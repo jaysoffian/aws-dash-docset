@@ -3,16 +3,18 @@
       <title>Walkthrough: Building a Pipeline for Test and Production Stacks - AWS CloudFormation</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="continuous-delivery-codepipeline.html" title="Continuous Delivery with AWS CodePipeline">
-      <link rel="prev" href="continuous-delivery-codepipeline.html" title="Continuous Delivery with AWS CodePipeline">
+      <link rel="up" href="continuous-delivery-codepipeline.html" title="Continuous Delivery with CodePipeline">
+      <link rel="prev" href="continuous-delivery-codepipeline.html" title="Continuous Delivery with CodePipeline">
       <link rel="next" href="continuous-delivery-codepipeline-action-reference.html" title="AWS CloudFormation Configuration Properties
     Reference">
-      <meta name="description" content="Learn how to build an AWS CodePipeline pipeline that automates many AWS CloudFormation actions for a continuous delivery workflow.">
+      <meta name="description" content="Learn how to build an CodePipeline pipeline that automates many AWS CloudFormation actions for a continuous delivery workflow.">
       <meta name="keywords" content="CloudFormation,AWSCloudFormation,resource provisioning,resource configuration,infrastructure management,CloudFormer,CloudFormation Designer,CloudFormation stack,CloudFormation stackset,CloudFormation template,change set">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS CloudFormation">
       <meta name="guide" content="User Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/continuous-delivery-codepipeline-basic-walkthrough.html">
@@ -22,7 +24,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -34,10 +36,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudformation">AWS CloudFormation</a> &#xBB; <a href="index.html">User Guide</a> &#xBB; <a href="continuous-delivery-codepipeline.html">Continuous Delivery with AWS CodePipeline</a> &#xBB; <span class="breadcrumb">Walkthrough: Building a Pipeline for Test and Production Stacks</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudformation/index.html">AWS CloudFormation</a> &#xBB; <a href="index.html">User Guide</a> &#xBB; <a href="continuous-delivery-codepipeline.html">Continuous Delivery with CodePipeline</a> &#xBB; <span class="breadcrumb">Walkthrough: Building a Pipeline for Test and Production Stacks</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="continuous-delivery-codepipeline-basic-walkthrough">Walkthrough: Building a Pipeline for Test and Production Stacks</h1>
                      <p>Imagine a release process where you submit an AWS CloudFormation template, which
@@ -48,16 +53,16 @@
                         workflow, you could use AWS CloudFormation to build your test stack, delete the test
                         stack, create a change set, and then execute the change set. However, with
                         each action, you need to manually interact with AWS CloudFormation. In this walkthrough,
-                        we&apos;ll build an AWS CodePipeline pipeline that automates many of these actions, helping
+                        we&apos;ll build an CodePipeline pipeline that automates many of these actions, helping
                         you achieve a continuous delivery workflow with your AWS CloudFormation stacks.
                      </p>
-                     <h2 id="w2ab2c13c11b5">Prerequisites</h2>
+                     <h2 id="w2ab1c13c11b5">Prerequisites</h2>
                      
                      
-                     <p>This walkthrough assumes that you have used AWS CodePipeline and AWS CloudFormation,
-                        and know
+                     <p>This walkthrough assumes that you have used CodePipeline and AWS CloudFormation, and
+                        know
                         how pipelines and AWS CloudFormation templates and stacks work. For more
-                        information about AWS CodePipeline, see the <a href="./codepipeline/latest/userguide/" target="_blank">AWS CodePipeline User Guide</a>. You also need to have an Amazon S3 <a href="./AmazonS3/latest/dev/UsingBucket.html" target="_blank">bucket</a> in the same AWS region
+                        information about CodePipeline, see the <a href="./codepipeline/latest/userguide/">AWS CodePipeline User Guide</a>. You also need to have an Amazon S3 <a href="./AmazonS3/latest/dev/UsingBucket.html">bucket</a> in the same AWS region
                         in which you will create your pipeline.
                      </p>
                      
@@ -69,13 +74,13 @@
                         </p>
                      </div>
                      
-                     <h2 id="w2ab2c13c11b7">Walkthrough Overview</h2>
+                     <h2 id="w2ab1c13c11b7">Walkthrough Overview</h2>
                      
                      
                      <p>This walkthrough builds a pipeline for a sample WordPress site in a
                         stack. The pipeline is separated into three stages. Each stage must
                         contain at least one action, which is a task the pipeline performs on your
-                        artifacts (your input). A stage organizes actions in a pipeline. AWS CodePipeline
+                        artifacts (your input). A stage organizes actions in a pipeline. CodePipeline
                         must complete all actions in a stage before the stage processes new
                         artifacts, for example, if you submitted new input to rerun the
                         pipeline.
@@ -141,24 +146,24 @@
                         </p>
                      </div>
                      
-                     <h2 id="w2ab2c13c11b9">Step 1: Edit the Artifact and Upload It to an S3 Bucket</h2>
+                     <h2 id="w2ab1c13c11b9">Step 1: Edit the Artifact and Upload It to an S3 Bucket</h2>
                      
                      
                      <p>Before you build your pipeline, you must set up your source repository
-                        and files. AWS CodePipeline copies these source files into your pipeline&apos;s <a href="./codepipeline/latest/userguide/concepts.html" target="_blank">artifact store</a>, and then uses
+                        and files. CodePipeline copies these source files into your pipeline&apos;s <a href="./codepipeline/latest/userguide/concepts.html">artifact store</a>, and then uses
                         them to perform actions in your pipeline, such as creating an AWS CloudFormation
                         stack.
                      </p>
                      
-                     <p>When you use Amazon Simple Storage Service (Amazon S3) as the source repository, AWS
-                        CodePipeline requires
+                     <p>When you use Amazon Simple Storage Service (Amazon S3) as the source repository, CodePipeline
+                        requires
                         you to zip your source files before uploading them to an S3 bucket. The
-                        zipped file is an AWS CodePipeline artifact that can contain an AWS CloudFormation
-                        template, a
+                        zipped file is an CodePipeline artifact that can contain an AWS CloudFormation template,
+                        a
                         template configuration file, or both. We provide an artifact that contains
                         a sample WordPress template and two template configuration files. The two
                         configuration files specify parameter values for the WordPress template.
-                        AWS CodePipeline uses them when it creates the WordPress stacks. One file contains
+                        CodePipeline uses them when it creates the WordPress stacks. One file contains
                         parameter values for a test stack, and the other for a production stack.
                         You&apos;ll need to edit the configuration files, for example, to specify an
                         existing EC2 key-pair name that you own. For more information about
@@ -266,7 +271,7 @@
                         </li>
                         <li>
                            
-                           <p><a href="./AmazonS3/latest/user-guide/UploadingObjectsintoAmazonS3.html" target="_blank">Upload
+                           <p><a href="./AmazonS3/latest/user-guide/UploadingObjectsintoAmazonS3.html">Upload
                                  the artifact to an S3 bucket that you own.</a></p>
                            
                            <p>Note the file&apos;s location. You&apos;ll specify the location of this file
@@ -291,7 +296,7 @@
                                  </li>
                                  <li class="listitem">
                                     
-                                    <p>AWS CodePipeline requires that the bucket is <a href="./AmazonS3/latest/user-guide/enable-bucket-versioning.html" target="_blank">versioning
+                                    <p>CodePipeline requires that the bucket is <a href="./AmazonS3/latest/user-guide/enable-bucket-versioning.html">versioning
                                           enabled</a>.
                                     </p>
                                     
@@ -299,7 +304,7 @@
                                  <li class="listitem">
                                     
                                     <p>You can also use services that don&apos;t require you to zip your
-                                       files before uploading them, like GitHub or AWS CodeCommit, for your
+                                       files before uploading them, like GitHub or CodeCommit, for your
                                        source repository.
                                     </p>
                                     
@@ -307,9 +312,9 @@
                                  <li class="listitem">
                                     
                                     <p>Artifacts can contain sensitive information such as
-                                       passwords. <a href="./AmazonS3/latest/user-guide/EditingPermissionsonanObject.html" target="_blank">Limit
+                                       passwords. <a href="./AmazonS3/latest/user-guide/EditingPermissionsonanObject.html">Limit
                                           access</a> so that only permitted users can view the file.
-                                       When you do, ensure that AWS CodePipeline can still access the file.
+                                       When you do, ensure that CodePipeline can still access the file.
                                     </p>
                                     
                                  </li>
@@ -319,19 +324,19 @@
                         </li>
                      </ol>
                      
-                     <p>You now have an artifact that AWS CodePipeline can pull in to your pipeline. In
+                     <p>You now have an artifact that CodePipeline can pull in to your pipeline. In
                         the next step, you&apos;ll specify the artifact&apos;s location and build the
                         WordPress pipeline.
                      </p>
                      
-                     <h2 id="w2ab2c13c11c11">Step 2: Create the Pipeline Stack</h2>
+                     <h2 id="w2ab1c13c11c11">Step 2: Create the Pipeline Stack</h2>
                      
                      
                      <p>To create the WordPress pipeline, you&apos;ll use a sample AWS CloudFormation template.
                         In addition to building the pipeline, the template sets up AWS Identity and Access
                         Management
-                        (IAM) service roles for AWS CodePipeline and AWS CloudFormation, an S3 bucket for
-                        the AWS CodePipeline
+                        (IAM) service roles for CodePipeline and AWS CloudFormation, an S3 bucket for the
+                        CodePipeline
                         artifact store, and an Amazon Simple Notification Service (Amazon SNS) topic to which
                         the pipeline sends
                         notifications, such as notifications about reviews. The sample template
@@ -368,9 +373,9 @@
                         </li>
                         <li>
                            
-                           <p>Choose an AWS region that supports AWS CodePipeline and AWS CloudFormation.</p>
+                           <p>Choose an AWS region that supports CodePipeline and AWS CloudFormation.</p>
                            
-                           <p>For more information, see <a href="./general/latest/gr/rande.html" target="_blank">AWS
+                           <p>For more information, see <a href="./general/latest/gr/rande.html">AWS
                                  Regions and Endpoints</a> in the
                               <em>AWS General Reference</em>.
                            </p>
@@ -459,7 +464,7 @@
                                  
                                  <dd>
                                     
-                                    <p>The email address to which AWS CodePipeline sends pipeline
+                                    <p>The email address to which CodePipeline sends pipeline
                                        notification, such as <code class="code">myemail@example.com</code>.
                                     </p>
                                     
@@ -494,11 +499,11 @@
                      </ol>
                      
                      <p>It might take several minutes for AWS CloudFormation to create your stack. To
-                        monitor progress, view the stack events. For more information, see <a href="cfn-console-view-stack-data-resources.html">Viewing Stack Data and Resources</a>.
+                        monitor progress, view the stack events. For more information, see <a href="cfn-console-view-stack-data-resources.html">Viewing AWS CloudFormation Stack Data and Resources on the AWS Management Console</a>.
                      </p>
                      
-                     <p>After your stack has been created, AWS CodePipeline starts your new pipeline. To
-                        view its status, see the <a href="https://console.aws.amazon.com/codepipeline/" target="_blank">AWS CodePipeline console</a>. From the list of pipelines, choose
+                     <p>After your stack has been created, CodePipeline starts your new pipeline. To
+                        view its status, see the <a href="https://console.aws.amazon.com/codepipeline/" target="_blank">CodePipeline console</a>. From the list of pipelines, choose
                         <b>WordPress-test-pipeline</b>.
                      </p>
                      
@@ -510,12 +515,12 @@
                         from the sample WordPress pipeline template.
                      </p>
                      
-                     <h4 id="w2ab2c13c11c11c14b4">Stage 1: Source</h4>
+                     <h4 id="w2ab1c13c11c11c14b4">Stage 1: Source</h4>
                      
                      
                      <p>The first stage of the pipeline is a source stage in which you
                         specify the location of your source code. Every time you push a
-                        revision to this location, AWS CodePipeline reruns your pipeline.
+                        revision to this location, CodePipeline reruns your pipeline.
                      </p>
                      
                      <p>The source code is located in an S3 bucket and is identified by
@@ -540,7 +545,7 @@
       OutputArtifacts:
         - Name: TemplateSource</code></pre>
                      
-                     <h4 id="w2ab2c13c11c11c14b6">Stage 2: TestStage</h4>
+                     <h4 id="w2ab1c13c11c11c14b6">Stage 2: TestStage</h4>
                      
                      
                      <p>In the <code class="code">TestStage</code> stage, the pipeline creates the test
@@ -562,13 +567,13 @@
                      <p>The <code class="code">ApproveTestStack</code> action pauses the pipeline and
                         sends a notification to the email address that you specified when you
                         created the pipeline stack. While the pipeline is paused, you can
-                        check the WordPress test stack and its resources. Use AWS CodePipeline to <a href="./codepipeline/latest/userguide/approvals-approve-or-reject.html" target="_blank">approve or
+                        check the WordPress test stack and its resources. Use CodePipeline to <a href="./codepipeline/latest/userguide/approvals-approve-or-reject.html">approve or
                            reject</a> this action. The <code class="code">CustomData</code> property
                         includes a description of the action you&apos;re approving, which the
                         pipeline adds to the notification email.
                      </p>
                      
-                     <p>After you approve this action, AWS CodePipeline moves to the
+                     <p>After you approve this action, CodePipeline moves to the
                         <code class="code">DeleteTestStack</code> action and deletes the test WordPress
                         stack and its resources.
                      </p>
@@ -611,7 +616,7 @@
         StackName: !Ref TestStackName
       RunOrder: &apos;3&apos;</code></pre>
                      
-                     <h4 id="w2ab2c13c11c11c14b8">Stage 3: ProdStage</h4>
+                     <h4 id="w2ab1c13c11c11c14b8">Stage 3: ProdStage</h4>
                      
                      
                      <p>The <code class="code">ProdStage</code> stage of the pipeline creates a change
@@ -632,8 +637,8 @@
                      <p>Similar to the previous stage, the <code class="code">ApproveChangeSet</code>
                         action pauses the pipeline and sends an email notification. While the
                         pipeline is paused, you can view the change set to check all of the
-                        proposed modifications to the production WordPress stack. Use AWS CodePipeline to
-                        <a href="./codepipeline/latest/userguide/approvals-approve-or-reject.html" target="_blank">approve
+                        proposed modifications to the production WordPress stack. Use CodePipeline to
+                        <a href="./codepipeline/latest/userguide/approvals-approve-or-reject.html">approve
                            or reject</a> this action to continue or stop the pipeline,
                         respectively.
                      </p>
@@ -686,11 +691,11 @@
       RunOrder: &apos;3&apos;</code></pre>
                      
                      
-                     <h2 id="w2ab2c13c11c13">Step 3: View the WordPress Stack</h2>
+                     <h2 id="w2ab1c13c11c13">Step 3: View the WordPress Stack</h2>
                      
                      
-                     <p>As AWS CodePipeline runs through the pipeline, it uses AWS CloudFormation to create
-                        test and
+                     <p>As CodePipeline runs through the pipeline, it uses AWS CloudFormation to create test
+                        and
                         production stacks. To see the status of these stacks and their output, use
                         the AWS CloudFormation console.
                      </p>
@@ -725,14 +730,14 @@
                         of your WordPress site.
                      </p>
                      
-                     <p>You&apos;ve successfully used AWS CodePipeline to build a continuous delivery workflow
-                        for a sample WordPress site. If you submit changes to the S3 bucket, AWS CodePipeline
+                     <p>You&apos;ve successfully used CodePipeline to build a continuous delivery workflow
+                        for a sample WordPress site. If you submit changes to the S3 bucket, CodePipeline
                         automatically detects a new version, and then reruns your pipeline. This
                         workflow makes it easier to submit and test changes before making changes
                         to your production site.
                      </p>
                      
-                     <h2 id="w2ab2c13c11c15"> Step 4: Clean Up Resources</h2>
+                     <h2 id="w2ab1c13c11c15"> Step 4: Clean Up Resources</h2>
                      
                      
                      <p>To make sure that you are not charged for unwanted services, delete
@@ -744,7 +749,7 @@
                         <p>Delete the test and production WordPress stacks before deleting the
                            pipeline stack. The pipeline stack contains a service role that&apos;s
                            required to delete the WordPress stacks. If you deleted the pipeline
-                           stack first, you can <a href="./AWSCloudFormation/latest/APIReference/API_DeleteStack.html" target="_blank">associate another service role Amazon Resource Name (ARN)</a>
+                           stack first, you can <a href="./AWSCloudFormation/latest/APIReference/API_DeleteStack.html">associate another service role Amazon Resource Name (ARN)</a>
                            with the WordPress stacks, and then delete them.
                         </p>
                      </div>
@@ -758,7 +763,7 @@
                         </li>
                         <li>
                            
-                           <p>Choose the S3 bucket that AWS CodePipeline used as your pipeline&apos;s artifact
+                           <p>Choose the S3 bucket that CodePipeline used as your pipeline&apos;s artifact
                               store.
                            </p>
                            
@@ -822,19 +827,23 @@
                      </p>
                      
                      <p>Now that you understand how to build a basic AWS CloudFormation workflow with
-                        AWS CodePipeline, you can use the sample template and artifacts as a starting point
+                        CodePipeline, you can use the sample template and artifacts as a starting point
                         for building your own.
                      </p>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -844,7 +853,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="continuous-delivery-codepipeline.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="continuous-delivery-codepipeline-action-reference.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -853,17 +864,21 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Prerequisites"><a class="pagetoc" href="#w2ab2c13c11b5">Prerequisites</a></li>
-                        <li class="pagetoc" name="Walkthrough Overview"><a class="pagetoc" href="#w2ab2c13c11b7">Walkthrough Overview</a></li>
-                        <li class="pagetoc" name="Step 1: Edit the Artifact and Upload It to an S3 Bucket"><a class="pagetoc" href="#w2ab2c13c11b9">Step 1: Edit the Artifact and Upload It to an S3 Bucket</a></li>
-                        <li class="pagetoc" name="Step 2: Create the Pipeline Stack"><a class="pagetoc" href="#w2ab2c13c11c11">Step 2: Create the Pipeline Stack</a></li>
-                        <li class="pagetoc" name="Step 3: View the WordPress Stack"><a class="pagetoc" href="#w2ab2c13c11c13">Step 3: View the WordPress Stack</a></li>
-                        <li class="pagetoc" name=" Step 4: Clean Up Resources"><a class="pagetoc" href="#w2ab2c13c11c15"> Step 4: Clean Up Resources</a></li>
+                        <li class="pagetoc" name="Prerequisites"><a class="pagetoc" href="#w2ab1c13c11b5">Prerequisites</a></li>
+                        <li class="pagetoc" name="Walkthrough Overview"><a class="pagetoc" href="#w2ab1c13c11b7">Walkthrough Overview</a></li>
+                        <li class="pagetoc" name="Step 1: Edit the Artifact and Upload It to an S3 Bucket"><a class="pagetoc" href="#w2ab1c13c11b9">Step 1: Edit the Artifact and Upload It to an S3 Bucket</a></li>
+                        <li class="pagetoc" name="Step 2: Create the Pipeline Stack"><a class="pagetoc" href="#w2ab1c13c11c11">Step 2: Create the Pipeline Stack</a></li>
+                        <li class="pagetoc" name="Step 3: View the WordPress Stack"><a class="pagetoc" href="#w2ab1c13c11c13">Step 3: View the WordPress Stack</a></li>
+                        <li class="pagetoc" name=" Step 4: Clean Up Resources"><a class="pagetoc" href="#w2ab1c13c11c15"> Step 4: Clean Up Resources</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

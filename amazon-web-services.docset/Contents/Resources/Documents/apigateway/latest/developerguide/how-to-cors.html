@@ -1,20 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Enable CORS for an API Gateway Resource - Amazon API Gateway</title>
+      <title>Enable CORS for an API Gateway REST API Resource - Amazon API Gateway</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="apigateway-control-access-to-api.html" title=" Controlling Access to an API in
-			API Gateway">
-      <link rel="prev" href="api-gateway-create-and-attach-iam-policy.html" title="Create and Attach a Policy to
-                an IAM User">
-      <link rel="next" href="enable-cors-for-resource-using-swagger-importer-tool.html" title="Enable CORS
-                on
-                a Resource Using the API Gateway Import API">
+      <link rel="up" href="apigateway-control-access-to-api.html" title="Controlling and Managing Access to a REST
+			API in API Gateway">
+      <link rel="prev" href="apigateway-cross-account-cognito-authorizer.html" title="Configure Cross-Account
+                Amazon Cognito Authorizer for a REST API Using the API Gateway Console">
+      <link rel="next" href="enable-cors-for-resource-using-swagger-importer-tool.html" title="Enable CORS on a
+                Resource Using the API Gateway Import API">
       <meta name="description" content="Learn how to enable cross-origin resource sharing (CORS) for an API resource through selected methods in API Gateway.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-cors.html">
@@ -24,7 +25,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -36,19 +37,212 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-control-access-to-api.html"> Controlling Access to an API in
-                                    			API Gateway</a> &#xBB; <span class="breadcrumb">Enable CORS for an API Gateway Resource</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="apigateway-control-access-to-api.html">Controlling and Managing Access to a REST
+                                    			API in API Gateway</a> &#xBB; <span class="breadcrumb">Enable CORS for an API Gateway REST API Resource</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="how-to-cors">Enable CORS for an API Gateway Resource</h1>
-                     <p>When your API&apos;s resources receive requests from a domain other than the API&apos;s own
-                        domain,
-                        you must enable cross-origin resource sharing (CORS) for selected methods on the resource.
-                        This amounts to having your API respond to the <code class="code">OPTIONS</code> preflight request with
-                        at least the following CORS-required response headers: 
+                     <h1 class="topictitle" id="how-to-cors">Enable CORS for an API Gateway REST API Resource</h1>
+                     <p><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS" target="_blank">Cross-origin resource
+                           sharing (CORS)</a> is a browser security feature that restricts cross-origin HTTP
+                        requests that are initiated from scripts running in the browser. If your REST API&apos;s
+                        resources receive non-simple cross-origin HTTP requests, you need to enable CORS
+                        support.
                      </p>
+                     <div class="highlights">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#apigateway-cors-request-types">Determining Whether to Enable CORS
+                                 Support</a></li>
+                           <li><a href="#apigateway-responding-to-cors-preflight">What It Means to Enable CORS
+                                 Support</a></li>
+                           <li><a href="#apigateway-test-cors">Testing CORS</a></li>
+                           <li><a href="#how-to-cors-console">Enable CORS on a Resource Using the API Gateway
+                                 Console</a></li>
+                           <li><a href="enable-cors-for-resource-using-swagger-importer-tool.html">Enable CORS on a
+                                 Resource Using the API Gateway Import API</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="apigateway-cors-request-types">Determining Whether to Enable CORS
+                        Support
+                     </h2>
+                     
+                     
+                     <p>A <em>cross-origin</em> HTTP request is one that is made to:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>A different <em>domain</em> (for example, from
+                                 <code class="code">example.com</code> to <code class="code">amazondomains.com</code>)
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>A different <em>subdomain</em> (for example, from
+                                 <code class="code">example.com</code> to <code class="code">petstore.example.com</code>)
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>A different <em>port</em> (for example, from
+                                 <code class="code">example.com</code> to <code class="code">example.com:10777</code>)
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>A different <em>protocol</em> (for example, from
+                                 <code class="code">https://example.com</code> to <code class="code">http://example.com</code>)
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>Cross-origin HTTP requests can be divided into two types: <em>simple</em>
+                        requests and <em>non-simple</em> requests.
+                     </p>
+                     
+                     <p>An HTTP request is <em>simple</em> if all of the following conditions are
+                        true:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>It is issued against an API resource that allows only <code class="code">GET</code>,
+                                 <code class="code">HEAD</code>, and <code class="code">POST</code> requests.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>If it is a <code class="code">POST</code> method request, it must include an
+                                 <code class="code">Origin</code> header.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The request payload content type is <code class="code">text/plain</code>,
+                                 <code class="code">multipart/form-data</code>, or
+                                 <code class="code">application/x-www-form-urlencoded</code>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The request does not contain custom headers.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Any additional requirements that are listed in the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS#Simple_requests" target="_blank">Mozilla CORS documentation for simple requests</a>.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>For simple cross-origin <code class="code">POST</code> method requests, the response from your
+                        resource needs to include the header <code class="code">Access-Control-Allow-Origin</code>, where the
+                        value of the header key is set to <code class="code">&apos;*&apos;</code>(any origin) or is set to the origins
+                        allowed to access that resource.
+                     </p>
+                     
+                     <p>All other cross-origin HTTP requests are <em>non-simple</em> requests. If
+                        your API&apos;s resources receive non-simple requests, you&apos;ll need to enable CORS
+                        support.
+                     </p>
+                     
+                     
+                     <h2 id="apigateway-responding-to-cors-preflight">What It Means to Enable CORS
+                        Support
+                     </h2>
+                     
+                     
+                     <p>When a browser receives a non-simple HTTP request, the <a href="https://fetch.spec.whatwg.org/#http-cors-protocol" target="_blank">CORS protocol</a>
+                        requires the browser to send a preflight request to the server and wait for approval
+                        (or
+                        a request for credentials) from the server before sending the actual request. The
+                        <em>preflight request</em> appears to your API as an HTTP request
+                        that:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Includes an <code class="code">Origin</code> header.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Uses the <code class="code">OPTIONS</code> method.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Includes the following headers:</p>
+                              
+                              <div class="itemizedlist">
+                                 
+                                 
+                                 
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       
+                                       <p><code class="code">Access-Control-Request-Method</code></p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p><code class="code">Access-Control-Request-Headers</code></p>
+                                       
+                                    </li>
+                                 </ul>
+                              </div>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <p>To support CORS, therefore, a REST API resource needs to implement an
+                        <code class="code">OPTIONS</code> method that can respond to the <code class="code">OPTIONS</code> preflight
+                        request with at least the following response headers mandated by the Fetch
+                        standard:
+                     </p>
+                     
                      <div class="itemizedlist">
                         
                         
@@ -72,73 +266,135 @@
                            </li>
                         </ul>
                      </div>
-                     <p> In API Gateway you enable CORS by setting up an <code class="code">OPTIONS</code> method with the mock
-                        integration type to return the preceding response
-                        headers
-                        (with static values discussed in the following) as the method response
-                        headers. In addition, the actual CORS-enabled methods must also return
-                        the <code class="code">Access-Control-Allow-Origin:&apos;<em class="replaceable"><code>request-originating server
-                                 addresses</code></em>&apos;</code> header in at least its 200 response. You can replace
-                        the static value of specific <code class="code"><em class="replaceable"><code>request-originating server
-                                 addresses</code></em></code> with <code class="code">*</code> to indicate any servers. However,
-                        you should be careful of enabling such a broad support and do so only when you fully
-                        understand the consequences.
-                     </p>
-                     <p>With Lambda, AWS or HTTP integrations, you can leverage API Gateway to set up the
-                        required
-                        headers using the method response and integration response. For Lambda or HTTP <a href="api-gateway-set-up-simple-proxy.html">proxy integrations</a>, you can still set
-                        up the required OPTIONS response headers in API Gateway. However, you must rely on
-                        the back
-                        end to return the <code class="code">Access-Control-Allow-Origin</code> headers because the integration
-                        response is disabled for the proxy integration.
-                     </p>
-                     <div class="aws-note">
-                        <p class="aws-note">Tip</p>
-                        <p>You must set up an OPTIONS method to handle preflight requests to support CORS. However,
-                           OPTIONS methods are optional if 1) an API resource exposes only the GET, HEAD or POST
-                           methods and 2) the request payload content type is
-                           <code class="code">application/x-www-form-urlencoded</code>, <code class="code">multipart/form-data</code> or
-                           <code class="code">text/plain</code> and 3) the request does not contain any custom headers. When
-                           possible, we recommend to use OPTIONS method to enable CORS in your API.
-                        </p>
-                     </div>
-                     <p> 
-                        This section describes how to enable CORS for a method in API Gateway using the API
-                        Gateway console
-                        or the API Gateway <a href="api-gateway-import-api.html">Import an API into API Gateway</a>.
-                        
-                     </p>
-                     <div class="highlights">
-                        <p><strong>Topics</strong></p>
-                        <ul>
-                           <li><a href="#how-to-cors-prerequisites">Prerequisites</a></li>
-                           <li><a href="#how-to-cors-console">Enable
-                                 CORS on a Resource Using the API Gateway Console</a></li>
-                           <li><a href="enable-cors-for-resource-using-swagger-importer-tool.html">Enable CORS
-                                 on
-                                 a Resource Using the API Gateway Import API</a></li>
-                        </ul>
-                     </div>
-                     <h2 id="how-to-cors-prerequisites">Prerequisites</h2>
                      
                      
-                     <ul>
-                        <li>
-                           
-                           <p> You must have the method available in API Gateway. For instructions on how to
-                              create and configure a method, see <a href="api-gateway-create-api-step-by-step.html">Build an API with HTTP Custom
-                                 Integration</a>. 
-                           </p>
-                           
-                        </li>
-                     </ul>
+                     <p>How you enable CORS support depends on your API&apos;s integration type.</p>
                      
-                     <h2 id="how-to-cors-console">Enable
-                        CORS on a Resource Using the API Gateway Console
+                     
+                     
+                     <h3 id="apigateway-enable-cors-mock">Enabling CORS Support for Mock
+                        Integrations
+                     </h3>
+                     
+                     <p>For a mock integration, you enable CORS by creating an <code class="code">OPTIONS</code> method
+                        to return the required response headers (with appropriate static values) as the
+                        method response headers. In addition, each of the actual CORS-enabled methods must
+                        also return the <code class="code">Access-Control-Allow-Origin:&apos;<em class="replaceable"><code>request-originating
+                                 server addresses</code></em>&apos;</code> header in at least its 200 response,
+                        where the value of the header key is set to <code class="code">&apos;*&apos;</code> (any origin) or is set
+                        to the origins allowed to access the resource.
+                     </p>
+                     
+                     
+                     
+                     <h3 id="apigateway-enable-cors-nonproxy">Enabling CORS Support for Lambda or
+                        HTTP Non-Proxy Integrations and AWS Service Integrations
+                     </h3>
+                     
+                     <p>For a Lambda custom (non-proxy) integration, HTTP custom (non-proxy) integration,
+                        or AWS service integration, you can set up the required headers by using API Gateway
+                        method response and integration response settings. API Gateway will create an
+                        <code class="code">OPTIONS</code> method and attempt to add the
+                        <code class="code">Access-Control-Allow-Origin</code> header to your existing method
+                        integration responses. This doesn&#x2019;t always work and sometimes you need to manually
+                        modify the integration response to properly enable CORS. Usually this just means
+                        manually modifying the integration response to return the
+                        <code class="code">Access-Control-Allow-Origin</code> header.
+                     </p>
+                     
+                     
+                     
+                     <h3 id="apigateway-enable-cors-proxy">Enabling CORS Support for Lambda or
+                        HTTP Proxy Integrations
+                     </h3>
+                     
+                     <p>For a Lambda proxy integration or HTTP proxy integration, you can still set up the
+                        required <code class="code">OPTIONS</code> response headers in API Gateway. However, your backend is
+                        responsible for returning the <code class="code">Access-Control-Allow-Origin</code> and
+                        <code class="code">Access-Control-Allow-Headers</code> headers, because a proxy integration
+                        doesn&apos;t return an integration response.
+                     </p>
+                     
+                     <p>The following is an example of a Node.js Lambda function that is configured to
+                        return the required CORS headers:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&apos;use strict&apos;;
+
+exports.handler = function(event, context) {
+    
+    var responseCode = 200;
+    
+    var response = {
+        statusCode: responseCode,
+        headers: {
+            &quot;x-custom-header&quot; : &quot;<em class="replaceable"><code>my custom header value</code></em>&quot;,
+            &quot;Access-Control-Allow-Origin&quot;: &quot;<em class="replaceable"><code>my-origin.com</code></em>&quot;
+        },
+        body: JSON.stringify(event)
+    };
+    
+    context.succeed(response);
+};</code></pre>
+                     <p>A more complete Node.js example can be found at <a href="https://github.com/awslabs/serverless-application-model/blob/master/examples/2016-10-31/api_swagger_cors/index.js" target="_blank">https://github.com/awslabs/serverless-application-model/blob/master/examples/2016-10-31/api_swagger_cors/index.js</a>.
+                     </p>
+                     
+                     <p>The following is an example of a Python code snippet that returns the required
+                        CORS headers:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">response[&quot;headers&quot;] = {
+    &apos;Content-Type&apos;: &apos;application/json&apos;, 
+    &apos;Access-Control-Allow-Origin&apos;: <em class="replaceable"><code>&apos;*&apos;</code></em> 
+}</code></pre>
+                     <p>The following is an example that returns the required headers for CORS using
+                        Serverless Application Model (SAM), including <code class="code">AllowHeaders</code>:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">Globals:
+  Api:
+    # Allows an application running locally on port 8080 to call this API
+    Cors:
+      AllowMethods: &quot;&apos;OPTIONS,POST,GET&apos;&quot;
+      AllowHeaders: &quot;&apos;Content-Type&apos;&quot;
+      AllowOrigin: &quot;&apos;http://localhost:8080&apos;&quot;
+</code></pre>
+                     <p>The following is a Lambda proxy example that returns the same headers as the SAM
+                        example:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">return {
+    &apos;statusCode&apos;: 200,
+    &apos;headers&apos;: {
+        &quot;Access-Control-Allow-Origin&quot;: &quot;http://localhost:8080&quot;,
+        &quot;Access-Control-Allow-Headers&quot;: &quot;Content-Type&quot;,
+        &quot;Access-Control-Allow-Methods&quot;: &quot;OPTIONS,POST,GET&quot;
+    },
+    &apos;body&apos;: json.dumps(response)
+}</code></pre>
+                     
+                     
+                     <h2 id="apigateway-test-cors">Testing CORS</h2>
+                     
+                     <p>You can test CORS by customizing the following <code class="code">cURL</code> command for the
+                        actual method and origin header you are using:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">curl -v -X OPTIONS -H &quot;Access-Control-Request-Method: POST&quot; -H &quot;Origin: <em class="replaceable"><code>http://example.com</code></em>&quot; https://<em class="replaceable"><code>{restapi_id}</code></em>.execute-api.<em class="replaceable"><code>{region}</code></em>.amazonaws.com/<em class="replaceable"><code>{stage_name}</code></em></code></pre>
+                     
+                     <h2 id="how-to-cors-console">Enable CORS on a Resource Using the API Gateway
+                        Console
                      </h2>
                      
+                     <p>You can use the API Gateway console to enable CORS support for one or all methods
+                        on a REST
+                        API resource that you have created.
+                     </p>
                      
+                     <div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>Resources can contain child resources. Enabling CORS support for a resource and
+                           its methods does not recursively enable it for child resources and their
+                           methods.
+                        </p>
+                     </div>
                      
+                     <p class="title"><b>Enable CORS support on a REST API resource</b></p>
                      <ol>
                         <li>
                            <p>Sign in to the API Gateway console at <a href="https://console.aws.amazon.com/apigateway" target="_blank">https://console.aws.amazon.com/apigateway</a>.
@@ -146,7 +402,7 @@
                         </li>
                         <li>
                            
-                           <p> In the API Gateway console, choose an API under <b>APIs</b>. 
+                           <p>Choose the API from the <b>APIs</b> list.
                            </p>
                            
                         </li>
@@ -167,11 +423,12 @@
                               drop-down menu.
                            </p>
                            
+                           
                            <div class="mediaobject">
                               
                               <img src="../../..//img/amazon-api-gateway-enable-cors.png" alt="
-                                Choose Enable CORS
-                            " style="max-width:100%">
+                        Choose Enable CORS
+                    " style="max-width:100%">
                               
                               
                               
@@ -199,8 +456,8 @@
                                  
                                  <p> Use the console-provided value of <code class="code">&apos;*&apos;</code> as the
                                     <b>Access-Control-Allow-Origin</b> header value to
-                                    allow access requests from all domains, or specify a named domain to all
-                                    access requests from the specified domain. 
+                                    allow access requests from all origins, or specify origins to be
+                                    permitted to access the resource. 
                                  </p>
                                  
                               </li>
@@ -216,20 +473,19 @@
                            <div class="mediaobject">
                               
                               <img src="../../..//img/amazon-api-gateway-enable-cors-resources.png" alt="
-                                Choose which headers are allowed
-                            " style="max-width:100%">
+                        Choose which headers are allowed
+                    " style="max-width:100%">
                               
                               
                               
                            </div>
                            
                            <div class="aws-note">
-                              <p class="aws-note">Note</p>
+                              <p class="aws-note">Important</p>
                               <p> When applying the above instructions to the <code class="code">ANY</code> method in a
-                                 proxy integration, any applicable CORS headers will not be set. Instead, you
-                                 rely on the integration backend to return the applicable CORS headers, such
-                                 as <code class="code">Access-Control-Allow-Origin</code>
-                                 
+                                 proxy integration, any applicable CORS headers will not be set. Instead,
+                                 your backend must return the applicable CORS headers, such as
+                                 <code class="code">Access-Control-Allow-Origin</code>. 
                               </p>
                            </div>
                            
@@ -244,8 +500,8 @@
                            <div class="mediaobject">
                               
                               <img src="../../..//img/amazon-api-gateway-enable-cors-confirm-method-overwrite.png" alt="
-                                Confirm overwrite of existing values
-                            " style="max-width:100%">
+                        Confirm overwrite of existing values
+                    " style="max-width:100%">
                               
                               
                               
@@ -254,30 +510,34 @@
                         </li>
                      </ol>
                      
-                     <p>After CORS is enabled on the GET method, an OPTIONS method is added to the resource,
-                        if it is not already there. The <code class="code">200</code> response of the OPTIONS method is
-                        automatically configured to return the three <code class="code">Access-Control-Allow-*</code> headers
-                        to fulfill preflight handshakes. In addition, the actual (GET) method is also configured
-                        by default to return the <code class="code">Access-Control-Allow-Origin</code> header in its 200
-                        response as well. For other types of responses, you will need to manually configure
-                        them
-                        to return <code class="code">Access-Control-Allow-Origin&apos;</code> header with &apos;*&apos; or specific origin
-                        domain names, if you do not want to return the Cross-origin access error.
+                     <p>After CORS is enabled on the <code class="code">GET</code> method, an <code class="code">OPTIONS</code> method
+                        is added to the resource, if it is not already there. The <code class="code">200</code> response of
+                        the <code class="code">OPTIONS</code> method is automatically configured to return the three
+                        <code class="code">Access-Control-Allow-*</code> headers to fulfill preflight handshakes. In
+                        addition, the actual (<code class="code">GET</code>) method is also configured by default to return
+                        the <code class="code">Access-Control-Allow-Origin</code> header in its 200 response as well. For
+                        other types of responses, you will need to manually configure them to return
+                        <code class="code">Access-Control-Allow-Origin&apos;</code> header with &apos;*&apos; or specific origins, if
+                        you do not want to return the <code class="code">Cross-origin access</code> error.
                      </p>
                      
-                     <p>As with any updates of your API, you must deploy or redeploy the API for the new settings
-                        to take effect.
+                     <p>After you enable CORS support on your resource, you must deploy or redeploy the API
+                        for the new settings to take effect. For more information, see <a href="how-to-deploy-api-with-console.html">Deploy a REST API from the API Gateway Console</a>.
                      </p>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -286,8 +546,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="api-gateway-create-and-attach-iam-policy.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="enable-cors-for-resource-using-swagger-importer-tool.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="apigateway-cross-account-cognito-authorizer.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="enable-cors-for-resource-using-swagger-importer-tool.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -296,14 +558,24 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Prerequisites"><a class="pagetoc" href="#how-to-cors-prerequisites">Prerequisites</a></li>
-                        <li class="pagetoc" name="Enable
-            CORS on a Resource Using the API Gateway Console"><a class="pagetoc" href="#how-to-cors-console">Enable CORS Using the Console</a></li>
+                        <li class="pagetoc" name="Determining Whether to Enable CORS
+                Support"><a class="pagetoc" href="#apigateway-cors-request-types">Determining Whether to Enable CORS
+                              Support</a></li>
+                        <li class="pagetoc" name="What It Means to Enable CORS
+                Support"><a class="pagetoc" href="#apigateway-responding-to-cors-preflight">What It Means to Enable CORS
+                              Support</a></li>
+                        <li class="pagetoc" name="Testing CORS"><a class="pagetoc" href="#apigateway-test-cors">Testing CORS</a></li>
+                        <li class="pagetoc" name="Enable CORS on a Resource Using the API Gateway
+                Console"><a class="pagetoc" href="#how-to-cors-console">Enable CORS Using the Console</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

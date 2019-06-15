@@ -1,17 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Logging AWS Lambda API Calls By Using AWS CloudTrail - AWS Lambda</title>
+      <title>Logging AWS Lambda API Calls with AWS CloudTrail - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="admin-lambda-apps.html" title="Administering Lambda-based Applications">
-      <link rel="prev" href="tagging.html" title="Tagging Lambda Functions">
-      <link rel="next" href="lambda-auth-and-access-control.html" title="Authentication and Access Control for
-    AWS Lambda">
-      <meta name="description" content="AWS Lambda is integrated with AWS CloudTrail, a service that captures API calls made by or on behalf of AWS Lambda in your AWS account and delivers the log files to an Amazon S3 bucket that you specify. CloudTrail captures API calls made from the AWS Lambda console or from the AWS Lambda API. Using the information collected by CloudTrail, you can determine what request was made to AWS Lambda, the source IP address from which the request was made, who made the request, when it was made, and so on. To learn more about CloudTrail, including how to configure and enable it, see the">
+      <link rel="up" href="troubleshooting.html" title="Monitoring and Troubleshooting Lambda Applications">
+      <link rel="prev" href="lambda-x-ray-daemon.html" title="The AWS X-Ray Daemon in the Lambda Environment">
+      <link rel="next" href="monitoring-functions-troubleshooting.html" title="AWS Lambda Troubleshooting Scenarios">
+      <meta name="description" content="AWS Lambda is integrated with AWS CloudTrail, a service that provides a record of actions taken by a user, role, or an AWS service in AWS Lambda. CloudTrail captures API calls for AWS Lambda as events. The calls captured include calls from the AWS Lambda console and code calls to the AWS Lambda API operations. If you create a trail, you can enable continuous delivery of CloudTrail events to an Amazon S3 bucket, including events for AWS Lambda. If you don&apos;t configure a trail, you can still view the most recent events in the CloudTrail console in">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/logging-using-cloudtrail.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,37 +35,92 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="admin-lambda-apps.html">Administering Lambda-based Applications</a> &#xBB; <span class="breadcrumb">Logging AWS Lambda API Calls By Using AWS CloudTrail</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="troubleshooting.html">Monitoring and Troubleshooting Lambda Applications</a> &#xBB; <span class="breadcrumb">Logging AWS Lambda API Calls with AWS CloudTrail</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="logging-using-cloudtrail">Logging AWS Lambda API Calls By Using AWS CloudTrail</h1>
-                     <p>AWS Lambda is integrated with AWS CloudTrail, a service that captures API calls made
-                        by or on behalf of AWS Lambda
-                        in your AWS account and delivers the log files to an Amazon S3 bucket that you specify.
-                        CloudTrail captures API calls made from the
-                        AWS Lambda console or from the AWS Lambda API. Using the information collected by
-                        CloudTrail, you can
-                        determine what request was made to AWS Lambda, the source IP address from which the
-                        request was made, who made
-                        the request, when it was made, and so on. To learn more about CloudTrail, including
-                        how to configure and enable it, see
-                        the <a href="./awscloudtrail/latest/userguide/" target="_blank"><em>AWS CloudTrail User Guide</em></a>.
+                     <h1 class="topictitle" id="logging-using-cloudtrail">Logging AWS Lambda API Calls with AWS CloudTrail</h1>
+                     <p>AWS Lambda is integrated with AWS CloudTrail, a service that provides a record of
+                        actions taken by a user, role, or an
+                        AWS service in AWS Lambda. CloudTrail captures API calls for AWS Lambda as events.
+                        The calls captured include calls from
+                        the AWS Lambda console and code calls to the AWS Lambda API operations. If you create
+                        a trail, you can enable
+                        continuous delivery of CloudTrail events to an Amazon S3 bucket, including events
+                        for AWS Lambda. If you don&apos;t configure a
+                        trail, you can still view the most recent events in the CloudTrail console in <b>Event history</b>. Using
+                        the information collected by CloudTrail, you can determine the request that was made
+                        to AWS Lambda, the IP address from
+                        which the request was made, who made the request, when it was made, and additional
+                        details. 
                      </p>
+                     <p>To learn more about CloudTrail, including how to configure and enable it, see the
+                        <a href="./awscloudtrail/latest/userguide/">AWS CloudTrail User Guide</a>.
+                     </p>
+                     
                      <h2 id="service-name-info-in-cloudtrail">AWS Lambda Information in CloudTrail</h2>
                      
-                     
-                     
-                     <p>When CloudTrail logging is enabled in your AWS account, API calls made to AWS Lambda
-                        actions are tracked in log files. AWS Lambda
-                        records are written together with other AWS service records in a log file. CloudTrail
-                        determines when to create and
-                        write to a new file based on a time period and file size.
+                     <p>CloudTrail is enabled on your AWS account when you create the account. When supported
+                        event activity occurs in
+                        AWS Lambda, that activity is recorded in a CloudTrail event along with other AWS service
+                        events in <b>Event
+                           history</b>. You can view, search, and download recent events in your AWS account. For more
+                        information, see <a href="./awscloudtrail/latest/userguide/view-cloudtrail-events.html">Viewing Events with CloudTrail Event
+                           History</a>. 
                      </p>
                      
+                     <p>For an ongoing record of events in your AWS account, including events for AWS Lambda,
+                        create a trail. A
+                        <em>trail</em> enables CloudTrail to deliver log files to an Amazon S3 bucket. By default, when
+                        you create a
+                        trail in the console, the trail applies to all AWS Regions. The trail logs events
+                        from all Regions in the AWS
+                        partition and delivers the log files to the Amazon S3 bucket that you specify. Additionally,
+                        you can configure other
+                        AWS services to further analyze and act upon the event data collected in CloudTrail
+                        logs. For more information, see
+                        the following: 
+                     </p>
                      
-                     <p>The following actions are supported:</p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><a href="./awscloudtrail/latest/userguide/cloudtrail-create-and-update-a-trail.html">Overview for Creating a
+                                    Trail</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="./awscloudtrail/latest/userguide/cloudtrail-aws-service-specific-topics.html#cloudtrail-aws-service-specific-topics-integrations">CloudTrail Supported Services and Integrations</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="./awscloudtrail/latest/userguide/getting_notifications_top_level.html">Configuring Amazon SNS Notifications for
+                                    CloudTrail</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="./awscloudtrail/latest/userguide/receive-cloudtrail-log-files-from-multiple-regions.html">Receiving CloudTrail Log Files
+                                    from Multiple Regions</a> and <a href="./awscloudtrail/latest/userguide/cloudtrail-receive-logs-from-multiple-accounts.html">Receiving CloudTrail Log Files from
+                                    Multiple Accounts</a></p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>AWS Lambda supports logging the following actions as events in CloudTrail log files:</p>
                      
                      
                      <div class="itemizedlist">
@@ -156,7 +213,8 @@
                               
                               <p><a href="API_UpdateFunctionCode.html">UpdateFunctionCode</a></p>
                               
-                              <p>(The <code class="code">ZipFile</code> parameter is omitted from the CloudTrail logs for <code class="code">UpdateFunctionCode</code>.)
+                              <p>(The <code class="code">ZipFile</code> parameter is omitted from the CloudTrail logs for
+                                 <code class="code">UpdateFunctionCode</code>.)
                               </p>
                               
                            </li>
@@ -175,8 +233,8 @@
                         with temporary security
                         credentials for a role or federated user, or by another AWS service. For more information,
                         see the
-                        <b>userIdentity</b> field in the <a href="./awscloudtrail/latest/userguide/cloudtrail-event-reference.html" target="_blank">CloudTrail Event
-                           Reference</a>.
+                        <b>userIdentity</b> field in the <a href="./awscloudtrail/latest/userguide/cloudtrail-event-reference.html">CloudTrail
+                           Event Reference</a>.
                      </p>
                      
                      
@@ -190,28 +248,29 @@
                      
                      <p>You can choose to have CloudTrail publish Amazon SNS notifications when new log files
                         are delivered if you want to take
-                        quick action upon log file delivery. For more information, see <a href="./awscloudtrail/latest/userguide/configure-sns-notifications-for-cloudtrail.html" target="_blank">Configuring Amazon SNS Notifications for CloudTrail</a>.
+                        quick action upon log file delivery. For more information, see <a href="./awscloudtrail/latest/userguide/configure-sns-notifications-for-cloudtrail.html">Configuring Amazon SNS Notifications for
+                           CloudTrail</a>.
                      </p>
                      
                      
                      <p>You can also aggregate AWS Lambda log files from multiple AWS regions and multiple
-                        AWS
-                        accounts into a single S3 bucket. For more information, see <a href="./awscloudtrail/latest/userguide/cloudtrail-working-with-log-files.html" target="_blank">Working with CloudTrail Log Files</a>.
+                        AWS accounts into a single
+                        S3 bucket. For more information, see <a href="./awscloudtrail/latest/userguide/cloudtrail-working-with-log-files.html">Working with
+                           CloudTrail Log Files</a>.
                      </p>
+                     
                      
                      <h2 id="understanding-service-name-entries">Understanding AWS Lambda Log File Entries</h2>
                      
                      
                      
                      <p>CloudTrail log files contain one or more log entries where each entry is made up of
-                        multiple
-                        JSON-formatted events. A log entry represents a single request from any source and
-                        includes
-                        information about the requested action, any parameters, the date and time of the action,
-                        and
-                        so on. The log entries are not guaranteed to be in any particular order. That is,
-                        they are not
-                        an ordered stack trace of the public API calls.
+                        multiple JSON-formatted events.
+                        A log entry represents a single request from any source and includes information about
+                        the requested action, any
+                        parameters, the date and time of the action, and so on. The log entries are not guaranteed
+                        to be in any particular
+                        order. That is, they are not an ordered stack trace of the public API calls.
                      </p>
                      
                      
@@ -238,7 +297,7 @@
       &quot;sourceIPAddress&quot;: &quot;127.0.0.1&quot;,
       &quot;userAgent&quot;: &quot;Python-httplib2/0.8 (gzip)&quot;,
       &quot;errorCode&quot;: &quot;AccessDenied&quot;,
-      &quot;errorMessage&quot;: &quot;User: arn:aws:iam::999999999999:user/myUserName&quot; is not authorized to perform: lambda:GetFunction on resource: arn:aws:lambda:us-west-2:999999999999:function:other-acct-function&quot;,
+      &quot;errorMessage&quot;: &quot;User: arn:aws:iam::999999999999:user/myUserName is not authorized to perform: lambda:GetFunction on resource: arn:aws:lambda:us-west-2:999999999999:function:other-acct-function&quot;,
       &quot;requestParameters&quot;: null,
       &quot;responseElements&quot;: null,
       &quot;requestID&quot;: &quot;7aebcd0f-cda1-11e4-aaa2-e356da31e4ff&quot;,
@@ -275,29 +334,36 @@
 }</code></pre>
                      <div class="aws-note">
                         <p class="aws-note">Note</p>
-                        <p>The <code class="code">eventName</code> may include date and version information, such as <code class="code">&quot;GetFunction20150331&quot;</code>, but it is still referring to the same public API.
+                        <p>The <code class="code">eventName</code> may include date and version information, such as
+                           <code class="code">&quot;GetFunction20150331&quot;</code>, but it is still referring to the same public API. For more information,
+                           see <a href="./awscloudtrail/latest/userguide/view-cloudtrail-events-supported-services.html#view-cloudtrail-events-supported-apis-lambda"> Services Supported by CloudTrail Event History</a> in the <em>AWS CloudTrail User
+                              Guide</em>. 
                         </p>
                      </div>
+                     
                      
                      <h2 id="tracking-function-invocations">Using CloudTrail to Track Function Invocations</h2>
                      
                      <p>CloudTrail also logs data events. You can turn on data event logging so that you log
-                        an event every time Lambda functions are invoked. This helps you understand what identities
-                        are invoking the functions and the frequency of their invocations. This feature is
-                        not enabled by default and incurs additional charges if enabled. You can do this using
-                        the AWS CloudTrail console or
-                        <a href="API_Invoke.html">Invoke</a> CLI operation. For more information on this option, see <a href="./awscloudtrail/latest/userguide/logging-management-and-data-events-with-cloudtrail.html" target="_blank">
-                           Logging Data and Management Events for Trails</a>.
+                        an event every time Lambda
+                        functions are invoked. This helps you understand what identities are invoking the
+                        functions and the frequency of
+                        their invocations. You can do this using the AWS CloudTrail console or <a href="API_Invoke.html">Invoke</a> CLI operation. For more information on this option, see <a href="./awscloudtrail/latest/userguide/logging-management-and-data-events-with-cloudtrail.html"> Logging Data and Management Events for Trails</a>.
                      </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -306,8 +372,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="tagging.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="lambda-auth-and-access-control.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="lambda-x-ray-daemon.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="monitoring-functions-troubleshooting.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -324,6 +392,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

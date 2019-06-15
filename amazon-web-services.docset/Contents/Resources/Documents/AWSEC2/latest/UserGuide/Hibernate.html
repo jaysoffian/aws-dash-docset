@@ -1,0 +1,839 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Hibernate Your Instance - Amazon Elastic Compute Cloud</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="ec2-instance-lifecycle.html" title="Instance Lifecycle">
+      <link rel="prev" href="Stop_Start.html" title="Stop and Start Your Instance">
+      <link rel="next" href="ec2-instance-reboot.html" title="Reboot Your Instance">
+      <meta name="description" content="Hibernate an instance with an encrypted Amazon EBS volume as its root device.">
+      <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Elastic Compute Cloud">
+      <meta name="guide" content="User Guide for Linux Instances">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Hibernate.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="ec2-instance-lifecycle.html">Instance Lifecycle</a> &#xBB; <span class="breadcrumb">Hibernate Your Instance</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="Hibernate">Hibernate Your Instance</h1>
+                     <p>When you hibernate an instance, we signal the operating system to perform hibernation
+                        		(suspend-to-disk), which saves the contents from the instance memory (RAM) to your
+                        Amazon EBS
+                        		root volume. We persist the instance&apos;s Amazon EBS root volume and any attached Amazon
+                        EBS data
+                        		volumes. When you restart your instance, the Amazon EBS root volume is restored
+                        to its previous
+                        		state, the RAM contents are reloaded, and the processes that were previously running
+                        on the
+                        		instance are resumed. Previously attached data volumes are reattached and the instance
+                        		retains its instance ID. 
+                     </p>
+                     <p>You can hibernate an instance only if it&apos;s <a href="Hibernate.html#enabling-hibernation">enabled for hibernation</a> and it meets the <a href="Hibernate.html#hibernating-prerequisites">hibernation prerequisites</a>. Hibernation is
+                        		currently supported only for Amazon Linux.
+                     </p>
+                     <p>If an instance or application takes a long time to bootstrap and build a memory footprint
+                        to
+                        		become fully productive, you can use hibernation to &quot;pre-warm&quot; the instance. To
+                        &quot;pre-warm&quot;
+                        		the instance, launch it, bring it to a desired state, and then hibernate it, ready
+                        to be
+                        		resumed to the same state as needed.
+                     </p>
+                     <p>We don&apos;t charge usage for a hibernated instance when it is in the <code class="code">stopped</code> state.
+                        		We do charge for instance usage while the instance is in the <code class="code">stopping</code> state
+                        		(unlike when you <a href="Stop_Start.html">stop an instance</a> without hibernating it)
+                        		when the contents of the RAM are transferred to the Amazon EBS root volume. We don&apos;t
+                        charge usage
+                        		for data transfer fees, but we do charge for the storage for any Amazon EBS volumes,
+                        including
+                        		storage for the RAM contents.
+                     </p>
+                     <p>If you no longer need an instance, you can terminate it at any time, including when
+                        it is in
+                        		a <code class="code">stopped</code> (hibernated) state. For more information, see <a href="terminating-instances.html">Terminate Your Instance</a>.
+                     </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>Hibernation is currently not supported on Windows instances.</p>
+                     </div>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Contents</strong></p>
+                        <ul>
+                           <li><a href="#instance_hibernate">Overview of Hibernation</a></li>
+                           <li><a href="#hibernating-prerequisites">Hibernation Prerequisites</a></li>
+                           <li><a href="#hibernating-not-supported">Limitations</a></li>
+                           <li><a href="#hibernation-enabled-AMI">Configuring an Existing AMI to Support Hibernation</a></li>
+                           <li><a href="#enabling-hibernation">Enabling Hibernation for an Instance</a></li>
+                           <li><a href="#hibernating-instances">Hibernating an Instance</a></li>
+                           <li><a href="#hibernating-resuming">Restarting a Hibernated Instance</a></li>
+                           <li><a href="#troubleshoot-instance-hibernate">Troubleshooting Hibernation</a></li>
+                        </ul>
+                     </div>
+                     	
+                     <h2 id="instance_hibernate">Overview of Hibernation</h2>
+                     		
+                     <p>The following diagram shows a basic overview of the hibernation process.</p>
+                     	
+                     <div class="mediaobject">
+                        		
+                        			<img src="../../..//img/hibernation-flow.png" alt="
+    			Overview of the hibernation flow
+    		" style="max-width:100%">
+                        		
+                        		
+                        	
+                     </div>
+                     	
+                     	    
+                     <p>When you hibernate a running instance, the following happens:</p>
+                     	
+                     <div class="itemizedlist">
+                        		
+                        		
+                        		
+                        			
+                        		
+                        		
+                        		
+                        			
+                        	
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              			
+                              <p>When you initiate hibernation, the instance moves to the <code class="code">stopping</code> state.
+                                 					We signal the operating system to perform hibernation (suspend-to-disk), which
+                                 					freezes all the processes, saves the contents of the RAM to the Amazon EBS root
+                                 					volume, and then performs a regular shutdown. 
+                              </p>
+                              		
+                           </li>
+                           <li class="listitem">
+                              			
+                              <p>After the shutdown is complete, the instance moves to the <code class="code">stopped</code>
+                                 					state.
+                              </p>
+                              		
+                           </li>
+                           <li class="listitem">
+                              			
+                              <p>Any Amazon EBS volumes remain attached to the instance, and their data persists, including
+                                 					the saved contents of the RAM.
+                              </p>
+                              		
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>In most cases, the instance is migrated to a new underlying host computer when
+                                 					it&apos;s restarted, which is the same as what happens when you stop and restart an
+                                 					instance.
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              			
+                              <p>When you restart the instance, the instance boots up and the operating system reads
+                                 in
+                                 					the contents of the RAM from the Amazon EBS root volume before unfreezing processes
+                                 					to resume its state.
+                              </p>
+                              		
+                           </li>
+                           <li class="listitem">
+                              			
+                              <p>The instance retains its private IPv4 addresses and any IPv6 addresses when hibernated
+                                 					and restarted. We release the public IPv4 address and assign a new one when you
+                                 					restart it.
+                              </p>
+                              		
+                           </li>
+                           <li class="listitem">
+                              			
+                              <p>The instance retains its associated Elastic IP addresses. You&apos;re charged for any
+                                 					Elastic IP addresses associated with a hibernated instance. With EC2-Classic,
+                                 an
+                                 					Elastic IP address is dissociated from your instance when you hibernate it. For
+                                 					more information, see <a href="ec2-classic-platform.html">EC2-Classic</a>.
+                              </p>
+                              		
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>When you hibernate a ClassicLink instance, it&apos;s unlinked from the VPC to which it
+                                 was
+                                 					linked. You must link the instance to the VPC again after restarting it. For
+                                 					more information, see <a href="vpc-classiclink.html">ClassicLink</a>.
+                              </p>
+                              			
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     	
+                     <p>For information about how hibernation differs from reboot, stop, and terminate, see
+                        <a href="ec2-instance-lifecycle.html#lifecycle-differences">Differences Between Reboot, Stop, Hibernate, and
+                           				Terminate</a>.
+                     </p>
+                     	
+                     
+                     		
+                     <h2 id="hibernating-prerequisites">Hibernation Prerequisites</h2>
+                     		
+                     <p>To hibernate an instance, the following prerequisites must be in place:</p>
+                     		
+                     <div class="itemizedlist">
+                        			
+                        			
+                        			
+                        				
+                        			
+                        			
+                        			
+                        				
+                        		
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              				
+                              <p><b>Instance families:</b> The following instance families are
+                                 					supported: C3, C4, C5, M3, M4, M5, R3, R4, and R5, with less than 150 GB of RAM.
+                                 					Hibernation is not supported for *.metal instances.
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p><b>Instance RAM size:</b> The instance RAM size must be less
+                                 					than 150 GB.
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p><b>Supported AMIs:</b> The following AMIs support
+                                 					hibernation: Amazon Linux AMI 2018.03 released 2018.11.16 or later.
+                              </p>
+                              				
+                              <p>Support for Amazon Linux 2 and Ubuntu is coming soon. Only HVM AMIs support hibernation.
+                                 To
+                                 					configure your own AMI to support hibernation, see <a href="Hibernate.html#hibernation-enabled-AMI">Configuring an Existing AMI to Support Hibernation</a>.
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p><b>Root volume type: </b>The instance root volume must be an
+                                 					Amazon EBS volume, not an instance store volume.
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p><b>Amazon EBS root volume size:</b> The root volume must be large
+                                 					enough to store the RAM contents and accommodate your expected usage, for
+                                 					example, OS or applications. If you enable hibernation, space is allocated on
+                                 					the root volume at launch to store the RAM.
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p><b>Amazon EBS root volume encryption:</b> To use hibernation, the
+                                 					root volume must be encrypted to ensure the protection of sensitive content that
+                                 					is in memory at the time of hibernation. When RAM data is moved to the Amazon
+                                 EBS
+                                 					root volume, it is always encrypted. Encryption of the root volume is enforced
+                                 					at instance launch. Use one of the following three options to ensure that the
+                                 					root volume is an encrypted Amazon EBS volume:
+                              </p>
+                              				
+                              <div class="itemizedlist">
+                                 					
+                                 					
+                                 					
+                                 				
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       						
+                                       <p>EBS &#x201C;single-step&#x201D; encryption: In a single run-instances API call, you can launch encrypted
+                                          EBS-backed EC2 instances from an unencrypted AMI and also enable hibernation at the
+                                          same time. For more information, see <a href="AMIEncryption.html">Using Encryption with EBS-Backed AMIs</a>.
+                                       </p>
+                                       					
+                                    </li>
+                                    <li class="listitem">
+                                       						
+                                       <p>EBS encryption by default: You can enable EBS encryption by default to ensure all
+                                          new
+                                          							EBS volumes created in your AWS account are encrypted. This way, you can
+                                          							enable hibernation for your instances without specifying encryption
+                                          							intent at instance launch. For more information, see <a href="EBSEncryption.html#encryption-by-default">Encryption by Default</a>.
+                                       </p>
+                                       					
+                                    </li>
+                                    <li class="listitem">
+                                       						
+                                       <p>Encrypted AMI: You can enable EBS encryption by using an encrypted AMI to launch your
+                                          							instance. If your AMI does not have an encrypted root snapshot, you can
+                                          							copy it to a new AMI and request encryption. For more information, see
+                                          								<a href="AMIEncryption.html#copy-unencrypted-to-encrypted">Encrypt an Unencrypted Image during Copy</a> and <a href="CopyingAMIs.html#ami-copy-steps">Copying an AMI</a>.
+                                       </p>
+                                       					
+                                    </li>
+                                 </ul>
+                              </div>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p><b>Enable hibernation at launch:</b> At launch, enable
+                                 					hibernation using the Amazon EC2 console or the AWS CLI. You cannot enable hibernation
+                                 					on an existing instance (running or stopped). For more information, see <a href="Hibernate.html#enabling-hibernation">Enabling Hibernation for an Instance</a>.
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p><b>Purchasing options:</b> This feature is only available for
+                                 					On-Demand Instances and Reserved Instances. For more information, see <a href="spot-interruptions.html#hibernate-spot-instances">Hibernating Interrupted Spot Instances</a>.
+                              </p>
+                              			
+                           </li>
+                        </ul>
+                     </div>
+                     	
+                     		
+                     <h2 id="hibernating-not-supported">Limitations</h2>
+                     		
+                     <p>The following actions are not supported for hibernation:</p>
+                     		
+                     <div class="itemizedlist">
+                        			
+                        			
+                        			
+                        		
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              				
+                              <p>Changing the instance type or size of a hibernated instance</p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>Creating snapshots or AMIs from instances for which hibernation is enabled</p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>Creating snapshots or AMIs from hibernated instances</p>
+                              			
+                           </li>
+                        </ul>
+                     </div>
+                     		
+                     <p>You can&apos;t stop or hibernate instance store-backed instances.*</p>
+                     		
+                     <p>You can&apos;t hibernate an instance that has more than 150 GB of RAM.</p>
+                     				
+                     <p>You cannot hibernate an instance that is in an Auto Scaling group or used by Amazon
+                        ECS. If your
+                        			instance is in an Auto Scaling group and you try to hibernate it, the Amazon EC2
+                        Auto Scaling service marks
+                        			the stopped instance as unhealthy, and may terminate it and launch a replacement
+                        			instance. For more information, see <a href="./autoscaling/latest/userguide/healthcheck.html">Health Checks for Auto Scaling Instances</a> in the <em>Amazon EC2 Auto Scaling User Guide</em>.
+                     </p>
+                     		
+                     <p>We do not support keeping an instance hibernated for more than 60 days. To keep the
+                        instance
+                        			for longer than 60 days, you must restart the hibernated instance, stop the instance,
+                        			and restart it.
+                     </p>
+                     		
+                     <p>We constantly update our platform with upgrades and security patches, which can conflict
+                        			with existing hibernated instances. We notify you about critical updates that require
+                        a
+                        			restart for hibernated instances so that we can perform a shutdown or a reboot
+                        to apply
+                        			the necessary upgrades and security patches.
+                     </p>
+                     		
+                     <p>*For C3 and R3 instances that are enabled for hibernation, do not use instance store
+                        volumes.
+                     </p>
+                     			
+                     	
+                     		
+                     <h2 id="hibernation-enabled-AMI">Configuring an Existing AMI to Support Hibernation</h2>
+                     			
+                     <p>To hibernate an instance that was launched using your own AMI, you must first configure
+                        			your AMI to support hibernation. <span>For more information, see <a href="install-updates.html">Updating Instance Software</a>.</span></p>
+                     		
+                     <p>If you use one of the <a href="Hibernate.html#hibernating-prerequisites">supported AMIs</a>,
+                        			or you create an AMI based on one of the <a href="Hibernate.html#hibernating-prerequisites">supported AMIs</a>, you do not need to configure it to support hibernation. The
+                        			supported AMIs come preconfigured to support hibernation.
+                     </p>
+                     			
+                     			
+                     <p class="title"><b>To configure an Amazon Linux AMI to support hibernation (AWS CLI)</b></p>
+                     <ol>
+                        <li>
+                           						
+                           <p>Update to the latest kernel to 4.14.77-70.59 or later using the following
+                              					command:
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">sudo yum update kernel</code></pre>
+                           				</li>
+                        <li>
+                           						
+                           <p>Install the <code class="code">ec2-hibinit-agent</code> package from the repositories using the following command:
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">sudo yum install ec2-hibinit-agent</code></pre>
+                           					</li>
+                        <li>
+                           							
+                           <p>Reboot the instance.</p>
+                           					
+                        </li>
+                        <li>
+                           							
+                           <p>Confirm that the kernel version is updated to 4.14.77-70.59 or
+                              								greater using the following command:
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">uname -a</code></pre>
+                           						</li>
+                        <li>
+                           					
+                           <p>Stop the instance and create an AMI. For more information, see <a href="creating-an-ami-ebs.html#how-to-create-ebs-ami">Creating a Linux AMI from an Instance</a>.
+                           </p>
+                           					
+                        </li>
+                     </ol>
+                     		
+                     		
+                     <h2 id="enabling-hibernation">Enabling Hibernation for an Instance</h2>
+                     	
+                     <p>To hibernate an instance, it must first be enabled for hibernation. At launch, enable
+                        			hibernation using the console or the command line. You cannot enable hibernation
+                        for an
+                        			existing instance (running or stopped).
+                     </p>
+                     		
+                     		
+                     <p class="title"><b>To enable hibernation (console)</b></p>
+                     <ol>
+                        <li>
+                           				
+                           <p>Follow the <a href="launching-instance.html">Launching an Instance Using the Launch Instance Wizard</a> procedure.
+                           </p>
+                           			
+                        </li>
+                        <li>
+                           				
+                           <p>On the <b>Choose an Amazon Machine Image (AMI)</b> page, select an AMI that
+                              					supports hibernation. For more information about supported AMIs, see <a href="Hibernate.html#hibernating-prerequisites">Hibernation Prerequisites</a>.
+                           </p>
+                           			
+                        </li>
+                        <li>
+                           				
+                           <p>On the <b>Choose an Instance Type</b> page, select a supported instance
+                              					type, and choose <b>Next: Configure Instance Details</b>. For
+                              					information about supported instance types, see <a href="Hibernate.html#hibernating-prerequisites">Hibernation Prerequisites</a>.
+                           </p>
+                           			
+                        </li>
+                        <li>
+                           				
+                           <p>On the <b>Configure Instance Details</b> page, for <b>Stop -
+                                 						Hibernate Behavior</b>, select the <b>Enable hibernation as an
+                                 						additional stop behavior</b> check box.
+                           </p>	
+                           			
+                        </li>
+                        <li>
+                           				
+                           <p>Continue as prompted by the wizard. When you&apos;ve finished reviewing your options on
+                              the <b>Review Instance Launch</b> page,
+                              					choose <b>Launch</b>. For more information, see <a href="launching-instance.html">Launching an Instance Using the Launch Instance Wizard</a>.
+                           </p>
+                           			
+                        </li>
+                     </ol>
+                     		
+                     		
+                     <p class="title"><b>To enable hibernation (AWS CLI)</b></p>
+                     <ul>
+                        <li>
+                           				
+                           <p>Use the <a href="./cli/latest/reference/ec2/run-instances.html">run-instances</a> command to
+                              					launch an instance. Enable hibernation using the <code class="code">--hibernation-options
+                                 						Configured=true</code> parameter.
+                           </p>
+                           				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 run-instances --image-id <em class="replaceable"><code>ami-abc12345</code></em> --count <em class="replaceable"><code>1</code></em> --instance-type <em class="replaceable"><code>m5.large</code></em> --key-name <em class="replaceable"><code>MyKeyPair</code></em> --hibernation-options Configured=<em class="replaceable"><code>true</code></em></code></strong></code></pre>
+                           			</li>
+                     </ul>
+                     	
+                     	
+                     <p class="title"><b>To view if an instance is enabled for hibernation (console)</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           			
+                           <p>In the navigation pane, choose <b>Instances</b>.
+                           </p>
+                           		
+                        </li>
+                        <li>
+                           			
+                           <p>Select the instance and, in the details pane, inspect <b>Stop - Hibernation
+                                 					behavior</b>. <b>Enabled</b> indicates that the instance is
+                              				enabled for hibernation.
+                           </p>
+                           			
+                           <div class="aws-note">
+                              <p class="aws-note">Note</p>
+                              <p>You can&apos;t enable or disable hibernation after launch.</p>
+                           </div>
+                           		
+                        </li>
+                     </ol>
+                     	
+                     	
+                     <p class="title"><b>To view if an instance is enabled for hibernation (AWS CLI)</b></p>
+                     <ul>
+                        <li>
+                           			
+                           <p>Use the <a href="./cli/latest/reference/ec2/describe-instances.html">describe-instances</a>
+                              				command and specify the <code class="code">--filters
+                                 					&quot;Name=hibernation-options.configured,Values=true&quot;</code> parameter to filter
+                              				instances that are enabled for hibernation.
+                           </p>
+                           			
+                           			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws --region <em class="replaceable"><code>us-east-1</code></em> ec2 describe-instances --filters &quot;Name=hibernation-options.configured,Values=true&quot;</code></pre>	
+                           		<p>The following field in the output indicates that the instance is enabled for
+                              				hibernation:
+                           </p>
+                           			<pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">&quot;HibernationOptions&quot;: {
+    &quot;Configured&quot;: true
+}</code></pre>
+                           		</li>
+                     </ul>
+                     	
+                     	
+                     		
+                     <h2 id="hibernating-instances">Hibernating an Instance</h2>
+                     		
+                     <p>You can hibernate an instance using the console or the command line if the instance
+                        is <a href="Hibernate.html#enabling-hibernation">enabled for hibernation</a> and meets the <a href="Hibernate.html#hibernating-prerequisites">hibernation prerequisites</a>. If an instance
+                        			cannot hibernate successfully, a normal shutdown occurs.
+                     </p>
+                     		
+                     <p class="title"><b>To hibernate an Amazon EBS-backed instance (console)</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           				
+                           <p>In the navigation pane, choose <b>Instances</b>.
+                           </p>
+                           			
+                        </li>
+                        <li>
+                           				
+                           <p>Select an instance, and choose <b>Actions</b>, <b>Instance
+                                 						State</b>, <b>Stop - Hibernate</b>. If <b>Stop -
+                                 						Hibernate</b> is disabled, the instance is already hibernated or
+                              					stopped, or it can&apos;t be hibernated. For more information, see <a href="Hibernate.html#hibernating-prerequisites">Hibernation Prerequisites</a>.
+                           </p>
+                           			
+                        </li>
+                        <li>
+                           				
+                           <p>In the confirmation dialog box, choose <b>Yes, Stop - Hibernate</b>. It can
+                              					take a few minutes for the instance to hibernate. The <b>Instance
+                                 						State</b> changes to <b>Stopping</b> while the instance
+                              					is hibernating, and then <b>Stopped</b> when the instance has
+                              					hibernated.
+                           </p>
+                           			
+                        </li>
+                     </ol>
+                     		
+                     		
+                     <p class="title"><b>To hibernate an Amazon EBS-backed instance (AWS CLI)</b></p>
+                     <ul>
+                        <li>
+                           			
+                           <p>Use the <a href="./cli/latest/reference/ec2/stop-instances.html">stop-instances</a> command
+                              					and specify the <code class="code">--hibernate</code> parameter.
+                           </p>
+                           				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">aws ec2 stop-instances --instance-ids i-1234567890abcdef0 --hibernate</code></pre>
+                           			</li>
+                     </ul>
+                     	
+                     		
+                     <p class="title"><b>To view if hibernation was initiated on an instance (console)</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           				
+                           <p>In the navigation pane, choose <b>Instances</b>.
+                           </p>
+                           			
+                        </li>
+                        <li>
+                           				
+                           <p>Select the instance and, in the details pane, inspect <b>State transition reason
+                                 						message</b>. <b>Client.UserInitiatedHibernate: User initiated
+                                 						hibernate</b> indicates that hibernation was initiated on the
+                              					instance.
+                           </p>
+                           			
+                        </li>
+                     </ol>
+                     
+                     	
+                     <p class="title"><b>To view if hibernation was initiated on an instance (AWS CLI)</b></p>
+                     <ul>
+                        <li>
+                           				
+                           <p>Use the <a href="./cli/latest/reference/ec2/describe-instances.html">describe-instances</a>
+                              					command and specify the <code class="code">--filters
+                                 						&quot;Name=state-reason-code,Values=Client.UserInitiatedHibernate&quot;</code>
+                              					parameter to filter instances on which hibernation was initiated.
+                           </p>
+                           				
+                           				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws --region <em class="replaceable"><code>us-east-1</code></em> ec2 describe-instances --filters &quot;Name=state-reason-code,Values=Client.UserInitiatedHibernate&quot;</code></pre>	
+                           				<p>The following field in the output indicates that hibernation was initiated on the
+                              					instance.
+                           </p>
+                           				<pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">&quot;StateReason&quot;: {
+    &quot;Code&quot;: Client.UserInitiatedHibernate
+}</code></pre>
+                           			</li>
+                     </ul>
+                     	
+                     	
+                     		
+                     <h2 id="hibernating-resuming">Restarting a Hibernated Instance</h2>
+                     		
+                     <p>Restart a hibernated instance by starting it in the same way that you would start
+                        a stopped
+                        			instance.
+                     </p>
+                     		
+                     <p class="title"><b>To restart a hibernated instance (console)</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           				
+                           <p>In the navigation pane, choose <b>Instances</b>.
+                           </p>
+                           			
+                        </li>
+                        <li>
+                           				
+                           <p>Select a hibernated instance, and choose <b>Actions</b>, <b>Instance
+                                 						State</b>, <b>Start</b>. It can take a few minutes for
+                              					the instance to enter the <code class="code">running</code> state. During this time, the
+                              					instance <a href="monitoring-system-instance-status-check.html#types-of-instance-status-checks">status checks</a>
+                              					show the instance in a failed state until the instance has restarted.
+                           </p>
+                           			
+                        </li>
+                     </ol>
+                     		
+                     		
+                     <p class="title"><b>To restart a hibernated instance (AWS CLI)</b></p>
+                     <ul>
+                        <li>
+                           					
+                           <p>Use the <a href="./cli/latest/reference/ec2/start-instances.html">start-instances</a>
+                              				command.
+                           </p>
+                           				
+                        </li>
+                     </ul>
+                     	
+                     	
+                     	
+                     <h2 id="troubleshoot-instance-hibernate">Troubleshooting Hibernation</h2>
+                     		
+                     <p>Use this information to help you diagnose and fix issues that you might encounter
+                        when
+                        			hibernating an instance.
+                     </p>
+                     	
+                     	
+                     		
+                     <h3 id="hibernate-troubleshooting-1">Can&apos;t hibernate immediately after launch</h3>
+                     	
+                     <p>If you try to hibernate an instance too quickly after you&apos;ve launched it, you will
+                        get
+                        			an error.
+                     </p>
+                     		
+                     <p>You must wait for about two minutes after launch before hibernating.</p>
+                     	
+                     
+                     	
+                     		
+                     <h3 id="hibernate-troubleshooting-2">Takes too long to transition from <code class="code">stopping</code> to
+                        						<code class="code">stopped</code>, and memory state not restored after start
+                     </h3>
+                     	
+                     <p>If it takes a long time for your hibernating instance to transition from the
+                        					<code class="code">stopping</code> state to <code class="code">stopped</code>, and the memory state is not
+                        				restored after you start, this could indicate that hibernation was not properly
+                        				configured.
+                     </p>
+                     		
+                     <p>Check the instance system log and look for messages that are related to hibernation.
+                        To
+                        				access the system log, <a href="AccessingInstances.html">connect</a>
+                        				to the instance or use the <a href="./cli/latest/reference/ec2/get-console-output.html">get-console-output</a> command. <span>Find log lines from the
+                           						<code class="code">hibinit-agent</code>. If the log lines indicate a failure or the log
+                           					lines are missing, there was most likely a failure configuring hibernation at
+                           					launch.</span></p>
+                     		
+                     <p>For example, the following message indicates that the instance root volume is not
+                        large
+                        				enough: <code class="code">hibinit-agent: Insufficient disk space. Cannot create setup for
+                           					hibernation. Please allocate a larger root device.</code></p>
+                     		
+                     <p>If the last log line from the <code class="code">hibinit-agent</code> is
+                        					<code class="code">hibinit-agent: Running: swapoff /swap</code>, hibernation was successfully
+                        				configured.
+                     </p>
+                     
+                     <p>If you do not see any logs from these processes, your AMI might not support hibernation.
+                        For
+                        			information about supported AMIs, see <a href="Hibernate.html#hibernating-prerequisites">Hibernation Prerequisites</a>. If you used your own AMI, make sure
+                        			that you followed the instructions for <a href="Hibernate.html#hibernation-enabled-AMI">Configuring an Existing AMI to Support Hibernation</a>.
+                     </p>
+                     	
+                     	
+                     	
+                     		
+                     <h3 id="hibernate-troubleshooting-3">Instance &quot;stuck&quot; in the <code class="code">stopping</code> state
+                     </h3>
+                     	
+                     <p>If you hibernated your instance and it appears &quot;stuck&quot; in the <code class="code">stopping</code>
+                        				state, you can forcibly stop it. For more information, see <a href="TroubleshootingInstancesStopping.html">Troubleshooting Stopping Your Instance</a>.
+                     </p>
+                     
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="Stop_Start.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="ec2-instance-reboot.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Overview of Hibernation"><a class="pagetoc" href="#instance_hibernate">Overview of Hibernation</a></li>
+                        <li class="pagetoc" name="Hibernation Prerequisites"><a class="pagetoc" href="#hibernating-prerequisites">Hibernation Prerequisites</a></li>
+                        <li class="pagetoc" name="Limitations"><a class="pagetoc" href="#hibernating-not-supported">Limitations</a></li>
+                        <li class="pagetoc" name="Configuring an Existing AMI to Support Hibernation"><a class="pagetoc" href="#hibernation-enabled-AMI">Configuring an Existing AMI to Support Hibernation</a></li>
+                        <li class="pagetoc" name="Enabling Hibernation for an Instance"><a class="pagetoc" href="#enabling-hibernation">Enabling Hibernation for an Instance</a></li>
+                        <li class="pagetoc" name="Hibernating an Instance"><a class="pagetoc" href="#hibernating-instances">Hibernating an Instance</a></li>
+                        <li class="pagetoc" name="Restarting a Hibernated Instance"><a class="pagetoc" href="#hibernating-resuming">Restarting a Hibernated Instance</a></li>
+                        <li class="pagetoc" name="Troubleshooting Hibernation"><a class="pagetoc" href="#troubleshoot-instance-hibernate">Troubleshooting Hibernation</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Elastic Compute Cloud';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide for Linux Instances';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

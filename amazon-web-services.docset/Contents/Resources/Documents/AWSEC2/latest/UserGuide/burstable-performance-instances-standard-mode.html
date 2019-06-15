@@ -1,0 +1,592 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Standard Mode for Burstable
+         Performance Instances - Amazon Elastic Compute Cloud
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="burstable-performance-instances.html" title="Burstable Performance Instances">
+      <link rel="prev" href="unlimited-mode-examples.html" title="Examples: Unlimited Mode">
+      <link rel="next" href="standard-mode-examples.html" title="Examples: Standard Mode">
+      <meta name="description" content="A burstable performance instance configured as standard is suited to workloads with an average CPU utilization that is consistently below the baseline performance of the instance. To burst above the baseline, the instance spends credits that it has accrued in its CPU credit balance. If the instance is running low on accrued credits, performance is gradually lowered to the baseline performance level, so that the instance does not experience a sharp performance drop-off when its accrued CPU credit balance is depleted. For more information, see">
+      <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Elastic Compute Cloud">
+      <meta name="guide" content="User Guide for Linux Instances">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-performance-instances-standard-mode.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="instance-types.html">Instance Types</a> &#xBB; <a href="general-purpose-instances.html">General Purpose Instances</a> &#xBB; <a href="burstable-performance-instances.html">Burstable Performance Instances</a> &#xBB; <span class="breadcrumb">Standard Mode for Burstable
+                                    Performance Instances</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="burstable-performance-instances-standard-mode">Standard Mode for Burstable
+                        Performance Instances
+                     </h1>
+                     <p>A burstable performance instance configured as <code class="code">standard</code> is suited to workloads 
+                        with an average CPU utilization that is consistently below the baseline performance
+                        of the instance. 
+                        To burst above the baseline, the instance spends credits that it has accrued in its
+                        CPU credit balance. 
+                        If the instance is running low on accrued credits, performance is gradually lowered
+                        to the baseline
+                        performance level, so that the instance does not experience a sharp performance drop-off
+                        when its accrued CPU credit balance is depleted. For more information, see <a href="burstable-credits-baseline-concepts.html">CPU Credits and Baseline Performance for
+                           Burstable Performance Instances</a>.
+                     </p>
+                     <div class="highlights">
+                        <p><strong>Contents</strong></p>
+                        <ul>
+                           <li><a href="#burstable-performance-instances-standard-mode-concepts">Standard Mode Concepts</a></li>
+                           <li><a href="standard-mode-examples.html">Examples: Standard Mode</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="burstable-performance-instances-standard-mode-concepts">Standard Mode Concepts</h2>
+                     
+                     <p>The <code class="code">standard</code> mode is a configuration option for burstable
+                        performance instances. It can be enabled or disabled at any time for a running or
+                        stopped instance.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>T3 and T3a instances are launched as
+                           <code class="code">unlimited</code> by default. T2 instances are launched as
+                           <code class="code">standard</code> by default.
+                        </p>
+                     </div>
+                     
+                     
+                     
+                     <h3 id="how-burstable-performance-instances-standard-works">How Standard Burstable Performance Instances Work</h3>
+                     
+                     <p>When a burstable performance instance configured as <code class="code">standard</code> is in a
+                        running state, it continuously earns (at a millisecond-level resolution) a set rate
+                        of earned credits per hour. For T2 Standard, when the instance is stopped, it loses
+                        all its accrued credits, and its credit balance is reset to zero. When it is
+                        restarted, it receives a new set of launch credits, and begins to accrue earned
+                        credits. For T3 and T3a Standard, the CPU credit
+                        balance persists for seven days after the instance stops and the credits are lost
+                        thereafter. If you start the instance within seven days, no credits are lost.
+                     </p>
+                     
+                     <p>A T2 Standard instance receives two types of CPU credits: <em>earned credits</em> and <em>launch credits</em>.
+                        When a T2 Standard instance is in a running state, it continuously earns (at a
+                        millisecond-level resolution) a set rate of earned credits per hour. At start, it
+                        has
+                        not yet earned credits for a good startup experience; therefore, to provide a good
+                        startup experience, it receives launch credits at start, which it spends first while
+                        it accrues earned credits.
+                     </p>
+                     
+                     <p>T3 and T3a Standard instances do not receive launch credits.</p>
+                     
+                     
+                     
+                     
+                     <h3 id="launch-credits">Launch Credits</h3>
+                     
+                     <p>T2 Standard instances get 30 launch credits per vCPU at launch or start. For
+                        example, a <code class="code">t2.micro</code> instance has one vCPU and gets 30 launch credits,
+                        while a <code class="code">t2.xlarge</code> instance has four vCPUs and gets 120 launch credits.
+                        Launch credits are designed to provide a good startup experience to allow instances
+                        to burst immediately after launch before they have accrued earned credits.
+                     </p>
+                     
+                     <p>Launch credits are spent first, before earned credits. Unspent launch credits are
+                        accrued in the CPU credit balance, but do not count towards the CPU credit balance
+                        limit. For example, a <code class="code">t2.micro</code> instance has a CPU credit balance limit
+                        of 144 earned credits. If it is launched and remains idle for 24 hours, its CPU
+                        credit balance reaches 174 (30 launch credits + 144 earned credits), which is over
+                        the limit. However, after the instance spends the 30 launch credits, the credit
+                        balance cannot exceed 144. For more information about the CPU credit balance limit
+                        for each instance size, see the <a href="burstable-credits-baseline-concepts.html#burstable-performance-instances-credit-table">credit table</a>.
+                     </p>
+                     
+                     <p>The following table lists the initial CPU credit allocation received at launch or
+                        start, and the number of vCPUs.
+                     </p>
+                     
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w306aac20c11c27c33c21b7b9b9">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>
+                                    
+                                    <p>Instance type</p>
+                                    
+                                 </th>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>Launch credits</p>
+                                    
+                                 </th>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>vCPUs</p>
+                                    
+                                 </th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t1.micro</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>15</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>1</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t2.nano</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>30</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>1</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t2.micro</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>30</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>1</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t2.small</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>30</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>1</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t2.medium</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>60</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t2.large</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>60</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t2.xlarge</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>120</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>4</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t2.2xlarge</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>240</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>8</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     
+                     <h3 id="launch-credit-limits">Launch Credit Limits</h3>
+                     
+                     <p>There is a limit to the number of times T2 Standard instances can receive launch
+                        credits. The default limit is 100 launches or starts of all T2 Standard instances
+                        combined per account, per Region, per rolling 24-hour period. For example, the limit
+                        is reached when one instance is stopped and started 100 times within a 24-hour
+                        period, or when 100 instances are launched within a 24-hour period, or other
+                        combinations that equate to 100 starts. New accounts may have a lower limit, which
+                        increases over time based on your usage.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Tip</p>
+                        <p>To ensure that your workloads always get the performance they need, switch to
+                           <a href="burstable-performance-instances-unlimited-mode.html">Unlimited Mode for Burstable Performance Instances</a> or consider
+                           using a larger instance size.
+                        </p>
+                     </div>
+                     
+                     
+                     
+                     <h3 id="burstable-performance-instances-diff-launch-earned-credits">Differences Between Launch Credits and Earned Credits</h3>
+                     
+                     <p>The following table lists the differences between launch credits and earned
+                        credits.
+                     </p>
+                     
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w306aac20c11c27c33c21b7c13b5">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>
+                                    
+                                    
+                                 </th>
+                                 
+                                 <th>
+                                    
+                                    <p>Launch credits</p>
+                                    
+                                 </th>
+                                 
+                                 <th>
+                                    
+                                    <p>Earned credits</p>
+                                    
+                                 </th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><b>Credit earn rate</b></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>T2 Standard instances get 30 launch credits per vCPU at launch or
+                                       start.
+                                    </p>
+                                    
+                                    <p>If a T2 instance is switched from <code class="code">unlimited</code> to <code class="code">standard</code>, it does not
+                                       get launch credits at the time of switching.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Each T2 instance continuously earns (at a millisecond-level
+                                       resolution) a set rate of CPU credits per hour, depending on the
+                                       instance size. For more information about the number of CPU credits
+                                       earned per instance size, see the <a href="burstable-credits-baseline-concepts.html#burstable-performance-instances-credit-table">credit
+                                          table</a>.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><b>Credit earn limit</b></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>The limit for receiving launch credits is 100 launches or starts of
+                                       all T2 Standard instances combined per account, per Region, per
+                                       rolling 24-hour period. New accounts may have a lower limit, which
+                                       increases over time based on your usage.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>A T2 instance cannot accrue more credits than the CPU credit balance
+                                       limit. If the CPU credit balance has reached its limit, any credits
+                                       that are earned after the limit is reached are discarded. Launch
+                                       credits do not count towards the limit. For more information about the
+                                       CPU credit balance limit for each T2 instance size, see the <a href="burstable-credits-baseline-concepts.html#burstable-performance-instances-credit-table">credit
+                                          table</a>.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><b>Credit use</b></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Launch credits are spent first, before earned credits.</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Earned credits are spent only after all launch credits are
+                                       spent.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><b>Credit expiration</b></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>When a T2 Standard instance is running, launch credits do not expire.
+                                       When a T2 Standard instance stops or is switched to T2 Unlimited, all
+                                       launch credits are lost.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>When a T2 instance is running, earned credits that have accrued do not
+                                       expire. When the T2 instance stops, all accrued earned credits are
+                                       lost.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     <p>The number of accrued launch credits and accrued earned credits is tracked by the
+                        CloudWatch metric <code class="code">CPUCreditBalance</code>. For more information, see
+                        <code class="code">CPUCreditBalance</code> in the <a href="burstable-performance-instances-monitoring-cpu-credits.html#burstable-performance-instances-CW-metrics-table">CloudWatch metrics
+                           table</a>.
+                     </p>
+                     
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="unlimited-mode-examples.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="standard-mode-examples.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Standard Mode Concepts"><a class="pagetoc" href="#burstable-performance-instances-standard-mode-concepts">Standard Mode Concepts</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Elastic Compute Cloud';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide for Linux Instances';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

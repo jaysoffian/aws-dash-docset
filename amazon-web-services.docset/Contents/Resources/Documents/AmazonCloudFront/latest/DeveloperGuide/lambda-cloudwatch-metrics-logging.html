@@ -3,16 +3,17 @@
       <title>CloudWatch Metrics and CloudWatch Logs for Lambda Functions - Amazon CloudFront</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="lambda-at-the-edge.html" title="Using CloudFront with Lambda@Edge">
+      <link rel="up" href="lambda-at-the-edge.html" title="Customizing Content at the Edge with Lambda@Edge">
       <link rel="prev" href="lambda-edge-testing-debugging.html" title="Testing and Debugging Lambda@Edge Functions">
-      <link rel="next" href="lambda-edge-delete-replicas.html" title="Deleting Lambda@Edge Functions 
-		and Replicas">
+      <link rel="next" href="lambda-edge-delete-replicas.html" title="Deleting Lambda@Edge Functions and Replicas">
       <meta name="description" content="Create logging statements for your Lambda functions.">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-cloudwatch-metrics-logging.html">
@@ -22,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -34,14 +35,17 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-at-the-edge.html">Using CloudFront with Lambda@Edge</a> &#xBB; <span class="breadcrumb">CloudWatch Metrics and CloudWatch Logs for Lambda Functions</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-at-the-edge.html">Customizing Content at the Edge with Lambda@Edge</a> &#xBB; <span class="breadcrumb">CloudWatch Metrics and CloudWatch Logs for Lambda Functions</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="lambda-cloudwatch-metrics-logging">CloudWatch Metrics and CloudWatch Logs for Lambda Functions</h1>
                      <p>You can use CloudWatch metrics to monitor, in real time, the CloudFront requests that
-                        trigger Lambda functions. You can also use 
+                        trigger Lambda functions. You can also use
                         			CloudWatch Logs to get aggregate data. There&apos;s no additional charge for metrics
                         or logs.
                      </p>
@@ -52,64 +56,95 @@
                            <li><a href="#lambda-cloudwatch-logs">CloudWatch Logs</a></li>
                         </ul>
                      </div>
+                     			
                      <h2 id="lambda-cloudwatch-metrics">CloudWatch Metrics</h2>
+                     
                      			
-                     			
-                     <p>When you create a trigger for a CloudFront event, Lambda automatically begins to send
-                        metrics to CloudWatch. Metrics are available for 
-                        				all Lambda regions. The name of each metric is <code class="code">/aws/lambda/us-east-1</code>.<em class="replaceable"><code>function-name</code></em> 
-                        				where <em class="replaceable"><code>function-name</code></em> is the name that you gave to the function when you created it. 
-                        				CloudWatch sends metrics to the region that&apos;s closest to the location where the
-                        function is executed.
+                     <p>When you create a trigger for a CloudFront event, Lambda begins to send metrics to
+                        CloudWatch automatically. Metrics are
+                        				available for all Lambda Regions. The name of each metric is
+                        					<code class="code">/aws/lambda/us-east-1</code>.<em class="replaceable"><code>function-name</code></em>, where
+                        					<em class="replaceable"><code>function-name</code></em> is the name that you gave to the function when you created it. CloudWatch
+                        				sends metrics to the Region that&apos;s closest to the location where the function
+                        is executed.
                      </p>
                      			
-                     <p>For more information about CloudWatch metrics, see the <a href="./AmazonCloudWatch/latest/monitoring/" target="_blank">Amazon CloudWatch User Guide</a>.
+                     <p>For more information about CloudWatch metrics, see the <a href="./AmazonCloudWatch/latest/monitoring/">Amazon CloudWatch User Guide</a>.
                      </p>
                      		
-                     <h2 id="lambda-cloudwatch-logs">CloudWatch Logs</h2>
                      			
+                     <h2 id="lambda-cloudwatch-logs">CloudWatch Logs</h2>
+                     
                      			
                      <p>When you create a trigger, Lambda automatically starts to send data to CloudWatch
-                        Logs about the CloudFront requests that trigger Lambda functions. 
-                        				You use CloudWatch Logs tools to access the logs.
+                        Logs about the CloudFront requests that trigger
+                        				Lambda functions. You use CloudWatch Logs tools to access the logs.
                      </p>
                      			
                      <p>Lambda creates CloudWatch Logs log streams in the CloudWatch Logs regions closest
-                        to the locations where the function is executed. 
-                        				The format of the name for each log stream is <code class="code">/aws/lambda/us-east-1</code>.<em class="replaceable"><code>function-name</code></em> 
+                        to the locations where the function is executed.
+                        				The log group name is formatted as: <code class="code">/aws/lambda/us-east-1</code>.<em class="replaceable"><code>function-name</code></em>,
                         				where <em class="replaceable"><code>function-name</code></em> is the name that you gave to the function when you created it. 
                      </p>
                      			
                      			
-                     <p>For information about the permissions required to send data to CloudWatch Logs, see
-                        
-                        				<a href="./lambda/latest/dg/lambda-edge.html#lambda-edge-permissions" target="_blank">Setting IAM Permissions and Roles for Lambda@Edge</a>
-                        				in the <em>IAM User Guide</em>.
+                     <p>To help you find your log files, you can use the following Linux (or OSX) command.
+                        Replace
+                        					<code class="code">function-name</code> with the name of your function.
                      </p>
+                     			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">for i in `aws ec2 describe-regions | grep RegionName | awk &apos;/[a-z]{2}-[a-z]+-[0-9]/g {gsub(/&quot;/, &quot;&quot;, $2); print $2 }&apos;`; 
+do aws logs describe-log-groups --log-group-name-prefix &apos;/aws/lambda/us-east-1.&apos; --region $i; done | grep arn: | grep function-name</code></pre>
+                     			<div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>Lambda@Edge throttles logs based on the request volume and the size of logs.</p>
+                     </div>
                      			
+                     <p>To learn more about how to use CloudWatch Logs with Lambda functions, see the following:</p>
                      			
-                     <p>For information about adding logging to a Lambda function, see 
-                        				<a href="./lambda/latest/dg/nodejs-prog-model-logging.html" target="_blank">Logging (Node.js)</a> in the <em>AWS Lambda Developer Guide</em>.
-                     </p>
+                     <div class="itemizedlist">
+                        				
+                        				
+                        				
+                        			
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              					
+                              <p>For information about the permissions required to send data to CloudWatch Logs, see
+                                 <a href="./lambda/latest/dg/lambda-edge.html#lambda-edge-permissions">Setting IAM Permissions and Roles for
+                                    							Lambda@Edge</a> in the <em>IAM User Guide</em>.
+                              </p>
+                              				
+                           </li>
+                           <li class="listitem">
+                              					
+                              <p>For information about adding logging to a Lambda function, see <a href="./lambda/latest/dg/nodejs-prog-model-logging.html">Logging (Node.js)</a> in the
+                                 							<em>AWS Lambda Developer Guide</em>. 
+                              </p>
+                              				
+                           </li>
+                           <li class="listitem">
+                              					
+                              <p>For information about CloudWatch Logs limits, see <a href="./AmazonCloudWatch/latest/logs/cloudwatch_limits_cwl.html">Limits</a> in the <em>Amazon CloudWatch Logs User Guide</em>.
+                              </p>
+                              				
+                           </li>
+                        </ul>
+                     </div>
                      			
-                     			
-                     <p>For information about CloudWatch Logs limits, see 
-                        				<a href="./AmazonCloudWatch/latest/logs/cloudwatch_limits_cwl.html" target="_blank">Limits</a> in the <em>Amazon CloudWatch Logs User Guide</em>.
-                     </p>
-                     			
-                     			
-                     			
-                     <p>Lambda@Edge throttles logs based on the request volume and the size of logs.</p>
                      		
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -119,7 +154,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="lambda-edge-testing-debugging.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="lambda-edge-delete-replicas.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -135,6 +172,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

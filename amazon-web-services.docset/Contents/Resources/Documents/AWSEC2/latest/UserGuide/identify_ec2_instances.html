@@ -5,13 +5,15 @@
       <link rel="home" href="#top">
       <link rel="up" href="Instances.html" title="Amazon EC2 Instances">
       <link rel="prev" href="instance-identity-documents.html" title="Instance Identity Documents">
-      <link rel="next" href="monitoring_ec2.html" title="Monitoring Amazon EC2">
+      <link rel="next" href="elastic-inference.html" title="Amazon Elastic Inference">
       <meta name="description" content="Identify EC2 instances in a mixed computing environment.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/identify_ec2_instances.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,20 +35,31 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <span class="breadcrumb">Identify EC2 Linux Instances</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <span class="breadcrumb">Identify EC2 Linux Instances</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="identify_ec2_instances">Identify EC2 <span>Linux</span> Instances
                      </h1>
-                     <p>You may benefit from being able to determine whether a system is an EC2 instance.
-                        
-                        There are two methods that you can use to identify an EC2 instance.
-                     </p>
-                     <p>For information about identifying Windows instances, see <a href="./AWSEC2/latest/WindowsGuide/identify_ec2_instances.html" target="_blank">Identify EC2 Windows Instances</a> 
+                     <p>Your application might need to determine whether it is running on an EC2 instance.</p>
+                     <p>For information about identifying Windows instances, see <a href="./AWSEC2/latest/WindowsGuide/identify_ec2_instances.html">Identify EC2 Windows Instances</a> 
                         in the <em>Amazon EC2 User Guide for Windows Instances</em>.
                      </p>
+                     
+                     <h2 id="inspect-document">Inspecting the Instance Identity Document</h2>
+                     
+                     
+                     <p>For a definitive and cryptographically verified method of identifying an EC2 instance,
+                        check the instance identity document, including its signature. These documents are
+                        available on every EC2 instance at the local, non-routable address
+                        <code>http://169.254.169.254/latest/dynamic/instance-identity/</code>. 
+                        For more information, see <a href="instance-identity-documents.html">Instance Identity Documents</a>.
+                     </p>
+                     
                      
                      <h2 id="inspect-uuid">Inspecting the System UUID</h2>
                      
@@ -59,7 +72,7 @@
                            Amazon Linux, the distribution&apos;s implementation of SMBIOS</span> might represent
                         the UUID in little-endian format, therefore the &quot;EC2&quot; characters do not appear at
                         the
-                        beginning of the UUID. For a definitive approach, see <a href="identify_ec2_instances.html#inspect-document">Inspecting the Instance Identity Document</a>.
+                        beginning of the UUID.
                      </p>        
                      
                      
@@ -86,32 +99,25 @@
                               the system is probably an EC2 instance.
                            </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">EC2E1916-9099-7CAF-FD21-01234ABCDEF</code></pre><p>In the following example output, the UUID is represented in little-endian
                               format.
-                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">45E12AEC-DCD1-B213-94ED-01234ABCDEF</code></pre></div>
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">45E12AEC-DCD1-B213-94ED-01234ABCDEF</code></pre><p>On Nitro instances, the following command can be used:</p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>cat /sys/devices/virtual/dmi/id/board_asset_tag</code></strong></code></pre><p>This returns the instance ID, which is unique to EC2 instances:</p><pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">i-0af01c0123456789a</code></pre></div>
                      </div>
                      
                      
                      
                      
-                     
-                     <h2 id="inspect-document">Inspecting the Instance Identity Document</h2>
-                     
-                     
-                     <p>For a definitive and cryptographically verified method of identifying an EC2 instance,
-                        check the instance identity document, including its signature. These documents are
-                        available on every EC2 instance at the local, non-routable address
-                        <code>http://169.254.169.254/latest/dynamic/instance-identity/</code>. 
-                        For more information, see <a href="instance-identity-documents.html">Instance Identity Documents</a>.
-                     </p>
-                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -120,8 +126,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="instance-identity-documents.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="monitoring_ec2.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="instance-identity-documents.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="elastic-inference.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -130,13 +138,17 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Inspecting the System UUID"><a class="pagetoc" href="#inspect-uuid">Inspecting the System UUID</a></li>
                         <li class="pagetoc" name="Inspecting the Instance Identity Document"><a class="pagetoc" href="#inspect-document">Inspecting the Instance Identity Document</a></li>
+                        <li class="pagetoc" name="Inspecting the System UUID"><a class="pagetoc" href="#inspect-uuid">Inspecting the System UUID</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

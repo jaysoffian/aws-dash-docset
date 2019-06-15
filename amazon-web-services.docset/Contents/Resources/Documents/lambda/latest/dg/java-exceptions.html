@@ -1,16 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Function Errors (Java) - AWS Lambda</title>
+      <title>AWS Lambda Function Errors in Java - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="java-programming-model.html" title="Programming Model for Authoring Lambda Functions in Java">
-      <link rel="prev" href="java-logging.html" title="Logging (Java)">
-      <link rel="next" href="java-logging-log4j1.html" title="Using Earlier Custom Appender for Log4j&#x2122; 1.2 (Not Recommended)">
+      <link rel="up" href="java-programming-model.html" title="Building Lambda Functions with Java">
+      <link rel="prev" href="java-logging.html" title="AWS Lambda Function Logging in Java">
+      <link rel="next" href="java-tracing.html" title="Instrumenting Java Code in AWS Lambda">
       <meta name="description" content="If your Lambda function throws an exception, AWS Lambda recognizes the failure and serializes the exception information into JSON and returns it. Following is an example error message:">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/java-exceptions.html">
@@ -20,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,16 +35,18 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-introduction-function.html">Lambda Functions</a> &#xBB; <a href="lambda-app.html">Building Lambda Functions</a> &#xBB; <a href="programming-model-v2.html">Programming Model</a> &#xBB; <a href="java-programming-model.html">Programming Model for Authoring Lambda Functions in Java</a> &#xBB; <span class="breadcrumb">Function Errors (Java)</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="java-programming-model.html">Building Lambda Functions with Java</a> &#xBB; <span class="breadcrumb">AWS Lambda Function Errors in Java</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="java-exceptions">Function Errors (Java)</h1>
+                     <h1 class="topictitle" id="java-exceptions">AWS Lambda Function Errors in Java</h1>
                      <p>If your Lambda function throws an exception, AWS Lambda recognizes the failure and
-                        serializes the exception information into JSON and returns it. Following is an example
-                        
-                        error message:
+                        serializes the exception
+                        information into JSON and returns it. Following is an example error message:
                      </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
   &quot;errorMessage&quot;: &quot;Name John Doe is invalid. Exception occurred...&quot;,
   &quot;errorType&quot;: &quot;java.lang.Exception&quot;,
@@ -52,12 +57,11 @@
     &quot;sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)&quot;,
     &quot;java.lang.reflect.Method.invoke(Method.java:497)&quot;
   ]
-}</code></pre><p>Note that the stack trace is returned as the <code class="code">stackTrace</code> JSON array of
-                        stack trace elements. 
+}</code></pre><p>Note that the stack trace is returned as the <code class="code">stackTrace</code> JSON array of stack trace elements. 
                      </p>
                      <p>The method in which you get the error information back depends on the invocation type
-                        that
-                        you specified at the time you invoked the function: 
+                        that you specified at
+                        the time you invoked the function: 
                      </p>
                      <div class="itemizedlist">
                         
@@ -66,15 +70,14 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p><code class="code">RequestResponse</code> invocation type (that is, synchronous execution): In
-                                 this case, you get the error message back. 
+                              <p><code class="code">RequestResponse</code> invocation type (that is, synchronous execution): In this case, you get the
+                                 error message back. 
                               </p>
                               
-                              <p>For example, if you invoke a Lambda function using the Lambda console, the
-                                 <code class="code">RequestResponse</code> is always the invocation type and the
-                                 console displays the error information returned by AWS Lambda in the
-                                 <b>Execution result</b> section as shown in the following
-                                 image.
+                              <p>For example, if you invoke a Lambda function using the Lambda console, the <code class="code">RequestResponse</code> is
+                                 always the invocation type and the console displays the error information returned
+                                 by AWS Lambda in the
+                                 <b>Execution result</b> section as shown in the following image.
                               </p>
                               
                               <div class="mediaobject">
@@ -87,53 +90,61 @@
                            </li>
                            <li class="listitem">
                               
-                              <p><code class="code">Event</code> invocation type (that is, asynchronous execution): In this case
-                                 AWS Lambda does not return anything. Instead, it logs the error information
-                                 in CloudWatch Logs and CloudWatch metrics.
+                              <p><code class="code">Event</code> invocation type (that is, asynchronous execution): In this case AWS Lambda does not
+                                 return anything. Instead, it logs the error information in CloudWatch Logs and CloudWatch
+                                 metrics.
                               </p>
                               
                            </li>
                         </ul>
                      </div>
                      <p>Depending on the event source, AWS Lambda may retry the failed Lambda function. For
-                        example, if Kinesis is the event source for the Lambda function, AWS Lambda 
-                        retries the failed function until the Lambda function succeeds or the records in the
-                        stream expire.
-                        
+                        example, if Kinesis is the
+                        event source for the Lambda function, AWS Lambda retries the failed function until
+                        the Lambda function succeeds or
+                        the records in the stream expire.
                      </p>
+                     
                      <h2 id="java-custom-errors">Function Error Handling </h2>
                      
-                     
                      <p>You can create custom error handling to raise an exception directly from your Lambda
-                        function
-                        and handle it directly (Retry or Catch) within an AWS Step Functions State Machine.
-                        For more information, see <a href="./step-functions/latest/dg/tutorial-handling-error-conditions.html" target="_blank">Handling Error Conditions Using a State Machine</a>.
-                        
+                        function and handle it
+                        directly (Retry or Catch) within an AWS Step Functions State Machine. For more information,
+                        see <a href="./step-functions/latest/dg/tutorial-handling-error-conditions.html">Handling Error Conditions Using a State
+                           Machine</a>. 
                      </p>
                      
-                     <p>Consider a <code class="code">CreateAccount</code> <a href="./step-functions/latest/dg/awl-ref-states.html" target="_blank">state</a> is a <a href="./step-functions/latest/dg/awl-ref-states-task.html" target="_blank">task</a>
-                        that writes a customer&apos;s details to a database using a Lambda function.
+                     <p>Consider a <code class="code">CreateAccount</code>
+                        <a href="./step-functions/latest/dg/awl-ref-states.html">state</a> is a <a href="./step-functions/latest/dg/awl-ref-states-task.html">task</a> that writes a customer&apos;s details to a database using
+                        a Lambda function.
                      </p>
                      
                      <div class="itemizedlist">
                         
                         
+                        
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
+                              
                               <p>If the task succeeds, an account is created and a welcome email is sent.</p>
+                              
                            </li>
-                           <li class="listitem"> 
+                           <li class="listitem">
+                              
                               <p>If a user tries to create an account for a username that already exists, the Lambda
-                                 function raises an error, causing the state machine to
-                                 suggest a different username and to retry the account-creation process.
+                                 function raises an
+                                 error, causing the state machine to suggest a different username and to retry the
+                                 account-creation
+                                 process.
                               </p>
+                              
                            </li>
                         </ul>
-                     </div> 
-                     
+                     </div>
                      
                      <p>The following code samples demonstrate how to do this. Note that custom errors in
-                        Java must extend the <code class="code">Exception</code> class.
+                        Java must extend the
+                        <code class="code">Exception</code> class.
                      </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="java ">package com.example; 
 
@@ -151,13 +162,10 @@ public class Handler {
     public static void CreateAccount(String name, Context context) throws AccountAlreadyExistsException {
         throw new AccountAlreadyExistsException (&quot;Account is in use!&quot;);
     }
-}
-</code></pre>
-                     
-                     <p>You can configure Step Functions to catch the error using a <code class="code">Catch</code> rule. 
-                        Lambda automatically sets the error name to the fully-qualified class name of the
-                        exception at runtime:
-                     </p>   
+}</code></pre>
+                     <p>You can configure Step Functions to catch the error using a <code class="code">Catch</code> rule. Lambda automatically sets the
+                        error name to the fully-qualified class name of the exception at runtime:
+                     </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
    &quot;StartAt&quot;: &quot;CreateAccount&quot;,
    &quot;States&quot;: {
@@ -174,33 +182,33 @@ public class Handler {
       },
       &#x2026;
    }
-}
-</code></pre>
-                     
-                     <p>At runtime, AWS Step Functions catches the error, <a href="./step-functions/latest/dg/concepts-transitions.html" target="_blank">transitioning</a> to the <code class="code">SuggestAccountName</code> state as specified in the <code class="code">Next</code> transition.
+}</code></pre>
+                     <p>At runtime, AWS Step Functions catches the error, <a href="./step-functions/latest/dg/concepts-transitions.html">transitioning</a> to the <code class="code">SuggestAccountName</code> state as specified in the <code class="code">Next</code>
+                        transition.
                      </p>
                      
-                     
-                     
-                     
-                     <p>Custom error handling makes it easier to create <a href="https://aws.amazon.com/serverless" target="_blank">serverless</a> applications. This feature integrates with 
-                        all the languages supported by the Lambda <a href="programming-model-v2.html">Programming Model</a>, allowing you to design your application in the programming languages of your choice,
-                        mixing and matching as you go.
+                     <p>Custom error handling makes it easier to create <a href="https://aws.amazon.com/serverless" target="_blank">serverless</a> applications. This feature integrates with all the languages supported by the Lambda
+                        <a href="programming-model-v2.html">Programming Model</a>, allowing you to design your application
+                        in the programming languages of your choice, mixing and matching as you go.
                      </p>
                      
                      <p>To learn more about creating your own serverless applications using AWS Step Functions
                         and AWS Lambda, see <a href="https://aws.amazon.com/step-functions/" target="_blank">AWS Step Functions</a>. 
                      </p>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -209,8 +217,10 @@ public class Handler {
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="java-logging.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="java-logging-log4j1.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="java-logging.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="java-tracing.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -225,6 +235,10 @@ public class Handler {
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

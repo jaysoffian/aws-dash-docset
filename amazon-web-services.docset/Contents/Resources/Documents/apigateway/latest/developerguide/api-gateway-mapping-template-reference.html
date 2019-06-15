@@ -1,19 +1,22 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>API Gateway Mapping Template Reference - Amazon API Gateway</title>
+      <title>API Gateway Mapping Template and Access
+         Logging Variable Reference - Amazon API Gateway
+      </title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="mappings.html" title="Set up
-            API Gateway
-            Request and Response Data Mappings  ">
-      <link rel="prev" href="integration-passthrough-behaviors.html" title="Integration Passthrough Behaviors">
+      <link rel="up" href="mappings.html" title="Set up API Gateway Request and Response Data Mappings">
+      <link rel="prev" href="integration-passthrough-behaviors.html" title="Integration Passthrough
+                Behaviors">
       <link rel="next" href="api-gateway-payload-encodings.html" title="Support Binary Payloads in
         API Gateway">
-      <meta name="description" content="Learn how mapping templates work in API Gateway">
+      <meta name="description" content="Reference for variables and functions used in mapping templates, access logging, etc.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-mapping-template-reference.html">
@@ -23,7 +26,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -35,38 +38,66 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="how-to-create-api.html">Creating an API in Amazon API Gateway</a> &#xBB; <a href="mappings.html">Set up
-                                    API Gateway
-                                    Request and Response Data Mappings  </a> &#xBB; <span class="breadcrumb">API Gateway Mapping Template Reference</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="how-to-create-api.html">Creating a REST API in Amazon API Gateway</a> &#xBB; <a href="mappings.html">Set up API Gateway Request and Response Data Mappings</a> &#xBB; <span class="breadcrumb">API Gateway Mapping Template and Access
+                                    Logging Variable Reference</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="api-gateway-mapping-template-reference">API Gateway Mapping Template Reference</h1>
-                     <p>Amazon API Gateway defines a set of variables and functions for working with models
-                        and mapping templates. This document describes those functions and provides examples
-                        for working with input payloads.
+                     <h1 class="topictitle" id="api-gateway-mapping-template-reference">API Gateway Mapping Template and Access
+                        Logging Variable Reference
+                     </h1>
+                     <p>This section provides reference information for the variables and functions that Amazon
+                        API Gateway
+                        defines for use with data models, authorizers, mapping templates, and CloudWatch access
+                        logging.
+                        For detailed information about how to use these variables and functions, see <a href="models-mappings.html">Create Models and Mapping Templates for Request and
+                           Response Mappings</a>.
                      </p>
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Topics</strong></p>
                         <ul>
-                           <li><a href="#context-variable-reference">Accessing the $context Variable</a></li>
-                           <li><a href="#input-variable-reference">Accessing the $input Variable</a></li>
-                           <li><a href="#stagevariables-template-reference">Accessing the $stageVariables Variable</a></li>
-                           <li><a href="#util-template-reference">Accessing the $util Variable</a></li>
+                           <li><a href="#context-variable-reference">$context Variables for Data
+                                 Models, Authorizers, Mapping Templates, and CloudWatch Access Logging</a></li>
+                           <li><a href="#context-variables-template-example">$context Variable
+                                 Template Example</a></li>
+                           <li><a href="#context-variable-reference-access-logging-only">$context
+                                 Variables for CloudWatch Access Logging Only</a></li>
+                           <li><a href="#input-variable-reference">$input Variables</a></li>
+                           <li><a href="#input-examples-mapping-templates">$input Variable Template
+                                 Examples</a></li>
+                           <li><a href="#stagevariables-template-reference">$stageVariables</a></li>
+                           <li><a href="#util-template-reference">$util Variables</a></li>
                         </ul>
                      </div>
-                     <h2 id="context-variable-reference">Accessing the $context Variable</h2>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>For <code class="code">$method</code> and <code class="code">$integration</code> variables, see <a href="request-response-data-mappings.html">Amazon API Gateway API Request and Response Data
+                              Mapping Reference</a>.
+                        </p>
+                     </div>
+                     
+                     <h2 id="context-variable-reference"><code class="code">$context</code> Variables for Data
+                        Models, Authorizers, Mapping Templates, and CloudWatch Access Logging
+                     </h2>
                      
                      
-                     <p>The <code class="code">$context</code> variable holds all the contextual information of your API call.
+                     <p>The following <code class="code">$context</code> variables can be used in data models, authorizers,
+                        mapping templates, and CloudWatch access logging.
                      </p>
                      
+                     <p>For <code class="code">$context</code> variables that can be used only in CloudWatch access logging, see
+                        <a href="api-gateway-mapping-template-reference.html#context-variable-reference-access-logging-only">$context
+                           Variables for CloudWatch Access Logging Only</a>.
+                     </p>
                      
                      <div class="table">
-                        <p class="title"><b>$context Variable Reference</b></p>
                         <div class="table-contents">
-                           <table id="w1526aac13c27c17b7b4">
+                           <table id="w468aac13b5c23c15b9b7">
                               
                               <tbody><tr>
                                  
@@ -76,6 +107,18 @@
                                  
                               </tr>
                               
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.accountId</code></td>
+                                 
+                                 <td>
+                                    
+                                    <p>The API owner&apos;s AWS account ID.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
                               
                               <tr>
                                  
@@ -96,7 +139,9 @@
                                  <td>
                                     
                                     <p>A property of the claims returned from the Amazon Cognito user pool after
-                                       the method caller is successfully authenticated.
+                                       the method caller is successfully authenticated. For more
+                                       information, see <a href="apigateway-integrate-with-cognito.html">Control Access to a REST API Using
+                                          Amazon Cognito User Pools as Authorizer</a>.
                                     </p>
                                     
                                     <div class="aws-note">
@@ -118,7 +163,7 @@
                                     
                                     <p>The principal user identification associated with the token sent
                                        by the client and returned from an API Gateway Lambda authorizer (formerly
-                                       known as a custom authorizer) Lambda function.
+                                       known as a custom authorizer). For more information, see <a href="apigateway-use-lambda-authorizer.html">Use API Gateway Lambda Authorizers</a>.
                                     </p>
                                     
                                  </td>
@@ -132,8 +177,8 @@
                                  <td>
                                     
                                     <p>The stringified value of the specified key-value pair of the <code class="literal">context</code> map returned from an API Gateway
-                                       Lambda authorizer Lambda function. For example, if the authorizer
-                                       returns the following <code class="code">context</code> map: 
+                                       Lambda authorizer function. For example, if the authorizer returns
+                                       the following <code class="code">context</code> map: 
                                     </p>
                                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&quot;context&quot; : {
   &quot;key&quot;: &quot;value&quot;,
@@ -148,21 +193,47 @@
                                        <code class="code">&quot;true&quot;</code> string.
                                     </p>
                                     
+                                    <p>For more information, see <a href="apigateway-use-lambda-authorizer.html">Use API Gateway Lambda Authorizers</a>.
+                                    </p>
+                                    
                                  </td>
                                  
                               </tr>
                               
-                              
                               <tr>
                                  
-                                 <td><code class="code">$context.httpMethod</code></td>
+                                 <td><code class="code">$context.awsEndpointRequestId</code></td>
                                  
                                  <td>
                                     
-                                    <p>The HTTP method used. Valid values include: <code class="code">DELETE</code>,
-                                       <code class="code">GET</code>, <code class="code">HEAD</code>, <code class="code">OPTIONS</code>,
-                                       <code class="code">PATCH</code>, <code class="code">POST</code>, and
-                                       <code class="code">PUT</code>.
+                                    <p>The AWS endpoint&apos;s request ID.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.domainName</code></td>
+                                 
+                                 <td>
+                                    
+                                    <p>The full domain name used to invoke the API. This should be the
+                                       same as the incoming <code class="code">Host</code> header.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.domainPrefix</code></td>
+                                 
+                                 <td>
+                                    
+                                    <p>The first label of the <code class="code">$context.domainName</code>. This is
+                                       often used as a caller/customer identifier.
                                     </p>
                                     
                                  </td>
@@ -175,9 +246,12 @@
                                  
                                  <td>
                                     
-                                    <p>A string of an API Gateway error message. This variable can only be used
-                                       for simple variable substitution in a <a href="./apigateway/api-reference/resource/gateway-response/" target="_blank">GatewayResponse</a> body-mapping template, which is not
-                                       processed by the Velocity Template Language engine.
+                                    <p>A string containing an API Gateway error message. This variable can only
+                                       be used for simple variable substitution in a <a href="./apigateway/api-reference/resource/gateway-response/">GatewayResponse</a> body-mapping template, which is not
+                                       processed by the Velocity Template Language engine, and in access
+                                       logging. For more information, see <a href="apigateway-websocket-api-logging.html">Monitor WebSocket API Execution
+                                          with CloudWatch</a> and <a href="customize-gateway-responses.html">Set up Gateway Responses to Customize Error
+                                          Responses</a>.
                                     </p>
                                     
                                  </td>
@@ -200,10 +274,25 @@
                                  
                                  <td>
                                     
-                                    <p>A <a href="./apigateway/api-reference/resource/gateway-response/#responseType" target="_blank">type</a> of <a href="./apigateway/api-reference/resource/gateway-response/" target="_blank">GatewayResponse</a>. This variable can only be used for
-                                       simple variable substitution in a <a href="./apigateway/api-reference/resource/gateway-response/" target="_blank">GatewayResponse</a> body-mapping template, which is not
-                                       processed by the Velocity Template Language engine. 
+                                    <p>A <a href="./apigateway/api-reference/resource/gateway-response/#responseType">type</a> of <a href="./apigateway/api-reference/resource/gateway-response/">GatewayResponse</a>. This variable can only be used for
+                                       simple variable substitution in a <a href="./apigateway/api-reference/resource/gateway-response/">GatewayResponse</a> body-mapping template, which is not
+                                       processed by the Velocity Template Language engine, and in access
+                                       logging. For more information, see <a href="apigateway-websocket-api-logging.html">Monitor WebSocket API Execution
+                                          with CloudWatch</a> and <a href="customize-gateway-responses.html">Set up Gateway Responses to Customize Error
+                                          Responses</a>.
                                     </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.error.validationErrorString</code></td>
+                                 
+                                 <td>
+                                    
+                                    <p>A string containing a detailed validation error message.</p>
                                     
                                  </td>
                                  
@@ -213,8 +302,24 @@
                                  
                                  <td><code class="code">$context.extendedRequestId</code></td>
                                  
-                                 <td>An automatically generated ID for the API call, which contains
+                                 <td>The extended ID that API Gateway assigns to the API request, which contains
                                     more useful information for debugging/troubleshooting.
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.httpMethod</code></td>
+                                 
+                                 <td>
+                                    
+                                    <p>The HTTP method used. Valid values include: <code class="code">DELETE</code>,
+                                       <code class="code">GET</code>, <code class="code">HEAD</code>, <code class="code">OPTIONS</code>,
+                                       <code class="code">PATCH</code>, <code class="code">POST</code>, and
+                                       <code class="code">PUT</code>.
+                                    </p>
+                                    
                                  </td>
                                  
                               </tr>
@@ -237,7 +342,12 @@
                                  
                                  <td>
                                     
-                                    <p>The API owner key associated with key-enabled API request.</p>
+                                    <p>For API methods that require an API key, this variable is the API
+                                       key associated with the method request. For methods that don&apos;t
+                                       require an API key, this variable is null. For more information, see
+                                       <a href="api-gateway-api-usage-plans.html">Create and Use Usage Plans with API
+                                          Keys</a>.
+                                    </p>
                                     
                                  </td>
                                  
@@ -247,7 +357,9 @@
                                  
                                  <td><code class="code">$context.identity.apiKeyId</code></td>
                                  
-                                 <td>The API key ID associated with the key-enabled API request</td>
+                                 <td>The API key ID associated with an API request that requires an API
+                                    key.
+                                 </td>
                                  
                               </tr>
                               
@@ -271,11 +383,7 @@
                                     
                                     <p>The Amazon Cognito authentication provider used by the caller making
                                        the request. Available only if the request was signed with Amazon Cognito
-                                       credentials.
-                                    </p>
-                                    
-                                    <p>For information related to this and the other Amazon Cognito
-                                       <code class="code">$context</code> variables, see <a href="./cognito/latest/developerguide/cognito-identity.html" target="_blank">Using Federated
+                                       credentials. For information, see <a href="./cognito/latest/developerguide/cognito-identity.html">Using Federated
                                           Identities</a> in the <em>Amazon Cognito Developer
                                           Guide</em>.
                                     </p>
@@ -331,6 +439,19 @@
                               
                               <tr>
                                  
+                                 <td><code class="code">$context.identity.principalOrgId</code></td>
+                                 
+                                 <td>
+                                    
+                                    <p>The <a href="./organizations/latest/userguide/orgs_manage_org_details.html">AWS organization ID</a>.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
                                  <td><code class="code">$context.identity.sourceIp</code></td>
                                  
                                  <td>
@@ -338,6 +459,13 @@
                                     <p>The source IP address of the TCP connection making the request to
                                        API Gateway.
                                     </p>
+                                    
+                                    <div class="aws-note">
+                                       <p class="aws-note">Warning</p>
+                                       <p>You should not trust this value if there is any chance that
+                                          the <code class="code">X-Forwarded-For</code> header could be forged.
+                                       </p>
+                                    </div>
                                     
                                  </td>
                                  
@@ -349,7 +477,10 @@
                                  
                                  <td>
                                     
-                                    <p>The principal identifier of the user making the request.</p>
+                                    <p>The principal identifier of the user making the request. Used in
+                                       Lambda authorizers. For more information, see <a href="api-gateway-lambda-authorizer-output.html">Output from an Amazon API Gateway Lambda
+                                          Authorizer</a>.
+                                    </p>
                                     
                                  </td>
                                  
@@ -361,7 +492,9 @@
                                  
                                  <td>
                                     
-                                    <p>The User Agent of the API caller.</p>
+                                    <p>The <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent" target="_blank"><code class="code">User-Agent</code></a> header of the API
+                                       caller.
+                                    </p>
                                     
                                  </td>
                                  
@@ -374,7 +507,7 @@
                                  <td>
                                     
                                     <p>The Amazon Resource Name (ARN) of the effective user identified
-                                       after authentication.
+                                       after authentication. For more information, see <a href="./IAM/latest/UserGuide/id_users.html">https://docs.aws.amazon.com/IAM/latest/UserGuide/id_users.html</a>.
                                     </p>
                                     
                                  </td>
@@ -383,19 +516,11 @@
                               
                               <tr>
                                  
-                                 <td><code class="code">$context.integrationLatency</code></td>
-                                 
-                                 <td>The integration latency in ms, available for access logging only.</td>
-                                 
-                              </tr>
-                              
-                              <tr>
-                                 
                                  <td><code class="code">$context.path</code></td>
                                  
-                                 <td>The request path. For example, for the non-proxy request URI of
+                                 <td>The request path. For example, for a non-proxy request URL of
                                     <code class="code">https://{rest-api-id.execute-api.{region}.amazonaws.com/{stage}/root/child</code>,
-                                    The <code class="code">$context.path</code> value is
+                                    the <code class="code">$context.path</code> value is
                                     <code class="code">/{stage}/root/child</code>. 
                                  </td>
                                  
@@ -416,8 +541,94 @@
                                  
                                  <td>
                                     
-                                    <p>An automatically generated ID for the API call.</p>
+                                    <p>The ID that API Gateway assigns to the API request.</p>
                                     
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.requestOverride.header.<em class="replaceable"><code>header_name</code></em></code></td>
+                                 
+                                 <td>
+                                    
+                                    <p>The request header override. If this parameter is defined, it
+                                       contains the headers to be used instead of the <b>HTTP
+                                          Headers</b> that are defined in the <b>Integration
+                                          Request</b> pane. For more information, see <a href="apigateway-override-request-response-parameters.html">Use a Mapping
+                                          Template to Override an API&apos;s Request and Response Parameters and Status
+                                          Codes</a>.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.requestOverride.path.<em class="replaceable"><code>path_name</code></em></code></td>
+                                 
+                                 <td>
+                                    
+                                    <p>The request path override. If this parameter is defined, it
+                                       contains the request path to be used instead of the <b>URL
+                                          Path Parameters</b> that are defined in the
+                                       <b>Integration Request</b> pane. For more
+                                       information, see <a href="apigateway-override-request-response-parameters.html">Use a Mapping
+                                          Template to Override an API&apos;s Request and Response Parameters and Status
+                                          Codes</a>.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.requestOverride.querystring.<em class="replaceable"><code>querystring_name</code></em></code></td>
+                                 
+                                 <td>
+                                    
+                                    <p>The request query string override. If this parameter is defined,
+                                       it contains the request query strings to be used instead of the
+                                       <b>URL Query String Parameters</b> that are
+                                       defined in the <b>Integration Request</b> pane. For
+                                       more information, see <a href="apigateway-override-request-response-parameters.html">Use a Mapping
+                                          Template to Override an API&apos;s Request and Response Parameters and Status
+                                          Codes</a>.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.responseOverride.header.<em class="replaceable"><code>header_name</code></em></code></td>
+                                 
+                                 <td>The response header override. If this parameter is defined, it
+                                    contains the header to be returned instead of the <b>Response
+                                       header</b> that is defined as the <b>Default
+                                       mapping</b> in the <b>Integration Response</b>
+                                    pane. For more information, see <a href="apigateway-override-request-response-parameters.html">Use a Mapping
+                                       Template to Override an API&apos;s Request and Response Parameters and Status
+                                       Codes</a>.
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.responseOverride.status</code></td>
+                                 
+                                 <td>The response status code override. If this parameter is defined, it
+                                    contains the status code to be returned instead of the <b>Method
+                                       response status</b> that is defined as the <b>Default
+                                       mapping</b> in the <b>Integration Response</b>
+                                    pane. For more information, see <a href="apigateway-override-request-response-parameters.html">Use a Mapping
+                                       Template to Override an API&apos;s Request and Response Parameters and Status
+                                       Codes</a>.
                                  </td>
                                  
                               </tr>
@@ -447,7 +658,7 @@
                                  
                                  <td>
                                     
-                                    <p>The identifier API Gateway assigns to your resource.</p>
+                                    <p>The identifier that API Gateway assigns to your resource.</p>
                                     
                                  </td>
                                  
@@ -463,7 +674,7 @@
                                        URI of
                                        <code class="code">https://{rest-api-id.execute-api.{region}.amazonaws.com/{stage}/root/child</code>,
                                        The <code class="code">$context.resourcePath</code> value is
-                                       <code class="code">/root/child</code>. For more information, see <a href="api-gateway-create-api-step-by-step.html">Build an API with HTTP Custom
+                                       <code class="code">/root/child</code>. For more information, see <a href="api-gateway-create-api-step-by-step.html">TUTORIAL: Build an API with HTTP Non-Proxy
                                           Integration</a>. 
                                     </p>
                                     
@@ -473,38 +684,58 @@
                               
                               <tr>
                                  
-                                 <td><code class="code">$context.responseLength</code></td>
+                                 <td><code class="code">$context.stage</code></td>
                                  
-                                 <td>The response payload length, available for access logging
-                                    only.
+                                 <td>
+                                    
+                                    <p>The deployment stage of the API request (for example,
+                                       <code class="code">Beta</code> or <code class="code">Prod</code>).
+                                    </p>
+                                    
                                  </td>
                                  
                               </tr>
                               
                               <tr>
                                  
-                                 <td><code class="code">$context.responseLatency</code></td>
-                                 
-                                 <td>The response latency in ms, available for access logging only.</td>
-                                 
-                              </tr>
-                              
-                              <tr>
-                                 
-                                 <td><code class="code">$context.status</code></td>
-                                 
-                                 <td>The response status, available for access logging only.</td>
-                                 
-                              </tr>
-                              
-                              <tr>
-                                 
-                                 <td><code class="code">$context.stage</code></td>
+                                 <td><code class="code">$context.wafResponseCode</code></td>
                                  
                                  <td>
                                     
-                                    <p>The deployment stage of the API call (for example, Beta or
-                                       Prod).
+                                    <p>The response received from <a href="./waf/latest/developerguide/waf-chapter.html">AWS WAF</a>:
+                                       <code class="code">WAF_ALLOW</code> or <code class="code">WAF_BLOCK</code>. Will not be
+                                       set if the stage is not associated with a web ACL. For more
+                                       information, see <a href="apigateway-control-access-aws-waf.html">Use AWS WAF to Protect Your Amazon API Gateway API
+                                          from Common Web Exploits</a>.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.webaclArn</code></td>
+                                 
+                                 <td>
+                                    
+                                    <p>The complete ARN of the web ACL that is used to decide whether to
+                                       allow or block the request. Will not be set if the stage is not
+                                       associated with a web ACL. For more information, see <a href="apigateway-control-access-aws-waf.html">Use AWS WAF to Protect Your Amazon API Gateway API
+                                          from Common Web Exploits</a>.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.xrayTraceId</code></td>
+                                 
+                                 <td>
+                                    
+                                    <p>The trace ID for the X-Ray trace. For more information, see <a href="apigateway-enabling-xray.html">Setting Up AWS X-Ray with API Gateway</a>.
                                     </p>
                                     
                                  </td>
@@ -516,24 +747,26 @@
                      </div>
                      
                      
+                     <h2 id="context-variables-template-example"><code class="code">$context</code> Variable
+                        Template Example
+                     </h2>
                      
-                     <h3 id="context-examples-mapping-templates">Example</h3>
-                     
-                     
-                     <p>You may want to use the <code class="code">$context</code> variable if you&apos;re using AWS Lambda as the target backend that the API method calls.
-                        For example, you may want to perform two different actions depending on whether the
-                        stage is in Beta or in Prod.
+                     <p>You may want to use <code class="code">$context</code> variables in a mapping template if your API
+                        method passes structured data to a backend that requires the data to be in a particular
+                        format.
                      </p>
                      
-                     
-                     
-                     <h4 id="context-variables-template-example">Context Variables Template
-                        Example
-                     </h4>
-                     
-                     <p>The following example shows a mapping template  to map  context variables to
-                        an integration request payload:
+                     <p>The following example shows a mapping template that maps incoming
+                        <code class="code">$context</code> variables to backend variables with slightly different names
+                        in an integration request payload:
                      </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>Note that one of the variables is an API key. This example assumes that the method
+                           has &quot;require API key&quot; enabled.
+                        </p>
+                     </div>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
     &quot;stage&quot; : &quot;$context.stage&quot;,
     &quot;request_id&quot; : &quot;$context.requestId&quot;,
@@ -549,74 +782,98 @@
     &quot;user&quot; : &quot;$context.identity.user&quot;,
     &quot;user_arn&quot; : &quot;$context.identity.userArn&quot;
 }</code></pre>
-                     <p>In the above example, the method is assumed to have an API key enabled. If API
-                        key is not required on the method request, <code class="code">api_key</code> will be null. 
+                     
+                     <h2 id="context-variable-reference-access-logging-only"><code class="code">$context</code>
+                        Variables for CloudWatch Access Logging Only
+                     </h2>
+                     
+                     <p>The following <code class="code">$context</code> variables are available only for CloudWatch access
+                        logging. For more information, see <a href="set-up-logging.html">Set Up CloudWatch API Logging in API Gateway</a>. (For WebSocket
+                        APIs, see <a href="apigateway-websocket-api-logging.html">Monitor WebSocket API Execution
+                           with CloudWatch</a>.)
                      </p>
                      
-                     <p>For requests of the <code class="code">AWS_IAM</code> authorization type, you can pass the
-                        authorized user information to the integration endpoint with
-                        <code class="code">$context.identity.*</code> properties. For requests of the
-                        <code class="code">COGNITO_USER_POOLS</code> authorization type, the authorized user
-                        information will also include <code class="code">$context.identity.cognito*</code> and
-                        <code class="code">$context.authorizer.claims.*</code> properties. For requests using a
-                        Lambda authorizer, you can pass <code class="code">$context.authorizer.principalId</code> and
-                        other applicable <code class="code">$context.authorizer.*</code> properties as additional
-                        authorized user context to the integration endpoint.
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w468aac13b5c23c15c13b5">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Parameter</th>
+                                 
+                                 <th>Description</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.authorizer.integrationLatency</code></td>
+                                 
+                                 <td>The authorizer latency in ms.</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.integrationLatency</code></td>
+                                 
+                                 <td>The integration latency in ms.</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.integrationStatus</code></td>
+                                 
+                                 <td>For Lambda proxy integration, this parameter represents the status code returned from
+                                    AWS Lambda, not from the backend Lambda function.
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.responseLatency</code></td>
+                                 
+                                 <td>The response latency in ms.</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.responseLength</code></td>
+                                 
+                                 <td>The response payload length.</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$context.status</code></td>
+                                 
+                                 <td>The method response status.</td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <h2 id="input-variable-reference"><code class="code">$input</code> Variables
+                     </h2>
+                     
+                     
+                     
+                     <p>The <code class="code">$input</code> variable represents the method request payload and parameters
+                        to be processed by a mapping template. It provides four functions:
                      </p>
-                     
-                     <p>With a proxy integration, API Gateway passes the authorized identity information to
-                        the backend in the <code class="code">requestContext.identity</code> object. You do not set
-                        up any mapping template and, instead, parse the input to the integration backend
-                        explicitly. The following shows an example of <code class="code">requestContext</code> passed
-                        to a Lambda proxy integration endpoint when the authorization type is set to
-                        <code class="code">AWS_IAM</code>.
-                     </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
-    ...,
-    &quot;requestContext&quot;: {
-        &quot;requestTime&quot;: &quot;20/Feb/2018:22:48:57 +0000&quot;,
-        &quot;path&quot;: &quot;/test/&quot;,
-        &quot;accountId&quot;: &quot;123456789012&quot;,
-        &quot;protocol&quot;: &quot;HTTP/1.1&quot;,
-        &quot;resourceId&quot;: &quot;yx5mhem7ye&quot;,
-        &quot;stage&quot;: &quot;test&quot;,
-        &quot;requestTimeEpoch&quot;: 1519166937665,
-        &quot;requestId&quot;: &quot;3c3ecbaa-1690-11e8-ae31-8f39f1d24afd&quot;,
-        &quot;identity&quot;: {
-            &quot;cognitoIdentityPoolId&quot;: null,
-            &quot;accountId&quot;: &quot;123456789012&quot;,
-            &quot;cognitoIdentityId&quot;: null,
-            &quot;caller&quot;: &quot;AIDAJ........4HCKVJZG&quot;,
-            &quot;sourceIp&quot;: &quot;51.240.196.104&quot;,
-            &quot;accessKey&quot;: &quot;<em class="replaceable"><code>IAM_user_access_key</code></em>&quot;,
-            &quot;cognitoAuthenticationType&quot;: null,
-            &quot;cognitoAuthenticationProvider&quot;: null,
-            &quot;userArn&quot;: &quot;arn:aws:iam::123456789012:user/alice&quot;,
-            &quot;userAgent&quot;: &quot;PostmanRuntime/7.1.1&quot;,
-            &quot;user&quot;: &quot;AIDAJ........4HCKVJZG&quot;
-        },
-        &quot;resourcePath&quot;: &quot;/&quot;,
-        &quot;httpMethod&quot;: &quot;GET&quot;,
-        &quot;apiId&quot;: &quot;qr2gd9cfmf&quot;
-    },
-    ...
-}</code></pre>
-                     
-                     
-                     <h2 id="input-variable-reference">Accessing the $input Variable</h2>
-                     
-                     
-                     
-                     <p>The <code class="code">$input</code> variable represents the input payload and parameters to be processed by your template.
-                        It provides four functions:
-                     </p>
-                     
                      
                      
                      <div class="table">
-                        <p class="title"><b>Function Reference</b></p>
                         <div class="table-contents">
-                           <table id="w1526aac13c27c17b9b4">
+                           <table id="w468aac13b5c23c15c15b5">
                               
                               <tbody><tr>
                                  
@@ -632,7 +889,7 @@
                                  <td><code class="code">$input.body</code></td>
                                  
                                  <td>
-                                    <p>Returns the raw payload as a string.</p>
+                                    <p>Returns the raw request payload as a string.</p>
                                  </td>
                                  
                               </tr>
@@ -642,12 +899,17 @@
                                  <td><code class="code">$input.json(x)</code></td>
                                  
                                  <td>
-                                    <p>This function evaluates a JSONPath expression and returns the results as a JSON string.</p>
-                                    
-                                    <p>For example, <code class="code">$input.json(&apos;$.pets&apos;)</code> will return a JSON string representing the pets structure.
+                                    <p>This function evaluates a JSONPath expression and returns the
+                                       results as a JSON string.
                                     </p>
                                     
-                                    <p>For more information about JSONPath, see <a href="http://goessner.net/articles/JsonPath/" target="_blank">JSONPath</a> or <a href="https://github.com/jayway/JsonPath" target="_blank">JSONPath for Java</a>.
+                                    <p>For example, <code class="code">$input.json(&apos;$.pets&apos;)</code> returns a JSON
+                                       string representing the <code class="code">pets</code> structure.
+                                    </p>
+                                    
+                                    <p>For more information about JSONPath, see <a href="http://goessner.net/articles/JsonPath/" target="_blank">JSONPath</a> or
+                                       <a href="https://github.com/jayway/JsonPath" target="_blank">JSONPath for
+                                          Java</a>.
                                     </p>
                                  </td>
                                  
@@ -658,7 +920,7 @@
                                  <td><code class="code">$input.params()</code></td>
                                  
                                  <td>
-                                    <p>Returns a map of all the request parameters of your API call.</p>
+                                    <p>Returns a map of all the request parameters.</p>
                                  </td>
                                  
                               </tr>
@@ -668,8 +930,9 @@
                                  <td><code class="code">$input.params(x)</code></td>
                                  
                                  <td>
-                                    <p>Returns the value of a method request parameter from the path, query string, or header
-                                       value (in that order) given a parameter name string x.
+                                    <p>Returns the value of a method request parameter from the path,
+                                       query string, or header value (searched in that order), given a
+                                       parameter name string <code class="code">x</code>.
                                     </p>
                                  </td>
                                  
@@ -680,94 +943,62 @@
                                  <td><code class="code">$input.path(x)</code></td>
                                  
                                  <td>
-                                    <p>Takes a JSONPath expression string (x) and returns an object representation of the
-                                       result. This allows you to access and manipulate elements of the payload natively
-                                       in <a href="http://velocity.apache.org/engine/devel/vtl-reference-guide.html" target="_blank">Apache Velocity Template Language (VTL)</a>.
-                                    </p> 
+                                    <p>Takes a JSONPath expression string (<code class="code">x</code>) and returns
+                                       a JSON object representation of the result. This allows you to
+                                       access and manipulate elements of the payload natively in <a href="http://velocity.apache.org/engine/devel/vtl-reference-guide.html" target="_blank">Apache Velocity Template Language (VTL)</a>.
+                                    </p>
                                     
-                                    <p>For example, <code class="code">$input.path(&apos;$.pets&apos;).size()</code></p>
+                                    <p>For example, if the expression <code class="code">$input.path(&apos;$.pets&apos;)</code>
+                                       returns an object like this:
+                                    </p>
+                                    <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">[
+  { 
+    &quot;id&quot;: 1, 
+    &quot;type&quot;: &quot;dog&quot;, 
+    &quot;price&quot;: 249.99 
+  }, 
+  { 
+    &quot;id&quot;: 2, 
+    &quot;type&quot;: &quot;cat&quot;, 
+    &quot;price&quot;: 124.99 
+  }, 
+  { 
+    &quot;id&quot;: 3, 
+    &quot;type&quot;: &quot;fish&quot;, 
+    &quot;price&quot;: 0.99 
+  } 
+]</code></pre>
+                                    <p><code class="code">$input.path(&apos;$.pets&apos;).count()</code> would return
+                                       <code class="code">&quot;3&quot;</code>.
+                                    </p>
                                     
-                                    <p>For more information about JSONPath, see <a href="http://goessner.net/articles/JsonPath/" target="_blank">JSONPath</a> or <a href="https://github.com/jayway/JsonPath" target="_blank">JSONPath for Java</a>.
+                                    <p>For more information about JSONPath, see <a href="http://goessner.net/articles/JsonPath/" target="_blank">JSONPath</a> or
+                                       <a href="https://github.com/jayway/JsonPath" target="_blank">JSONPath for
+                                          Java</a>.
                                     </p>
                                  </td>
                                  
-                              </tr>          
+                              </tr>
                               
                            </tbody></table>
                         </div>
                      </div>
                      
                      
-                     
-                     <h3 id="input-examples-mapping-templates">Examples</h3>
-                     
-                     
-                     <p>You may want to use the <code class="code">$input</code> variable to get query strings and the request body with or without using models.
-                        You may also want to get the parameter and the payload, or a subsection of the payload,
-                        into your 
-                        AWS Lambda function. The examples below show how to do this.
-                     </p>
-                     
-                     
-                     <h4 id="input-example-json-mapping-template">Example JSON Mapping Template</h4>
+                     <h2 id="input-examples-mapping-templates"><code class="code">$input</code> Variable Template
+                        Examples
+                     </h2>
                      
                      
                      
-                     <p>The following example shows how to use a mapping to read a name from the query string
-                        and then include the 
-                        entire POST body in an element:
-                     </p>
-                     
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
-    &quot;name&quot; : &quot;$input.params(&apos;name&apos;)&quot;,
-    &quot;body&quot; : $input.json(&apos;$&apos;) 
-}</code></pre>
-                     <p>
-                        If the JSON input contains unescaped characters that cannot be parsed by JavaScript,
-                        
-                        a 400 response may be returned. Applying <code class="code">$util.escapeJavaScript($input.json(&apos;$&apos;))</code> above 
-                        will ensure that the JSON input can be parsed properly.
-                        
-                     </p>
+                     <h3 id="context-example-param-map-template">Parameter Mapping Template
+                        Example
+                     </h3>
                      
                      
-                     
-                     
-                     <h4 id="input-example-inputs-mapping-template">Example Inputs Mapping Template</h4>
-                     
-                     
-                     
-                     <p>The following example shows how to pass a JSONPath expression to the <code class="code">json()</code> method. You could also read a 
-                        specific property of your request body object by using a period <code class="code">(.)</code>, followed by your property name:
-                     </p>
-                     
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
-    &quot;name&quot; : &quot;$input.params(&apos;name&apos;)&quot;,
-    &quot;body&quot; : $input.json(&apos;$.mykey&apos;)  
-}</code></pre>
-                     
-                     <p>
-                        If a method request payload contains unescaped characters that cannot be parsed by
-                        JavaScript, 
-                        you may get <code class="code">400</code> response. In this case, you need to call <code class="code">$util.escapeJavaScript()</code> 
-                        function in the mapping template, as shown as follows:
-                        
-                     </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
-    &quot;name&quot; : &quot;$input.params(&apos;name&apos;)&quot;,
-    &quot;body&quot; : $util.escapeJavaScript($input.json(&apos;$.mykey&apos;)) 
-}</code></pre>
-                     
-                     
-                     <h4 id="context-example-param-map-template">Param Mapping Template Example</h4>
-                     
-                     
-                     
-                     <p>
-                        The following parameter-mapping example passes all parameters, including path, querystring
-                        and header, 
-                        through to the integration endpoint via a JSON payload
-                        
+                     <p> The following parameter-mapping example passes all parameters, including
+                        <code class="code">path</code>, <code class="code">querystring</code>, and <code class="code">header</code>, through to
+                        the integration endpoint via a JSON payload:
                      </p>
                      
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">#set($allParams = $input.params())
@@ -787,7 +1018,7 @@
 }</code></pre>
                      <p>In effect, this mapping template outputs all the request parameters in the payload
                         as outlined as follows:
-                     </p>  
+                     </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
   &quot;parameters&quot; : {
      &quot;path&quot; : {    
@@ -805,12 +1036,69 @@
    }
 }</code></pre>
                      
+                     <p>You may want to use the <code class="code">$input</code> variable to get query strings and the
+                        request body with or without using models. You may also want to get the parameter
+                        and
+                        the payload, or a subsection of the payload, into your Lambda function. The following
+                        examples show how to do this.
+                     </p>
                      
-                     <h4 id="input-example-request-and-response">Example Request and Response</h4>
+                     
+                     
+                     <h3 id="input-example-json-mapping-template">Example JSON Mapping Template
+                        Using <code class="code">$input</code></h3>
+                     
+                     
+                     <p>The following example shows how to use a mapping to read a name from the query
+                        string and then include the entire POST body in an element:
+                     </p>
+                     
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;name&quot; : &quot;$input.params(&apos;name&apos;)&quot;,
+    &quot;body&quot; : $input.json(&apos;$&apos;) 
+}</code></pre>
+                     <p> If the JSON input contains unescaped characters that cannot be parsed by
+                        JavaScript, a 400 response may be returned. Applying
+                        <code class="code">$util.escapeJavaScript($input.json(&apos;$&apos;))</code> above will ensure that the
+                        JSON input can be parsed properly. 
+                     </p>
                      
                      
                      
-                     <p>Here&#x2019;s an example that uses all three functions:</p>
+                     
+                     
+                     <h3 id="input-example-inputs-mapping-template">Example Mapping Template
+                        Using <code class="code">$input</code></h3>
+                     
+                     
+                     
+                     <p>The following example shows how to pass a JSONPath expression to the
+                        <code class="code">json()</code> method. You could also read a specific property of your
+                        request body object by using a period <code class="code">(.)</code>, followed by your property
+                        name:
+                     </p>
+                     
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;name&quot; : &quot;$input.params(&apos;name&apos;)&quot;,
+    &quot;body&quot; : $input.json(&apos;$.mykey&apos;)  
+}</code></pre>
+                     
+                     <p> If a method request payload contains unescaped characters that cannot be parsed
+                        by JavaScript, you may get <code class="code">400</code> response. In this case, you need to call
+                        <code class="code">$util.escapeJavaScript()</code> function in the mapping template, as shown
+                        as follows: 
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;name&quot; : &quot;$input.params(&apos;name&apos;)&quot;,
+    &quot;body&quot; : $util.escapeJavaScript($input.json(&apos;$.mykey&apos;)) 
+}</code></pre>
+                     
+                     
+                     <h3 id="input-example-request-and-response">Example Request and Response
+                        Using <code class="code">$input</code></h3>
+                     
+                     
+                     <p>Here&apos;s an example that uses all three functions:</p>
                      
                      
                      <p><b>Request Template:</b></p>
@@ -842,25 +1130,24 @@ POST /things/abc
     &quot;3&quot;: {}
   }
 }</code></pre>
-                     
-                     <p>
-                        For more mapping examples, see <a href="models-mappings.html">Create Models and Mapping Templates for Request and Response Mappings</a>
-                        
+                     <p> For more mapping examples, see <a href="models-mappings.html">Create Models and Mapping Templates for Request and
+                           Response Mappings</a>. 
                      </p>
                      
                      
                      
-                     <h2 id="stagevariables-template-reference">Accessing the $stageVariables Variable</h2>
+                     <h2 id="stagevariables-template-reference"><code class="code">$stageVariables</code></h2>
                      
                      
-                     <p>The syntax for inserting a stage variable looks like this: <code class="code">$stageVariables</code>.
+                     <p>Stage variables can be used in parameter mapping and mapping templates and as
+                        placeholders in ARNs and URLs used in method integrations. For more information, see
+                        <a href="stage-variables.html">Set up Stage Variables for a REST API Deployment</a>.
                      </p>
                      
                      
                      <div class="table">
-                        <p class="title"><b>$stageVariables Reference</b></p>
                         <div class="table-contents">
-                           <table id="w1526aac13c27c17c11b4">
+                           <table id="w468aac13b5c23c15c19b5">
                               
                               <tbody><tr>
                                  
@@ -877,7 +1164,8 @@ POST /things/abc
                                  
                                  <td>
                                     
-                                    <p><em class="replaceable"><code>&lt;variable_name&gt;</code></em> represents a stage variable name.
+                                    <p><em class="replaceable"><code>&lt;variable_name&gt;</code></em> represents a
+                                       stage variable name.
                                     </p>
                                     
                                  </td>
@@ -890,7 +1178,8 @@ POST /things/abc
                                  
                                  <td>
                                     
-                                    <p><em class="replaceable"><code>&lt;variable_name&gt;</code></em> represents any stage variable name.
+                                    <p><em class="replaceable"><code>&lt;variable_name&gt;</code></em> represents any
+                                       stage variable name.
                                     </p>
                                     
                                  </td>
@@ -903,7 +1192,8 @@ POST /things/abc
                                  
                                  <td>
                                     
-                                    <p><em class="replaceable"><code>&lt;variable_name&gt;</code></em> represents any stage variable name.
+                                    <p><em class="replaceable"><code>&lt;variable_name&gt;</code></em> represents any
+                                       stage variable name.
                                     </p>
                                     
                                  </td>
@@ -914,10 +1204,13 @@ POST /things/abc
                         </div>
                      </div>
                      
-                     <h2 id="util-template-reference">Accessing the $util Variable</h2>
+                     
+                     <h2 id="util-template-reference"><code class="code">$util</code> Variables
+                     </h2>
                      
                      
-                     <p>The <code class="code">$util</code> variable contains utility functions for use in mapping templates.
+                     <p>The <code class="code">$util</code> variable contains utility functions for use in mapping
+                        templates.
                      </p>
                      
                      <div class="aws-note">
@@ -927,9 +1220,8 @@ POST /things/abc
                      
                      
                      <div class="table">
-                        <p class="title"><b>$util Variable Reference</b></p>
                         <div class="table-contents">
-                           <table id="w1526aac13c27c17c13b6">
+                           <table id="w468aac13b5c23c15c21b7">
                               
                               <tbody><tr>
                                  
@@ -946,14 +1238,21 @@ POST /things/abc
                                  
                                  <td>
                                     
-                                    <p>Escapes the characters in a string using JavaScript string rules.</p>
+                                    <p>Escapes the characters in a string using JavaScript string
+                                       rules.
+                                    </p>
                                     
                                     <div class="aws-note">
                                        <p class="aws-note">Note</p>
-                                       <p>This function will turn any regular single quotes (<code class="code">&apos;</code>) into escaped ones (<code class="code">\&apos;</code>). However, the escaped single quotes are not valid in JSON. Thus, when the output
-                                          from this function is used in a JSON property, you must turn any escaped single quotes
-                                          (<code class="code">\&apos;</code>) back to regular single quotes (<code class="code">&apos;</code>). This is shown in the following example: 
+                                       <p>This function will turn any regular single quotes
+                                          (<code class="code">&apos;</code>) into escaped ones (<code class="code">\&apos;</code>).
+                                          However, the escaped single quotes are not valid in JSON. Thus,
+                                          when the output from this function is used in a JSON property,
+                                          you must turn any escaped single quotes (<code class="code">\&apos;</code>) back
+                                          to regular single quotes (<code class="code">&apos;</code>). This is shown in the
+                                          following example: 
                                        </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"> $util.escapeJavaScript(<em class="replaceable"><code>data</code></em>).replaceAll(&quot;\\&apos;&quot;,&quot;&apos;&quot;)</code></pre></div>
+                                    
                                  </td>
                                  
                               </tr>
@@ -964,18 +1263,14 @@ POST /things/abc
                                  
                                  <td>
                                     
-                                    <p>
-                                       Takes &quot;stringified&quot; JSON and returns an object representation of the result. 
-                                       You can use the result from this function to access and manipulate elements 
-                                       of the payload natively in Apache Velocity Template Language (VTL). For example,
-                                       if you have the following payload:
-                                       
+                                    <p> Takes &quot;stringified&quot; JSON and returns an object representation of
+                                       the result. You can use the result from this function to access and
+                                       manipulate elements of the payload natively in Apache Velocity
+                                       Template Language (VTL). For example, if you have the following
+                                       payload: 
                                     </p>
                                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{&quot;errorMessage&quot;:&quot;{\&quot;key1\&quot;:\&quot;var1\&quot;,\&quot;key2\&quot;:{\&quot;arr\&quot;:[1,2,3]}}&quot;}</code></pre>
-                                    <p>
-                                       and use the following mapping template
-                                       
-                                    </p>
+                                    <p> and use the following mapping template </p>
                                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">#set ($errorMessageObj = $util.parseJson($input.path(&apos;$.errorMessage&apos;)))
 {
    &quot;errorMessageObjKey2ArrVal&quot; : $errorMessageObj.key2.arr[0]
@@ -995,7 +1290,9 @@ POST /things/abc
                                  <td><code class="code">$util.urlEncode()</code></td>
                                  
                                  <td>
-                                    <p>Converts a string into &quot;application/x-www-form-urlencoded&quot; format.</p>
+                                    <p>Converts a string into &quot;application/x-www-form-urlencoded&quot;
+                                       format.
+                                    </p>
                                  </td>
                                  
                               </tr>
@@ -1005,7 +1302,9 @@ POST /things/abc
                                  <td><code class="code">$util.urlDecode()</code></td>
                                  
                                  <td>
-                                    <p>Decodes an &quot;application/x-www-form-urlencoded&quot; string.</p>
+                                    <p>Decodes an &quot;application/x-www-form-urlencoded&quot;
+                                       string.
+                                    </p>
                                  </td>
                                  
                               </tr>
@@ -1034,15 +1333,19 @@ POST /things/abc
                         </div>
                      </div>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -1052,7 +1355,9 @@ POST /things/abc
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="integration-passthrough-behaviors.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="api-gateway-payload-encodings.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -1061,15 +1366,30 @@ POST /things/abc
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Accessing the $context Variable"><a class="pagetoc" href="#context-variable-reference">Accessing the $context Variable</a></li>
-                        <li class="pagetoc" name="Accessing the $input Variable"><a class="pagetoc" href="#input-variable-reference">Accessing the $input Variable</a></li>
-                        <li class="pagetoc" name="Accessing the $stageVariables Variable"><a class="pagetoc" href="#stagevariables-template-reference">Accessing the $stageVariables Variable</a></li>
-                        <li class="pagetoc" name="Accessing the $util Variable"><a class="pagetoc" href="#util-template-reference">Accessing the $util Variable</a></li>
+                        <li class="pagetoc" name="$context Variables for Data
+                Models, Authorizers, Mapping Templates, and CloudWatch Access Logging"><a class="pagetoc" href="#context-variable-reference">$context Variables for Data
+                              Models, Authorizers, Mapping Templates, and CloudWatch Access Logging</a></li>
+                        <li class="pagetoc" name="$context Variable
+                Template Example"><a class="pagetoc" href="#context-variables-template-example">$context Variable
+                              Template Example</a></li>
+                        <li class="pagetoc" name="$context
+                Variables for CloudWatch Access Logging Only"><a class="pagetoc" href="#context-variable-reference-access-logging-only">$context
+                              Variables for CloudWatch Access Logging Only</a></li>
+                        <li class="pagetoc" name="$input Variables"><a class="pagetoc" href="#input-variable-reference">$input Variables</a></li>
+                        <li class="pagetoc" name="$input Variable Template
+                Examples"><a class="pagetoc" href="#input-examples-mapping-templates">$input Variable Template
+                              Examples</a></li>
+                        <li class="pagetoc" name="$stageVariables"><a class="pagetoc" href="#stagevariables-template-reference">$stageVariables</a></li>
+                        <li class="pagetoc" name="$util Variables"><a class="pagetoc" href="#util-template-reference">$util Variables</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

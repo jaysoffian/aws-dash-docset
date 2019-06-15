@@ -12,6 +12,8 @@
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/device_naming.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <span class="breadcrumb">Device Naming on Linux Instances</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <span class="breadcrumb">Device Naming on Linux Instances</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="device_naming">Device Naming on <span>Linux</span> Instances
                      </h1>
@@ -48,6 +53,10 @@
                         the name
                         that Amazon EC2 uses.
                      </p>
+                     <p>The number of volumes that your instance can support is determined by the operating
+                        system. 
+                        For more information, see <a href="volume_limits.html">Instance Volume Limits</a>.
+                     </p>
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Contents</strong></p>
                         <ul>
@@ -55,20 +64,29 @@
                            <li><a href="#device-name-limits">Device Name Considerations</a></li>
                         </ul>
                      </div>
-                     <p>For information about device names on Windows instances, see <a href="./AWSEC2/latest/WindowsGuide/device_naming.html" target="_blank">Device Naming on Windows Instances</a> in
+                     <p>For information about device names on Windows instances, see <a href="./AWSEC2/latest/WindowsGuide/device_naming.html">Device Naming on Windows Instances</a> in
                         the <em>Amazon EC2 User Guide for Windows Instances</em>.
                      </p>
                      
                      <h2 id="available-ec2-device-names">Available Device Names</h2>
                      
-                     <p>The following table lists the available device names for <span>Linux</span> instances. The
-                        number of volumes that you can attach to your instance is determined by the operating
-                        system. For more information, see <a href="volume_limits.html">Instance Volume Limits</a>.
+                     <p>There are two types of virtualization available for Linux instances:
+                        paravirtual (PV) and hardware virtual machine (HVM). The virtualization type of
+                        an instance is determined by the AMI used to launch the instance. Some instance
+                        types support both PV and HVM, some support HVM only, and others support PV
+                        only. Be sure to note the virtualization type of your AMI, because the
+                        recommended and available device names that you can use depend on the
+                        virtualization type of your instance. For more information, see <a href="virtualization_types.html">Linux AMI Virtualization Types</a>.
+                     </p>
+                     
+                     
+                     <p>The following table lists the available device names that you can specify in a block
+                        device mapping or when attaching an EBS volume.
                      </p>
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac23c39b9b5">
+                           <table id="w306aac29c39c11b7">
                               
                               <tbody><tr>
                                  
@@ -81,8 +99,6 @@
                                  <th>Recommended for EBS Volumes</th>
                                  
                                  <th>Instance Store Volumes</th>
-                                 
-                                 <th>NVMe Volumes</th>
                                  
                               </tr>
                               
@@ -129,10 +145,6 @@
                                     
                                  </td>
                                  
-                                 <td>
-                                    <p>Not available</p>
-                                 </td>
-                                 
                               </tr>
                               
                               <tr>
@@ -157,7 +169,7 @@
                                  
                                  <td>
                                     
-                                    <p>/dev/sd[f-p]</p>
+                                    <p>/dev/sd[f-p] *</p>
                                     
                                  </td>
                                  
@@ -173,10 +185,8 @@
                                     
                                     <p>/dev/sd[b-i] (i2.8xlarge)</p>
                                     
-                                 </td>
-                                 
-                                 <td>
-                                    <p>/dev/nvme[0-26]n1 *</p>
+                                    <p>**</p>
+                                    
                                  </td>
                                  
                               </tr>
@@ -188,19 +198,22 @@
                      </div>
                      
                      
+                     <p>* The device names that you specify for NVMe EBS volumes in a
+                        block device mapping are renamed using NVMe device names  (<code>/dev/nvme[0-26]n1</code>). 
+                        The block device driver can assign NVMe device names in a different order 
+                        than you specified for the volumes in the block device mapping.
+                     </p>
                      
-                     
-                     <p>* NVMe instance store volumes are automatically enumerated and assigned a
-                        device name. There is no need to specify NVMe instance store volumes in your block
-                        device mapping.
+                     <p>** NVMe instance store volumes are automatically enumerated and assigned an
+                        NVMe device name.
                      </p>
                      
                      
                      
-                     <p>For more information about instance store volumes, see <a href="InstanceStorage.html">Amazon EC2 Instance Store</a>.
-                     </p> 
                      
-                     <p>For more information about NVMe EBS volumes, see <a href="nvme-ebs-volumes.html">Amazon EBS and NVMe</a>.
+                     
+                     <p>For more information about instance store volumes, see <a href="InstanceStorage.html">Amazon EC2 Instance Store</a>. 
+                        For more information about NVMe EBS volumes, see <a href="nvme-ebs-volumes.html">Amazon EBS and NVMe on Linux Instances</a>.
                      </p>
                      
                      
@@ -214,8 +227,7 @@
                         
                         
                         
-                        
-                        
+                        	
                         
                         
                         
@@ -229,56 +241,50 @@
                               
                            </li>
                            <li class="listitem">
-                              <p>Depending on the block device driver of the kernel, the device could be attached with
-                                 a different name than you specified. 
-                                 For example, if you specify a device name of <code>/dev/sdh</code>, your device could be renamed <code>/dev/xvdh</code> or <code>/dev/hdh</code>.
-                                 In most cases, the trailing letter remains the same. In some versions of Red Hat Enterprise
-                                 Linux (and its variants, such as CentOS), even the trailing letter could
-                                 change (<code>/dev/sda</code> could become <code>/dev/xvde</code>). In these cases, the trailing letter of each device name is incremented the same
-                                 number of times. 
-                                 For example, if <code>/dev/sdb</code> is renamed <code>/dev/xvdf</code>, then <code>/dev/sdc</code> is renamed <code>/dev/xvdg</code>. 
-                                 Amazon Linux AMIs create a symbolic link for the name you specified to the renamed
-                                 device. Other AMIs could behave differently.
-                              </p>
-                           </li>
-                           <li class="listitem">
                               
                               <p>The number of NVMe instance store volumes for an instance depends on the size
-                                 of the instance. The device names are <code>/dev/nvme0n1</code>,
-                                 <code>/dev/nvme1n1</code>, and so on.
+                                 of the instance. NVMe instance store volumes are automatically enumerated and
+                                 assigned <span>an NVMe device name (<code>/dev/nvme[0-26]n1</code>)</span>.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>There are two types of virtualization available for Linux instances:
-                                 paravirtual (PV) and hardware virtual machine (HVM). The virtualization type of
-                                 an instance is determined by the AMI used to launch the instance. Some instance
-                                 types support both PV and HVM, some support HVM only, and others support PV
-                                 only. Be sure to note the virtualization type of your AMI, because the
-                                 recommended and available device names that you can use depend on the
-                                 virtualization type of your instance. For more information, see <a href="virtualization_types.html">Linux AMI Virtualization Types</a>.
+                              <p>Depending on the block device driver of the kernel, the device could be attached 
+                                 with a different name than you specified. For example, if you specify a device name
+                                 of 
+                                 <code>/dev/sdh</code>, your device could be renamed <code>/dev/xvdh</code> 
+                                 or <code>/dev/hdh</code>. In most cases, the trailing letter remains the same. 
+                                 In some versions of Red Hat Enterprise Linux (and its variants, such as CentOS), even
+                                 
+                                 the trailing letter could change (<code>/dev/sda</code> could become 
+                                 <code>/dev/xvde</code>). In these cases, the trailing letter of each device 
+                                 name is incremented the same number of times. For example, if <code>/dev/sdb</code> 
+                                 is renamed <code>/dev/xvdf</code>, then <code>/dev/sdc</code> is renamed 
+                                 <code>/dev/xvdg</code>. Amazon Linux creates a symbolic link for the name you specified 
+                                 to the renamed device. Other operating systems could behave differently.
                               </p>
                               
                            </li>
                            <li class="listitem">
-                              
-                              <p>You cannot attach volumes that share the same device letters both with and
-                                 without trailing digits. For example, if you attach a volume as
-                                 <code>/dev/sdc</code> and another volume as
-                                 <code>/dev/sdc1</code>, only <code>/dev/sdc</code> is
-                                 visible to the instance. To use trailing digits in device names, you must use
-                                 trailing digits on all device names that share the same base letters (such as
-                                 <code>/dev/sdc1</code>, <code>/dev/sdc2</code>,
-                                 <code>/dev/sdc3</code>).
+                              		
+                              <p>HVM AMIs do not support the use of trailing numbers on device names, except for 
+                                 			<code class="code">/dev/sda1</code>, which is reserved for the root device, and <code class="code">/dev/sda2</code>. While 
+                                 			using <code class="code">/dev/sda2</code> is possible, we do not recommend using this device mapping 
+                                 			with HVM instances.
                               </p>
-                              
+                              	
                            </li>
                            <li class="listitem">
-                              
-                              <p>Hardware virtual machine (HVM) AMIs don&apos;t support the use of trailing numbers
-                                 					on device names, except for the device name that&apos;s reserved for the root
-                                 					device.
+                              	
+                              <p>When using PV AMIs, you cannot attach volumes that share the same device letters both
+                                 with 
+                                 		and without trailing digits. For example, if you attach a volume as <code class="code">/dev/sdc</code> and 
+                                 		another volume as <code class="code">/dev/sdc1</code>, only <code class="code">/dev/sdc</code> is visible to the instance. 
+                                 		To use trailing digits in device names, you must use trailing digits on all device
+                                 names that 
+                                 		share the same base letters (such as <code class="code">/dev/sdc1</code>, <code class="code">/dev/sdc2</code>, 
+                                 		<code class="code">/dev/sdc3</code>).
                               </p>
                               
                            </li>
@@ -297,15 +303,19 @@
                      </div>
                      
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -315,7 +325,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="volume_limits.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="block-device-mapping-concepts.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -331,6 +343,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

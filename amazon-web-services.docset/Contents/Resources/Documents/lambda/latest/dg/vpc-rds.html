@@ -1,20 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Tutorial: Configuring a Lambda Function to Access Amazon RDS in an
-         Amazon VPC - AWS Lambda
-      </title>
+      <title>Tutorial: Configuring a Lambda Function to Access Amazon RDS in an Amazon VPC - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="vpc-tutorials.html" title="Tutorials: Configuring a Lambda Function to Access Resources in
-            an Amazon VPC">
-      <link rel="prev" href="vpc-ec-invoke-lambda-function.html" title="Step 3: Test the Lambda Function (Invoke Manually)">
-      <link rel="next" href="vpc-rds-create-rds-mysql.html" title="Step 1: Create an Amazon RDS MySQL Instance and
-            ExampleDB Database">
+      <link rel="up" href="vpc.html" title="Configuring a Lambda Function to Access Resources in an Amazon VPC">
+      <link rel="prev" href="vpc-ec.html" title="Tutorial: Configuring a Lambda Function to Access Amazon ElastiCache in an Amazon VPC">
+      <link rel="next" href="tagging.html" title="Tagging Lambda Functions">
       <meta name="description" content="In this tutorial, you do the following:">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/vpc-rds.html">
@@ -24,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -36,16 +35,15 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-introduction-function.html">Lambda Functions</a> &#xBB; <a href="accessing-resources.html">Accessing Resources from a Lambda Function</a> &#xBB; <a href="vpc.html">Configuring a Lambda Function to Access Resources in an Amazon VPC</a> &#xBB; <a href="vpc-tutorials.html">Tutorials: Configuring a Lambda Function to Access Resources in
-                                    an Amazon VPC</a> &#xBB; <span class="breadcrumb">Tutorial: Configuring a Lambda Function to Access Amazon RDS in an
-                                    Amazon VPC</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-configuration.html">Configuring AWS Lambda Functions</a> &#xBB; <a href="vpc.html">Configuring a Lambda Function to Access Resources in an Amazon VPC</a> &#xBB; <span class="breadcrumb">Tutorial: Configuring a Lambda Function to Access Amazon RDS in an Amazon VPC</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="vpc-rds">Tutorial: Configuring a Lambda Function to Access Amazon RDS in an
-                        Amazon VPC
-                     </h1>
+                     <h1 class="topictitle" id="vpc-rds">Tutorial: Configuring a Lambda Function to Access Amazon RDS in an Amazon VPC</h1>
                      <p>In this tutorial, you do the following:</p>
                      <div class="itemizedlist">
                         
@@ -56,52 +54,327 @@
                            <li class="listitem">
                               
                               <p>Launch an Amazon RDS MySQL database engine instance in your default Amazon VPC. In
-                                 the
-                                 MySQL instance, you create a database (ExampleDB) with a sample table (Employee)
-                                 in it. For more information about Amazon RDS, see <a href="https://aws.amazon.com/rds" target="_blank">Amazon RDS</a>.
+                                 the MySQL instance, you create a
+                                 database (ExampleDB) with a sample table (Employee) in it. For more information about
+                                 Amazon RDS, see <a href="https://aws.amazon.com/rds" target="_blank">Amazon RDS</a>.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>Create a Lambda function to access the ExampleDB database, create a table
-                                 (Employee), add a few records, and retrieve the records from the table.
+                              <p>Create a Lambda function to access the ExampleDB database, create a table (Employee),
+                                 add a few records, and
+                                 retrieve the records from the table.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>Invoke the Lambda function manually and verify the query results. This is how you
-                                 
-                                 verify that your Lambda function was able to access the RDS MySQL instance in the
-                                 VPC.
+                              <p>Invoke the Lambda function and verify the query results. This is how you verify that
+                                 your Lambda function was
+                                 able to access the RDS MySQL instance in the VPC.
                               </p>
                               
                            </li>
                         </ul>
                      </div>
-                     <div class="aws-note">
-                        <p class="aws-note">Important</p>
-                        <p>This tutorial uses the default Amazon VPC in the us-east-1 region in your account.
-                           For more
-                           information about Amazon VPC, see <a href="./AmazonVPC/latest/UserGuide/VPC_Introduction.html#howto" target="_blank">How to Get Started with Amazon VPC</a> in the <em>Amazon VPC User Guide</em>. 
-                        </p>
+                     
+                     <h2 id="vpc-rds-prereqs">Prerequisites</h2>
+                      
+                     <p>This tutorial assumes that you have some knowledge of basic Lambda operations and
+                        the Lambda console. If you
+                        haven&apos;t already, follow the instructions in <a href="getting-started.html">Getting Started with AWS Lambda</a> to create your first Lambda function.
+                     </p>
+                      
+                     <p>To follow the procedures in this guide, you will need a command line terminal or shell
+                        to run commands. Commands are shown in
+                        listings preceded by a
+                        prompt symbol ($) and the name of the current directory, when appropriate:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/lambda-project$ <strong class="userinput"><code>this is a command</code></strong>
+this is output</code></pre>
+                     <p>For long commands, an escape character (<code class="code">\</code>) is used to split a command over multiple lines.
+                     </p>
+                     
+                     <p>On Linux and macOS, use your preferred shell and package manager. On Windows 10, you
+                        can <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10" target="_blank">install the Windows Subsystem for Linux</a> to get a Windows-integrated version of 
+                        Ubuntu and Bash.
+                     </p>
+                     
+                     
+                     
+                     <h2 id="vpc-rds-create-iam-role">Create the Execution Role</h2>
+                     
+                     <p>Create the <a href="lambda-intro-execution-role.html">execution role</a> that gives your function
+                        permission to access AWS resources.
+                     </p>
+                     
+                     <p class="title"><b>To create an execution role</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Open the <a href="https://console.aws.amazon.com/iam/home#/roles" target="_blank">roles page</a> in the IAM console.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create role</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Create a role with the following properties.</p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p><b>Trusted entity</b> &#x2013; Lambda.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Permissions</b> &#x2013; <b>AWSLambdaVPCAccessExecutionRole</b>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Role name</b> &#x2013; <strong class="userinput"><code>lambda-vpc-role</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>The <b>AWSLambdaVPCAccessExecutionRole</b> has the permissions that the function needs to manage
+                        network connections to a VPC.
+                     </p>
+                     
+                     
+                     <h2 id="vpc-rds-create-rds-mysql">Create an Amazon RDS Database Instance</h2>
+                     
+                     <p>In this tutorial, the example Lambda function creates a table (Employee), inserts
+                        a few records, and then
+                        retrieves the records. The table that the Lambda function creates has the following
+                        schema:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">Employee(EmpID, Name)</code></pre>
+                     <p>Where <code class="code">EmpID</code> is the primary key. Now, you need to add a few records to this table.
+                     </p>
+                     
+                     <p>First, you launch an RDS MySQL instance in your default VPC with ExampleDB database.
+                        If you already have an
+                        RDS MySQL instance running in your default VPC, skip this step.
+                     </p>
+                     
+                     <p>You can launch an RDS MySQL instance using one of the following methods:</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Follow the instructions at <a href="./AmazonRDS/latest/UserGuide/CHAP_GettingStarted.CreatingConnecting.MySQL.html">Creating a MySQL DB Instance and Connecting to a Database on a MySQL DB Instance</a> in the
+                                 <em>Amazon RDS User Guide</em>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Use the following AWS CLI command:</p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws rds create-db-instance --db-name ExampleDB --engine MySQL \
+--db-instance-identifier MySQLForLambdaTest --backup-retention-period 3 \
+--db-instance-class db.t2.micro --allocated-storage 5 --no-publicly-accessible \
+--master-username <em class="replaceable"><code>username</code></em> --master-user-password <em class="replaceable"><code>password</code></em></code></strong></code></pre>
+                              </li>
+                        </ul>
                      </div>
                      
-                     <p class="title"><b>Next Step</b></p>
+                     <p>Write down the database name, user name, and password. You also need the host address
+                        (endpoint) of the DB
+                        instance, which you can get from the RDS console. You might need to wait until the
+                        instance status is available
+                        and the Endpoint value appears in the console.
+                     </p>
                      
-                     <p><a href="vpc-rds-create-rds-mysql.html">Step 1: Create an Amazon RDS MySQL Instance and
-                           ExampleDB Database</a></p>
                      
+                     <h2 id="vpc-rds-deployment-pkg">Create a Deployment Package</h2>
+                     
+                     <p>The following example Python code runs a SELECT query against the Employee table in
+                        the MySQL RDS instance
+                        that you created in the VPC. The code creates a table in the ExampleDB database, adds
+                        sample records, and
+                        retrieves those records. 
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example app.py</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">import sys
+import logging
+import rds_config
+import pymysql
+#rds settings
+rds_host  = &quot;<em class="replaceable"><code>rds-instance-endpoint</code></em>&quot;
+name = rds_config.db_username
+password = rds_config.db_password
+db_name = rds_config.db_name
+
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
+
+try:
+    conn = pymysql.connect(rds_host, user=name, passwd=password, db=db_name, connect_timeout=5)
+except:
+    logger.error(&quot;ERROR: Unexpected error: Could not connect to MySQL instance.&quot;)
+    sys.exit()
+
+logger.info(&quot;SUCCESS: Connection to RDS MySQL instance succeeded&quot;)
+def handler(event, context):
+    &quot;&quot;&quot;
+    This function fetches content from MySQL RDS instance
+    &quot;&quot;&quot;
+
+    item_count = 0
+
+    with conn.cursor() as cur:
+        cur.execute(&quot;create table Employee3 ( EmpID  int NOT NULL, Name varchar(255) NOT NULL, PRIMARY KEY (EmpID))&quot;)  
+        cur.execute(&apos;insert into Employee3 (EmpID, Name) values(1, &quot;Joe&quot;)&apos;)
+        cur.execute(&apos;insert into Employee3 (EmpID, Name) values(2, &quot;Bob&quot;)&apos;)
+        cur.execute(&apos;insert into Employee3 (EmpID, Name) values(3, &quot;Mary&quot;)&apos;)
+        conn.commit()
+        cur.execute(&quot;select * from Employee3&quot;)
+        for row in cur:
+            item_count += 1
+            logger.info(row)
+            #print(row)
+    conn.commit()
+
+    return &quot;Added %d items from RDS MySQL table&quot; %(item_count)</code></pre></div>
+                     </div>
+                     
+                     <p>Executing <code class="code">pymysql.connect()</code> outside of the handler allows your function to re-use the database
+                        connection for better performance.
+                     </p>
+                     
+                     <p>A second file contains connection information for the function.</p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example rds_config.py</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">#config file containing credentials for RDS MySQL instance
+db_username = &quot;<em class="replaceable"><code>username</code></em>&quot;
+db_password = &quot;<em class="replaceable"><code>password</code></em>&quot;
+db_name = &quot;ExampleDB&quot; </code></pre></div>
+                     </div>
+                     
+                     <div class="itemizedlist">
+                        
+                        <p class="title"><b>Dependencies</b></p>
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><code class="code">pymysql</code> &#x2013; The Lambda function code uses this library to access your MySQL instance (see
+                                 <a href="https://pypi.python.org/pypi/PyMySQL" target="_blank">PyMySQL</a>) .
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                      
+                     <p>Install dependencies with Pip and create a deployment package. For instructions, see
+                        <a href="lambda-python-how-to-create-deployment-package.html">AWS Lambda Deployment Package in Python</a>.
+                     </p>
+                     
+                     
+                     
+                     <h2 id="vpc-rds-upload-deployment-pkg">Create the Lambda Function</h2>
+                     
+                     <p>Create the Lambda function with the <code class="code">create-function</code> command.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda create-function --function-name  CreateTableAddRecordsAndRead --runtime python3.7 \
+--zip-file fileb://app.zip --handler app.handler \
+--role <em class="replaceable"><code>execution-role-arn</code></em> \
+--vpc-config SubnetIds=<em class="replaceable"><code>comma-separated-subnet-ids</code></em>,SecurityGroupIds=<em class="replaceable"><code>default-vpc-security-group-id</code></em></code></strong></code></pre>
+                     
+                     <h2 id="vpc-rds-invoke-lambda-function">Test the Lambda Function</h2>
+                     
+                     <p>In this step, you invoke the Lambda function manually using the <code class="code">invoke</code> command. When the Lambda
+                        function executes, it runs the SELECT query against the Employee table in the RDS
+                        MySQL instance and prints the
+                        results, which also go to the CloudWatch Logs.
+                     </p>
+                     
+                     <ol>
+                        <li>
+                           
+                           <p>Invoke the Lambda function with the <code class="code">invoke</code> command. 
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda invoke --function-name CreateTableAddRecordsAndRead output.txt</code></strong></code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Verify that the Lambda function executed successfully as follows:</p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p>Review the output.txt file.</p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>Review the results in the AWS Lambda console.</p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>Verify the results in CloudWatch Logs.</p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>Now that you have created a Lambda function that accesses a database in your VPC,
+                        you can have the function
+                        invoked in response to events. For information about configuring event sources and
+                        examples, see <a href="lambda-services.html">Using AWS Lambda with Other Services</a>.
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -110,15 +383,33 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="vpc-ec-invoke-lambda-function.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="vpc-rds-create-rds-mysql.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="vpc-ec.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="tagging.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
             <div id="right-expanded">
-               <div id="right-content-wrapper"></div>
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Prerequisites"><a class="pagetoc" href="#vpc-rds-prereqs">Prerequisites</a></li>
+                        <li class="pagetoc" name="Create the Execution Role"><a class="pagetoc" href="#vpc-rds-create-iam-role">Create the Execution Role</a></li>
+                        <li class="pagetoc" name="Create an Amazon RDS Database Instance"><a class="pagetoc" href="#vpc-rds-create-rds-mysql">Create an Amazon RDS Database Instance</a></li>
+                        <li class="pagetoc" name="Create a Deployment Package"><a class="pagetoc" href="#vpc-rds-deployment-pkg">Create a Deployment Package</a></li>
+                        <li class="pagetoc" name="Create the Lambda Function"><a class="pagetoc" href="#vpc-rds-upload-deployment-pkg">Create the Lambda Function</a></li>
+                        <li class="pagetoc" name="Test the Lambda Function"><a class="pagetoc" href="#vpc-rds-invoke-lambda-function">Test the Lambda Function</a></li>
+                     </ul>
+                  </div>
+               </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

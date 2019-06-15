@@ -1,20 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Programming Model for Authoring Lambda Functions in
-         Python - AWS Lambda
-      </title>
+      <title>Building Lambda Functions with Python - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="programming-model-v2.html" title="Programming Model">
-      <link rel="prev" href="get-started-step4-optional.html" title="(Optional) Create a Lambda Function Authored in
-        Java">
-      <link rel="next" href="python-programming-model-handler-types.html" title="Lambda Function Handler
-            (Python)">
-      <meta name="description" content="The following sections explain how common programming patterns and core concepts apply when authoring Lambda function code in Python.">
+      <link rel="up" href="welcome.html" title="What Is AWS Lambda?">
+      <link rel="prev" href="nodejs-tracing.html" title="Instrumenting Node.js Code in AWS Lambda">
+      <link rel="next" href="python-programming-model-handler-types.html" title="AWS Lambda Function Handler in Python">
+      <meta name="description" content="You can run Python code in AWS Lambda. Lambda provides runtimes for Python that execute your code to process events. Your code runs in an environment that includes the SDK for Python (Boto 3), with credentials from an AWS Identity and Access Management (IAM) role that you manage.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/python-programming-model.html">
@@ -24,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -36,27 +35,317 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-introduction-function.html">Lambda Functions</a> &#xBB; <a href="lambda-app.html">Building Lambda Functions</a> &#xBB; <a href="programming-model-v2.html">Programming Model</a> &#xBB; <span class="breadcrumb">Programming Model for Authoring Lambda Functions in
-                                    Python</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Building Lambda Functions with Python</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="python-programming-model">Programming Model for Authoring Lambda Functions in
-                        Python
-                     </h1>
-                     <p>The following sections explain how <a href="./lambda/latest/dg/programming-model-v2.html" target="_blank">common programming patterns and core concepts</a> apply when
-                        authoring Lambda function code in Python.
+                     <h1 class="topictitle" id="python-programming-model">Building Lambda Functions with Python</h1>
+                     <p>You can run Python code in AWS Lambda. Lambda provides <a href="lambda-runtimes.html">runtimes</a> for Python that execute your code to process events. Your code runs
+                        in an environment that includes the SDK for Python (Boto 3), with credentials from
+                        an AWS Identity and Access Management (IAM) role that you manage.
+                     </p>
+                     <p>Lambda supports the following Python runtimes.</p>
+                     <div class="table">
+                        <p class="title"><b>Python Runtimes</b></p>
+                        <div class="table-contents">
+                           <table id="w306aac53c11">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Name</th>
+                                 
+                                 <th>Identifier</th>
+                                 
+                                 <th>AWS SDK for Python</th>
+                                 
+                                 <th>Operating System</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>Python 3.6</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">python3.6</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>boto3-1.7.74 botocore-1.10.74</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Amazon Linux</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>Python 3.7</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">python3.7</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>boto3-1.9.42 botocore-1.12.42</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Amazon Linux</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>Python 2.7</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">python2.7</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>N/A</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Amazon Linux</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     <p>Lambda functions use an <a href="lambda-intro-execution-role.html">execution role</a> to get permission to
+                        write logs to Amazon CloudWatch Logs and access other services and resources. If you
+                        don&apos;t already have an execution role for
+                        function development, create one.
+                     </p>
+                     <p class="title"><b>To create an execution role</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Open the <a href="https://console.aws.amazon.com/iam/home#/roles" target="_blank">roles page</a> in the IAM console.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create role</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Create a role with the following properties.</p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p><b>Trusted entity</b> &#x2013; <b>Lambda</b>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Permissions</b> &#x2013; <b>AWSLambdaBasicExecutionRole</b>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Role name</b> &#x2013; <strong class="userinput"><code>lambda-role</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                           <p>The <b>AWSLambdaBasicExecutionRole</b> policy has the permissions that the function needs to
+                              write logs to CloudWatch Logs.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     <p>You can add permissions to the role later, or swap it out for a different role that&apos;s
+                        specific to a single
+                        function.
+                     </p>
+                     <p class="title"><b>To create a Python function</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Open the <a href="https://console.aws.amazon.com/lambda" target="_blank">Lambda console</a>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create function</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Configure the following settings:</p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p><b>Name</b> &#x2013; <strong class="userinput"><code>my-function</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Runtime</b> &#x2013; <b>Python 3.7</b>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Role</b> &#x2013; <b>Choose an existing role</b>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Existing role</b> &#x2013; <strong class="userinput"><code>lambda-role</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create function</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>To configure a test event, choose <b>Test</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Event name</b>, enter <strong class="userinput"><code>test</code></strong>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>To execute the function, choose <b>Test</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     <p>The console creates a Lambda function with a single source file named <code class="code">lambda_function</code>. You can edit
+                        this file and add more files in the built-in <a href="code-editor.html">code editor</a>. Choose
+                        <b>Save</b> to save your changes, and choose <b>Test</b> to run your code.
+                     </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>The Lambda console uses AWS Cloud9 to provide an integrated development environment
+                           in the browser. You can also
+                           use AWS Cloud9 to develop Lambda functions in your own environment. See <a href="./cloud9/latest/user-guide/lambda-functions.html">Working with AWS Lambda Functions</a> in the AWS Cloud9 user guide for more information.
+                        </p>
+                     </div>
+                     <p><code class="code">lambda_function</code> exports a function named <code class="code">lambda_handler</code> that takes an event object and a
+                        context object. This is the <a href="python-programming-model-handler-types.html">handler function</a> that Lambda calls when the
+                        function is invoked. The Python function runtime gets invocation events from Lambda
+                        and passes them to the
+                        handler.
+                     </p>
+                     <p>Each time you save your function code, the Lambda console creates a deployment package,
+                        which is a ZIP archive
+                        that contains your function code. As your function development progresses, you will
+                        want to store your function code
+                        in source control, add libraries, and automate deployments. Start by <a href="lambda-python-how-to-create-deployment-package.html">creating a
+                           deployment package</a> and updating your code at the command line.
+                     </p>
+                     <p>The function runtime passes a context object to the handler, in addition to the invocation
+                        event. The <a href="python-context-object.html">context object</a> contains additional information about the invocation, the
+                        function, and the execution environment. Further information is available from environment
+                        variables.
+                     </p>
+                     <p>Your Lambda function comes with a CloudWatch Logs log group. The function runtime
+                        sends details about each invocation to
+                        CloudWatch Logs, and relays any <a href="python-logging.html">logs that your function outputs</a> during invocation. If
+                        your function <a href="python-exceptions.html">returns an error</a>, Lambda formats the error and returns it to the
+                        invoker.
                      </p>
                      <div class="highlights">
                         <p><strong>Topics</strong></p>
                         <ul>
-                           <li><a href="python-programming-model-handler-types.html">Lambda Function Handler
-                                 (Python)</a></li>
-                           <li><a href="python-context-object.html">The Context Object (Python)</a></li>
-                           <li><a href="python-logging.html">Logging (Python)</a></li>
-                           <li><a href="python-exceptions.html">Function Errors (Python)</a></li>
+                           <li><a href="python-programming-model-handler-types.html">AWS Lambda Function Handler in Python</a></li>
+                           <li><a href="lambda-python-how-to-create-deployment-package.html">AWS Lambda Deployment Package in Python</a></li>
+                           <li><a href="python-context-object.html">AWS Lambda Context Object in Python</a></li>
+                           <li><a href="python-logging.html">AWS Lambda Function Logging in Python</a></li>
+                           <li><a href="python-exceptions.html">AWS Lambda Function Errors in Python</a></li>
+                           <li><a href="python-tracing.html">Instrumenting Python Code in AWS Lambda</a></li>
                         </ul>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
                   </div>
                   <noscript>
@@ -64,9 +353,10 @@
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -75,8 +365,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="get-started-step4-optional.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="python-programming-model-handler-types.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="nodejs-tracing.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="python-programming-model-handler-types.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -84,6 +376,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

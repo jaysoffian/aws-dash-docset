@@ -1,0 +1,823 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Examples: Standard Mode - Amazon Elastic Compute Cloud</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="burstable-performance-instances-standard-mode.html" title="Standard Mode for Burstable
+            Performance Instances">
+      <link rel="prev" href="burstable-performance-instances-standard-mode.html" title="Standard Mode for Burstable
+            Performance Instances">
+      <link rel="next" href="burstable-performance-instances-how-to.html" title="Working with Burstable Performance
+            Instances">
+      <meta name="description" content="The following examples explain credit use when instances are configured as standard .">
+      <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Elastic Compute Cloud">
+      <meta name="guide" content="User Guide for Linux Instances">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/standard-mode-examples.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="instance-types.html">Instance Types</a> &#xBB; <a href="general-purpose-instances.html">General Purpose Instances</a> &#xBB; <a href="burstable-performance-instances.html">Burstable Performance Instances</a> &#xBB; <a href="burstable-performance-instances-standard-mode.html">Standard Mode for Burstable
+                                    Performance Instances</a> &#xBB; <span class="breadcrumb">Examples: Standard Mode</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="standard-mode-examples">Examples: Standard Mode</h1>
+                     <p>The following examples explain credit use when instances are configured as
+                        <code class="code">standard</code>.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Examples</strong></p>
+                        <ul>
+                           <li><a href="#t3_standard_example">Example 1: Explaining Credit Use with T3
+                                 Standard</a></li>
+                           <li><a href="#t2-standard-example">Example 2: Explaining Credit Use with T2 Standard</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="t3_standard_example">Example 1: Explaining Credit Use with T3
+                        Standard
+                     </h2>
+                     
+                     <p>In this example, you see how a <code class="code">t3.nano</code> instance launched as
+                        <code class="code">standard</code> earns, accrues, and spends <em>earned</em> credits. You see how the credit balance reflects the accrued
+                        <em>earned</em> credits.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>T3 and T3a instances configured as <code class="code">standard</code> do not receive launch credits.
+                        </p>
+                     </div>
+                     
+                     <p>A running <code class="code">t3.nano</code> instance earns 144 credits every 24 hours. Its
+                        credit balance limit is 144 earned credits. After the limit is reached, new credits
+                        that are earned are discarded. For more information about the number of credits that
+                        can be earned and accrued, see the <a href="burstable-credits-baseline-concepts.html#burstable-performance-instances-credit-table">credit table</a>.
+                     </p>
+                     
+                     <p>You might launch a T3 Standard instance and use it immediately. Or, you might
+                        launch a T3 Standard instance and leave it idle for a few days before running
+                        applications on it. Whether an instance is used or remains idle determines if credits
+                        are spent or accrued. If an instance remains idle for 24 hours from the time it is
+                        launched, the credit balance reaches it limit, which is the maximum number of earned
+                        credits that can be accrued. 
+                     </p>
+                     
+                     <p>This example describes an instance that remains idle for 24 hours from the time it
+                        is launched, and walks you through seven periods of time over a 96-hour period,
+                        showing the rate at which credits are earned, accrued, spent, and discarded, and the
+                        value of the credit balance at the end of each period.
+                     </p>
+                     
+                     
+                     <p>The following workflow references the numbered points on the graph:</p>
+                     
+                     
+                     <p><b>P1</b> &#x2013; At 0 hours on the graph, the 
+                        instance is launched as <code class="code">standard</code> and immediately begins to earn credits.
+                        The instance remains idle from the time it is launched&#x2014;CPU utilization is 0%&#x2014;and no
+                        credits are spent. All unspent credits are accrued in the credit balance. For the
+                        first 24 hours, <code class="code">CPUCreditUsage</code> is at 0, and the
+                        <code class="code">CPUCreditBalance</code> value reaches its maximum of 144.
+                     </p>
+                     
+                     <p><b>P2</b> &#x2013; For the next 12 hours, CPU
+                        utilization is at 2.5%, which is below the 5% baseline. The instance earns more
+                        credits than it spends, but the <code class="code">CPUCreditBalance</code> value cannot exceed its
+                        maximum of 144 credits. Any credits that are earned in excess of the limit are
+                        discarded.
+                     </p>
+                     
+                     <p><b>P3</b> &#x2013; For the next 24 hours, CPU
+                        utilization is at 7% (above the baseline), which requires a spend of 57.6 credits.
+                        The instance spends more credits than it earns, and the <code class="code">CPUCreditBalance</code>
+                        value reduces to 86.4 credits.
+                     </p>
+                     
+                     <p><b>P4</b> &#x2013; For the next 12 hours, CPU
+                        utilization decreases to 2.5% (below the baseline), which requires a spend of 36
+                        credits. In the same time, the instance earns 72 credits. The instance earns more
+                        credits than it spends, and the <code class="code">CPUCreditBalance</code> value increases to 122
+                        credits.
+                     </p>
+                     
+                     <p><b>P5</b> &#x2013; For the next two hours, the instance
+                        bursts at 100% CPU utilization, and depletes its entire <code class="code">CPUCreditBalance</code>
+                        value of 122 credits. At the end of this period, with the
+                        <code class="code">CPUCreditBalance</code> at zero, CPU utilization is forced to drop to the
+                        baseline performance level of 5%. At the baseline, the instance earns as many credits
+                        as it spends.
+                     </p>
+                     
+                     <p><b>P6</b> &#x2013; For the next 14 hours, CPU
+                        utilization is at 5% (the baseline). The instance earns as many credits as it spends.
+                        The <code class="code">CPUCreditBalance</code> value remains at 0.
+                     </p>
+                     
+                     <p><b>P7</b> &#x2013; For the last 24 hours in this
+                        example, the instance is idle and CPU utilization is 0%. During this time, the
+                        instance earns 144 credits, which it accrues in its
+                        <code class="code">CPUCreditBalance</code>.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/t3_standard_graph.png">
+                        
+                        
+                     </div>
+                     
+                     
+                     
+                     <h2 id="t2-standard-example">Example 2: Explaining Credit Use with T2 Standard</h2>
+                     
+                     <p>In this example, you see how a <code class="code">t2.nano</code> instance launched as
+                        <code class="code">standard</code> earns, accrues, and spends <em>launch</em> and <em>earned</em> credits. You see how
+                        the credit balance reflects not only accrued <em>earned</em>
+                        credits, but also accrued <em>launch</em> credits.
+                     </p>
+                     
+                     <p>A <code class="code">t2.nano</code> instance gets 30 launch credits when it is launched, and earns
+                        72 credits every 24 hours. Its credit balance limit is 72 earned credits; launch
+                        credits do not count towards the limit. After the limit is reached, new credits that
+                        are earned are discarded. For more information about the number of credits that can
+                        be earned and accrued, see the <a href="burstable-credits-baseline-concepts.html#burstable-performance-instances-credit-table">credit table</a>. 
+                        For more information about limits, see <a href="burstable-performance-instances-standard-mode.html#launch-credit-limits">Launch Credit Limits</a>.
+                     </p>
+                     
+                     <p>You might launch a T2 Standard instance and use it immediately. Or, you might launch
+                        a T2 Standard instance and leave it idle for a few days before running applications
+                        on it. Whether an instance is used or remains idle determines if credits are spent
+                        or
+                        accrued. If an instance remains idle for 24 hours from the time it is launched, the
+                        credit balance appears to exceed its limit because the balance reflects both accrued
+                        earned credits and accrued launch credits. However, after CPU is used, the launch
+                        credits are spent first. Thereafter, the limit always reflects the maximum number
+                        of
+                        earned credits that can be accrued. 
+                     </p>
+                     
+                     <p>This example describes an instance that remains idle for 24 hours from the time it
+                        is
+                        launched, and walks you through seven periods of time over a 96-hour period, showing
+                        the
+                        rate at which credits are earned, accrued, spent, and discarded, and the value of
+                        the
+                        credit balance at the end of each period.
+                     </p>
+                     
+                     
+                     <h3 id="period-1">Period 1: 1 &#x2013; 24 hours</h3>
+                     
+                     <p>At 0 hours on the graph, the T2 instance is launched as <code class="code">standard</code> and
+                        immediately gets 30 launch credits. It earns credits while in the running state. The
+                        instance remains idle from the time it is launched&#x2014;CPU utilization is
+                        0%&#x2014;and no credits are spent. All unspent credits are accrued in the credit
+                        balance. At approximately 14 hours after launch, the credit balance is 72 (30 launch
+                        credits + 42 earned credits), which is equivalent to what the instance can earn in
+                        24
+                        hours. At 24 hours after launch, the credit balance exceeds 72 credits because the
+                        unspent launch credits are accrued in the credit balance&#x2014;the credit balance is
+                        102 credits: 30 launch credits + 72 earned credits. 
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/t2-graph1.png">
+                        
+                        
+                     </div>
+                     
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w306aac20c11c27c33c21b9b9c11b7">
+                              
+                              <tbody><tr>
+                                 
+                                 <td>Credit Spend Rate</td>
+                                 
+                                 <td>0 credits per 24 hours (0% CPU utilization)</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Earn Rate</td>
+                                 
+                                 <td>72 credits per 24 hours</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Discard Rate</td>
+                                 
+                                 <td>0 credits per 24 hours</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Balance</td>
+                                 
+                                 <td>
+                                    
+                                    <p>102 credits (30 launch credits + 72 earned credits)</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <p class="title"><b>Conclusion</b></p>
+                     
+                     <p>If there is no CPU utilization after launch, the instance accrues more credits
+                        than what it can earn in 24 hours (30 launch credits + 72 earned credits = 102
+                        credits).
+                     </p>
+                     
+                     
+                     <p>In a real-world scenario, an EC2 instance consumes a small number of credits while
+                        launching and running, which prevents the balance from reaching the maximum
+                        theoretical value in this example.
+                     </p>
+                     
+                     
+                     
+                     <h3 id="period-2">Period 2: 25 &#x2013; 36 hours</h3>
+                     
+                     <p>For the next 12 hours, the instance continues to remain idle and earn credits, but
+                        the credit balance does not increase. It plateaus at 102 credits (30 launch credits
+                        +
+                        72 earned credits). The credit balance has reached its limit of 72 accrued earned
+                        credits, so newly earned credits are discarded.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/t2-graph2.png">
+                        
+                        
+                     </div>
+                     
+                     <div class="table">
+                        <p class="title"><b></b></p>
+                        <div class="table-contents">
+                           <table id="w306aac20c11c27c33c21b9b9c13b7">
+                              
+                              <tbody><tr>
+                                 
+                                 <td>Credit Spend Rate</td>
+                                 
+                                 <td>0 credits per 24 hours (0% CPU utilization)</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Earn Rate</td>
+                                 
+                                 <td>72 credits per 24 hours (3 credits per hour)</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Discard Rate</td>
+                                 
+                                 <td>72 credits per 24 hours (100% of credit earn rate)</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Balance</td>
+                                 
+                                 <td>
+                                    
+                                    <p>102 credits (30 launch credits + 72 earned credits)&#x2014;balance
+                                       is unchanged
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <p class="title"><b>Conclusion</b></p>
+                     
+                     <p>An instance constantly earns credits, but it cannot accrue more earned credits
+                        if the credit balance has reached its limit. After the limit is reached, newly
+                        earned credits are discarded. Launch credits do not count towards the credit
+                        balance limit. If the balance includes accrued launch credits, the balance appears
+                        to be over the limit.
+                     </p>
+                     
+                     
+                     
+                     
+                     <h3 id="period-3">Period 3: 37 &#x2013; 61 hours</h3>
+                     
+                     <p>For the next 25 hours, the instance uses 2% CPU, which requires 30 credits. In the
+                        same period, it earns 75 credits, but the credit balance decreases. The balance
+                        decreases because the accrued <em>launch</em> credits are
+                        spent first, while newly earned credits are discarded because the credit balance is
+                        already at its limit of 72 earned credits.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/t2-graph3.png">
+                        
+                        
+                     </div>
+                     
+                     <div class="table">
+                        <p class="title"><b></b></p>
+                        <div class="table-contents">
+                           <table id="w306aac20c11c27c33c21b9b9c15b7">
+                              
+                              <tbody><tr>
+                                 
+                                 <td>Credit Spend Rate</td>
+                                 
+                                 <td>28.8 credits per 24 hours (1.2 credits per hour, 2% CPU utilization,
+                                    40% of credit earn rate)&#x2014;30 credits over 25 hours
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Earn Rate</td>
+                                 
+                                 <td>72 credits per 24 hours</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Discard Rate</td>
+                                 
+                                 <td>72 credits per 24 hours (100% of credit earn rate)</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Balance</td>
+                                 
+                                 <td>
+                                    
+                                    <p>72 credits (30 launch credits were spent; 72 earned credits remain
+                                       unspent)
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <p class="title"><b>Conclusion</b></p>
+                     
+                     <p>An instance spends launch credits first, before spending earned credits. Launch
+                        credits do not count towards the credit limit. After the launch credits are spent,
+                        the balance can never go higher than what can be earned in 24 hours. Furthermore,
+                        while an instance is running, it cannot get more launch credits.
+                     </p>
+                     
+                     
+                     
+                     
+                     <h3 id="period-4">Period 4: 62 &#x2013; 72 hours</h3>
+                     
+                     <p>For the next 11 hours, the instance uses 2% CPU, which requires 13.2 credits. This
+                        is the same CPU utilization as in the previous period, but the balance does not
+                        decrease. It stays at 72 credits.
+                     </p>
+                     
+                     <p>The balance does not decrease because the credit earn rate is higher than the
+                        credit spend rate. In the time that the instance spends 13.2 credits, it also
+                        earns 33 credits. However, the balance limit is 72 credits, so any earned credits
+                        that exceed the limit are discarded. The balance plateaus at 72 credits, which is
+                        different from the plateau of 102 credits during Period 2, because there are no
+                        accrued launch credits.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/t2-graph4.png">
+                        
+                        
+                     </div>
+                     
+                     <div class="table">
+                        <p class="title"><b></b></p>
+                        <div class="table-contents">
+                           <table id="w306aac20c11c27c33c21b9b9c17b9">
+                              
+                              <tbody><tr>
+                                 
+                                 <td>Credit Spend Rate</td>
+                                 
+                                 <td>28.8 credits per 24 hours (1.2 credits per hour, 2% CPU utilization,
+                                    40% of credit earn rate)&#x2014;13.2 credits over 11 hours
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Earn Rate</td>
+                                 
+                                 <td>72 credits per 24 hours</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Discard Rate</td>
+                                 
+                                 <td>43.2 credits per 24 hours (60% of credit earn rate)</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Balance</td>
+                                 
+                                 <td>
+                                    
+                                    <p>72 credits (0 launch credits, 72 earned credits)&#x2014;balance is
+                                       at its limit
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <p class="title"><b>Conclusion</b></p>
+                     
+                     <p>After launch credits are spent, the credit balance limit is determined by the
+                        number of credits that an instance can earn in 24 hours. If the instance earns
+                        more credits than it spends, newly earned credits over the limit are
+                        discarded.
+                     </p>
+                     
+                     
+                     
+                     
+                     <h3 id="period-5">Period 5: 73 &#x2013; 75 hours</h3>
+                     
+                     <p>For the next three hours, the instance bursts at 20% CPU utilization, which
+                        requires 36 credits. The instance earns nine credits in the same three hours, which
+                        results in a net balance decrease of 27 credits. At the end of three hours, the
+                        credit balance is 45 accrued earned credits.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/t2-graph5.png">
+                        
+                        
+                     </div>
+                     
+                     <div class="table">
+                        <p class="title"><b></b></p>
+                        <div class="table-contents">
+                           <table id="w306aac20c11c27c33c21b9b9c19b7">
+                              
+                              <tbody><tr>
+                                 
+                                 <td>Credit Spend Rate</td>
+                                 
+                                 <td>288 credits per 24 hours (12 credits per hour, 20% CPU utilization,
+                                    400% of credit earn rate)&#x2014;36 credits over 3 hours
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Earn Rate</td>
+                                 
+                                 <td>72 credits per 24 hours (9 credits over 3 hours)</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Discard Rate</td>
+                                 
+                                 <td>0 credits per 24 hours</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Balance</td>
+                                 
+                                 <td>
+                                    
+                                    <p>45 credits (previous balance (72) - spent credits (36) + earned
+                                       credits (9))&#x2014;balance decreases at a rate of 216 credits per 24
+                                       hours (spend rate 288/24 + earn rate 72/24 = balance decrease rate
+                                       216/24)
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <p class="title"><b>Conclusion</b></p>
+                     
+                     <p>If an instance spends more credits than it earns, its credit balance
+                        decreases.
+                     </p>
+                     
+                     
+                     
+                     
+                     <h3 id="period-6">Period 6: 76 &#x2013; 90 hours</h3>
+                     
+                     <p>For the next 15 hours, the instance uses 2% CPU, which requires 18 credits. This
+                        is the same CPU utilization as in Periods 3 and 4. However, the balance increases
+                        in
+                        this period, whereas it decreased in Period 3 and plateaued in Period 4.
+                     </p>
+                     
+                     <p>In Period 3, the accrued launch credits were spent, and any earned credits that
+                        exceeded the credit limit were discarded, resulting in a decrease in the credit
+                        balance. In Period 4, the instance spent fewer credits than it earned. Any earned
+                        credits that exceeded the limit were discarded, so the balance plateaued at its
+                        maximum of 72 credits.
+                     </p>
+                     
+                     <p>In this period, there are no accrued launch credits, and the number of accrued
+                        earned credits in the balance is below the limit. No earned credits are discarded.
+                        Furthermore, the instance earns more credits than it spends, resulting in an increase
+                        in the credit balance.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/t2-graph6.png">
+                        
+                        
+                     </div>
+                     
+                     <div class="table">
+                        <p class="title"><b></b></p>
+                        <div class="table-contents">
+                           <table id="w306aac20c11c27c33c21b9b9c21c11">
+                              
+                              <tbody><tr>
+                                 
+                                 <td>Credit Spend Rate</td>
+                                 
+                                 <td>28.8 credits per 24 hours (1.2 credits per hour, 2% CPU utilization,
+                                    40% of credit earn rate)&#x2014;18 credits over 15 hours
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Earn Rate</td>
+                                 
+                                 <td>72 credits per 24 hours (45 credits over 15 hours)</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Discard Rate</td>
+                                 
+                                 <td>0 credits per 24 hours</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Balance</td>
+                                 
+                                 <td>
+                                    
+                                    <p>72 credits (balance increases at a rate of 43.2 credits per 24
+                                       hours&#x2014;change rate = spend rate 28.8/24 + earn rate
+                                       72/24)
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <p class="title"><b>Conclusion</b></p>
+                     
+                     <p>If an instance spends fewer credits than it earns, its credit balance
+                        increases.
+                     </p>
+                     
+                     
+                     
+                     
+                     <h3 id="period-7">Period 7: 91 &#x2013; 96 hours</h3>
+                     
+                     <p>For the next six hours, the instance remains idle&#x2014;CPU utilization is
+                        0%&#x2014;and no credits are spent. This is the same CPU utilization as in Period 2,
+                        but the balance does not plateau at 102 credits&#x2014;it plateaus at 72 credits,
+                        which is the credit balance limit for the instance.
+                     </p>
+                     
+                     <p>In Period 2, the credit balance included 30 accrued launch credits. The launch
+                        credits were spent in Period 3. A running instance cannot get more launch credits.
+                        After its credit balance limit is reached, any earned credits that exceed the limit
+                        are discarded.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/t2-graph7.png">
+                        
+                        
+                     </div>
+                     
+                     <div class="table">
+                        <p class="title"><b></b></p>
+                        <div class="table-contents">
+                           <table id="w306aac20c11c27c33c21b9b9c23b9">
+                              
+                              <tbody><tr>
+                                 
+                                 <td>Credit Spend Rate</td>
+                                 
+                                 <td>0 credits per 24 hours (0% CPU utilization)</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Earn Rate</td>
+                                 
+                                 <td>72 credits per 24 hours</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Discard Rate</td>
+                                 
+                                 <td>72 credits per 24 hours (100% of credit earn rate)</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Credit Balance</td>
+                                 
+                                 <td>
+                                    
+                                    <p>72 credits (0 launch credits, 72 earned credits)</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <p class="title"><b>Conclusion</b></p>
+                     
+                     <p>An instance constantly earns credits, but cannot accrue more earned credits if
+                        the credit balance limit has been reached. After the limit is reached, newly
+                        earned credits are discarded. The credit balance limit is determined by the
+                        number of credits that an instance can earn in 24 hours. For more information
+                        about credit balance limits, see the <a href="burstable-credits-baseline-concepts.html#burstable-performance-instances-credit-table">credit table</a>.
+                     </p>
+                     
+                     
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="burstable-performance-instances-standard-mode.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="burstable-performance-instances-how-to.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Example 1: Explaining Credit Use with T3
+                  Standard"><a class="pagetoc" href="#t3_standard_example">Example 1: Explaining Credit Use with T3
+                              Standard</a></li>
+                        <li class="pagetoc" name="Example 2: Explaining Credit Use with T2 Standard"><a class="pagetoc" href="#t2-standard-example">Example 2: Explaining Credit Use with T2 Standard</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Elastic Compute Cloud';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide for Linux Instances';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

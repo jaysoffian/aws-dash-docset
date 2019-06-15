@@ -4,15 +4,17 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="enhanced-networking.html" title="Enhanced Networking on Linux">
-      <link rel="prev" href="enhanced-networking-ena.html" title="Enabling Enhanced Networking with the Elastic
-            Network Adapter (ENA) on Linux Instances in a VPC">
-      <link rel="next" href="Storage.html" title="Storage">
+      <link rel="prev" href="sriov-networking.html" title="Enabling Enhanced Networking with the Intel 82599 VF
+            Interface on Linux Instances">
+      <link rel="next" href="efa.html" title="Elastic Fabric Adapter">
       <meta name="description" content="Troubleshoot the Elastic Network Adapter (ENA) on supported Linux instances in a VPC.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/troubleshooting-ena.html">
@@ -22,7 +24,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -34,10 +36,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="EC2_Network_and_Security.html">Network and Security</a> &#xBB; <a href="enhanced-networking.html">Enhanced Networking on Linux</a> &#xBB; <span class="breadcrumb">Troubleshooting the Elastic Network Adapter (ENA)</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="EC2_Network_and_Security.html">Network and Security</a> &#xBB; <a href="enhanced-networking.html">Enhanced Networking on Linux</a> &#xBB; <span class="breadcrumb">Troubleshooting the Elastic Network Adapter (ENA)</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="troubleshooting-ena">Troubleshooting the Elastic Network Adapter (ENA)</h1>
                      <p>The Elastic Network Adapter (ENA) is designed to improve operating system health and
@@ -95,7 +100,7 @@
                         <li>
                            
                            <p>From your local computer, stop the instance using the Amazon EC2 console or one of
-                              the following commands: <a href="./cli/latest/reference/ec2/stop-instances.html" target="_blank">stop-instances</a> (AWS CLI), <a href="./powershell/latest/reference/items/Stop-EC2Instance.html" target="_blank">Stop-EC2Instance</a>
+                              the following commands: <a href="./cli/latest/reference/ec2/stop-instances.html">stop-instances</a> (AWS CLI), <a href="./powershell/latest/reference/items/Stop-EC2Instance.html">Stop-EC2Instance</a>
                               (AWS Tools for Windows PowerShell). If your instance is managed by AWS OpsWorks, you
                               should stop the instance
                               in the AWS OpsWorks console so that the instance state remains in sync.
@@ -122,7 +127,7 @@
                               <ul class="itemizedlist" type="disc">
                                  <li class="listitem">
                                     
-                                    <p><a href="./cli/latest/reference/ec2/modify-instance-attribute.html" target="_blank">modify-instance-attribute</a> (AWS CLI)
+                                    <p><a href="./cli/latest/reference/ec2/modify-instance-attribute.html">modify-instance-attribute</a> (AWS CLI)
                                     </p>
                                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><span><code class="prompt" copy="false">$ </code></span><strong class="userinput"><code><b>aws ec2 modify-instance-attribute</b> --instance-id <em class="replaceable"><code>instance_id</code></em> --no-ena-support</code></strong></code></pre>
                                     </li>
@@ -133,7 +138,7 @@
                         <li>
                            
                            <p>From your local computer, start the instance using the Amazon EC2 console or one of
-                              the following commands: <a href="./cli/latest/reference/ec2/start-instances.html" target="_blank">start-instances</a> (AWS CLI), <a href="./powershell/latest/reference/items/Start-EC2Instance.html" target="_blank">Start-EC2Instance</a>
+                              the following commands: <a href="./cli/latest/reference/ec2/start-instances.html">start-instances</a> (AWS CLI), <a href="./powershell/latest/reference/items/Start-EC2Instance.html">Start-EC2Instance</a>
                               (AWS Tools for Windows PowerShell). If your instance is managed by AWS OpsWorks, you
                               should start the instance
                               in the AWS OpsWorks console so that the instance state remains in sync.
@@ -145,7 +150,7 @@
                            <p>(Optional) Connect to your instance and try reinstalling the
                               <code>ena</code> module with your current kernel version by following
                               the steps in <a href="enhanced-networking-ena.html">Enabling Enhanced Networking with the Elastic
-                                 Network Adapter (ENA) on <span>Linux</span> Instances in a VPC</a>.
+                                 Network Adapter (ENA) on Linux Instances</a>.
                            </p>
                            
                         </li>
@@ -169,14 +174,14 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p><a href="./cli/latest/reference/ec2/register-image.html" target="_blank">register-image</a>
+                              <p><a href="./cli/latest/reference/ec2/register-image.html">register-image</a>
                                  (AWS CLI)
                               </p>
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><span><code class="prompt" copy="false">$ </code></span><strong class="userinput"><code><b>aws ec2 register-image --no-ena-support ...</b></code></strong></code></pre>
                               </li>
                            <li class="listitem">
                               
-                              <p><a href="./powershell/latest/reference/items/Register-EC2Image.html" target="_blank">Register-EC2Image</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/Register-EC2Image.html">Register-EC2Image</a> (AWS Tools for Windows PowerShell)
                               </p>
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">C:\&gt; </code><strong class="userinput"><code><b>Register-EC2Image</b> -EnaSupport $false ...</code></strong></code></pre>
                               </li>
@@ -891,15 +896,19 @@ Jun  3 22:37:46 ip-172-31-2-186 kernel: [  481.025842] NET: Registered protocol 
                         </dl>
                      </div>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -908,8 +917,10 @@ Jun  3 22:37:46 ip-172-31-2-186 kernel: [  481.025842] NET: Registered protocol 
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="enhanced-networking-ena.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="Storage.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="sriov-networking.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="efa.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -930,6 +941,10 @@ Jun  3 22:37:46 ip-172-31-2-186 kernel: [  481.025842] NET: Registered protocol 
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

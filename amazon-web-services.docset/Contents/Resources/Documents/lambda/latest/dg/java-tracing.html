@@ -1,17 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Java - AWS Lambda</title>
+      <title>Instrumenting Java Code in AWS Lambda - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="downstream-tracing.html" title="Emitting Trace Segments from a Lambda
-                Function">
-      <link rel="prev" href="nodejs-tracing.html" title="Node.js">
-      <link rel="next" href="python-tracing.html" title="Python">
+      <link rel="up" href="java-programming-model.html" title="Building Lambda Functions with Java">
+      <link rel="prev" href="java-exceptions.html" title="AWS Lambda Function Errors in Java">
+      <link rel="next" href="get-started-step4-optional.html" title="Create a Lambda Function Authored in Java">
       <meta name="description" content="In Java, you can have Lambda emit subsegments to X-Ray to show you information regarding downstream calls to other AWS services made by your function. To take advantage of this capability, include the AWS X-Ray SDK for Java in your deployment package. No code changes are needed. As long as you are using an AWS SDK version 1.11.48 or later, there is no need to add any additional code lines for downstream calls from your function to be traced.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/java-tracing.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,30 +35,33 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="troubleshooting.html">Monitoring and Troubleshooting Lambda-based Applications</a> &#xBB; <a href="lambda-x-ray.html">Using AWS X-Ray</a> &#xBB; <a href="downstream-tracing.html">Emitting Trace Segments from a Lambda
-                                    Function</a> &#xBB; <span class="breadcrumb">Java</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="java-programming-model.html">Building Lambda Functions with Java</a> &#xBB; <span class="breadcrumb">Instrumenting Java Code in AWS Lambda</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="java-tracing">Java</h1>
-                     <p>In Java, you can have Lambda emit subsegments to X-Ray to show you information
-                        regarding downstream calls to other AWS services made by your function. To take
-                        advantage of this capability, include the <a href="./xray/latest/devguide/xray-sdk-java.html" target="_blank">AWS X-Ray SDK for Java</a> in
-                        your deployment package. No code changes are needed. As long as you are using an
-                        AWS SDK version 1.11.48 or later, there is no need to add any additional
+                     <h1 class="topictitle" id="java-tracing">Instrumenting Java Code in AWS Lambda</h1>
+                     <p>In Java, you can have Lambda emit subsegments to X-Ray to show you information regarding
+                        downstream calls to
+                        other AWS services made by your function. To take advantage of this capability, include
+                        the <a href="./xray/latest/devguide/xray-sdk-java.html">AWS X-Ray SDK for Java</a> in your deployment package. No code changes
+                        are needed. As long as you are using an AWS SDK version 1.11.48 or later, there is
+                        no need to add any additional
                         code lines for downstream calls from your function to be traced. 
                      </p>
-                     <p>The AWS SDK will dynamically import the X-Ray SDK to emit subsegments for
-                        downstream calls made by your function. By using the X-Ray SDK for Java, you
-                        can instrument your code in order to emit custom subsegments and or add
-                        annotatations to your X-Ray segments. 
+                     <p>The AWS SDK will dynamically import the X-Ray SDK to emit subsegments for downstream
+                        calls made by your
+                        function. By using the X-Ray SDK for Java, you can instrument your code in order to
+                        emit custom subsegments and or
+                        add annotations to your X-Ray segments. 
                      </p>
-                     <p>The following example uses the X-Ray SDK for Java to instrument a Lambda
-                        function to emit a custom subsegment and send custom annotation to
-                        X-Ray:
-                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">
-package uptime;
+                     <p>The following example uses the X-Ray SDK for Java to instrument a Lambda function
+                        to emit a custom subsegment
+                        and send custom annotation to X-Ray:
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">package uptime;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -106,9 +111,8 @@ public class Hello {
             dynamoClient.putItem(&quot;amazon-2xx&quot;, item);
         });
     }
-}
-</code></pre><p>Following is what a trace emitted by the code preceding looks like
-                        (synchronous invocation): 
+}</code></pre><p>Following is what a trace emitted by the code preceding looks like (synchronous invocation):
+                        
                      </p>
                      <div class="mediaobject">
                         
@@ -116,15 +120,19 @@ public class Hello {
                         
                         
                      </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -133,8 +141,10 @@ public class Hello {
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="nodejs-tracing.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="python-tracing.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="java-exceptions.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="get-started-step4-optional.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -142,6 +152,10 @@ public class Hello {
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

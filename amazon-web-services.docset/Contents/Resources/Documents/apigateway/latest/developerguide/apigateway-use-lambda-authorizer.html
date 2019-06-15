@@ -3,18 +3,19 @@
       <title>Use API Gateway Lambda Authorizers - Amazon API Gateway</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="apigateway-control-access-to-api.html" title=" Controlling Access to an API in
-			API Gateway">
-      <link rel="prev" href="enable-cors-for-resource-using-swagger-importer-tool.html" title="Enable CORS
-                on
-                a Resource Using the API Gateway Import API">
-      <link rel="next" href="api-gateway-lambda-authorizer-input.html" title="Input to an Amazon API Gateway Lambda
-                Authorizer">
+      <link rel="up" href="apigateway-control-access-to-api.html" title="Controlling and Managing Access to a REST
+			API in API Gateway">
+      <link rel="prev" href="apigateway-control-access-tags.html" title="Using Tags to Control Access to a
+            REST API in API Gateway">
+      <link rel="next" href="configure-api-gateway-lambda-authorization-with-console.html" title="Configure a
+                Lambda Authorizer Using the API Gateway Console">
       <meta name="description" content="Enable an Amazon API Gateway Lambda authorizer to authenticate API requests.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-use-lambda-authorizer.html">
@@ -24,7 +25,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -36,93 +37,32 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-control-access-to-api.html"> Controlling Access to an API in
-                                    			API Gateway</a> &#xBB; <span class="breadcrumb">Use API Gateway Lambda Authorizers</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="apigateway-control-access-to-api.html">Controlling and Managing Access to a REST
+                                    			API in API Gateway</a> &#xBB; <span class="breadcrumb">Use API Gateway Lambda Authorizers</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="apigateway-use-lambda-authorizer">Use API Gateway Lambda Authorizers</h1>
-                     <p> An Amazon API Gateway <em>Lambda authorizer</em> (formerly known as a <em>custom
-                           authorizer</em>) is a Lambda function that you provide to control access to your
-                        API methods. A Lambda authorizer uses bearer token authentication strategies, such
-                        as OAuth
-                        or SAML. It can also use information described by headers, paths, query strings, stage
-                        variables, or context variables request parameters. 
+                     <p>A <em>Lambda authorizer</em> (formerly known as a <em>custom
+                           authorizer</em>) is an API Gateway feature that uses a Lambda function to control access
+                        to your API.
                      </p>
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p> Path parameters can be used to grant or deny permissions to invoke a method, but
-                           they
-                           cannot be used to define identity sources, which can be used as parts of an
-                           authorization policy caching key. Only headers, query strings, stage variables, and
-                           context variables can be set as identity sources. 
-                        </p>
-                     </div>
-                     <p> When a client calls your API, API Gateway verifies whether a Lambda authorizer is
-                        configured for
-                        the API method. If so, API Gateway calls the Lambda function. In this call, API Gateway
-                        supplies the
-                        authorization token that is extracted from a specified request header for the token-based
-                        authorizer, or passes in the incoming request parameters as the input (for example,
-                        the
-                        <code class="code">event</code> parameter) to the request parameters-based authorizer function. 
+                     <p>A Lambda authorizer is useful if you want to implement a custom authorization scheme
+                        that
+                        uses a bearer token authentication strategy such as OAuth or SAML, or that uses request
+                        parameters to determine the caller&apos;s identity.
                      </p>
-                     <div class="mediaobject">
-                        
-                        <img src="../../..//img/custom-auth-workflow.png" alt="
-            API Gateway Lambda authorization workflow
-        " style="max-width:100%">
-                        
-                        
-                        
-                     </div>
-                     <p>You can implement various authorization strategies, such as JSON Web Token (JWT)
-                        verification and OAuth provider callout. You can also implement a custom scheme based
-                        on
-                        incoming request parameter values, to return IAM policies that authorize the request.
-                        If
-                        the returned policy is invalid or the permissions are denied, the API call does not
-                        succeed.
-                        For a valid policy, API Gateway caches the returned policy, associated with the incoming
-                        token or
-                        identity source request parameters. It then uses the cached policy for the current
-                        and
-                        subsequent requests, over a pre-configured time-to-live (TTL) period of up to 3600
-                        seconds.
-                        You can set the TTL period to zero seconds to disable the policy caching. The default
-                        TTL
-                        value is 300 seconds. Currently, the maximum TTL value of 3600 seconds cannot be increased.
-                        
+                     <p>When a client makes a request to one of your API&apos;s methods, API Gateway calls your
+                        Lambda
+                        authorizer, which takes the caller&apos;s identity as input and returns an IAM policy as
+                        output.
                      </p>
-                     <div class="highlights">
-                        <p><strong>Topics</strong></p>
-                        <ul>
-                           <li><a href="#api-gateway-lambda-authorizer-types">Types of API Gateway Lambda
-                                 Authorizers</a></li>
-                           <li><a href="#api-gateway-lambda-authorizer-lambda-function-create">Create an API Gateway
-                                 Lambda Authorizer Lambda Function</a></li>
-                           <li><a href="api-gateway-lambda-authorizer-input.html">Input to an Amazon API Gateway Lambda
-                                 Authorizer</a></li>
-                           <li><a href="api-gateway-lambda-authorizer-output.html">Output from an Amazon API Gateway Lambda
-                                 Authorizer</a></li>
-                           <li><a href="configure-api-gateway-lambda-authorization-with-console.html">Configure
-                                 Lambda Authorizer Using the API Gateway Console</a></li>
-                           <li><a href="call-api-with-api-gateway-lambda-authorization.html">Call an API with API Gateway
-                                 Lambda Authorizers</a></li>
-                           <li><a href="apigateway-lambda-authorizer-cross-account-lambda-authorizer.html">
-                                 Configure Cross-Account Lambda Authorizer Using the API Gateway Console</a></li>
-                        </ul>
-                     </div>
-                     
-                     <h2 id="api-gateway-lambda-authorizer-types">Types of API Gateway Lambda
-                        Authorizers
-                     </h2>
-                     
-                     <p>API Gateway supports Lambda authorizers of the <code class="code">TOKEN</code> and <code class="code">REQUEST</code>
-                        types:
-                     </p>
-                     
+                     <p>There are two types of Lambda authorizers:</p>
                      <div class="itemizedlist">
                         
                         
@@ -130,101 +70,293 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p>Lambda authorizers of the <code class="code">TOKEN</code> type grant a caller permissions to
-                                 invoke a given request using an authorization token passed in a header. The
-                                 token could be, for example, an OAuth token.
+                              <p>A <em>token-based</em> Lambda authorizer (also called a
+                                 <code class="code">TOKEN</code> authorizer) receives the caller&apos;s identity in a bearer token,
+                                 such as a JSON Web Token (JWT) or an OAuth token.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>Lambda authorizers of the <code class="code">REQUEST</code> type grant a caller permissions
-                                 to invoke a given request using request parameters, including headers, query
-                                 strings, stage variables, or context parameters.
+                              <p>A <em>request parameter-based</em> Lambda authorizer (also called a
+                                 <code class="code">REQUEST</code> authorizer) receives the caller&apos;s identity in a combination
+                                 of headers, query string parameters, <a href="api-gateway-mapping-template-reference.html#stagevariables-template-reference">stageVariables</a>,
+                                 and <a href="api-gateway-mapping-template-reference.html#context-variable-reference">$context</a>
+                                 variables.
                               </p>
+                              
+                              <p>For WebSocket APIs, only request parameter-based authorizers are supported.</p>
                               
                            </li>
                         </ul>
                      </div>
+                     <p>It is possible to use an AWS Lambda function from an AWS account that is different
+                        from
+                        the one in which you created your Lambda authorizer function. For more information,
+                        see <a href="apigateway-lambda-authorizer-cross-account-lambda-authorizer.html">Configure
+                           a Cross-Account Lambda Authorizer</a>.
+                     </p>
+                     <p>To see an example of a .NET Lambda authorizer, view the <a href="http://www.youtube.com/watch?v=-0EG17oVxV0&amp;feature=player_embedded" target="_blank">Creating an API Gateway Custom Authorizer in .NET Core 2.0</a> video.
+                     </p>
+                     <div class="highlights">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#api-gateway-lambda-authorizer-flow">Lambda Authorizer Auth
+                                 Workflow</a></li>
+                           <li><a href="#api-gateway-lambda-authorizer-create">Steps to Create an API Gateway Lambda
+                                 Authorizer</a></li>
+                           <li><a href="#api-gateway-lambda-authorizer-lambda-function-create">Create an API Gateway
+                                 Lambda Authorizer Function in the Lambda Console</a></li>
+                           <li><a href="configure-api-gateway-lambda-authorization-with-console.html">Configure a
+                                 Lambda Authorizer Using the API Gateway Console</a></li>
+                           <li><a href="configure-api-gateway-lambda-authorization-programmatically.html">Configure
+                                 a Lambda Authorizer Using the AWS CLI or an AWS SDK</a></li>
+                           <li><a href="api-gateway-lambda-authorizer-input.html">Input to an Amazon API Gateway Lambda
+                                 Authorizer</a></li>
+                           <li><a href="api-gateway-lambda-authorizer-output.html">Output from an Amazon API Gateway Lambda
+                                 Authorizer</a></li>
+                           <li><a href="call-api-with-api-gateway-lambda-authorization.html">Call an API with API Gateway
+                                 Lambda Authorizers</a></li>
+                           <li><a href="apigateway-lambda-authorizer-cross-account-lambda-authorizer.html">Configure
+                                 a Cross-Account Lambda Authorizer</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="api-gateway-lambda-authorizer-flow">Lambda Authorizer Auth
+                        Workflow
+                     </h2>
+                     
+                     <p>The following diagram illustrates the authorization workflow for Lambda
+                        authorizers.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/custom-auth-workflow.png" alt="
+                API Gateway Lambda authorization workflow
+            " style="max-width:100%">
+                        
+                        
+                        
+                     </div>
+                     
+                     <p class="title"><b>API Gateway Lambda authorization workflow</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>The client calls a method on an API Gateway API method, passing a bearer token or
+                              request parameters.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>API Gateway checks whether a Lambda authorizer is configured for the method. If it
+                              is, API Gateway calls the Lambda function.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>The Lambda function authenticates the caller by means such as the
+                              following:
+                           </p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p>Calling out to an OAuth provider to get an OAuth access token.</p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>Calling out to a SAML provider to get a SAML assertion.</p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>Generating an IAM policy based on the request parameter
+                                       values.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>Retrieving credentials from a database.</p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>If the call succeeds, the Lambda function grants access by returning an output
+                              object containing at least an IAM policy and a principal identifier.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>API Gateway evaluates the policy.</p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p>If access is denied, API Gateway returns a suitable HTTP status code, such
+                                       as <code class="code">403 ACCESS_DENIED</code>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>If access is allowed, API Gateway executes the method. If caching is enabled
+                                       in the authorizer settings, API Gateway also caches the policy so that the
+                                       Lambda authorizer function doesn&apos;t need to be invoked again.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <h2 id="api-gateway-lambda-authorizer-create">Steps to Create an API Gateway Lambda
+                        Authorizer
+                     </h2>
+                     
+                     <p>To create a Lambda authorizer, you need to perform the following tasks:</p>
+                     
+                     <ol>
+                        <li>
+                           
+                           <p>Create the Lambda authorizer function in the Lambda console as described in
+                              <a href="apigateway-use-lambda-authorizer.html#api-gateway-lambda-authorizer-lambda-function-create">Create an API Gateway
+                                 Lambda Authorizer Function in the Lambda Console</a>. You
+                              can use one of the blueprint examples as a starting point and customize the
+                              <a href="api-gateway-lambda-authorizer-input.html">input</a> and <a href="api-gateway-lambda-authorizer-output.html">output</a> as
+                              desired.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Configure the Lambda function as an API Gateway authorizer and configure an API
+                              method to require it, as described in <a href="configure-api-gateway-lambda-authorization-with-console.html">Configure a
+                                 Lambda Authorizer Using the API Gateway Console</a>.
+                              Alternatively, if you need a cross-account Lambda authorizer, see <a href="apigateway-lambda-authorizer-cross-account-lambda-authorizer.html">Configure
+                                 a Cross-Account Lambda Authorizer</a>.
+                           </p>
+                           
+                           <div class="aws-note">
+                              <p class="aws-note">Note</p>
+                              <p>It is also possible to configure an authorizer by using the AWS CLI or an AWS SDK.
+                                 See <a href="configure-api-gateway-lambda-authorization-programmatically.html">Configure
+                                    a Lambda Authorizer Using the AWS CLI or an AWS SDK</a>.
+                              </p>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Test your authorizer by using <a href="https://www.getpostman.com/" target="_blank">Postman</a> as described in <a href="call-api-with-api-gateway-lambda-authorization.html">Call an API with API Gateway
+                                 Lambda Authorizers</a>.
+                           </p>
+                           
+                        </li>
+                     </ol>
                      
                      
                      <h2 id="api-gateway-lambda-authorizer-lambda-function-create">Create an API Gateway
-                        Lambda Authorizer Lambda Function
+                        Lambda Authorizer Function in the Lambda Console
                      </h2>
                      
-                     <p> Before creating an API Gateway Lambda authorizer, you must first create the AWS Lambda
-                        function that implements the logic to authorize and, if necessary, to authenticate
-                        the
-                        caller. You can do so in the Lambda console, using the code template available from
-                        the
-                        API Gateway Lambda Authorizer blueprint. Or you can create one from scratch, following
-                        this
-                        <a href="https://github.com/awslabs/aws-apigateway-lambda-authorizer-blueprints" target="_blank">example in awslabs</a>. For illustration purposes, we explain how to create a
-                        simple Lambda function from scratch without using a blueprint. In production code,
-                        you
-                        should follow the API Gateway Lambda Authorizer blueprint to implement your authorizer
-                        Lambda
-                        function. 
+                     <p>Before configuring a Lambda authorizer, you must first create the Lambda function
+                        that
+                        implements the logic to authorize and, if necessary, to authenticate the caller. The
+                        Lambda console provides a Python blueprint, which you can use by choosing <b>Use a
+                           blueprint</b> and choosing the
+                        <b>api-gateway-authorizer-python</b> blueprint. Otherwise, you&apos;ll want
+                        to use one of the blueprints in the <a href="https://github.com/awslabs/aws-apigateway-lambda-authorizer-blueprints" target="_blank">awslabs</a> GitHub repository as a starting point.
                      </p>
                      
-                     <p> When creating the Lambda function for your API Gateway Lambda authorizer, you assign
-                        an
-                        execution role for the Lambda function if it calls other AWS services. For the
-                        following example, the basic <code class="code">AWSLambdaRole</code> suffices. For more involved use
-                        cases, follow the <a href="./lambda/latest/dg/intro-permission-model.html#lambda-intro-execution-role" target="_blank">instructions</a> to grant permissions in an execution role for the Lambda
-                        function. 
+                     <p>For the example Lambda authorizer functions in this section, which don&apos;t call other
+                        services, you can use the built-in <a href="./lambda/latest/dg/lambda-intro-execution-role.html"><code class="code">AWSLambdaBasicExecutionRole</code></a>. When creating the Lambda
+                        function for your own API Gateway Lambda authorizer, you&apos;ll need to assign an IAM
+                        execution
+                        role to the Lambda function if it calls other AWS services. To create the role, follow
+                        the instructions in <a href="./lambda/latest/dg/lambda-intro-execution-role.html">AWS Lambda
+                           Execution Role</a>.
                      </p>
                      
                      
                      
-                     <h3 id="api-gateway-lambda-authorizer-token-control-lambda-function">Control a Lambda Function of a Lambda Authorizer</h3>
                      
-                     <p>To grant another AWS acccount permission to call <a href="./apigateway/api-reference/link-relation/authorizer-create" target="_blank">authorizer:create</a> or
-                        <a href="./cli/latest/reference/apigateway/create-authorizer.html" target="_blank">create-authorizer</a> to control the Lambda function used in your Lambda
-                        authorizer, you can create the following IAM policy.
+                     
+                     <h3 id="api-gateway-lambda-authorizer-token-lambda-function-create">EXAMPLE: Create a Token-Based Lambda Authorizer Function</h3>
+                     
+                     <p>To create a token-based Lambda authorizer function, enter the following Node.js
+                        8.10 code in the Lambda console and test it in the API Gateway console as follows.
                      </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
-    &quot;Version&quot;: &quot;2012-10-17&quot;,
-    &quot;Statement&quot;: [
-        {
-            &quot;Effect&quot;: &quot;Allow&quot;,
-            &quot;Action&quot;: [
-                &quot;apigateway:POST&quot;
-            ],
-            &quot;Resource&quot;: [
-                &quot;arn:aws:apigateway:<em class="replaceable"><code>region</code></em>::/restapis/<em class="replaceable"><code>restapi_id</code></em>/authorizers&quot;
-            ],
-            //Create Authorizer operation is allowed only with the following Lambda function
-            &quot;Condition&quot;: {
-                &quot;StringEquals&quot;: {
-                    &quot;apigateway:AuthorizerUri&quot;: &quot;arn:aws:lambda:<em class="replaceable"><code>region</code></em>:<em class="replaceable"><code>account-id</code></em>:function:<em class="replaceable"><code>lambda-function-name</code></em>&quot;
-                }
-            }
-        }
-    ]
-}</code></pre>
                      
-                     
-                     
-                     
-                     <h3 id="api-gateway-lambda-authorizer-token-lambda-function-create">Create
-                        a Lambda Function for a Lambda Authorizer of the <code class="code">TOKEN</code> type
-                     </h3>
-                     
-                     <p> In the code editor of the Lambda console, enter the following Node.js code as an
-                        example of the API Gateway Lambda authorizer of the <code class="code">TOKEN</code> type. 
-                     </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">
-// A simple TOKEN authorizer example to demonstrate how to use an authorization token 
+                     <ol>
+                        <li>
+                           
+                           <p>In the Lambda console, choose <b>Create function</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Author from scratch</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Enter a name for the function.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Runtime</b>, choose <b>Node.js
+                                 8.10</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create function</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Copy/paste the following code into the code editor.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">
+// A simple token-based authorizer example to demonstrate how to use an authorization token 
 // to allow or deny a request. In this example, the caller named &apos;user&apos; is allowed to invoke 
 // a request if the client-supplied token value is &apos;allow&apos;. The caller is not allowed to invoke 
-// the request if the token value is &apos;deny&apos;. If the token value is &apos;Unauthorized&apos;, the function 
-// returns the &apos;Unauthorized&apos; error with an HTTP status code of 401. For any other token value, 
-// the authorizer returns an &apos;Invalid token&apos; error. 
+// the request if the token value is &apos;deny&apos;. If the token value is &apos;unauthorized&apos; or an empty
+// string, the authorizer function returns an HTTP 401 status code. For any other token value, 
+// the authorizer returns an HTTP 500 status code. 
+// Note that token values are case-sensitive.
 
 exports.handler =  function(event, context, callback) {
     var token = event.authorizationToken;
-    switch (token.toLowerCase()) {
+    switch (token) {
         case &apos;allow&apos;:
             callback(null, generatePolicy(&apos;user&apos;, &apos;Allow&apos;, event.methodArn));
             break;
@@ -235,7 +367,7 @@ exports.handler =  function(event, context, callback) {
             callback(&quot;Unauthorized&quot;);   // Return a 401 Unauthorized response
             break;
         default:
-            callback(&quot;Error: Invalid token&quot;); 
+            callback(&quot;Error: Invalid token&quot;); // Return a 500 Invalid token response
     }
 };
 
@@ -264,93 +396,237 @@ var generatePolicy = function(principalId, effect, resource) {
     };
     return authResponse;
 }</code></pre>
-                     <p> For Lambda authorizers of the <code class="code">TOKEN</code> type, API Gateway passes the source
-                        token to the Lambda function as the <code class="code">event.authorizationToken</code>. Based on
-                        the value of this token, the preceding authorizer function returns an
-                        <code class="code">Allow</code> IAM policy on a specified method if the token value is
-                        <code class="code">&apos;allow&apos;</code>. This permits a caller to invoke the specified method. The
-                        caller receives a <code class="code">200 OK</code> response. The authorizer function returns a
-                        <code class="code">Deny</code> policy against the specified method if the authorization token
-                        has a <code class="code">&apos;deny&apos;</code> value. This blocks the caller from calling the method. The
-                        client receives a <code class="code">403 Forbidden</code> response. If the token is
-                        <code class="code">&apos;unauthorized&apos;</code>, the client receives a <code class="code">401 Unauthorized</code>
-                        response. If the token is <code class="code">&apos;fail&apos;</code> or anything else, the client receives
-                        a <code class="code">500 Internal Server Error</code> response. In both of the last two cases, no
-                        IAM policy is generated and the calls fail. 
+                           </li>
+                        <li>
+                           
+                           <p>Choose <b>Save</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the API Gateway console, create a <a href="api-gateway-create-api-from-example.html">simple API</a>
+                              if you don&apos;t already have one.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose your API from the API list.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Authorizers</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create New Authorizer</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Enter a name for the authorizer.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Type</b>, choose Lambda.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Lambda Function</b>, choose the region where you
+                              created your Lambda authorizer function and choose the function name from the
+                              dropdown list.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Leave <b>Lambda Invoke Role</b> blank.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Lambda Event Payload</b>, choose
+                              <b>Token</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Token Source</b>, enter
+                              <strong class="userinput"><code>tokenHeader</code></strong>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Test</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For the <b>tokenHeader</b> value, enter
+                              <strong class="userinput"><code>allow</code></strong>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Test</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>In this example, when the API receives a method request, API Gateway passes the source
+                        token to this Lambda authorizer function in the <code class="code">event.authorizationToken</code>
+                        attribute. The Lambda authorizer function reads the token and acts as follows:
                      </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>If the token value is <code class="code">&apos;allow&apos;</code>, the authorizer function
+                                 returns a <code class="code">200 OK</code> HTTP response and an IAM policy that looks
+                                 like the following, and the method request succeeds:
+                              </p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {
+      &quot;Action&quot;: &quot;execute-api:Invoke&quot;,
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Resource&quot;: &quot;arn:aws:execute-api:us-east-1:123456789012:ivdtdhp7b5/ESTestInvoke-stage/GET/&quot;
+    }
+  ]
+}</code></pre>
+                              </li>
+                           <li class="listitem">
+                              
+                              <p>If the token value is <code class="code">&apos;deny&apos;</code>, the authorizer function returns
+                                 a <code class="code">403 Forbidden</code> HTTP response and a <code class="code">Deny</code> IAM
+                                 policy that looks like the following, and the method request fails:
+                              </p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {
+      &quot;Action&quot;: &quot;execute-api:Invoke&quot;,
+      &quot;Effect&quot;: &quot;Deny&quot;,
+      &quot;Resource&quot;: &quot;arn:aws:execute-api:us-east-1:123456789012:ivdtdhp7b5/ESTestInvoke-stage/GET/&quot;
+    }
+  ]
+}</code></pre>
+                              </li>
+                           <li class="listitem">
+                              
+                              <p>If the token value is <code class="code">&apos;unauthorized&apos;</code> or an empty string, the
+                                 authorizer function returns a <code class="code">401 Unauthorized</code> HTTP response,
+                                 and the method call fails.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>If the token is anything else, the client receives a <code class="code">500 Invalid
+                                    token</code> response, and the method call fails.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
                      
                      <div class="aws-note">
                         <p class="aws-note">Note</p>
                         <p>In production code, you may need to authenticate the user before granting
-                           authorizations. If so, you can add authentication logic in the Lambda function as
-                           well. Consult the provider-specific documentation for instructions on how to
-                           call such an authentication provider. 
+                           authorization. If so, you can add authentication logic in the Lambda function as
+                           well by calling an authentication provider as directed in the documentation for
+                           that provider.
                         </p>
                      </div>
                      
-                     <p> In addition to returning an IAM policy, the Lambda authorizer function must also
-                        return the caller&apos;s principal identifier. It can optionally return a key-value map
-                        named <code class="code">context</code>, containing additional information that can be passed
-                        into the integration backend. For more information about the authorizer&apos;s output
-                        format, see <a href="api-gateway-lambda-authorizer-output.html">Output from an Amazon API Gateway Lambda
+                     <p>In addition to returning an IAM policy, the Lambda authorizer function must also
+                        return the caller&apos;s principal identifier. It can also optionally return a
+                        <code class="code">context</code> object containing additional information that can be passed
+                        into the integration backend. For more information, see <a href="api-gateway-lambda-authorizer-output.html">Output from an Amazon API Gateway Lambda
                            Authorizer</a>. 
                      </p>
                      
-                     <p> You can use the <code class="code">context</code> map to return cached credentials from the
-                        authorizer to the backend, using an integration request mapping template. This
-                        enables the backend to provide an improved user experience by using the cached
-                        credentials to reduce the need to access the secret keys and open the authorization
-                        tokens for every request. 
-                     </p>
-                     
-                     <p> For the Lambda proxy integration, API Gateway passes the <code class="code">context</code> object
-                        from a Lambda authorizer directly to the backend Lambda function as part of the input
-                        <code class="code">event</code>. You can retrieve the <code class="code">context</code> key-value pairs in
-                        the Lambda function by calling
-                        <code class="code">$event.requestContext.authorizer.<em class="replaceable"><code>key</code></em></code>.
-                        For the preceding Lambda authorizer example, <em class="replaceable"><code>key</code></em> is
-                        <code class="code">stringKey</code>, <code class="code">numberKey</code>, or <code class="code">booleanKey</code>.
-                        Their values are stringified, for example, <code class="code">&quot;stringval&quot;</code>,
-                        <code class="code">&quot;123&quot;</code>, or <code class="code">&quot;true&quot;</code>, respectively. 
-                     </p>
-                     
-                     <p> Before going further, you may want to test the Lambda function from within the
-                        Lambda console. To do this, configure the sample event to provide an input as
-                        described in <a href="api-gateway-lambda-authorizer-input.html">Input to an Amazon API Gateway Lambda
-                           Authorizer</a> and verify the result by
-                        examining the output compatible with <a href="api-gateway-lambda-authorizer-output.html">Output from an Amazon API Gateway Lambda
-                           Authorizer</a>. The next subsection
-                        explains how to create a Lambda function of the <code class="code">Request</code> authorizer.
-                        
-                     </p>
                      
                      
                      
                      <h3 id="api-gateway-lambda-authorizer-request-lambda-function-create">
-                        Create a Lambda Function of a Lambda Authorizer of the <code class="code">REQUEST</code> type 
+                        EXAMPLE: Create a Request-Based Lambda Authorizer Function
                      </h3>
                      
-                     <p> In the code editor of the Lambda console, enter the following Node.js code for a
-                        simplified Lambda function as an example of the API Gateway Lambda authorizers of
-                        the
-                        <code class="code">REQUEST</code> type. 
+                     <p>To create a request-based Lambda authorizer function, enter the following Node.js
+                        8.10 code in the Lambda console and test it in the API Gateway console as follows.
                      </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">exports.handler = function(event, context, callback) {        
+                     
+                     <ol>
+                        <li>
+                           
+                           <p>In the Lambda console, choose <b>Create function</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Author from scratch</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Enter a name for the function.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Runtime</b>, choose <b>Node.js
+                                 8.10</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create function</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Copy/paste the following code into the code editor.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">exports.handler = function(event, context, callback) {        
     console.log(&apos;Received event:&apos;, JSON.stringify(event, null, 2));
 
-    // A simple REQUEST authorizer example to demonstrate how to use request 
+    // A simple request-based authorizer example to demonstrate how to use request 
     // parameters to allow or deny a request. In this example, a request is  
-    // authorized if the client-supplied HeaderAuth1 header, QueryString1 query parameter,
-    // stage variable of StageVar1 and the accountId in the request context all match
-    // specified values of &apos;headerValue1&apos;, &apos;queryValue1&apos;, &apos;stageValue1&apos;, and
-    // &apos;123456789012&apos;, respectively.
+    // authorized if the client-supplied HeaderAuth1 header, QueryString1 
+    // query parameter, and stage variable of StageVar1 all match
+    // specified values of &apos;headerValue1&apos;, &apos;queryValue1&apos;, and &apos;stageValue1&apos;,
+    // respectively.
 
     // Retrieve request parameters from the Lambda function input:
     var headers = event.headers;
     var queryStringParameters = event.queryStringParameters;
     var pathParameters = event.pathParameters;
     var stageVariables = event.stageVariables;
-    var requestContext = event.requestContext;
         
     // Parse the input for the parameter values
     var tmp = event.methodArn.split(&apos;:&apos;);
@@ -373,8 +649,7 @@ var generatePolicy = function(principalId, effect, resource) {
      
     if (headers.HeaderAuth1 === &quot;headerValue1&quot;
         &amp;&amp; queryStringParameters.QueryString1 === &quot;queryValue1&quot;
-        &amp;&amp; stageVariables.StageVar1 === &quot;stageValue1&quot;
-        &amp;&amp; requestContext.accountId === &quot;123456789012&quot;) {
+        &amp;&amp; stageVariables.StageVar1 === &quot;stageValue1&quot;) {
         callback(null, generateAllow(&apos;me&apos;, event.methodArn));
     }  else {
         callback(&quot;Unauthorized&quot;);
@@ -413,43 +688,170 @@ var generateAllow = function(principalId, resource) {
 var generateDeny = function(principalId, resource) {
     return generatePolicy(principalId, &apos;Deny&apos;, resource);
 }</code></pre>
-                     <p> This Lambda function of the <code class="code">REQUEST</code> authorizer verifies the input
-                        request parameters to return an <code class="code">Allow</code> IAM policy on a specified
-                        method if all the required parameter (<code class="code">HeaderAuth1</code>,
-                        <code class="code">QueryString1</code>, <code class="code">StageVar1</code>, and <code class="code">accountId</code>)
-                        values match the pre-configured ones. This permits a caller to invoke the specified
-                        method. The caller receives a <code class="code">200 OK</code> response. Otherwise, the
-                        authorizer function returns an <code class="code">Unauthorized</code> error, without generating
-                        any IAM policy. 
+                           </li>
+                        <li>
+                           
+                           <p>Choose <b>Save</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the API Gateway console, create a <a href="api-gateway-create-api-from-example.html">simple API</a>
+                              if you don&apos;t already have one.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose your API from the API list.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Authorizers</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create New Authorizer</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Enter a name for the authorizer.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Type</b>, choose Lambda.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Lambda Function</b>, choose the region where you
+                              created your Lambda authorizer function and choose the function name from the
+                              dropdown list.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Leave <b>Lambda Invoke Role</b> blank.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Lambda Event Payload</b>, choose
+                              <b>Request</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Under <b>Identity Sources</b>, add a
+                              <b>Header</b> named <strong class="userinput"><code>HeaderAuth1</code></strong>, a
+                              <b>Query String</b> named
+                              <strong class="userinput"><code>QueryString1</code></strong>, and a <b>Stage
+                                 Variable</b> named <strong class="userinput"><code>StageVar1</code></strong>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Test</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>HeaderAuth1</b>, enter
+                              <strong class="userinput"><code>headerValue1</code></strong>. For
+                              <b>QueryString1</b>, enter
+                              <strong class="userinput"><code>queryValue1</code></strong>. For <b>StageVar1</b>,
+                              enter <strong class="userinput"><code>stageValue1</code></strong>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Test</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>In this example, the Lambda authorizer function checks the input parameters and
+                        acts as follows:
                      </p>
                      
-                     <p>The above example authorizer function in Node.js illustrates the programming flow
-                        to create a Lambda authorizer of the <code class="code">REQUEST</code> type, including parsing the
-                        input which is similar to parsing the <a href="set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format">Lambda function input
-                           in the Lambda proxy integration</a>, You can extend the implementation to
-                        other languages supported by Lambda, such as Java or Python. For example to parse
-                        the
-                        input to a Lambda REQUEST authorizer in Java, see <a href="api-gateway-create-api-as-simple-proxy-for-lambda.html#api-gateway-proxy-integration-lambda-function-java">Java Function
-                           for an API with Lambda Proxy Integration</a>.
-                     </p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>If all the required parameter values match the expected values, the
+                                 authorizer function returns a <code class="code">200 OK</code> HTTP response and an IAM
+                                 policy that looks like the following, and the method request
+                                 succeeds:
+                              </p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {
+      &quot;Action&quot;: &quot;execute-api:Invoke&quot;,
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Resource&quot;: &quot;arn:aws:execute-api:us-east-1:123456789012:ivdtdhp7b5/ESTestInvoke-stage/GET/&quot;
+    }
+  ]
+}</code></pre>
+                              </li>
+                           <li class="listitem">
+                              
+                              <p>Otherwise, the the authorizer function returns a <code class="code">401
+                                    Unauthorized</code> HTTP response, and the method call fails.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
                      
-                     <p> Before going further, you may want to test the Lambda function from within the
-                        Lambda console. To do this, configure the sample event to provide the input and
-                        verify the result by examining the output. The next two sections explain the <a href="api-gateway-lambda-authorizer-input.html">Input to an Amazon API Gateway Lambda
-                           Authorizer</a> and <a href="api-gateway-lambda-authorizer-output.html">Output from an Amazon API Gateway Lambda
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>In production code, you may need to authenticate the user before granting
+                           authorization. If so, you can add authentication logic in the Lambda function as
+                           well by calling an authentication provider as directed in the documentation for
+                           that provider.
+                        </p>
+                     </div>
+                     
+                     <p>In addition to returning an IAM policy, the Lambda authorizer function must also
+                        return the caller&apos;s principal identifier. It can also optionally return a
+                        <code class="code">context</code> object containing additional information that can be passed
+                        into the integration backend. For more information, see <a href="api-gateway-lambda-authorizer-output.html">Output from an Amazon API Gateway Lambda
                            Authorizer</a>. 
                      </p>
                      
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -458,8 +860,10 @@ var generateDeny = function(principalId, resource) {
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="enable-cors-for-resource-using-swagger-importer-tool.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="api-gateway-lambda-authorizer-input.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="apigateway-control-access-tags.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="configure-api-gateway-lambda-authorization-with-console.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -468,16 +872,22 @@ var generateDeny = function(principalId, resource) {
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Types of API Gateway Lambda
-                Authorizers"><a class="pagetoc" href="#api-gateway-lambda-authorizer-types">Types of API Gateway Lambda
-                              Authorizers</a></li>
+                        <li class="pagetoc" name="Lambda Authorizer Auth
+                Workflow"><a class="pagetoc" href="#api-gateway-lambda-authorizer-flow">Lambda Authorizer Auth
+                              Workflow</a></li>
+                        <li class="pagetoc" name="Steps to Create an API Gateway Lambda
+                Authorizer"><a class="pagetoc" href="#api-gateway-lambda-authorizer-create">Steps to Create a Lambda Authorizer</a></li>
                         <li class="pagetoc" name="Create an API Gateway
-                Lambda Authorizer Lambda Function"><a class="pagetoc" href="#api-gateway-lambda-authorizer-lambda-function-create">Create a Lambda Authorizer Lambda Function</a></li>
+                Lambda Authorizer Function in the Lambda Console"><a class="pagetoc" href="#api-gateway-lambda-authorizer-lambda-function-create">Create a Lambda Authorizer Function in the Lambda Console</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

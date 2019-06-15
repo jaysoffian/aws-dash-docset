@@ -16,6 +16,8 @@
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/SSEUsingRubySDK.html">
@@ -25,7 +27,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -37,12 +39,15 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="DataDurability.html">Protecting Data in Amazon S3</a> &#xBB; <a href="UsingEncryption.html">Protecting Data Using Encryption</a> &#xBB; <a href="serv-side-encryption.html">Protecting Data Using Server-Side Encryption</a> &#xBB; <a href="UsingServerSideEncryption.html">Protecting Data Using Server-Side Encryption
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="DataDurability.html">Protecting Data in Amazon S3</a> &#xBB; <a href="UsingEncryption.html">Protecting Data Using Encryption</a> &#xBB; <a href="serv-side-encryption.html">Protecting Data Using Server-Side Encryption</a> &#xBB; <a href="UsingServerSideEncryption.html">Protecting Data Using Server-Side Encryption
                                     			with Amazon S3-Managed Encryption Keys (SSE-S3)</a> &#xBB; <span class="breadcrumb">Specifying Server-Side Encryption Using the
                                     				AWS SDK for Ruby</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="SSEUsingRubySDK">Specifying Server-Side Encryption Using the
                         				AWS SDK for Ruby
@@ -55,11 +60,19 @@
                      <p>The following AWS SDK for Ruby &#x2013; Version 3 example demonstrates how to specify that
                         a
                         			file uploaded to Amazon S3 be encrypted at rest.
-                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">require &apos;aws-sdk-s3&apos; 
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="ruby "># The following example demonstrates how to specify that a file uploaded to Amazon S3 be encrypted at rest.
+require &apos;aws-sdk-s3&apos; 
 
-s3 = Aws::S3::Resource.new(region:&apos;<em class="replaceable"><code>us-west-2</code></em>&apos;) 
-obj = s3.bucket(&apos;<em class="replaceable"><code>my-bucket</code></em>&apos;).object(&apos;<em class="replaceable"><code>key</code></em>&apos;) 
-obj.upload_file(&apos;<em class="replaceable"><code>local/path/to/file</code></em>&apos;, :server_side_encryption =&gt; &apos;AES256&apos;)</code></pre><p>For an example that shows how to upload an object without SSE, see <a href="UploadObjSingleOpRuby.html">Upload an Object Using the AWS SDK for Ruby</a>.
+regionName = &apos;us-west-2&apos; 
+bucketName = &apos;my-bucket&apos; 
+key = &apos;key&apos; 
+filePath = &apos;local/path/to/file&apos;
+encryptionType = &apos;AES256&apos;
+
+s3 = Aws::S3::Resource.new(region:regionName) 
+obj = s3.bucket(bucketName).object(key) 
+obj.upload_file(filePath, :server_side_encryption =&gt; encryptionType)
+</code></pre><p>For an example that shows how to upload an object without SSE, see <a href="UploadObjSingleOpRuby.html">Upload an Object Using the AWS SDK for Ruby</a>.
                      </p>
                      			
                      <h2 id="DeterminingEncryptionAlgorithmUsed03">Determining the Encryption
@@ -69,11 +82,15 @@ obj.upload_file(&apos;<em class="replaceable"><code>local/path/to/file</code></e
                      <p>The following code example demonstrates how to determine the encryption state of
                         				an existing object.
                      </p>
-                     			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"># Determine server-side encryption of an object.
+                     			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="ruby "># Determine server-side encryption of an object.
 require &apos;aws-sdk-s3&apos;
 
-s3 = Aws::S3::Resource.new(region:&apos;<em class="replaceable"><code>us-west-2</code></em>&apos;)
-enc = s3.bucket(&apos;<em class="replaceable"><code>bucket-name</code></em>&apos;).object(&apos;<em class="replaceable"><code>key</code></em>&apos;).server_side_encryption
+regionName = &apos;us-west-2&apos; 
+bucketName=&apos;bucket-name&apos;
+key = &apos;key&apos;
+
+s3 = Aws::S3::Resource.new(region:regionName)
+enc = s3.bucket(bucketName).object(key).server_side_encryption
 enc_state = (enc != nil) ? enc : &quot;not set&quot;
 puts &quot;Encryption state is #{enc_state}.&quot;
 </code></pre>
@@ -93,29 +110,36 @@ puts &quot;Encryption state is #{enc_state}.&quot;
                         				the options hash argument as shown in the following Ruby code example. The code
                         				example demonstrates how to copy an object and encrypt the copy. 
                      </p>
-                     			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">require &apos;aws-sdk-s3&apos;
+                     			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="ruby ">require &apos;aws-sdk-s3&apos;
 
-s3 = Aws::S3::Resource.new(region:&apos;<em class="replaceable"><code>us-west-2</code></em>&apos;)
-bucket1 = s3.bucket(&apos;<em class="replaceable"><code>source-bucket-name</code></em>&apos;)
-bucket2 = s3.bucket(&apos;<em class="replaceable"><code>target-bucket-name</code></em>&apos;)
-obj1 = bucket1.object(&apos;<em class="replaceable"><code>key</code></em>&apos;)
-obj2 = bucket2.object(&apos;<em class="replaceable"><code>key</code></em>&apos;)
+regionName = &apos;us-west-2&apos; 
+encryptionType = &apos;AES256&apos;
+
+s3 = Aws::S3::Resource.new(region:regionName)
+bucket1 = s3.bucket(&apos;source-bucket-name&apos;)
+bucket2 = s3.bucket(&apos;target-bucket-name&apos;)
+obj1 = bucket1.object(&apos;Bucket1Key&apos;)
+obj2 = bucket2.object(&apos;Bucket2Key&apos;)
  
-obj1.copy_to(obj2, :server_side_encryption =&gt; &apos;AES256&apos;)
+obj1.copy_to(obj2, :server_side_encryption =&gt; encryptionType)
 </code></pre>
                      			<p>For a sample of how to copy an object without encryption, see <a href="CopyingObjectUsingRuby.html">Copy an Object Using the AWS SDK for Ruby</a>.
                         			
                      </p>
                      		
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -125,7 +149,9 @@ obj1.copy_to(obj2, :server_side_encryption =&gt; &apos;AES256&apos;)
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="SSEUsingPHPSDK.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="SSEUsingRESTAPI.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -143,6 +169,10 @@ obj1.copy_to(obj2, :server_side_encryption =&gt; &apos;AES256&apos;)
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

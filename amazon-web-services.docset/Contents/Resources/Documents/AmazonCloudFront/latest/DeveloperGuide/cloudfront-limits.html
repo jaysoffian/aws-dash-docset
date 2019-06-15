@@ -4,14 +4,16 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="Introduction.html" title="What Is Amazon CloudFront?">
-      <link rel="prev" href="TutorialStreamingJWPlayer.html" title="On-Demand Video Streaming Using CloudFront and JW Player">
-      <link rel="next" href="Resources.html" title="Amazon CloudFront Resources">
+      <link rel="prev" href="infrastructure-security.html" title="Infrastructure Security in Amazon CloudFront">
+      <link rel="next" href="Resources.html" title="Amazon CloudFront Related Information">
       <meta name="description" content="Lists the limitations on CloudFront, such as the limits on distributions, data transfer rate, and requests per second, .">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/cloudfront-limits.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,13 +35,16 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Limits</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Limits</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="cloudfront-limits">Limits</h1>
-                     <p>CloudFront entities have the following limits. Note that Lambda@Edge has specific
+                     <p>CloudFront is subject to the following limits. Note that Lambda@Edge has specific
                         limits as well, 
                         	that are in addition to the default CloudFront limits.
                      </p>
@@ -48,6 +53,7 @@
                         <ul>
                            <li><a href="#limits-general">General Limits</a></li>
                            <li><a href="#limits-web-distributions">General Limits on Web Distributions</a></li>
+                           <li><a href="#limits-websockets">Limit on WebSocket Connections</a></li>
                            <li><a href="#limits-whitelisted-cookies">Limits on Whitelisted Cookies (Web Distributions Only)</a></li>
                            <li><a href="#limits-whitelisted-query-strings">Limits on Whitelisted Query Strings (Web Distributions Only)</a></li>
                            <li><a href="#limits-custom-headers">Limits on Custom Headers (Web Distributions Only)</a></li>
@@ -55,6 +61,7 @@
                            <li><a href="#limits-invalidations">Limits on Invalidations</a></li>
                            <li><a href="#limits-field-level-encryption">Limits on Field-Level Encryption</a></li>
                            <li><a href="#limits-lambda-at-edge">Limits on Lambda@Edge</a></li>
+                           <li><a href="#limits-request-timeout">Request Timeout</a></li>
                            <li><a href="#limits-rtmp-distributions">Limits on RTMP Distributions</a></li>
                         </ul>
                      </div>
@@ -65,7 +72,7 @@
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w313aac47b7b3">
+                           <table id="w521aac39b7b3">
                               					
                               <tbody><tr>
                                  						
@@ -121,7 +128,7 @@
                               <tr>
                                  						
                                  <td>
-                                    <p>Objects that you can serve per distribution</p>
+                                    <p>Files that you can serve per distribution</p>
                                  </td>
                                  						
                                  <td>
@@ -133,7 +140,9 @@
                               <tr>
                                  						
                                  <td>
-                                    <p>Maximum length of a request, including headers and query strings</p>
+                                    <p>Maximum length of a request, including headers and query strings, but not including
+                                       the body content
+                                    </p>
                                  </td>
                                  						
                                  <td>
@@ -159,8 +168,8 @@
                                  <td>
                                     <p>Active CloudFront key pairs for trusted signers</p>
                                     							
-                                    <p>For more information, see <a href="private-content-trusted-signers.html">Specifying the AWS Accounts That Can Create Signed URLs and Signed Cookies (Trusted
-                                          Signers)</a>.
+                                    <p>For more information, see <a href="private-content-trusted-signers.html">Specifying the AWS Accounts That Can Create Signed URLs and Signed
+                                          				Cookies (Trusted Signers)</a>.
                                     </p>
                                     						
                                  </td>
@@ -182,7 +191,7 @@
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w313aac47b9b3">
+                           <table id="w521aac39b9b3">
                               					
                               <tbody><tr>
                                  						
@@ -198,7 +207,7 @@
                                  <td>
                                     <p>Web distributions per AWS account</p>
                                     							
-                                    <p>For more information, see <a href="distribution-web.html">Working with Web Distributions</a>.
+                                    <p>For more information, see <a href="distribution-web-creating-console.html">Creating a Distribution</a>.
                                     </p>
                                     						
                                  </td>
@@ -230,8 +239,7 @@
                                     <p>Response timeout per origin</p>
                                     							
                                     <p>For more information, see 
-                                       								<a href="distribution-web-values-specify.html#DownloadDistValuesOriginResponseTimeout">Origin Response Timeout (Amazon EC2, Elastic Load Balancing, and Other Custom Origins
-                                          Only)</a>.
+                                       								<a href="distribution-web-values-specify.html#DownloadDistValuesOriginResponseTimeout">Origin Response Timeout</a>.
                                     </p>
                                     						
                                  </td>
@@ -266,7 +274,7 @@
                                  <td>
                                     <p>Alternate domain names (CNAMEs) per distribution</p>
                                     							
-                                    <p>For more information, see <a href="CNAMEs.html">Adding and Moving Alternate Domain Names (CNAMEs)</a>.
+                                    <p>For more information, see <a href="CNAMEs.html">Using Custom URLs for Files by Adding Alternate Domain Names (CNAMEs)</a>.
                                     </p>
                                     						
                                  </td>
@@ -298,6 +306,21 @@
                               <tr>
                                  						
                                  <td>
+                                    <p>Origin groups per distribution</p>
+                                 </td>
+                                 						
+                                 <td>
+                                    <p>10</p>
+                                    							
+                                    <p><a href="https://console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase&amp;limitType=service-code-cloudfront-distributions" target="_blank">Request a higher limit</a></p>
+                                    						
+                                 </td>
+                                 					
+                              </tr>
+                              					
+                              <tr>
+                                 						
+                                 <td>
                                     <p>Cache behaviors per distribution</p>
                                  </td>
                                  						
@@ -315,13 +338,53 @@
                      </div>
                      	
                      		
+                     <h2 id="limits-websockets">Limit on WebSocket Connections</h2>
+                     		
+                     		
+                     <div class="table">
+                        <p class="title"><b></b></p>
+                        <div class="table-contents">
+                           <table id="w521aac39c11b3">
+                              					
+                              <tbody><tr>
+                                 						
+                                 <th>Entity</th>
+                                 						
+                                 <th>Limit</th>
+                                 					
+                              </tr>
+                              				
+                              					
+                              					
+                              <tr>
+                                 						
+                                 <td>
+                                    <p>Origin response timeout (idle timeout)</p>
+                                 </td>
+                                 						
+                                 <td>
+                                    <p>10 minutes</p>
+                                    						
+                                    <p>If CloudFront hasn&apos;t detected any bytes sent from the origin to the client within
+                                       the
+                                       						past 10 minutes, the connection is assumed to be idle and is closed.
+                                    </p>
+                                 </td>
+                                 					
+                              </tr>
+                              				
+                           </tbody></table>
+                        </div>
+                     </div>
+                     	
+                     		
                      <h2 id="limits-whitelisted-cookies">Limits on Whitelisted Cookies (Web Distributions Only)</h2>
                      		
                      		
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w313aac47c11b3">
+                           <table id="w521aac39c13b3">
                               					
                               <tbody><tr>
                                  						
@@ -337,7 +400,7 @@
                                  <td>
                                     <p>Whitelisted cookies per cache behavior</p>
                                     							
-                                    <p>For more information, see <a href="Cookies.html">Configuring CloudFront to Cache Objects Based on Cookies</a>.
+                                    <p>For more information, see <a href="Cookies.html">Caching Content Based on Cookies</a>.
                                     </p>
                                     						
                                  </td>
@@ -377,7 +440,7 @@
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w313aac47c13b3">
+                           <table id="w521aac39c15b3">
                               					
                               <tbody><tr>
                                  						
@@ -421,7 +484,7 @@
                                  <td>
                                     <p>Whitelisted query strings per cache behavior</p>
                                     							
-                                    <p>For more information, see <a href="QueryStringParameters.html">Configuring CloudFront to Cache Based on Query String Parameters</a>.
+                                    <p>For more information, see <a href="QueryStringParameters.html">Caching Content Based on Query String Parameters</a>.
                                     </p>
                                     						
                                  </td>
@@ -446,7 +509,7 @@
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w313aac47c15b3">
+                           <table id="w521aac39c17b3">
                               					
                               <tbody><tr>
                                  						
@@ -462,7 +525,7 @@
                                  <td>
                                     <p>Whitelisted headers per cache behavior</p>
                                     							
-                                    <p>For more information, see <a href="header-caching.html">Configuring CloudFront to Cache Objects Based on Request Headers</a>.
+                                    <p>For more information, see <a href="header-caching.html">Caching Content Based on Request Headers</a>.
                                     </p>
                                     						
                                  </td>
@@ -483,7 +546,7 @@
                                        to forward to the origin
                                     </p>
                                     							
-                                    <p>For more information, see <a href="forward-custom-headers.html">Forwarding Custom Headers to Your Origin (Web Distributions Only)</a>.
+                                    <p>For more information, see <a href="forward-custom-headers.html">Forwarding Custom Headers to Your Origin</a>.
                                     </p>
                                     						
                                  </td>
@@ -544,7 +607,7 @@
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w313aac47c17b3">
+                           <table id="w521aac39c19b3">
                               					
                               <tbody><tr>
                                  						
@@ -600,7 +663,7 @@
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w313aac47c19b3">
+                           <table id="w521aac39c21b3">
                               					
                               <tbody><tr>
                                  						
@@ -614,11 +677,11 @@
                               <tr>
                                  						
                                  <td>
-                                    <p>Object invalidation: maximum number of objects allowed in active invalidation requests,
+                                    <p>File invalidation: maximum number of files allowed in active invalidation requests,
                                        excluding wildcard invalidations
                                     </p>
                                     							
-                                    <p>For more information, see <a href="Invalidation.html">Invalidating Objects (Web Distributions Only)</a>.
+                                    <p>For more information, see <a href="Invalidation.html">Invalidating Files</a>.
                                     </p>
                                     						
                                  </td>
@@ -632,7 +695,7 @@
                               <tr>
                                  						
                                  <td>
-                                    <p>Object invalidation: maximum number of active wildcard invalidations allowed</p>
+                                    <p>File invalidation: maximum number of active wildcard invalidations allowed</p>
                                  </td>
                                  						
                                  <td>
@@ -644,9 +707,7 @@
                               <tr>
                                  						
                                  <td>
-                                    <p>Object invalidation: maximum number of objects that one wildcard invalidation can
-                                       process
-                                    </p>
+                                    <p>File invalidation: maximum number of files that one wildcard invalidation can process</p>
                                  </td>
                                  						
                                  <td>
@@ -666,7 +727,7 @@
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w313aac47c21b3">
+                           <table id="w521aac39c23b3">
                               					
                               <tbody><tr>
                                  						
@@ -682,8 +743,7 @@
                                  <td>
                                     <p>Maximum length of a field to encrypt</p>
                                     							
-                                    <p>For more information, see <a href="field-level-encryption.html">Using Field-Level Encryption to Help Protect Sensitive
-                                          		Data</a>.
+                                    <p>For more information, see <a href="field-level-encryption.html">Using Field-Level Encryption to Help Protect Sensitive Data</a>.
                                     </p>
                                     						
                                  </td>
@@ -697,8 +757,7 @@
                               <tr>
                                  						
                                  <td>
-                                    <p>Maximum number of fields in a request body when field-level encryption encryption
-                                       is
+                                    <p>Maximum number of fields in a request body when field-level encryption is
                                        								configured
                                     </p>
                                  </td>
@@ -815,7 +874,7 @@
                      <p>The limits in this section apply to Lambda@Edge. These limits are in addition to the
                         default
                         			CloudFront and Lambda limits, which also apply. See the default Lambda limits in
-                        the <a href="./lambda/latest/dg/limits.html" target="_blank">Limits</a> 
+                        the <a href="./lambda/latest/dg/limits.html">Limits</a> 
                         			section of the <em>AWS Lambda Developer Guide</em>.
                         			
                      </p>
@@ -824,7 +883,7 @@
                         <p class="aws-note">Note</p>
                         <p>Lambda dynamically scales capacity in response to increased traffic, within your account&#x2019;s
                            limits. For more information, see 
-                           			the <a href="./lambda/latest/dg/scaling.html" target="_blank">Scaling</a> section of the <em>AWS Lambda Developer Guide</em>.
+                           			the <a href="./lambda/latest/dg/scaling.html">Scaling</a> section of the <em>AWS Lambda Developer Guide</em>.
                         </p>
                      </div>
                      		
@@ -836,7 +895,7 @@
                      <div class="table">
                         <p class="title"><b>Limits that differ by event-type</b></p>
                         <div class="table-contents">
-                           <table id="w313aac47c23b9">
+                           <table id="w521aac39c25b9">
                               					
                               <tbody><tr>
                                  						
@@ -929,7 +988,7 @@
                      <div class="table">
                         <p class="title"><b>Other limits</b></p>
                         <div class="table-contents">
-                           <table id="w313aac47c23c11">
+                           <table id="w521aac39c25c11">
                               					
                               <tbody><tr>
                                  						
@@ -1002,7 +1061,7 @@
                                     <p>Concurrent executions</p>
                                     							
                                     <p>For more information, see 
-                                       								<a href="./lambda/latest/dg/concurrent-executions.html" target="_blank">Lambda Function Concurrent Executions</a> in the 
+                                       								<a href="./lambda/latest/dg/concurrent-executions.html">Lambda Function Concurrent Executions</a> in the 
                                        								<em>AWS Lambda Developer Guide</em>.
                                     </p>
                                     						
@@ -1024,13 +1083,53 @@
                      </div>
                      	
                      		
+                     <h2 id="limits-request-timeout">Request Timeout</h2>
+                     		
+                     		
+                     <div class="table">
+                        <p class="title"><b></b></p>
+                        <div class="table-contents">
+                           <table id="w521aac39c27b3">
+                              					
+                              <tbody><tr>
+                                 						
+                                 <th>Entity</th>
+                                 						
+                                 <th>Limit</th>
+                                 					
+                              </tr>
+                              				
+                              					
+                              <tr>
+                                 						
+                                 <td>
+                                    <p>Request timeout</p>
+                                    						
+                                 </td>
+                                 						
+                                 <td>
+                                    							
+                                    <p>30 seconds</p>
+                                    							
+                                    <p><a href="./AmazonCloudFront/latest/DeveloperGuide/RequestAndResponseBehaviorCustomOrigin.html#request-custom-request-timeout">
+                                          								Request a higher limit</a></p>
+                                    						
+                                 </td>
+                                 					
+                              </tr>
+                              				
+                           </tbody></table>
+                        </div>
+                     </div>
+                     	
+                     		
                      <h2 id="limits-rtmp-distributions">Limits on RTMP Distributions</h2>
                      		
                      		
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w313aac47c25b3">
+                           <table id="w521aac39c29b3">
                               					
                               <tbody><tr>
                                  						
@@ -1064,15 +1163,19 @@
                         </div>
                      </div>
                      	
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -1081,8 +1184,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="TutorialStreamingJWPlayer.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="Resources.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="infrastructure-security.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="Resources.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -1093,6 +1198,7 @@
                      <ul class="pagetoc">
                         <li class="pagetoc" name="General Limits"><a class="pagetoc" href="#limits-general">General Limits</a></li>
                         <li class="pagetoc" name="General Limits on Web Distributions"><a class="pagetoc" href="#limits-web-distributions">General Limits on Web Distributions</a></li>
+                        <li class="pagetoc" name="Limit on WebSocket Connections"><a class="pagetoc" href="#limits-websockets">Limit on WebSocket Connections</a></li>
                         <li class="pagetoc" name="Limits on Whitelisted Cookies (Web Distributions Only)"><a class="pagetoc" href="#limits-whitelisted-cookies">Limits on Whitelisted Cookies (Web Distributions Only)</a></li>
                         <li class="pagetoc" name="Limits on Whitelisted Query Strings (Web Distributions Only)"><a class="pagetoc" href="#limits-whitelisted-query-strings">Limits on Whitelisted Query Strings (Web Distributions Only)</a></li>
                         <li class="pagetoc" name="Limits on Custom Headers (Web Distributions Only)"><a class="pagetoc" href="#limits-custom-headers">Limits on Custom Headers (Web Distributions Only)</a></li>
@@ -1100,12 +1206,17 @@
                         <li class="pagetoc" name="Limits on Invalidations"><a class="pagetoc" href="#limits-invalidations">Limits on Invalidations</a></li>
                         <li class="pagetoc" name="Limits on Field-Level Encryption"><a class="pagetoc" href="#limits-field-level-encryption">Limits on Field-Level Encryption</a></li>
                         <li class="pagetoc" name="Limits on Lambda@Edge"><a class="pagetoc" href="#limits-lambda-at-edge">Limits on Lambda@Edge</a></li>
+                        <li class="pagetoc" name="Request Timeout"><a class="pagetoc" href="#limits-request-timeout">Request Timeout</a></li>
                         <li class="pagetoc" name="Limits on RTMP Distributions"><a class="pagetoc" href="#limits-rtmp-distributions">Limits on RTMP Distributions</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

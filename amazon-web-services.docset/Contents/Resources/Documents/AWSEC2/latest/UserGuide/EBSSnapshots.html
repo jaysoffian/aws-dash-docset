@@ -4,14 +4,16 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="AmazonEBS.html" title="Amazon Elastic Block Store (Amazon EBS)">
-      <link rel="prev" href="stop-start.html" title="Appendix: Starting and Stopping an Instance to Modify an EBS Volume">
-      <link rel="next" href="ebs-creating-snapshot.html" title="Creating an Amazon EBS Snapshot">
-      <meta name="description" content="Use snapshots as a point-in-time backup copies of an Amazon EBS volume.">
+      <link rel="prev" href="ebs-deleting-volume.html" title="Deleting an Amazon EBS Volume">
+      <link rel="next" href="ebs-creating-snapshot.html" title="Creating Amazon EBS Snapshots">
+      <meta name="description" content="Use snapshots as a point-in-time backup copy of an Amazon EBS volume.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSSnapshots.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <span class="breadcrumb">Amazon EBS Snapshots</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <span class="breadcrumb">Amazon EBS Snapshots</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="EBSSnapshots">Amazon EBS Snapshots</h1>
                      <p>You can back up the data on your Amazon EBS volumes to Amazon S3 by taking point-in-time
@@ -48,25 +53,38 @@
                         data.
                         When you delete a snapshot, only the data unique to that snapshot is removed. Each
                         snapshot
-                        contains all of the information needed to restore your data (from the moment when
-                        the snapshot
-                        was taken) to a new EBS volume. 
+                        contains all of the information that is needed to restore your data (from the moment
+                        when the
+                        snapshot was taken) to a new EBS volume. 
                      </p>
                      <p>When you create an EBS volume based on a snapshot, the new volume begins as an exact
                         replica
                         of the original volume that was used to create the snapshot. The replicated volume
-                        loads data
-                        lazily in the background so that you can begin using it immediately. If you access
-                        data that
-                        hasn&apos;t been loaded yet, the volume immediately downloads the requested data from Amazon
-                        S3, and then
-                        continues loading the rest of the volume&apos;s data in the background. For more information,
-                        see
-                        <a href="ebs-creating-snapshot.html">Creating an Amazon EBS Snapshot</a>.
+                        loads data in
+                        the background so that you can begin using it immediately. If you access data that
+                        hasn&apos;t been
+                        loaded yet, the volume immediately downloads the requested data from Amazon S3, and
+                        then continues
+                        loading the rest of the volume&apos;s data in the background. For more information, see
+                        <a href="ebs-creating-snapshot.html">Creating Amazon EBS Snapshots</a>.
+                     </p>
+                     <p> <b>Multi-Volume Snapshots</b></p>
+                     <p>Snapshots can be used to create a backup of critical workloads, such as a large database
+                        or a file system that spans across multiple EBS volumes. Multi-volume snapshots allow
+                        you to
+                        take exact point-in-time, data coordinated, and crash-consistent snapshots across
+                        multiple EBS
+                        volumes attached to an EC2 instance. You are no longer required to stop your instance
+                        or to
+                        coordinate between volumes to ensure crash consistency, because snapshots are automatically
+                        taken
+                        across multiple EBS volumes. For more information, see the steps for creating a multi-volume
+                        EBS
+                        snapshot under <a href="ebs-creating-snapshot.html">Creating Amazon EBS Snapshots</a>.
                      </p>
                      <p>You can track the status of your EBS snapshots through CloudWatch Events. For more
                         information, see
-                        <a href="./AWSEC2/latest/UserGuide/ebs-cloud-watch-events.html" target="_blank">Amazon CloudWatch Events for
+                        <a href="./AWSEC2/latest/UserGuide/ebs-cloud-watch-events.html">Amazon CloudWatch Events for
                            Amazon EBS</a>.
                      </p>
                      <div class="highlights">
@@ -74,12 +92,13 @@
                         <ul>
                            <li><a href="#how_snapshots_work">How Incremental Snapshots Work</a></li>
                            <li><a href="#copy-and-share">Copying and Sharing Snapshots</a></li>
-                           <li><a href="#encryption-support">Encryption Support for Snapshots</a></li>
-                           <li><a href="ebs-creating-snapshot.html">Creating an Amazon EBS Snapshot</a></li>
+                           <li><a href="#encryption-support">Encryption Support for Snapshots </a></li>
+                           <li><a href="ebs-creating-snapshot.html">Creating Amazon EBS Snapshots</a></li>
                            <li><a href="ebs-deleting-snapshot.html">Deleting an Amazon EBS Snapshot</a></li>
                            <li><a href="ebs-copy-snapshot.html">Copying an Amazon EBS Snapshot</a></li>
                            <li><a href="ebs-describing-snapshots.html">Viewing Amazon EBS Snapshot Information</a></li>
                            <li><a href="ebs-modifying-snapshot-permissions.html">Sharing an Amazon EBS Snapshot</a></li>
+                           <li><a href="snapshot-lifecycle.html">Automating the Amazon EBS Snapshot Lifecycle</a></li>
                         </ul>
                      </div>
                      
@@ -98,6 +117,7 @@
                      </p>
                      
                      <div class="itemizedlist">
+                        
                         
                         
                         
@@ -126,10 +146,15 @@
                               <p>In State 3, 2 GiB of data have been added to the volume, for a total of 12 GiB. Snap
                                  C
                                  needs to copy the 2 GiB that were added after Snap B was taken. As shown by the dashed
-                                 arrows, Snap C also references the 4 GiB of data stored in Snap B, and the 6 GiB of
-                                 data
-                                 stored in Snap A. The total storage required for the three snapshots is 16 GiB.
+                                 arrows, Snap C also references 4 GiB of data stored in Snap B, and 6 GiB of data stored
+                                 in
+                                 Snap A. 
                               </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The total storage required for the three snapshots is 16 GiB.</p>
                               
                            </li>
                         </ul>
@@ -151,6 +176,15 @@
                         
                      </div>
                      
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>If you copy a snapshot and encrypt it to a new CMK, a complete
+                           (non-incremental) copy is always created, resulting in additional delay and
+                           storage costs.
+                        </p>
+                     </div>
+                     
                      <p>For more information about how data is managed when you delete a snapshot, see <a href="ebs-deleting-snapshot.html">Deleting an Amazon EBS Snapshot</a>.
                      </p>
                      
@@ -164,10 +198,12 @@
                         more information, see <a href="ebs-modifying-snapshot-permissions.html">Sharing an Amazon EBS Snapshot</a>.
                      </p>
                      
-                     <p>A snapshot is constrained to the region where it was created. After you create a snapshot
-                        of an EBS volume, you can use it to create new volumes in the same region. For more
+                     <p>A snapshot is constrained to the AWS Region where it was created. After you create
+                        a
+                        snapshot of an EBS volume, you can use it to create new volumes in the same Region.
+                        For more
                         information, see <a href="ebs-restoring-volume.html">Restoring an Amazon EBS Volume from a Snapshot</a>.
-                        You can also copy snapshots across regions, making it possible to use multiple regions
+                        You can also copy snapshots across Regions, making it possible to use multiple Regions
                         for
                         geographical expansion, data center migration, and disaster recovery. You can copy
                         any
@@ -175,11 +211,12 @@
                      </p>
                      
                      
-                     <h2 id="encryption-support">Encryption Support for Snapshots</h2>
+                     <h2 id="encryption-support">Encryption Support for Snapshots </h2>
                      
-                     <p>EBS snapshots broadly support EBS encryption.</p>
+                     <p>EBS snapshots fully support EBS encryption.</p>
                      
                      <div class="itemizedlist">
+                        
                         
                         
                         
@@ -193,7 +230,14 @@
                            </li>
                            <li class="listitem">
                               
-                              <p>Volumes that are created from encrypted snapshots are automatically encrypted.</p>
+                              <p>Volumes that you create from encrypted snapshots are automatically encrypted.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Volumes that you create from an unencrypted snapshot that you own or have access to
+                                 can be encrypted on-the-fly.
+                              </p>
                               
                            </li>
                            <li class="listitem">
@@ -206,27 +250,43 @@
                            </li>
                            <li class="listitem">
                               
-                              <p>When you copy an encrypted snapshot that you own, you can reencrypt it with a
-                                 different key during the copy process.
+                              <p>When you copy an encrypted snapshot that you own or have access to, you can reencrypt
+                                 it with a different key during the copy process.
                               </p>
                               
                            </li>
                         </ul>
                      </div>
                      
-                     <p>For more information, see <a href="./AWSEC2/latest/UserGuide/EBSEncryption.html" target="_blank">Amazon
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>If you copy a snapshot and encrypt it to a new CMK, a complete
+                           (non-incremental) copy is always created, resulting in additional delay and
+                           storage costs.
+                        </p>
+                     </div>
+                     
+                     <p>Complete documentation of possible snapshot encryption scenarios is provided in <a href="ebs-creating-snapshot.html">Creating Amazon EBS Snapshots</a> and in <a href="ebs-copy-snapshot.html">Copying an Amazon EBS Snapshot</a>.
+                     </p>
+                     
+                     <p>For more information, see <a href="./AWSEC2/latest/UserGuide/EBSEncryption.html">Amazon
                            EBS Encryption</a>.
                      </p>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -235,8 +295,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="stop-start.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="ebs-creating-snapshot.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="ebs-deleting-volume.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="ebs-creating-snapshot.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -247,12 +309,16 @@
                      <ul class="pagetoc">
                         <li class="pagetoc" name="How Incremental Snapshots Work"><a class="pagetoc" href="#how_snapshots_work">How Incremental Snapshots Work</a></li>
                         <li class="pagetoc" name="Copying and Sharing Snapshots"><a class="pagetoc" href="#copy-and-share">Copying and Sharing Snapshots</a></li>
-                        <li class="pagetoc" name="Encryption Support for Snapshots"><a class="pagetoc" href="#encryption-support">Encryption Support for Snapshots</a></li>
+                        <li class="pagetoc" name="Encryption Support for Snapshots "><a class="pagetoc" href="#encryption-support">Encryption Support for Snapshots </a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

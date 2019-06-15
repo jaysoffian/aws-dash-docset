@@ -1,16 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Creating an API in Amazon API Gateway - Amazon API Gateway</title>
+      <title>Creating a REST API in Amazon API Gateway - Amazon API Gateway</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="welcome.html" title="What Is Amazon API Gateway?">
-      <link rel="prev" href="getting-started-aws-proxy.html" title="Build an API Gateway API with AWS Integration">
-      <link rel="next" href="create-api-resources-methods.html" title=" Initialize API Setup in API Gateway ">
+      <link rel="up" href="apigateway-rest-api.html" title="Creating, Deploying, and Invoking a REST API
+            in Amazon API Gateway">
+      <link rel="prev" href="apigateway-rest-api.html" title="Creating, Deploying, and Invoking a REST API
+            in Amazon API Gateway">
+      <link rel="next" href="api-gateway-api-endpoint-types.html" title="Choose an Endpoint Type to Set up for
+                an API Gateway API">
       <meta name="description" content="Learn the types of APIs in Amazon API Gateway and how to create one of a specific type.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/how-to-create-api.html">
@@ -20,7 +25,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,43 +37,47 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Creating an API in Amazon API Gateway</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <span class="breadcrumb">Creating a REST API in Amazon API Gateway</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="how-to-create-api">Creating an API in Amazon API Gateway</h1>
-                     <p> In Amazon API Gateway, you build an API with a collection of programmable entities
-                        known as API Gateway
-                        <a href="./apigateway/api-reference/resource/" target="_blank">resources</a>. For example, you use a <a href="./apigateway/api-reference/resource/rest-api/" target="_blank">RestApi</a> resource to represent an API that
-                        can contain a collection of <a href="./apigateway/api-reference/resource/resource/" target="_blank">Resource</a>
-                        entities. Each <code class="code">Resource</code> entity can in turn have one or more <a href="./apigateway/api-reference/resource/method/" target="_blank">Method</a> resources. Expressed in the request
-                        parameters and body, a <code class="code">Method</code> defines the application programming interface for
-                        the client to access the exposed <code class="code">Resource</code> and represents an incoming request
-                        submitted by the client. You then create an <a href="./apigateway/api-reference/resource/integration/" target="_blank"><code class="code">Integration</code></a> resource to integrate the <code class="code">Method</code> with
-                        a backend endpoint, also known as the integration endpoint, by forwarding the incoming
-                        request to a specified integration endpoint URI. If necessary, you transform request
-                        parameters or body to meet the backend requirements. For responses, you can create
-                        a <a href="./apigateway/api-reference/resource/method-response/" target="_blank">MethodResponse</a> resource to
-                        represent a request response received by the client and you create an <a href="./apigateway/api-reference/resource/integration-response/" target="_blank">IntegrationResponse</a> resource
-                        to represent the request response that is returned by the backend. You can configure
+                     <h1 class="topictitle" id="how-to-create-api">Creating a REST API in Amazon API Gateway</h1>
+                     <p> In Amazon API Gateway, you build a REST API as a collection of programmable entities
+                        known as
+                        API Gateway <a href="./apigateway/api-reference/resource/">resources</a>. For example, you use a <a href="./apigateway/api-reference/resource/rest-api/"><code class="code">RestApi</code></a> resource to represent
+                        an API that can contain a collection of <a href="./apigateway/api-reference/resource/resource/"><code class="code">Resource</code></a> entities. Each <code class="code">Resource</code> entity can in
+                        turn have one or more <a href="./apigateway/api-reference/resource/method/"><code class="code">Method</code></a>
+                        resources. Expressed in the request parameters and body, a <code class="code">Method</code> defines the
+                        application programming interface for the client to access the exposed <code class="code">Resource</code>
+                        and represents an incoming request submitted by the client. You then create an <a href="./apigateway/api-reference/resource/integration/"><code class="code">Integration</code></a> resource to
+                        integrate the <code class="code">Method</code> with a backend endpoint, also known as the integration
+                        endpoint, by forwarding the incoming request to a specified integration endpoint URI.
+                        If
+                        necessary, you transform request parameters or body to meet the backend requirements.
+                        For
+                        responses, you can create a <a href="./apigateway/api-reference/resource/method-response/"><code class="code">MethodResponse</code></a> resource to represent a request response
+                        received by the client and you create an <a href="./apigateway/api-reference/resource/integration-response/"><code class="code">IntegrationResponse</code></a> resource to represent the request response
+                        that is returned by the backend. You can configure the integration response to transform
                         the
-                        integration response to transform the backend response data before returning the data
-                        to the
-                        client or to pass the backend response as-is to the client. 
+                        backend response data before returning the data to the client or to pass the backend
+                        response as-is to the client. 
                      </p>
                      <p>To help your customers understand your API, you can also provide documentation for
                         the
                         API, as part of the API creation or after the API is created. To enable this, add
-                        a
-                        <code class="code"><a href="./apigateway/api-reference/resource/documentation-part/" target="_blank">DocumentationPart</a></code> resource for a supported API entity. 
+                        a <a href="./apigateway/api-reference/resource/documentation-part/"><code class="code">DocumentationPart</code></a>
+                        resource for a supported API entity. 
                      </p>
                      <p>To control how clients call an API, use <a href="permissions.html">IAM
-                           permissions</a>, a <a href="apigateway-use-lambda-authorizer.html">Lambda authorizer</a>, or
-                        an <a href="apigateway-integrate-with-cognito.html">Amazon Cognito user pool</a>. To meter the
-                        use of your API, set up <code class="code"><a href="./apigateway/api-reference/resource/usage-plan/" target="_blank">usage
-                              plans</a></code> to throttle API requests. You can enable these when creating or
-                        updating the API.
+                           permissions</a>, a <a href="apigateway-use-lambda-authorizer.html">Lambda
+                           authorizer</a>, or an <a href="apigateway-integrate-with-cognito.html">Amazon Cognito user
+                           pool</a>. To meter the use of your API, set up <a href="api-gateway-api-usage-plans.html">usage plans</a> to throttle API requests. You
+                        can enable these when creating or updating the API.
                      </p>
                      <p> You can perform these and other tasks by using the API Gateway console, the API Gateway
                         REST API, the
@@ -77,72 +86,36 @@
                      <div class="highlights">
                         <p><strong>Topics</strong></p>
                         <ul>
-                           <li><a href="#api-gateway-api-endpoint-types">Choose an Endpoint Type to Set up an
-                                 API Gateway API</a></li>
-                           <li><a href="create-api-resources-methods.html"> Initialize API Setup in API Gateway </a></li>
-                           <li><a href="how-to-method-settings.html">Set up API Methods in API Gateway </a></li>
-                           <li><a href="how-to-integration-settings.html">Set up API Integrations in API Gateway</a></li>
-                           <li><a href="customize-gateway-responses.html">Set up Gateway Responses to Customize Error Responses</a></li>
-                           <li><a href="mappings.html">Set up
-                                 API Gateway
-                                 Request and Response Data Mappings  </a></li>
+                           <li><a href="api-gateway-api-endpoint-types.html">Choose an Endpoint Type to Set up for
+                                 an API Gateway API</a></li>
+                           <li><a href="create-api-resources-methods.html"> Initialize REST API Setup in
+                                 API Gateway</a></li>
+                           <li><a href="how-to-method-settings.html">Set up REST API Methods in API Gateway</a></li>
+                           <li><a href="how-to-integration-settings.html">Set up REST API Integrations in API Gateway</a></li>
+                           <li><a href="customize-gateway-responses.html">Set up Gateway Responses to Customize Error
+                                 Responses</a></li>
+                           <li><a href="mappings.html">Set up API Gateway Request and Response Data Mappings</a></li>
                            <li><a href="api-gateway-payload-encodings.html">Support Binary Payloads in
                                  API Gateway</a></li>
-                           <li><a href="api-gateway-gzip-compression-decompression.html"> Enable Payload Compression for an API </a></li>
+                           <li><a href="api-gateway-gzip-compression-decompression.html">Enable Payload Compression for
+                                 an API</a></li>
                            <li><a href="api-gateway-method-request-validation.html">Enable Request Validation in API Gateway</a></li>
-                           <li><a href="updating-api.html">Update and Maintain an API in Amazon API Gateway</a></li>
-                           <li><a href="api-gateway-import-api.html">Import an API into API Gateway</a></li>
+                           <li><a href="api-gateway-import-api.html">Import a REST API into API Gateway</a></li>
                         </ul>
                      </div>
-                     
-                     <h2 id="api-gateway-api-endpoint-types">Choose an Endpoint Type to Set up an
-                        API Gateway API
-                     </h2>
-                     
-                     
-                     <p>An <a href="api-gateway-basic-concept.html">API endpoint</a> refers to a host name
-                        of the API. the API endpoint can be edge-optimized or regional, depending on where
-                        the
-                        majority of your API traffic originates from. You choose a specific endpoint type
-                        when
-                        creating an API. 
-                     </p>
-                     
-                     <p>An
-                        edge-optimized API endpoint optimizes access to an API by geographically distributed
-                        clients through an Amazon CloudFront distribution. API requests are routed to the
-                        nearest CloudFront
-                        Point of Presence (POP) . By default, an API is created with the
-                        edge-optimized endpoint.
-                     </p>
-                     
-                     <p>A regional API is intended for clients in the same region. When a client running on
-                        an
-                        EC2 instance calls an API in the same region, or when an API is intended to serve
-                        a
-                        small number of clients with high demands, a regional API reduces connection overhead.
-                        
-                     </p>
-                     
-                     <p>For an edge-optimized API, you create a custom domain name that applies across all
-                        the
-                        regions. For a regional API, you create a custom domain name that is specific to the
-                        API
-                        hosting region. It is possible that a regional API deployed in different regions can
-                        have the same custom domain name.
-                        
-                        
-                     </p>
-                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -151,23 +124,21 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="getting-started-aws-proxy.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="create-api-resources-methods.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="apigateway-rest-api.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="api-gateway-api-endpoint-types.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
             <div id="right-expanded">
-               <div id="right-content-wrapper">
-                  <div id="pagetoc">
-                     <p>On this page:</p>
-                     <ul class="pagetoc">
-                        <li class="pagetoc" name="Choose an Endpoint Type to Set up an
-                API Gateway API"><a class="pagetoc" href="#api-gateway-api-endpoint-types">Choose an Endpoint Type to Set up an API</a></li>
-                     </ul>
-                  </div>
-               </div>
+               <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

@@ -1,0 +1,620 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Working with Burstable Performance
+         Instances - Amazon Elastic Compute Cloud
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="burstable-performance-instances.html" title="Burstable Performance Instances">
+      <link rel="prev" href="standard-mode-examples.html" title="Examples: Standard Mode">
+      <link rel="next" href="burstable-performance-instances-monitoring-cpu-credits.html" title="Monitoring Your CPU Credits">
+      <meta name="description" content="The steps for launching, monitoring, and modifying these instances are similar. The key difference is the default credit specification when they launch:">
+      <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Elastic Compute Cloud">
+      <meta name="guide" content="User Guide for Linux Instances">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-performance-instances-how-to.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="instance-types.html">Instance Types</a> &#xBB; <a href="general-purpose-instances.html">General Purpose Instances</a> &#xBB; <a href="burstable-performance-instances.html">Burstable Performance Instances</a> &#xBB; <span class="breadcrumb">Working with Burstable Performance
+                                    Instances</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="burstable-performance-instances-how-to">Working with Burstable Performance
+                        Instances
+                     </h1>
+                     <p>The steps for launching, monitoring, and modifying these instances are similar. The
+                        key difference is the default credit specification when they launch: 
+                     </p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>T3 and T3a instances launch as <code class="code">unlimited</code> by default.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>T2 instances launch as <code class="code">standard</code> by default.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Contents</strong></p>
+                        <ul>
+                           <li><a href="#launch-burstable-performance-instances">Launching a Burstable
+                                 Performance Instance as Unlimited or Standard</a></li>
+                           <li><a href="#burstable-performance-instances-auto-scaling-grp">Using an Auto Scaling Group to Launch a Burstable
+                                 Performance Instance as Unlimited</a></li>
+                           <li><a href="#describe-burstable-performance-instances">Viewing the Credit
+                                 Specification of a Burstable Performance Instance</a></li>
+                           <li><a href="#modify-burstable-performance-instances">Modifying the Credit
+                                 Specification of a Burstable Performance Instance</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="launch-burstable-performance-instances">Launching a Burstable
+                        Performance Instance as Unlimited or Standard
+                     </h2>
+                     
+                     <p>T3 and T3a instances launch as <code class="code">unlimited</code> by default. T2 instances launch as
+                        <code class="code">standard</code> by default.
+                     </p>
+                     
+                     <p>For more information about AMI and driver requirements for these instances, see 
+                        <a href="general-purpose-instances.html#general-purpose-instances-limits">Release Notes</a>.
+                     </p>
+                     
+                     <p>You must launch your instances using an Amazon EBS volume as the root device.
+                        For more information, see <a href="RootDeviceStorage.html">Amazon EC2 Root Device Volume</a>.
+                     </p>
+                     
+                     <p>You can launch your instances as <code class="code">unlimited</code> or
+                        <code class="code">standard</code> using the Amazon EC2 console, an AWS SDK, a command line tool, or
+                        with an Auto Scaling group. For more information, see <a href="burstable-performance-instances-how-to.html#burstable-performance-instances-auto-scaling-grp">Using an Auto Scaling Group to Launch a Burstable
+                           Performance Instance as Unlimited</a>.
+                     </p>
+                     
+                     <p class="title"><b>To launch a burstable performance instance as Unlimited or Standard (console)</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Follow the <a href="launching-instance.html">Launching an Instance Using the Launch Instance Wizard</a> procedure.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>On the <b>Choose an Instance Type</b> page, select an
+                              instance type, and choose <b>Next: Configure Instance
+                                 Details</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose a credit specification. The default for T3 and T3a is <code class="code">unlimited</code>,
+                              and for T2 it is <code class="code">standard</code>.
+                           </p>
+                           
+                           <ol>
+                              <li>
+                                 
+                                 <p>To launch a T3 or T3a instance as <code class="code">standard</code>, on the
+                                    <b>Configure Instance Details</b> page, for
+                                    <b>T2/T3 Unlimited</b>, clear
+                                    <b>Enable</b>.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>To launch a T2 instance as <code class="code">unlimited</code>, on the
+                                    <b>Configure Instance Details</b> page, for
+                                    <b>T2/T3 Unlimited</b>, select
+                                    <b>Enable</b>.
+                                 </p>
+                                 
+                              </li>
+                           </ol>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Continue as prompted by the wizard. When you&apos;ve finished reviewing your
+                              options on the <b>Review Instance Launch</b> page, choose
+                              <b>Launch</b>. For more information, see <a href="launching-instance.html">Launching an Instance Using the Launch Instance Wizard</a>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <p class="title"><b>To launch a burstable performance instance as Unlimited or Standard (AWS CLI)</b></p>
+                     
+                     <p>Use the <a href="./cli/latest/reference/ec2/run-instances.html">run-instances</a> command to launch your instances. Specify the
+                        credit specification using the <code class="code">--credit-specification CpuCredits=</code>
+                        parameter. Valid credit specifications are <code class="code">unlimited</code> and
+                        <code class="code">standard</code>.
+                     </p>
+                     
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>For T3 and T3a, if you do not include the <code class="code">--credit-specification</code>
+                                 parameter, the instance launches as <code class="code">unlimited</code> by default.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>For T2, if you do not include the <code class="code">--credit-specification</code>
+                                 parameter, the instance launches as <code class="code">standard</code> by default.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 run-instances --image-id <em class="replaceable"><code>ami-abc12345</code></em> --count <em class="replaceable"><code>1</code></em> --instance-type <em class="replaceable"><code>t3.micro</code></em> --key-name <em class="replaceable"><code>MyKeyPair</code></em> --credit-specification &quot;CpuCredits=<em class="replaceable"><code>unlimited</code></em>&quot;</code></strong></code></pre>
+                     
+                     <h2 id="burstable-performance-instances-auto-scaling-grp">Using an Auto Scaling Group to Launch a Burstable
+                        Performance Instance as Unlimited
+                     </h2>
+                     
+                     <p>When burstable performance instances are launched or started, they require CPU credits
+                        for a
+                        good bootstrapping experience. If you use an Auto Scaling group to launch your instances,
+                        we recommend 
+                        that you configure your instances as <code class="code">unlimited</code>. If you do, the instances use surplus 
+                        credits when they are automatically launched or restarted by the Auto Scaling group.
+                        Using surplus credits 
+                        prevents performance restrictions.
+                     </p>
+                     
+                     
+                     
+                     <h3 id="burstable-performance-instances-asg-launch-template">Creating a Launch Template</h3>
+                     
+                     <p>You must use a <em>launch template</em> for launching 
+                        instances as <code class="code">unlimited</code> in an Auto Scaling group. A launch configuration
+                        does not support launching instances as <code class="code">unlimited</code>.
+                     </p>
+                     
+                     <p class="title"><b>To create a launch template that launches instances as Unlimited (console)</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Follow the <a href="./autoscaling/ec2/userguide/create-launch-template.html">Creating a Launch Template for an Auto Scaling
+                                 Group</a>
+                              procedure.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>In <b>Launch template contents</b>, for <b>Instance
+                                 type</b>, choose a T3, T3a, or T2 instance size.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>To launch instances as <code class="code">unlimited</code> in an Auto Scaling group,
+                              in <b>Advanced details</b>, for <b>T2/T3
+                                 Unlimited</b>, choose <b>Enable</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>When you&apos;ve finished defining the launch template parameters, choose
+                              <b>Create launch template</b>. For more information, see <a href="./autoscaling/ec2/userguide/create-launch-template.html">Creating a Launch Template for an Auto Scaling
+                                 Group</a>
+                              in the <em>Amazon EC2 Auto Scaling User Guide</em>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <p class="title"><b>To create a launch template that launches instances as Unlimited (AWS CLI)</b></p>
+                     
+                     <p>Use the <a href="./cli/latest/reference/ec2/create-launch-template.html">create-launch-template</a> command and specify <code class="code">unlimited</code>
+                        as the credit specification.
+                     </p>
+                     
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>For T3 and T3a, if you do not include the
+                                 <code class="code">CreditSpecification={CpuCredits=unlimited}</code> value, the
+                                 instance launches as <code class="code">unlimited</code> by default.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>For T2, if you do not include the
+                                 <code class="code">CreditSpecification={CpuCredits=unlimited}</code> value, the
+                                 instance launches as <code class="code">standard</code> by default.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 create-launch-template --launch-template-name <em class="replaceable"><code>MyLaunchTemplate</code></em> --version-description <em class="replaceable"><code>FirstVersion</code></em> --launch-template-data ImageId=<em class="replaceable"><code>ami-8c1be5f6</code></em>,InstanceType=<em class="replaceable"><code>t3.medium</code></em>,CreditSpecification={CpuCredits=<em class="replaceable"><code>unlimited</code></em>}</code></strong></code></pre>
+                     
+                     
+                     
+                     <h3 id="burstable-performance-instances-create-asg-with-launch-template">Associating an Auto Scaling Group with
+                        a Launch Template
+                     </h3>
+                     
+                     <p>To associate the launch template with an Auto Scaling group, create the Auto Scaling
+                        group
+                        using the launch template, or add the launch template to an existing Auto Scaling
+                        group.
+                     </p>
+                     
+                     <p class="title"><b>To create an Auto Scaling group using a launch template (console)</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>On the navigation bar at the top of the screen, select the same Region
+                              that you used when you created the launch template.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the navigation pane, choose <b>Auto Scaling Groups</b>,
+                              <b>Create Auto Scaling group</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Launch Template</b>, select your launch template,
+                              and then choose <b>Next Step</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Complete the fields for the Auto Scaling group. When you&apos;ve finished reviewing
+                              your configuration settings on the <b>Review page</b>, choose
+                              <b>Create Auto Scaling group</b>. For more information, see
+                              <a href="./autoscaling/ec2/userguide/create-asg-launch-template.html">Creating an Auto Scaling
+                                 Group Using a Launch Template</a> in the
+                              <em>Amazon EC2 Auto Scaling User Guide</em>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <p class="title"><b>To create an Auto Scaling group using a launch template (AWS CLI)</b></p>
+                     
+                     <p>Use the <a href="./cli/latest/reference/autoscaling/create-auto-scaling-group.html">create-auto-scaling-group</a> AWS CLI command and specify the
+                        <code class="code">--launch-template</code> parameter. 
+                     </p>
+                     
+                     
+                     
+                     <p class="title"><b>To add a launch template to an existing Auto Scaling group (console)</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>On the navigation bar at the top of the screen, select the same Region
+                              that you used when you created the launch template.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the navigation pane, choose <b>Auto Scaling Groups</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>From the Auto Scaling group list, select an Auto Scaling group, and choose
+                              <b>Actions</b>, <b>Edit</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>On the <b>Details</b> tab, for <b>Launch
+                                 Template</b>, choose a launch template, and then choose
+                              <b>Save</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <p class="title"><b>To add a launch template to an existing Auto Scaling group (AWS CLI)</b></p>
+                     
+                     <p>Use the <a href="./cli/latest/reference/autoscaling/update-auto-scaling-group.html">update-auto-scaling-group</a> AWS CLI command and specify the
+                        <code class="code">--launch-template</code> parameter. 
+                     </p>
+                     
+                     
+                     
+                     
+                     <h2 id="describe-burstable-performance-instances">Viewing the Credit
+                        Specification of a Burstable Performance Instance
+                     </h2>
+                     
+                     <p>You can view the credit specification (<code class="code">unlimited</code> or
+                        <code class="code">standard</code>) of a running or stopped instance.
+                     </p>
+                     
+                     <p class="title"><b>To view the credit specification of a burstable instance (console)</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>In the left navigation pane, choose <b>Instances</b> and
+                              select the instance.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Description</b> and view the <b>T2/T3
+                                 Unlimited</b> field.
+                           </p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p>If the value is <code class="code">Enabled</code>, then your instance is configured
+                                       as <code class="code">unlimited</code>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>If the value is <code class="code">Disabled</code>, then your instance is
+                                       configured as <code class="code">standard</code> .
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <p class="title"><b>To describe the credit specification of a burstable performance instance (AWS CLI)</b></p>
+                     
+                     <p>Use the <a href="./cli/latest/reference/ec2/describe-instance-credit-specifications.html">describe-instance-credit-specifications</a> command. If you do not specify
+                        one or more instance IDs, all instances with the credit specification of
+                        <code class="code">unlimited</code> are returned, as well as instances that were previously
+                        configured with the <code class="code">unlimited</code> credit specification. For
+                        example, if you resize a T3 instance to an M4 instance, while it is configured as
+                        <code class="code">unlimited</code>, Amazon EC2 returns the M4 instance.
+                     </p>
+                     
+                     
+                     <div class="example">
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 describe-instance-credit-specifications --instance-id <em class="replaceable"><code>i-1234567890abcdef0</code></em></code></strong></code></pre><p>The following is example output:</p><pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+  &quot;InstanceCreditSpecifications&quot;: [
+    {
+        &quot;InstanceId&quot;: &quot;i-1234567890abcdef0&quot;,
+        &quot;CpuCredits&quot;: &quot;unlimited&quot;
+    }
+  ]
+}</code></pre></div>
+                     </div>
+                     
+                     
+                     <h2 id="modify-burstable-performance-instances">Modifying the Credit
+                        Specification of a Burstable Performance Instance
+                     </h2>
+                     
+                     <p>You can switch the credit specification of a running or stopped instance
+                        at any time between <code class="code">unlimited</code> and <code class="code">standard</code>.
+                     </p>
+                     
+                     <p class="title"><b>To modify the credit specification of a burstable performance instance (console)</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>In the left navigation pane, choose <b>Instances</b> and
+                              select the instance. To modify the credit specification for several 
+                              instances at one time, select all applicable instances.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Actions</b>, <b>Instance Settings</b>,
+                              <b>Change T2/T3 Unlimited</b>.
+                           </p>
+                           
+                           <div class="aws-note">
+                              <p class="aws-note">Note</p>
+                              <p>The <b>Change T2/T3 Unlimited</b> option is enabled only if
+                                 you select a T3, T3a, or T2 instance.
+                              </p>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>To change the credit specification to <code class="code">unlimited</code>, choose
+                              <b>Enable</b>. To change the credit specification to
+                              <code class="code">standard</code>, choose <b>Disable</b>. The current credit
+                              specification for the instance appears in parentheses after the instance
+                              ID.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <p class="title"><b>To modify the credit specification of a burstable performance instance (AWS CLI)</b></p>
+                     
+                     <p>Use the <a href="./cli/latest/reference/ec2/modify-instance-credit-specification.html">modify-instance-credit-specification</a> command. Specify the instance and
+                        its credit specification using the <code class="code">--instance-credit-specification</code>
+                        parameter. Valid credit specifications are <code class="code">unlimited</code> and
+                        <code class="code">standard</code>.
+                     </p>
+                     
+                     
+                     <div class="example">
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 modify-instance-credit-specification --region <em class="replaceable"><code>us-east-1</code></em> --instance-credit-specification &quot;InstanceId=<em class="replaceable"><code>i-1234567890abcdef0</code></em>,CpuCredits=<em class="replaceable"><code>unlimited</code></em>&quot;</code></strong></code></pre><p>The following is example output:</p><pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+  &quot;SuccessfulInstanceCreditSpecifications&quot;: [
+    {
+      &quot;InstanceId&quot;: &quot;i- 1234567890abcdef0&quot;
+    }
+  ],
+  &quot;UnsuccessfulInstanceCreditSpecifications&quot;: []
+}</code></pre></div>
+                     </div>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="standard-mode-examples.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="burstable-performance-instances-monitoring-cpu-credits.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Launching a Burstable
+               Performance Instance as Unlimited or Standard"><a class="pagetoc" href="#launch-burstable-performance-instances">Launching a Burstable
+                              Performance Instance as Unlimited or Standard</a></li>
+                        <li class="pagetoc" name="Using an Auto Scaling Group to Launch a Burstable
+               Performance Instance as Unlimited"><a class="pagetoc" href="#burstable-performance-instances-auto-scaling-grp">Using an Auto Scaling Group to Launch a Burstable
+                              Performance Instance as Unlimited</a></li>
+                        <li class="pagetoc" name="Viewing the Credit
+               Specification of a Burstable Performance Instance"><a class="pagetoc" href="#describe-burstable-performance-instances">Viewing the Credit
+                              Specification of a Burstable Performance Instance</a></li>
+                        <li class="pagetoc" name="Modifying the Credit
+               Specification of a Burstable Performance Instance"><a class="pagetoc" href="#modify-burstable-performance-instances">Modifying the Credit
+                              Specification of a Burstable Performance Instance</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Elastic Compute Cloud';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide for Linux Instances';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

@@ -5,16 +5,18 @@
       </title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="api-gateway-documenting-api.html" title="Documenting an API Gateway API">
+      <link rel="up" href="api-gateway-documenting-api.html" title="Documenting a REST API in API Gateway">
       <link rel="prev" href="api-gateway-documenting-api-quick-start-publishing.html" title="Publish API
-            Documentation">
-      <link rel="next" href="api-gateway-documenting-api-content-provision-and-consumption.html" title="Control Access to
-            API Documentation">
-      <meta name="description" content="Import documentation parts from Swagger to an API using API Gateway.">
+                Documentation Using the API Gateway REST API">
+      <link rel="next" href="api-gateway-documenting-api-content-provision-and-consumption.html" title="Control
+                Access to API Documentation">
+      <meta name="description" content="Import documentation parts from OpenAPI to an API using API Gateway.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-documenting-api-quick-start-import-export.html">
@@ -24,7 +26,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -36,41 +38,141 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="api-gateway-documenting-api.html">Documenting an API Gateway API</a> &#xBB; <span class="breadcrumb">Import API
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="api-gateway-documenting-api.html">Documenting a REST API in API Gateway</a> &#xBB; <span class="breadcrumb">Import API
                                     Documentation</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="api-gateway-documenting-api-quick-start-import-export">Import API
                         Documentation
                      </h1>
                      <p> As with importing API entity definitions, you can import documentation parts from
-                        an external Swagger file into an API in API Gateway. You specify the to-be-imported
-                        documentation parts within the <a href="api-gateway-swagger-extensions-documentation.html">x-amazon-apigateway-documentation Object</a> extension in a valid
-                        Swagger 2.0 definition file. Importing documentation does not alter the existing API
-                        entity definitions.
+                        an
+                        external OpenAPI file into an API in API Gateway. You specify the to-be-imported documentation
+                        parts within the <a href="api-gateway-swagger-extensions-documentation.html">x-amazon-apigateway-documentation Object</a> extension in a valid
+                        OpenAPI definition file. Importing documentation does not alter the existing API entity
+                        definitions.
                      </p>
                      <p>You have an option to merge the newly specified documentation parts into existing
                         documentation parts in API Gateway or to overwrite the existing documentation parts.
                         In the
-                        <code class="literal">MERGE</code> mode, a new documentation part defined in the Swagger file
-                        is added to the <code class="literal">DocumentationParts</code> collection of the API. If an
-                        imported <code class="literal">DocumentationPart</code> already exists, an imported attribute
-                        replaces the existing one if the two are different. Other existing documentation
-                        attributes remain unaffected. In the <code class="literal">OVERWRITE</code> mode, the entire
-                        <code class="literal">DocumentationParts</code> collection is replaced according to the
-                        imported Swagger definition file.
+                        <code class="literal">MERGE</code> mode, a new documentation part defined in the
+                        OpenAPI file is added to the <code class="literal">DocumentationParts</code>
+                        collection of the API. If an imported <code class="literal">DocumentationPart</code>
+                        already exists, an imported attribute replaces the existing one if the two are
+                        different. Other existing documentation attributes remain unaffected. In the <code class="literal">OVERWRITE</code> mode, the entire <code class="literal">DocumentationParts</code> collection is replaced according to the imported OpenAPI
+                        definition file.
                      </p>
+                     
                      <h2 id="api-gateway-importing-api-with-swagger-file-using-rest-api">Importing Documentation Parts Using the API Gateway REST API</h2>
                      
                      
-                     <p>To import API documentation using the API Gateway REST API, call the <a href="./apigateway/api-reference/link-relation/documentationpart-import/" target="_blank">documentationpart:import</a> operation. The following example shows how to
-                        overwrite existing documentation parts of an API with a single <code class="literal">GET /
-                           </code> method, returning a <code class="literal">200 OK</code> response when
-                        successful.
+                     <p>To import API documentation using the API Gateway REST API, call the <a href="./apigateway/api-reference/link-relation/documentationpart-import/">documentationpart:import</a> operation. The following example shows how to
+                        overwrite existing documentation parts of an API with a single <code class="literal">GET / </code> method, returning a <code class="literal">200 OK</code> response when successful.
                      </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">PUT /restapis/&lt;restapi_id&gt;/documentation/parts&amp;mode=overwrite&amp;failonwarnings=true
+                     
+                     <div class="option container">
+                        <div class="optionselector"><span class="optionanchor" id=""><span class="option  selected" data-tab="openapi-3.0">OpenAPI 3.0</span></span><span class="optionanchor" id=""><span class="option " data-tab="openapi-2.0">OpenAPI 2.0</span></span></div>
+                        <dl>
+                           <dt>OpenAPI 3.0</dt>
+                           <dd class="selected" data-tab="openapi-3.0"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">PUT /restapis/&lt;restapi_id&gt;/documentation/parts&amp;mode=overwrite&amp;failonwarnings=true
+Host: apigateway.<em class="replaceable"><code>region</code></em>.amazonaws.com
+Content-Type: application/json
+X-Amz-Date: <em class="replaceable"><code>YYYYMMDDTttttttZ</code></em>
+Authorization: AWS4-HMAC-SHA256 Credential=<em class="replaceable"><code>access_key_id</code></em>/<em class="replaceable"><code>YYYYMMDD</code></em>/<em class="replaceable"><code>region</code></em>/apigateway/aws4_request, SignedHeaders=content-length;content-type;host;x-amz-date, Signature=<em class="replaceable"><code>sigv4_secret</code></em>
+
+{
+   &quot;openapi&quot;: &quot;3.0.0&quot;,
+   &quot;info&quot;: {
+      &quot;description&quot;: &quot;description&quot;,
+      &quot;version&quot;: &quot;1&quot;,
+      &quot;title&quot;: &quot;doc&quot;
+   },
+   &quot;paths&quot;: {
+      &quot;/&quot;: {
+         &quot;get&quot;: {
+            &quot;description&quot;: &quot;Method description.&quot;,
+            &quot;responses&quot;: {
+               &quot;200&quot;: {
+                  &quot;description&quot;: &quot;200 response&quot;,
+                  &quot;content&quot;: {
+                     &quot;application/json&quot;: {
+                        &quot;schema&quot;: {
+                           &quot;$ref&quot;: &quot;#/components/schemas/Empty&quot;
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   },
+   &quot;x-amazon-apigateway-documentation&quot;: {
+      &quot;version&quot;: &quot;1.0.3&quot;,
+      &quot;documentationParts&quot;: [
+         {
+            &quot;location&quot;: {
+               &quot;type&quot;: &quot;API&quot;
+            },
+            &quot;properties&quot;: {
+               &quot;description&quot;: &quot;API description&quot;,
+               &quot;info&quot;: {
+                  &quot;description&quot;: &quot;API info description 4&quot;,
+                  &quot;version&quot;: &quot;API info version 3&quot;
+               }
+            }
+         },
+         {
+            &quot;location&quot;: {
+               &quot;type&quot;: &quot;METHOD&quot;,
+               &quot;method&quot;: &quot;GET&quot;
+            },
+            &quot;properties&quot;: {
+               &quot;description&quot;: &quot;Method description.&quot;
+            }
+         },
+         {
+            &quot;location&quot;: {
+               &quot;type&quot;: &quot;MODEL&quot;,
+               &quot;name&quot;: &quot;Empty&quot;
+            },
+            &quot;properties&quot;: {
+               &quot;title&quot;: &quot;Empty Schema&quot;
+            }
+         },
+         {
+            &quot;location&quot;: {
+               &quot;type&quot;: &quot;RESPONSE&quot;,
+               &quot;method&quot;: &quot;GET&quot;,
+               &quot;statusCode&quot;: &quot;200&quot;
+            },
+            &quot;properties&quot;: {
+               &quot;description&quot;: &quot;200 response&quot;
+            }
+         }
+      ]
+   },
+   &quot;servers&quot;: [
+      {
+         &quot;url&quot;: &quot;/&quot;
+      }
+   ],
+   &quot;components&quot;: {
+      &quot;schemas&quot;: {
+         &quot;Empty&quot;: {
+            &quot;type&quot;: &quot;object&quot;,
+            &quot;title&quot;: &quot;Empty Schema&quot;
+         }
+      }
+   }
+}</code></pre></dd>
+                           <dt>OpenAPI 2.0</dt>
+                           <dd class="" data-tab="openapi-2.0"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">PUT /restapis/&lt;restapi_id&gt;/documentation/parts&amp;mode=overwrite&amp;failonwarnings=true
 Host: apigateway.<em class="replaceable"><code>region</code></em>.amazonaws.com
 Content-Type: application/json
 X-Amz-Date: <em class="replaceable"><code>YYYYMMDDTttttttZ</code></em>
@@ -157,11 +259,14 @@ Authorization: AWS4-HMAC-SHA256 Credential=<em class="replaceable"><code>access_
       }
     ]
   }
-}</code></pre>
-                     <p>When successful, this request returns a 200 OK response containing the
-                        imported <code class="literal">DocumentationPartId</code> in the
-                        payload.
-                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+}</code></pre></dd>
+                        </dl>
+                     </div>
+                     
+                     <p>When successful, this request returns a 200 OK response containing the imported
+                        <code class="literal">DocumentationPartId</code> in the payload.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
   &quot;ids&quot;: [
     &quot;kg3mth&quot;,
     &quot;796rtf&quot;,
@@ -169,15 +274,16 @@ Authorization: AWS4-HMAC-SHA256 Credential=<em class="replaceable"><code>access_
     &quot;5ukm9s&quot;
   ]
 }</code></pre>
-                     <p>In addition, you can also call <a href="./apigateway/api-reference/link-relation/restapi-import/" target="_blank">restapi:import</a> or 
-                        <a href="./apigateway/api-reference/link-relation/restapi-put/" target="_blank">restapi:put</a>, supplying the documentation parts in the 
-                        <code class="literal">x-amazon-apigateway-documentation</code> object as part of the input Swagger file of the API definition. 
-                        To exclude the documentation parts from the API import, set <code class="literal">ignore=documentation</code> in the request query parameters.
+                     <p>In addition, you can also call <a href="./apigateway/api-reference/link-relation/restapi-import/">restapi:import</a> or
+                        <a href="./apigateway/api-reference/link-relation/restapi-put/">restapi:put</a>,
+                        supplying the documentation parts in the <code class="literal">x-amazon-apigateway-documentation</code> object as part of the input OpenAPI
+                        file of the API definition. To exclude the documentation parts from the API import,
+                        set <code class="literal">ignore=documentation</code> in the request query
+                        parameters.
                      </p>
                      
-                     <h2 id="api-gateway-importing-api-with-swagger-file-using-console">Importing
-                        Documentation Parts Using the API Gateway Console
-                     </h2>
+                     
+                     <h2 id="api-gateway-importing-api-with-swagger-file-using-console">Importing Documentation Parts Using the API Gateway Console</h2>
                      
                      
                      <p>The following instructions describe how to import documentation parts.</p>
@@ -201,7 +307,7 @@ Authorization: AWS4-HMAC-SHA256 Credential=<em class="replaceable"><code>access_
                         </li>
                         <li>
                            
-                           <p>Choose <b>Select Swagger File</b> to load a file from a
+                           <p>Choose <b>Select OpenAPI File</b> to load a file from a
                               drive, or copy and paste a file contents into the file view. For an example,
                               see the payload of the example request in <a href="api-gateway-documenting-api-quick-start-import-export.html#api-gateway-importing-api-with-swagger-file-using-rest-api">Importing Documentation Parts Using the API Gateway REST API</a>.
                            </p>
@@ -210,9 +316,7 @@ Authorization: AWS4-HMAC-SHA256 Credential=<em class="replaceable"><code>access_
                         <li>
                            
                            <p>Optionally, choose <b>Fail on warnings</b> or
-                              <b>Ignore warnings</b>, and choose
-                              <code class="literal">Merge</code> or <code class="literal">Overwrite</code> from
-                              <b>Import mode</b>.
+                              <b>Ignore warnings</b>, and choose <code class="literal">Merge</code> or <code class="literal">Overwrite</code> from <b>Import mode</b>.
                            </p>
                            
                         </li>
@@ -224,15 +328,19 @@ Authorization: AWS4-HMAC-SHA256 Credential=<em class="replaceable"><code>access_
                         </li>
                      </ol>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -242,7 +350,9 @@ Authorization: AWS4-HMAC-SHA256 Credential=<em class="replaceable"><code>access_
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="api-gateway-documenting-api-quick-start-publishing.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="api-gateway-documenting-api-content-provision-and-consumption.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -252,14 +362,16 @@ Authorization: AWS4-HMAC-SHA256 Credential=<em class="replaceable"><code>access_
                      <p>On this page:</p>
                      <ul class="pagetoc">
                         <li class="pagetoc" name="Importing Documentation Parts Using the API Gateway REST API"><a class="pagetoc" href="#api-gateway-importing-api-with-swagger-file-using-rest-api">Importing Documentation Parts Using the API Gateway REST API</a></li>
-                        <li class="pagetoc" name="Importing
-                Documentation Parts Using the API Gateway Console"><a class="pagetoc" href="#api-gateway-importing-api-with-swagger-file-using-console">Importing
-                              Documentation Parts Using the API Gateway Console</a></li>
+                        <li class="pagetoc" name="Importing Documentation Parts Using the API Gateway Console"><a class="pagetoc" href="#api-gateway-importing-api-with-swagger-file-using-console">Importing Documentation Parts Using the API Gateway Console</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

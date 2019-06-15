@@ -1,0 +1,277 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Elastic Fabric Adapter - Amazon Elastic Compute Cloud</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="EC2_Network_and_Security.html" title="Network and Security">
+      <link rel="prev" href="troubleshooting-ena.html" title="Troubleshooting the Elastic Network Adapter (ENA)">
+      <link rel="next" href="efa-start.html" title="Getting Started with EFAs">
+      <meta name="description" content="Elastic Fabric Adapter (EFA) is a network device that you can attach to your Amazon EC2 instances to accelerate High Performance Computing (HPC) applications.">
+      <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Elastic Compute Cloud">
+      <meta name="guide" content="User Guide for Linux Instances">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/efa.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="EC2_Network_and_Security.html">Network and Security</a> &#xBB; <span class="breadcrumb">Elastic Fabric Adapter</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="efa">Elastic Fabric Adapter</h1>
+                     <p>An Elastic Fabric Adapter (EFA) is a network device that you can attach to your Amazon
+                        EC2 instance 
+                        		to accelerate High Performance Computing (HPC) applications. EFA enables you to
+                        
+                        		achieve the application performance of an on-premises HPC cluster, with the scalability,
+                        
+                        		flexibility, and elasticity provided by the AWS Cloud.
+                     </p>
+                     <p>EFA provides lower and more consistent latency and higher throughput than the TCP
+                        transport
+                        		traditionally used in cloud-based HPC systems. It enhances the performance of inter-instance
+                        		communication that is critical for scaling HPC applications.
+                     </p>
+                     <p>EFA is optimized to work on the existing AWS network infrastructure and it can 
+                        		scale depending on application requirements.
+                     </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>The OS-bypass capabilities of EFAs are not supported on Windows instances. If you
+                           attach an
+                           			EFA to a Windows instance, the instance functions as an Elastic Network Adapter,
+                           			without the added EFA capabilities.
+                        </p>
+                     </div>
+                     <div class="highlights">
+                        <p><strong>Contents</strong></p>
+                        <ul>
+                           <li><a href="#efa-basics">EFA Basics</a></li>
+                           <li><a href="#efa-differences">Differences between EFAs and ENAs</a></li>
+                           <li><a href="#efa-instance-types">Supported Instance Types</a></li>
+                           <li><a href="#efa-amis">Supported AMIs</a></li>
+                           <li><a href="#efa-limits">EFA limitations</a></li>
+                           <li><a href="efa-start.html">Getting Started with EFAs</a></li>
+                           <li><a href="efa-working-with.html">Working with EFA</a></li>
+                           <li><a href="efa-working-monitor.html">Monitoring an EFA</a></li>
+                        </ul>
+                     </div>
+                     		
+                     <h2 id="efa-basics">EFA Basics</h2>
+                     		
+                     <p>An EFA is an Elastic Network Adapter (ENA) with added capabilities. It provides all
+                        of the
+                        			functionality of an ENA, with an additional OS-bypass functionality. OS-bypass
+                        is an
+                        			access model that allows HPC applications to communicate directly with the network
+                        			interface hardware to provide low-latency, reliable transport functionality.
+                     </p>
+                     		
+                     		
+                     <div class="mediaobject">
+                        			
+                        				<img src="../../..//img/efa_stack.png" alt="
+				Contrasting a traditional HPC software stack with one that uses an EFA.
+			">
+                        			
+                        			
+                        		
+                     </div>
+                     		
+                     		
+                     <p>Traditionally, HPC applications use the Message Passing Interface (MPI) to interface
+                        with
+                        			the system&#x2019;s network transport. In the AWS Cloud, this has meant that applications
+                        			interface with MPI, which then uses the operating system&apos;s TCP/IP stack and the
+                        ENA
+                        			device driver in order to enable network communication between instances.
+                     </p>
+                     		
+                     		
+                     		
+                     <p>With an EFA, HPC applications use MPI to interface with the <em>libfabric</em> 
+                        			API. The libfabric API bypasses the operating system kernel and communicates directly
+                        with 
+                        			the EFA device to put packets on the network. This reduces overhead and enables
+                        the HPC 
+                        			application to run more efficiently.
+                     </p>
+                     			
+                     		
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>Libfabric is a core component of the OpenFabrics Interfaces (OFI) framework, which
+                           defines
+                           				and exports the user-space API of OFI. For more information, see the <a href="https://ofiwg.github.io/libfabric/" target="_blank">Libfabric OpenFabrics</a>
+                           				website.
+                        </p>
+                     </div>
+                     	
+                     		
+                     <h2 id="efa-differences">Differences between EFAs and ENAs</h2>
+                     		
+                     <p>Elastic Network Adapters (ENAs) provide traditional IP networking features that are
+                        required
+                        			to support VPC networking. EFAs provide all of the same traditional IP networking
+                        			features as ENAs, and they also support OS-bypass capabilities. OS-bypass enables
+                        HPC
+                        			applications to bypass the operating system kernel and to communicate directly
+                        with the
+                        			EFA device.
+                     </p>
+                     	
+                     		
+                     <h2 id="efa-instance-types">Supported Instance Types</h2>
+                     		
+                     <p>The following instance types support EFAs: c5n.18xlarge, i3en.24xlarge, p3dn.24xlarge</p>
+                     		
+                     		
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>EFA requires an instance type that has at least 8GB of memory.</p>
+                     </div>
+                     	
+                     		
+                     <h2 id="efa-amis">Supported AMIs</h2>
+                     		
+                     <p>The following AMIs support EFAs: Amazon Linux, Amazon Linux 2, Red Hat Enterprise
+                        Linux 7.6, CentOS 7.6, Ubuntu 16.04, Ubuntu 18.04
+                     </p>
+                     	
+                     		
+                     <h2 id="efa-limits">EFA limitations</h2>
+                     			
+                     <p>EFA has the following limitations:</p>
+                     			
+                     <div class="itemizedlist">
+                        				
+                        				
+                        				
+                        				
+                        			
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              					
+                              <p>You can attach only one EFA per instance.</p>
+                              				
+                           </li>
+                           <li class="listitem">
+                              					
+                              <p>EFA OS-bypass traffic is limited to a single subnet. In other words, 
+                                 						EFA traffic cannot be sent from one subnet to another. Normal IP traffic 
+                                 						from the EFA can be sent from one subnet to another.
+                              </p>
+                              				
+                           </li>
+                           <li class="listitem">
+                              					
+                              <p>EFA OS-bypass traffic is not routable. Normal IP traffic from the EFA remains
+                                 					routable.
+                              </p>
+                              				
+                           </li>
+                           <li class="listitem">
+                              					
+                              <p>The EFA must be a member of a security group that allows all inbound and outbound
+                                 					traffic to and from the security group itself.
+                              </p>
+                              				
+                           </li>
+                        </ul>
+                     </div>			
+                     	
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="troubleshooting-ena.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="efa-start.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="EFA Basics"><a class="pagetoc" href="#efa-basics">EFA Basics</a></li>
+                        <li class="pagetoc" name="Differences between EFAs and ENAs"><a class="pagetoc" href="#efa-differences">Differences between EFAs and ENAs</a></li>
+                        <li class="pagetoc" name="Supported Instance Types"><a class="pagetoc" href="#efa-instance-types">Supported Instance Types</a></li>
+                        <li class="pagetoc" name="Supported AMIs"><a class="pagetoc" href="#efa-amis">Supported AMIs</a></li>
+                        <li class="pagetoc" name="EFA limitations"><a class="pagetoc" href="#efa-limits">EFA limitations</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Elastic Compute Cloud';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide for Linux Instances';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

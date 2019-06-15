@@ -5,14 +5,15 @@
       <link rel="home" href="#top">
       <link rel="up" href="ec2-tutorials.html" title="Tutorials for Amazon EC2 Instances Running Linux">
       <link rel="prev" href="install-LAMP.html" title="Tutorial: Install a LAMP Web Server with the Amazon Linux AMI">
-      <link rel="next" href="SSL-on-an-instance.html" title="Tutorial: Configure Apache Web Server on Amazon Linux 2 to Use
-            SSL/TLS">
-      <meta name="description" content="Tutorial - install, configure, and secure a WordPress blog on your Amazon Linux instance.">
+      <link rel="next" href="SSL-on-amazon-linux-2.html" title="Tutorial: Configure SSL/TLS on Amazon Linux 2">
+      <meta name="description" content="Tutorial to install, configure, and secure a WordPress blog on your EC2 instance.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/hosting-wordpress.html">
@@ -22,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -34,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="ec2-tutorials.html">Tutorials for Amazon EC2 Instances Running Linux</a> &#xBB; <span class="breadcrumb">Tutorial: Hosting a WordPress Blog with Amazon Linux</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="ec2-tutorials.html">Tutorials for Amazon EC2 Instances Running Linux</a> &#xBB; <span class="breadcrumb">Tutorial: Hosting a WordPress Blog with Amazon Linux</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="hosting-wordpress">Tutorial: Hosting a WordPress Blog with Amazon Linux</h1>
                      <p>The following procedures will help you install, configure, and secure a WordPress
@@ -53,11 +57,11 @@
                         direct
                         interaction with the web server configuration, the AWS CloudFormation service provides
                         a WordPress
-                        template that can also get you started quickly. For more information, see <a href="./AWSCloudFormation/latest/UserGuide/GettingStarted.Walkthrough.html" target="_blank">Getting Started</a> in the
+                        template that can also get you started quickly. For more information, see <a href="./AWSCloudFormation/latest/UserGuide/GettingStarted.Walkthrough.html">Getting Started</a> in the
                         <em>AWS CloudFormation User Guide</em>. If you&apos;d prefer to host your WordPress blog on a
-                        Windows instance, see <a href="./AWSEC2/latest/WindowsGuide/EC2Win_CreateWordPressBlog.html" target="_blank">Deploying a WordPress Blog on Your Amazon EC2 Windows Instance</a> in the
+                        Windows instance, see <a href="./AWSEC2/latest/WindowsGuide/EC2Win_CreateWordPressBlog.html">Deploying a WordPress Blog on Your Amazon EC2 Windows Instance</a> in the
                         <em>Amazon EC2 User Guide for Windows Instances</em>. If you need a high-availability solution with
-                        a decoupled database, see <a href="./elasticbeanstalk/latest/dg/php-hawordpress-tutorial.html" target="_blank">Deploying
+                        a decoupled database, see <a href="./elasticbeanstalk/latest/dg/php-hawordpress-tutorial.html">Deploying
                            a High-Availability WordPress Website</a> in the
                         <em>AWS Elastic Beanstalk Developer Guide</em>.
                      </p>
@@ -71,6 +75,7 @@
                            documentation. 
                         </p>
                      </div>
+                     
                      <h2 id="hosting-wordpress-prereqs">Prerequisites</h2>
                      
                      
@@ -103,9 +108,10 @@
                      <p>If you don&apos;t already have a domain name for your blog, you can register a domain name
                         with Route&#xA0;53 and associate your instance&apos;s EIP address with your domain name. For
                         more
-                        information, see <a href="./Route53/latest/DeveloperGuide/registrar.html" target="_blank">Registering Domain Names Using
+                        information, see <a href="./Route53/latest/DeveloperGuide/registrar.html">Registering Domain Names Using
                            Amazon Route 53</a> in the <em>Amazon Route&#xA0;53 Developer Guide</em>.
                      </p>
+                     
                      
                      <h2 id="install-wordpress">Install WordPress</h2>
                      
@@ -118,49 +124,44 @@
                            
                            <p>Download the latest WordPress installation package with the
                               <b>wget</b> command. The following command should always
-                              download the latest
-                              release.
-                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>wget https://wordpress.org/latest.tar.gz</code></strong></code></pre>
+                              download the latest release.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>wget https://wordpress.org/latest.tar.gz</code></strong></code></pre>
                            </li>
                         <li>
                            
                            <p>Unzip and unarchive the installation package. The installation folder is
-                              unzipped to a folder called
-                              <code>wordpress</code>.
-                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>tar -xzf latest.tar.gz</code></strong></code></pre>
+                              unzipped to a folder called <code>wordpress</code>.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>tar -xzf latest.tar.gz</code></strong></code></pre>
                            </li>
                      </ol>
                      <a id="create_user_and_database"></a><p class="title"><b>To create a database user and database for
                            your WordPress installation</b></p>
-                     <p>Your WordPress installation needs to store information, such as blog post entries
-                        and user comments, in a database. This procedure helps you create a database for
-                        your blog and a user that is authorized to read and save information to that
-                        database. 
+                     <p>Your WordPress installation needs to store information, such as blog posts and
+                        				user comments, in a database. This procedure helps you create your blog&apos;s database
+                        				and a user that is authorized to read and save information to it. 
                      </p>
                      <ol>
                         <li>
                            
                            <p>Start the database server.</p>
                            
-                           <div class="itemizedlist">
+                           <ul>
                               
-                              
-                              
-                              <ul class="itemizedlist" type="disc">
-                                 <li class="listitem">
-                                    
-                                    <p><b>Amazon Linux AMI</b>: <strong class="userinput"><code>sudo service mysqld
-                                             start</code></strong></p>
-                                    
+                              <li>
+                                 
+                                 <p>Amazon Linux 2</p> 
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo systemctl start mariadb</code></strong></code></pre>
                                  </li>
-                                 <li class="listitem">
-                                    
-                                    <p><b>Amazon Linux 2</b>: <strong class="userinput"><code>sudo systemctl start
-                                             mariadb</code></strong></p>
-                                    
+                              
+                              <li>
+                                 
+                                 <p>Amazon Linux AMI</p>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo service mysqld start</code></strong></code></pre>
                                  </li>
-                              </ul>
-                           </div>
+                              
+                           </ul>
                            
                         </li>
                         <li>
@@ -170,12 +171,11 @@
                               your <code class="code">root</code> system password, or it may even be empty if you have not
                               secured your database server.
                            </p>
-                           <div class="aws-note">
-                              <p class="aws-note">Important</p>
-                              <p>If you have not secured your database server yet, it is very important
-                                 that you do so. For more information, see <a href="install-LAMP.html#SecuringMySQLProcedure">To secure the database server</a>.
-                              </p>
-                           </div><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>mysql -u root -p</code></strong></code></pre>
+                           
+                           <p>If you have not secured your database server yet, it is important that you
+                              do so. For more information, see <a href="install-LAMP.html#SecuringMySQLProcedure">To secure the database server</a>.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>mysql -u root -p</code></strong></code></pre>
                            </li>
                         <li><a id="create_database_user"></a>
                            
@@ -216,13 +216,14 @@
                            </li>
                         <li>
                            
-                           <p>Flush the database privileges to pick up all of your changes.</p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>FLUSH PRIVILEGES;</code></strong></code></pre>
+                           <p>Flush the database privileges to pick up all of your changes.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>FLUSH PRIVILEGES;</code></strong></code></pre>
                            </li>
                         <li>
                            
-                           <p>Exit the <code class="code">mysql</code>
-                              client.
-                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>exit</code></strong></code></pre>
+                           <p>Exit the <code class="code">mysql</code> client.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>exit</code></strong></code></pre>
                            </li>
                      </ol>
                      
@@ -236,18 +237,18 @@
                            
                            <p>Copy the <code>wp-config-sample.php</code> file to a file called
                               <code>wp-config.php</code>. This creates a new configuration file
-                              and keeps the original sample file intact as a
-                              backup.
-                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user wordpress]$ </code><strong class="userinput"><code>cp wordpress/wp-config-sample.php wordpress/wp-config.php</code></strong></code></pre>
+                              and keeps the original sample file intact as a backup.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>cp wordpress/wp-config-sample.php wordpress/wp-config.php</code></strong></code></pre>
                            </li>
                         <li>
                            
                            <p>Edit the <code>wp-config.php</code> file with your favorite text
-                              editor (such as <b>nano</b> or <b>vim</b>) and enter
-                              values for your installation. If you do not have a favorite text editor,
-                              <code class="code">nano</code> is much easier for beginners to
-                              use.
-                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user wordpress]$ </code><strong class="userinput"><code>nano wordpress/wp-config.php</code></strong></code></pre>
+                              					editor (such as <b>nano</b> or <b>vim</b>) and enter
+                              					values for your installation. If you do not have a favorite text editor,
+                              						<code class="code">nano</code> is suitable for beginners.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>nano wordpress/wp-config.php</code></strong></code></pre>
                            <ol>
                               <li>
                                  
@@ -255,7 +256,8 @@
                                     <code class="code">database_name_here</code> to the database name that you
                                     created in <a href="hosting-wordpress.html#create_database">Step&#xA0;4</a> of <a href="hosting-wordpress.html#create_user_and_database">To create a database user and database for
                                        your WordPress installation</a>.
-                                 </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">define(&apos;DB_NAME&apos;, &apos;<em class="replaceable"><code>wordpress-db</code></em>&apos;);</code></pre>
+                                 </p>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">define(&apos;DB_NAME&apos;, &apos;<em class="replaceable"><code>wordpress-db</code></em>&apos;);</code></pre>
                                  </li>
                               <li>
                                  
@@ -263,7 +265,8 @@
                                     <code class="code">username_here</code> to the database user that you
                                     created in <a href="hosting-wordpress.html#create_database_user">Step&#xA0;3</a> of <a href="hosting-wordpress.html#create_user_and_database">To create a database user and database for
                                        your WordPress installation</a>.
-                                 </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">define(&apos;DB_USER&apos;, &apos;<em class="replaceable"><code>wordpress-user</code></em>&apos;);</code></pre>
+                                 </p>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">define(&apos;DB_USER&apos;, &apos;<em class="replaceable"><code>wordpress-user</code></em>&apos;);</code></pre>
                                  </li>
                               <li>
                                  
@@ -271,7 +274,8 @@
                                     <code class="code">password_here</code> to the strong password that you
                                     created in <a href="hosting-wordpress.html#create_database_user">Step&#xA0;3</a> of <a href="hosting-wordpress.html#create_user_and_database">To create a database user and database for
                                        your WordPress installation</a>.
-                                 </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">define(&apos;DB_PASSWORD&apos;, &apos;<em class="replaceable"><code>your_strong_password</code></em>&apos;);</code></pre>
+                                 </p>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">define(&apos;DB_PASSWORD&apos;, &apos;<em class="replaceable"><code>your_strong_password</code></em>&apos;);</code></pre>
                                  </li>
                               <li>
                                  
@@ -328,15 +332,16 @@ define(&apos;NONCE_SALT&apos;,       &apos;<em class="replaceable"><code>-97r*V/
                            </p>
                         </li>
                         <li> 
-                           <p>If you want Wordpress to run at your document root, copy the contents of the
-                              wordpress installation directory (but not the directory itself) as follows: 
+                           <p>If you want WordPress to run at your document root, copy the contents of the wordpress
+                              					installation directory (but not the directory itself) as follows: 
                            </p>
                            <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>cp -r wordpress/* /var/www/html/</code></strong></code></pre>
                            </li>
                         <li> 
-                           <p>If you want Wordpress to run in an alternative directory under the document root,
-                              first create that directory, and then copy the files to it. In this example,
-                              Wordpress will run from the directory <code class="code">blog</code>:
+                           <p>If you want WordPress to run in an alternative directory under the document root,
+                              first
+                              					create that directory, and then copy the files to it. In this example, WordPress
+                              					will run from the directory <code class="code">blog</code>:
                            </p>
                            <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>mkdir /var/www/html/blog</code></strong>
 <code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>cp -r wordpress/* /var/www/html/blog/</code></strong></code></pre></li>
@@ -363,16 +368,16 @@ define(&apos;NONCE_SALT&apos;,       &apos;<em class="replaceable"><code>-97r*V/
                         <li>
                            
                            <p>Open the <code>httpd.conf</code> file with your favorite text editor
-                              (such as <b>nano</b> or <b>vim</b>). If you do not have
-                              a favorite text editor, <code class="code">nano</code> is much easier for beginners to
-                              use.
-                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user wordpress]$ </code><strong class="userinput"><code>sudo vim /etc/httpd/conf/httpd.conf</code></strong></code></pre>
+                              					(such as <b>nano</b> or <b>vim</b>). If you do not have
+                              					a favorite text editor, <code class="code">nano</code> is suitable for beginners.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo vim /etc/httpd/conf/httpd.conf</code></strong></code></pre>
                            </li>
                         <li>
                            
-                           <p>Find the section that starts with <code class="code">&lt;Directory
-                                 &quot;/var/www/html&quot;&gt;</code>.
-                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&lt;Directory &quot;/var/www/html&quot;&gt;
+                           <p>Find the section that starts with <code class="code">&lt;Directory &quot;/var/www/html&quot;&gt;</code>.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&lt;Directory &quot;/var/www/html&quot;&gt;
     #
     # Possible values for the Options directive are &quot;None&quot;, &quot;All&quot;,
     # or any combination of:
@@ -430,290 +435,153 @@ define(&apos;NONCE_SALT&apos;,       &apos;<em class="replaceable"><code>-97r*V/
                      <ol>
                         <li>
                            
-                           <p>Change the file ownership of <code>/var/www</code> and its contents to
-                              the <code class="code">apache</code>
-                              user.
-                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user wordpress]$ </code><strong class="userinput"><code>sudo chown -R apache /var/www</code></strong></code></pre>
+                           <p>Grant file ownership of <code>/var/www</code> and its contents to the
+                              						<code class="code">apache</code> user.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo chown -R apache /var/www</code></strong></code></pre>
                            </li>
                         <li>
                            
-                           <p>Change the group ownership of <code>/var/www</code> and its contents
-                              to the <code class="code">apache</code>
-                              group.
-                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user wordpress]$ </code><strong class="userinput"><code>sudo chgrp -R apache /var/www</code></strong></code></pre>
+                           <p>Grant group ownership of <code>/var/www</code> and its contents to the
+                              						<code class="code">apache</code> group.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo chgrp -R apache /var/www</code></strong></code></pre>
                            </li>
                         <li>
                            
                            <p>Change the directory permissions of <code>/var/www</code> and its
                               subdirectories to add group write permissions and to set the group ID on future
                               subdirectories.
-                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user wordpress]$ </code><strong class="userinput"><code>sudo chmod 2775 /var/www</code></strong></code></pre>
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo chmod 2775 /var/www</code></strong>
+<code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>find /var/www -type d -exec sudo chmod 2775 {} \;</code></strong></code></pre>
                            </li>
                         <li>
                            
                            <p>Recursively change the file permissions of <code>/var/www</code> and
                               its subdirectories to add group write
                               permissions.
-                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user wordpress]$ </code><strong class="userinput"><code>find /var/www -type d -exec sudo chmod 2775 {} \;</code></strong></code></pre>
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>find /var/www -type f -exec sudo chmod 0664 {} \;</code></strong></code></pre>
                            </li>
                         <li>
                            
-                           <p>Restart the Apache web server to pick up the new group and
-                              permissions.
-                           </p>
+                           <p>Restart the Apache web server to pick up the new group and permissions.</p>
                            
-                           <div class="itemizedlist">
+                           <ul>
                               
-                              
-                              
-                              <ul class="itemizedlist" type="disc">
-                                 <li class="listitem">
-                                    
-                                    <p><b>Amazon Linux AMI</b>: <strong class="userinput"><code>sudo service httpd
-                                             restart</code></strong></p>
-                                    
+                              <li>
+                                 
+                                 <p>Amazon Linux 2</p> 
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo systemctl restart httpd</code></strong></code></pre>
                                  </li>
-                                 <li class="listitem">
-                                    
-                                    <p><b>Amazon Linux 2</b>: <strong class="userinput"><code>sudo systemctl restart
-                                             httpd</code></strong></p>
-                                    
+                              
+                              <li>
+                                 
+                                 <p>Amazon Linux AMI</p>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo service httpd restart</code></strong></code></pre>
                                  </li>
-                              </ul>
-                           </div>
+                              
+                           </ul>
                            
                         </li>
                      </ol>
                      
-                     <p class="title"><b>To run the WordPress installation script</b></p>
+                     
+                     <p class="title"><b>To run the WordPress installation script with Amazon Linux 2</b></p>
+                     <p>You are ready to install WordPress. The commands that you use depend on the operating
+                        system.
+                        The commands in this procedure are for use with Amazon Linux 2. Use the procedure
+                        that follows this one 
+                        with Amazon Linux AMI.
+                     </p>
+                     <ol>
+                        <li>
+                           
+                           <p>Use the <b>systemctl</b> command to ensure that the
+                              <code class="code">httpd</code> and database services start at every system boot.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo systemctl enable httpd &amp;&amp; sudo systemctl enable mariadb</code></strong></code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Verify that the database server is running.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo systemctl status mariadb</code></strong></code></pre>
+                           
+                           <p>If the database service is not running, start it.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo systemctl start mariadb</code></strong></code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Verify that your Apache web server (<code class="code">httpd</code>) is
+                              running.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo systemctl status httpd</code></strong></code></pre>
+                           
+                           <p>If the <code class="code">httpd</code> service is not running, start it.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo systemctl start httpd</code></strong></code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>In a web browser, type the URL of your WordPress blog (either the public DNS address
+                              for your instance, or that address followed by the <code>blog</code> folder). 
+                              You should see the WordPress installation script. Provide the information required
+                              by 
+                              the WordPress installation. Choose <b>Install WordPress</b> to complete the 
+                              installation. For more information, see <a href="https://codex.wordpress.org/Installing_WordPress#Step_5:_Run_the_Install_Script" target="_blank">Run the Install Script</a> on the WordPress website.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <p class="title"><b>To run the WordPress installation script with Amazon Linux AMI</b></p>
                      <ol>
                         <li>
                            
                            <p>Use the <b>chkconfig</b> command to ensure that the
                               <code class="code">httpd</code> and database services start at every system boot.
                            </p>
-                           
-                           <div class="itemizedlist">
-                              
-                              
-                              
-                              <ul class="itemizedlist" type="disc">
-                                 <li class="listitem">
-                                    
-                                    <p><b>Amazon Linux AMI</b>: <strong class="userinput"><code>sudo chkconfig enable httpd
-                                             &amp;&amp; sudo chkconfig enable mysql</code></strong></p>
-                                    
-                                 </li>
-                                 <li class="listitem">
-                                    
-                                    <p><b>Amazon Linux 2</b>: <strong class="userinput"><code>sudo systemctl enable httpd
-                                             &amp;&amp; sudo systemctl enable mariadb</code></strong></p>
-                                    
-                                 </li>
-                              </ul>
-                           </div>
-                           
-                        </li>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo chkconfig httpd on &amp;&amp; sudo chkconfig mysqld on</code></strong></code></pre>
+                           </li>
                         <li>
                            
                            <p>Verify that the database server is running.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo service mysqld status</code></strong></code></pre>
                            
-                           <div class="itemizedlist">
-                              
-                              
-                              
-                              <ul class="itemizedlist" type="disc">
-                                 <li class="listitem">
-                                    
-                                    <p><b>Amazon Linux AMI</b>: <strong class="userinput"><code>sudo service mysqld
-                                             status</code></strong></p>
-                                    
-                                 </li>
-                                 <li class="listitem">
-                                    
-                                    <p><b>Amazon Linux 2</b>: <strong class="userinput"><code>sudo systemctl status
-                                             mariadb</code></strong></p>
-                                    
-                                 </li>
-                              </ul>
-                           </div>
                            <p>If the database service is not running, start it.</p>
-                           
-                           <div class="itemizedlist">
-                              
-                              
-                              
-                              <ul class="itemizedlist" type="disc">
-                                 <li class="listitem">
-                                    
-                                    <p><b>Amazon Linux AMI</b>: <strong class="userinput"><code>sudo service mysqld
-                                             start</code></strong></p>
-                                    
-                                 </li>
-                                 <li class="listitem">
-                                    
-                                    <p><b>Amazon Linux 2</b>: <strong class="userinput"><code>sudo systemctl start
-                                             mariadb</code></strong></p>
-                                    
-                                 </li>
-                              </ul>
-                           </div>
-                           
-                        </li>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo service mysqld start</code></strong></code></pre>
+                           </li>
                         <li>
                            
                            <p>Verify that your Apache web server (<code class="code">httpd</code>) is
                               running.
                            </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo service httpd status</code></strong></code></pre>
                            
-                           <div class="itemizedlist">
-                              
-                              
-                              
-                              <ul class="itemizedlist" type="disc">
-                                 <li class="listitem">
-                                    
-                                    <p><b>Amazon Linux AMI</b>: <strong class="userinput"><code>sudo service httpd
-                                             status</code></strong></p>
-                                    
-                                 </li>
-                                 <li class="listitem">
-                                    
-                                    <p><b>Amazon Linux 2</b>: <strong class="userinput"><code>sudo systemctl status
-                                             httpd</code></strong></p>
-                                    
-                                 </li>
-                              </ul>
-                           </div>
-                           <p>If
-                              the <code class="code">httpd</code> service is not running, start
-                              it.
+                           <p>If the <code class="code">httpd</code> service is not running, start it.
                            </p>
-                           
-                           <div class="itemizedlist">
-                              
-                              
-                              
-                              <ul class="itemizedlist" type="disc">
-                                 <li class="listitem">
-                                    
-                                    <p><b>Amazon Linux AMI</b>: <strong class="userinput"><code>sudo service httpd
-                                             start</code></strong></p>
-                                    
-                                 </li>
-                                 <li class="listitem">
-                                    
-                                    <p><b>Amazon Linux 2</b>: <strong class="userinput"><code>sudo systemctl start
-                                             httpd</code></strong></p>
-                                    
-                                 </li>
-                              </ul>
-                           </div>
-                           
-                        </li>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo service httpd start</code></strong></code></pre>
+                           </li>
                         <li>
                            
-                           <p>In a web browser, enter the URL of your WordPress blog (either the public DNS
-                              address for your instance, or that address followed by the
-                              <code class="code">blog</code> folder). You should see the WordPress installation
-                              screen.
-                           </p>
-                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">http://<em class="replaceable"><code>my.public.dns.amazonaws.com</code></em></code></pre>
-                           <div class="mediaobject">
-                              
-                              <img src="../../..//img/wordpress_install.png" alt="
-                        Wordpress installation screen
-                    ">
-                              
-                              
-                              
-                           </div>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>Enter the remaining installation information into the WordPress installation
-                              wizard.
-                           </p>
-                           
-                           <div class="table">
-                              <div class="table-contents">
-                                 <table id="w185aac13c11c11c18c10b3">
-                                    
-                                    <tbody><tr>
-                                       
-                                       <th>Field</th>
-                                       
-                                       <th>Value</th>
-                                       
-                                    </tr>
-                                    
-                                    
-                                    <tr>
-                                       
-                                       <td><b>Site Title</b></td>
-                                       
-                                       <td>Enter a name for your WordPress site.</td>
-                                       
-                                    </tr>
-                                    
-                                    <tr>
-                                       
-                                       <td><b>Username</b></td>
-                                       
-                                       <td>Enter a name for your WordPress administrator. For security
-                                          purposes, you should choose a unique name for this user, because
-                                          it will be more difficult to exploit than the default user name,
-                                          <code class="code">admin</code>.
-                                       </td>
-                                       
-                                    </tr>
-                                    
-                                    <tr>
-                                       
-                                       <td><b>Password</b></td>
-                                       
-                                       <td>Enter a strong password, and then enter it again to confirm.
-                                          Do not reuse an existing password, and make sure to store this
-                                          password in a safe place.
-                                       </td>
-                                       
-                                    </tr>
-                                    
-                                    <tr>
-                                       
-                                       <td><b>Your E-mail</b></td>
-                                       
-                                       <td>Enter the email address you want to use for
-                                          notifications.
-                                       </td>
-                                       
-                                    </tr>
-                                    
-                                 </tbody></table>
-                              </div>
-                           </div>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>Click <b>Install WordPress</b> to complete the
-                              installation.
+                           <p>In a web browser, type the URL of your WordPress blog (either the public DNS address
+                              for your instance, or that address followed by the <code>blog</code> folder). 
+                              You should see the WordPress installation script. Provide the information required
+                              by 
+                              the WordPress installation. Choose <b>Install WordPress</b> to complete the 
+                              installation. For more information, see <a href="https://codex.wordpress.org/Installing_WordPress#Step_5:_Run_the_Install_Script" target="_blank">Run the Install Script</a> on the WordPress website.
                            </p>
                            
                         </li>
                      </ol>
                      
-                     <p>Congratulations, you should now be able to log into your WordPress blog and start
-                        posting entries.
-                     </p>
                      
                      <h2 id="wordpress-next-steps">Next Steps</h2>
                      
                      
-                     <p>After you have tested your initial WordPress blog, consider updating its
-                        configuration.
-                     </p>
+                     <p>After you have tested your WordPress blog, consider updating its configuration.</p>
                      
                      
                      
@@ -757,7 +625,8 @@ define(&apos;NONCE_SALT&apos;,       &apos;<em class="replaceable"><code>-97r*V/
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p>Expand the storage space on your instance. For more information, see <a href="ebs-modify-volume.html">Modifying the Size, IOPS, or Type of an EBS Volume on <span>Linux</span></a>.
+                              <p>Expand the storage space on your instance. For more information, see <a href="ebs-modify-volume.html">Modifying the Size, Performance, or Type of an EBS
+                                    Volume</a>.
                               </p>
                               
                            </li>
@@ -770,7 +639,7 @@ define(&apos;NONCE_SALT&apos;,       &apos;<em class="replaceable"><code>-97r*V/
                            </li>
                            <li class="listitem">
                               
-                              <p>Migrate to a larger instance type. For more information, see <a href="ec2-instance-resize.html">Resizing Your Instance</a>.
+                              <p>Migrate to a larger instance type. For more information, see <a href="ec2-instance-resize.html">Changing the Instance Type</a>.
                               </p>
                               
                            </li>
@@ -861,15 +730,19 @@ define(&apos;NONCE_SALT&apos;,       &apos;<em class="replaceable"><code>-97r*V/
                         </li>
                      </ol>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -878,8 +751,10 @@ define(&apos;NONCE_SALT&apos;,       &apos;<em class="replaceable"><code>-97r*V/
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="install-LAMP.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="SSL-on-an-instance.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="install-LAMP.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="SSL-on-amazon-linux-2.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -899,6 +774,10 @@ define(&apos;NONCE_SALT&apos;,       &apos;<em class="replaceable"><code>-97r*V/
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

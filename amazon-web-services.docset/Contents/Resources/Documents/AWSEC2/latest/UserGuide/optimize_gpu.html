@@ -1,17 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Optimizing GPU Settings (P2, P3, and G3 Instances) - Amazon Elastic Compute Cloud</title>
+      <title>Optimizing GPU Settings - Amazon Elastic Compute Cloud</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="accelerated-computing-instances.html" title="Linux Accelerated Computing Instances">
-      <link rel="prev" href="activate_grid.html" title="Activate NVIDIA GRID Capabilities (G3 Instances Only)">
+      <link rel="up" href="accelerated-computing-instances.html" title="Linux Accelerated Computing
+			Instances">
+      <link rel="prev" href="activate_grid.html" title="Activate NVIDIA GRID Virtual Applications (G3 Instances
+				Only)">
       <link rel="next" href="fpga-getting-started.html" title="Getting Started with FPGA Development">
-      <meta name="description" content="There are several GPU setting optimizations that you can perform to achieve the best performance on P2, P3, and G3 instances. By default, the NVIDIA driver uses an autoboost feature, which varies the GPU clock speeds. By disabling the autoboost feature and setting the GPU clock speeds to their maximum frequency, you can consistently achieve the maximum performance with your GPU instances.">
+      <meta name="description" content="There are several GPU setting optimizations that you can perform to achieve the best performance on G3, P2, and P3 instances. By default, the NVIDIA driver uses an autoboost feature, which varies the GPU clock speeds. By disabling the autoboost feature and setting the GPU clock speeds to their maximum frequency, you can consistently achieve the maximum performance with your GPU instances.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/optimize_gpu.html">
@@ -21,7 +25,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,35 +37,41 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="instance-types.html">Instance Types</a> &#xBB; <a href="accelerated-computing-instances.html">Linux Accelerated Computing Instances</a> &#xBB; <span class="breadcrumb">Optimizing GPU Settings (P2, P3, and G3 Instances)</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="instance-types.html">Instance Types</a> &#xBB; <a href="accelerated-computing-instances.html">Linux Accelerated Computing
+                                    			Instances</a> &#xBB; <span class="breadcrumb">Optimizing GPU Settings</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="optimize_gpu">Optimizing GPU Settings (P2, P3, and G3 Instances)</h1>
+                     <h1 class="topictitle" id="optimize_gpu">Optimizing GPU Settings</h1>
                      <p>There are several GPU setting optimizations that you can perform to achieve the best
-                        			performance on P2, P3, and G3 instances. By default, the NVIDIA driver uses an
+                        			performance on G3, P2, and P3 instances. By default, the NVIDIA driver uses an
                         autoboost
                         			feature, which varies the GPU clock speeds. By disabling the autoboost feature
                         and
                         			setting the GPU clock speeds to their maximum frequency, you can consistently achieve
                         			the maximum performance with your GPU instances.<span> The following
-                           			procedure helps you to configure the GPU settings to be persistent, disable the
-                           			autoboost feature, and set the GPU clock speeds to their maximum frequency.</span></p>
+                           				procedure helps you to configure the GPU settings to be persistent, disable the
+                           				autoboost feature, and set the GPU clock speeds to their maximum
+                           			frequency.</span></p>
                      <p class="title"><b>To optimize GPU settings</b></p>
                      <ol>
                         <li>
                            				
-                           <p>Configure the GPU settings to be persistent. This command can take several minutes
-                              to run.
+                           <p>Configure the GPU settings to be persistent. This command can take several
+                              					minutes to run.
                            </p>
                            				
-                           				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>sudo nvidia-persistenced</code></strong></code></pre>
+                           				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo nvidia-persistenced</code></strong></code></pre>
                            			</li>
                         <li>
                            				
                            <p>Disable the autoboost feature for all GPUs on the instance.</p>
-                           				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code><code class="code" copy="true">sudo </code>nvidia-smi --auto-boost-default=0</code></strong></code></pre>
+                           				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo nvidia-smi --auto-boost-default=0</code></strong></code></pre>
+                           				
                            				<div class="aws-note">
                               <p class="aws-note">Note</p>
                               <p>GPUs on P3 instances do not support autoboost.</p>
@@ -70,16 +80,15 @@
                         </li>
                         <li>
                            				
-                           <p>Set all GPU clock speeds to their maximum frequency. Use the memory and graphics clock
-                              					speeds specified in the following commands.
+                           <p>Set all GPU clock speeds to their maximum frequency. Use the memory and
+                              					graphics clock speeds specified in the following commands.
                            </p>
                            				
                            <div class="aws-note">
                               <p class="aws-note">Note</p>
-                              <p>Some versions of the NVIDIA driver do not allow setting application clock speed and
-                                 throw
-                                 						a <code class="code">&quot;Setting applications clocks is not supported for GPU &#x2026;&quot;</code>
-                                 						error, which you can ignore.
+                              <p>Some versions of the NVIDIA driver do not allow setting application clock
+                                 						speed and throw a <code class="code">&quot;Setting applications clocks is not supported for
+                                    							GPU &#x2026;&quot;</code> error, which you can ignore.
                               </p>
                            </div>
                            				
@@ -87,37 +96,45 @@
                               					
                               					
                               					
+                              					
                               				
                               <ul class="itemizedlist" type="disc">
                                  <li class="listitem">
                                     						
+                                    <p>G3 instances:</p>
+                                    						<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo nvidia-smi -ac <em class="replaceable"><code>2505,1177</code></em></code></strong></code></pre>
+                                    						
+                                    					</li>
+                                 <li class="listitem">
+                                    						
                                     <p>P2 instances:</p>
-                                    						<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code><code class="code" copy="true">sudo </code>nvidia-smi -ac <em class="replaceable"><code>2505,875</code></em></code></strong></code></pre>
+                                    						<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo nvidia-smi -ac <em class="replaceable"><code>2505,875</code></em></code></strong></code></pre>
+                                    						
                                     					</li>
                                  <li class="listitem">
                                     						
                                     <p>P3 instances:</p>
-                                    						<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code><code class="code" copy="true">sudo </code>nvidia-smi -ac <em class="replaceable"><code>877,1530</code></em></code></strong></code></pre>
-                                    					</li>
-                                 <li class="listitem">
+                                    						<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo nvidia-smi -ac <em class="replaceable"><code>877,1530</code></em></code></strong></code></pre>
                                     						
-                                    <p>G3 instances:</p>
-                                    						<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code><code class="code" copy="true">sudo </code>nvidia-smi -ac <em class="replaceable"><code>2505,1177</code></em></code></strong></code></pre>
                                     					</li>
                               </ul>
                            </div>
                            			
                         </li>
                      </ol>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -127,7 +144,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="activate_grid.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="fpga-getting-started.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -135,6 +154,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

@@ -1,0 +1,898 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Tutorial: Creating a Simple Lambda@Edge Function - Amazon CloudFront</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="lambda-edge-how-it-works.html" title="Get Started Creating and Using Lambda@Edge Functions">
+      <link rel="prev" href="lambda-edge-how-it-works.html" title="Get Started Creating and Using Lambda@Edge Functions">
+      <link rel="next" href="lambda-edge-permissions.html" title="Setting IAM Permissions and Roles for Lambda@Edge">
+      <meta name="description" content="This tutorial shows you how to get started with Lambda@Edge by helping you create and add a sample Node.js function that runs in CloudFront. The example that we walk through adds HTTP security headers to a response, which can improve security and privacy for a website. (That said, you don&#x2019;t need a website for this walkthrough; we simply add security headers to a response when CloudFront retrieves a file.)">
+      <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon CloudFront">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-how-it-works-tutorial.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-at-the-edge.html">Customizing Content at the Edge with Lambda@Edge</a> &#xBB; <a href="lambda-edge-how-it-works.html">Get Started Creating and Using Lambda@Edge Functions</a> &#xBB; <span class="breadcrumb">Tutorial: Creating a Simple Lambda@Edge Function</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="lambda-edge-how-it-works-tutorial">Tutorial: Creating a Simple Lambda@Edge Function</h1>
+                     <p>This tutorial shows you how to get started with Lambda@Edge by helping you create
+                        and add a sample Node.js
+                        				function that runs in CloudFront. The example that we walk through adds HTTP security
+                        headers to a response, which can
+                        				improve security and privacy for a website. (That said, you don&#x2019;t need a website
+                        for this walkthrough; we simply
+                        				add security headers to a response when CloudFront retrieves a file.) 
+                     </p>
+                     <p>This example illustrates, step by step, how you create and configure a Lambda@Edge
+                        function. You will follow
+                        				similar steps and choose from the same options for your own Lambda@Edge solution.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#lambda-edge-how-it-works-tutorial-AWS">Step 1: Sign Up for an AWS Account</a></li>
+                           <li><a href="#lambda-edge-how-it-works-tutorial-cloudfront"> Step 2: Create a CloudFront Distribution</a></li>
+                           <li><a href="#lambda-edge-how-it-works-tutorial-create-function"> Step 3: Create Your Function</a></li>
+                           <li><a href="#lambda-edge-how-it-works-tutorial-add-trigger"> Step 4: Add a CloudFront Trigger to Run the
+                                 						Function</a></li>
+                           <li><a href="#lambda-edge-how-it-works-tutorial-verify"> Step 5: Verify that the Function Runs</a></li>
+                           <li><a href="#lambda-edge-how-it-works-tutorial-troubleshoot">Step 6: Troubleshoot Issues</a></li>
+                           <li><a href="#lambda-edge-how-it-works-tutorial-cleanup-resources"> Step 7: Clean Up Your Example
+                                 						Resources</a></li>
+                           <li><a href="#lambda-edge-how-it-works-tutorial-resources"> Resources for Learning More</a></li>
+                        </ul>
+                     </div>
+                     				
+                     <h2 id="lambda-edge-how-it-works-tutorial-AWS">Step 1: Sign Up for an AWS Account</h2>
+                     				
+                     <p>If you haven&apos;t already done so, sign up for Amazon Web Services at https://aws.amazon.com/.
+                        Choose <b>Sign
+                           						Up Now</b> and enter the required information. 
+                     </p>
+                     			
+                     				
+                     <h2 id="lambda-edge-how-it-works-tutorial-cloudfront"> Step 2: Create a CloudFront Distribution</h2>
+                     				
+                     <p>Before you create the example Lambda@Edge function, you must have a CloudFront environment
+                        to work with that
+                        					includes an origin to serve content from.
+                     </p>
+                     				
+                     <p><b>Are you new to CloudFront?</b> CloudFront delivers content through a worldwide
+                        					network of edge locations. When you set up a Lambda function with CloudFront,
+                        the function can customize content
+                        					closer to viewers, improving performance. If you&#x2019;re not familiar with CloudFront,
+                        take a few minutes before you
+                        					complete the tutorial to <a href="./AmazonCloudFront/latest/DeveloperGuide/introduction.html">read a short overview</a> and <a href="./AmazonCloudFront/latest/DeveloperGuide/HowCloudFrontWorks.html">learn a bit about how CloudFront caches and serves
+                           						content</a>.
+                     </p>
+                     				
+                     <p>For this example, you create a CloudFront distribution that is set up with an Amazon
+                        S3 bucket, the origin for your
+                        					CloudFront distribution. If you already have an environment to use, you can skip
+                        this step.
+                     </p>
+                     
+                     				<a id="lambda-edge-how-it-works-tutorial-cf-proc"></a><p class="title"><b> To create a CloudFront distribution with an Amazon S3
+                           						origin</b></p>
+                     <ol>
+                        <li>
+                           						
+                           <p>Create an Amazon S3 bucket with a file or two, such as image files, for sample content.
+                              You can follow
+                              							the steps in <a href="./AmazonCloudFront/latest/DeveloperGuide/GettingStarted.html#GettingStartedUploadContent">Upload your
+                                 								content to Amazon S3</a>. Make sure that you set permissions to grant public read access to the
+                              							objects in your bucket.
+                           </p>
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>Create a CloudFront distribution and add your S3 bucket as an origin, by following
+                              the steps in <a href="./AmazonCloudFront/latest/DeveloperGuide/GettingStarted.html#GettingStartedCreateDistribution">Create a CloudFront web
+                                 								distribution</a>. If you already have a distribution, you can add the bucket as an origin for
+                              							that distribution instead.
+                           </p>
+                           						
+                           <div class="aws-note">
+                              <p class="aws-note">Tip</p>
+                              <p>Make a note of your distribution ID. Later in this tutorial when you add a CloudFront
+                                 trigger for your
+                                 								function, you must choose the ID for your distribution in a drop-down list&#x2014;for
+                                 example,
+                                 								E653W22221KDDL.
+                              </p>
+                           </div>
+                           					
+                        </li>
+                     </ol>
+                     			
+                     				
+                     <h2 id="lambda-edge-how-it-works-tutorial-create-function"> Step 3: Create Your Function</h2>
+                     
+                     				
+                     <p>In this step, you create a Lambda function, starting with a blueprint template that&apos;s
+                        provided in the Lambda
+                        					Console. The function adds code to update security headers in your CloudFront
+                        distribution. 
+                     </p>
+                     				
+                     <p><b>Are you new to Lambda or Lambda@Edge?</b> Lambda@Edge lets you use CloudFront triggers
+                        					to invoke a Lambda function. When you associate a CloudFront distribution with
+                        a Lambda function, CloudFront <a href="./lambda/latest/dg/lambda-edge.html">intercepts requests and responses</a> at CloudFront edge locations and
+                        					runs the function. Lambda functions can improve security or customize information
+                        close to your viewers, to
+                        					improve performance. In this tutorial, the function that we create updates the
+                        security headers in a CloudFront
+                        					response.
+                     </p>
+                     				
+                     				
+                     <p>There are several steps to take when you create a Lambda function. In this tutorial,
+                        you use a blueprint
+                        					template as the basis for your function, and then update the function with code
+                        that sets the security
+                        					headers. Finally, you add and deploy a CloudFront trigger to run the function.
+                     </p>
+                     
+                     				<a id="lambda-edge-how-it-works-tutorial-create-function-blueprint-proc"></a><p class="title"><b>To create a Lambda
+                           						function</b></p>
+                     <ol>
+                        <li>
+                           						
+                           <p>Sign in to the AWS Management Console and open the AWS Lambda console at <a href="https://console.aws.amazon.com/lambda/" target="_blank">https://console.aws.amazon.com/lambda/</a>. 
+                           </p>
+                           						
+                           <div class="aws-note">
+                              <p class="aws-note">Important</p>
+                              <p>Make sure that you&#x2019;re in the US-East-1 (N. Virginia) Region. You must be in this Region
+                                 to
+                                 								create Lambda@Edge functions.
+                              </p>
+                           </div>
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>Choose <b>Create function</b>.
+                           </p>
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>On the <b>Create function</b> page, choose <b>Blueprints</b>, and then
+                              							filter for the CloudFront blueprints. Type <code class="code">cloudfront</code> in the search field, and the press
+                              								<b>Return</b>. The keyword <code class="code">cloudfront</code> is shown, and all the
+                              							blueprints that are tagged for CloudFront are listed.
+                           </p>
+                           						
+                           <div class="aws-note">
+                              <p class="aws-note">Note</p>
+                              <p>CloudFront blueprints are only available in the US-East-1 (N. Virginia) Region.</p>
+                           </div>
+                           						
+                           <div class="mediaobject">
+                              							
+                              								<img src="../../..//img/lambda-modify-response-headers.png" alt="
+								Filter for CloudFront blueprints in the Lambda console.
+							" style="max-width:100%">
+                              							
+                              							
+                              						
+                           </div>
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>Choose the <b>cloudfront-modify-response-header</b> blueprint to use as the template
+                              							for your function.
+                           </p>
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>Enter the information about your function:</p>
+                           						
+                           <div class="variablelist">
+                              							
+                              							
+                              							
+                              							
+                              						
+                              <dl>
+                                 								
+                                 <dt><b><span class="term">Name</span></b></dt>
+                                 								
+                                 <dd>
+                                    									
+                                    <p>Type a name for your function.</p>
+                                    								
+                                 </dd>
+                                 							
+                                 								
+                                 <dt><b><span class="term">Role</span></b></dt>
+                                 								
+                                 <dd>
+                                    									
+                                    <p>Choose how to set the permissions for your function. It&apos;s easiest to get started by
+                                       										using the basic Lambda@Edge permissions policy template, so for this option,
+                                       choose
+                                       											<b>Create new role from template(s)</b>. 
+                                    </p>
+                                    								
+                                 </dd>
+                                 							
+                                 								
+                                 <dt><b><span class="term">Role name</span></b></dt>
+                                 								
+                                 <dd>
+                                    									
+                                    <p>Type a name for the role that will be created from the policy template, which you
+                                       choose
+                                       										next, under <b>Policy templates</b>.
+                                    </p>
+                                    								
+                                 </dd>
+                                 							
+                                 								
+                                 <dt><b><span class="term">Policy templates</span></b></dt>
+                                 								
+                                 <dd>
+                                    									
+                                    <p>
+                                       										The policy template <b>Basic Edge Lambda permissions</b> is automatically
+                                       										added for you, because you chose a CloudFront blueprint as the basis for
+                                       your function. This
+                                       										policy template adds execution role permissions that allow CloudFront to
+                                       run your Lambda function
+                                       										for you in CloudFront locations around the world. For more information,
+                                       see <a href="lambda-edge-permissions.html">Setting IAM Permissions and Roles for Lambda@Edge</a>.
+                                    </p>
+                                    								
+                                 </dd>
+                                 							
+                              </dl>
+                           </div>
+                           						
+                           						
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>Choose <b>Create function</b>. Lambda creates the function, and on the next page, you
+                              							see a Congratulations! success message box.
+                           </p>
+                           						
+                           <div class="mediaobject">
+                              							
+                              								<img src="../../..//img/lambda-after-choose-create-function.png" alt="
+								Code editing and configuration page for a function in the Lambda console.
+							" style="max-width:100%">
+                              							
+                              							
+                              						
+                           </div>
+                           						
+                           <p>On the <b>Configuration</b> tab, there are three main areas: A diagram with boxes for
+                              							your function by name (in our example, UpdateSecurityHeaders), any triggers
+                              for the function, and
+                              							logging information. There&apos;s also section on the bottom that changes to allow
+                              different options,
+                              							depending on which box you choose in the main area&#x2014;for example, the function
+                              name, a trigger,
+                              							or Amazon CloudWatch Logs. 
+                           </p>
+                           						
+                           <p>In addition, on the left, there&apos;s list of trigger types that you can choose from.
+                              Because you chose
+                              							a CloudFront blueprint when you created your function, a CloudFront trigger
+                              was automatically added for the
+                              							function.
+                           </p>
+                           						
+                           <p>Now you can update the function code to modify security headers, and then, in the
+                              next step,
+                              							configure and deploy the CloudFront trigger to run the code.
+                           </p>
+                           						
+                           						
+                           <div class="mediaobject">
+                              							
+                              								<img src="../../..//img/lambda-function-update-page-full-with-cf.png" alt="
+								Lambda console page where you can add code or triggers for a function.
+							" style="max-width:100%">
+                              							
+                              							
+                              						
+                           </div>
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>Choose the box with your function name, and then in the <b>Function code</b> section,
+                              							replace the template code with a function that modifies security headers that
+                              are returned from your
+                              							origin. For example, you could use code similar to the following:
+                           </p>
+                           						<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="javascript ">&apos;use strict&apos;;
+exports.handler = (event, context, callback) =&gt; {
+    
+    //Get contents of response
+    const response = event.Records[0].cf.response;
+    const headers = response.headers;
+
+//Set new headers 
+ headers[&apos;strict-transport-security&apos;] = [{key: &apos;Strict-Transport-Security&apos;, value: &apos;max-age= 63072000 
+ ; includeSubdomains; preload&apos;}]; 
+ headers[&apos;content-security-policy&apos;] = [{key: &apos;Content-Security-Policy&apos;, value: &quot;default-src &apos;none&apos;; img-src &apos;self&apos;; script-src &apos;self&apos;; style-src &apos;self&apos;; object-src &apos;none&apos;&quot;}]; 
+ headers[&apos;x-content-type-options&apos;] = [{key: &apos;X-Content-Type-Options&apos;, value: &apos;nosniff&apos;}]; 
+ headers[&apos;x-frame-options&apos;] = [{key: &apos;X-Frame-Options&apos;, value: &apos;DENY&apos;}]; 
+ headers[&apos;x-xss-protection&apos;] = [{key: &apos;X-XSS-Protection&apos;, value: &apos;1; mode=block&apos;}]; 
+ headers[&apos;referrer-policy&apos;] = [{key: &apos;Referrer-Policy&apos;, value: &apos;same-origin&apos;}]; 
+    
+    //Return modified response
+    callback(null, response);
+};</code></pre>
+                           					</li>
+                        <li>
+                           						
+                           <p>Choose <b>Save</b> to save your updated code.
+                           </p>
+                           					
+                        </li>
+                     </ol>
+                     			
+                     				
+                     <h2 id="lambda-edge-how-it-works-tutorial-add-trigger"> Step 4: Add a CloudFront Trigger to Run the
+                        						Function
+                     </h2>
+                     
+                     
+                     				
+                     <p>Now that you have a Lambda function to update security headers, configure the CloudFront
+                        trigger to run your
+                        					function to add the headers in any response that CloudFront receives from the
+                        origin for your distribution. 
+                     </p>
+                     				
+                     
+                     				<a id="lambda-edge-how-it-works-tutorial-add-trigger-proc"></a><p class="title"><b> To configure the CloudFront trigger for your
+                           						function</b></p>
+                     <ol>
+                        <li>
+                           						
+                           <p>Choose the CloudFront box to highlight it.</p>
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>Below, in the <b>Configure triggers</b> section, choose <b>Deploy to
+                                 								Lambda@Edge</b> to open a page where you can define the trigger, and then deploy
+                              							it.
+                           </p>
+                           						
+                           <div class="mediaobject">
+                              							
+                              								<img src="../../..//img/lambda-function-configure-triggers.png" alt="
+								Lambda console page where you have the option to go configure and deploy a CloudFront
+									trigger.
+							" style="max-width:100%">
+                              							
+                              							
+                              						
+                           </div>
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>On the <b>Deploy to Lambda@Edge</b> page, under <b>Configure CloudFront
+                                 								trigger</b>, enter the following information:
+                           </p>
+                           						
+                           <div class="variablelist">
+                              							
+                              							
+                              							
+                              							
+                              						
+                              <dl>
+                                 								
+                                 <dt><b><span class="term">Distribution</span></b></dt>
+                                 								
+                                 <dd>
+                                    									
+                                    <p>The CloudFront distribution ID to associate with your function. In the drop-down list,
+                                       choose
+                                       										the distribution ID.
+                                    </p>
+                                    								
+                                 </dd>
+                                 							
+                                 								
+                                 <dt><b><span class="term">Cache behavior</span></b></dt>
+                                 								
+                                 <dd>
+                                    									
+                                    <p>The cache behavior to use with the trigger. For this example, leave the value set
+                                       to *,
+                                       										which applies your distribution&apos;s default cache behavior to all requests.
+                                       For more
+                                       										information, see <a href="distribution-web-values-specify.html#DownloadDistValuesCacheBehavior">Cache Behavior Settings</a> in the <a href="distribution-web-values-specify.html">Values That You Specify When You Create or Update a Distribution</a> topic.
+                                    </p>
+                                    								
+                                 </dd>
+                                 							
+                                 								
+                                 <dt><b><span class="term">CloudFront event</span></b></dt>
+                                 								
+                                 <dd>
+                                    									
+                                    <p>The trigger that specifies when your function will run. We want the security headers
+                                       										function to run whenever CloudFront returns a response from the origin.
+                                       So in the drop-down
+                                       										list, choose <b>Origin response</b>. For more information, see <a href="lambda-edge-add-triggers.html">Adding Triggers for a Lambda@Edge Function</a>. 
+                                    </p>
+                                    								
+                                 </dd>
+                                 							
+                                 								
+                                 <dt><b><span class="term">(Optional) Include body</span></b></dt>
+                                 								
+                                 <dd>
+                                    									
+                                    <p>Select this check box if you want to access the request body in your function, for
+                                       										viewer request or origin request events. For more information, see <a href="lambda-include-body-access.html">Accessing the Request Body by Choosing the Include Body
+                                          					Option</a>.
+                                       									
+                                    </p>
+                                    								
+                                 </dd>
+                                 							
+                              </dl>
+                           </div>
+                           						
+                           <div class="mediaobject">
+                              							
+                              								<img src="../../..//img/lambda-function-configure-trigger-dialog-no-options.png" alt="
+								Lambda console page where you can add code or triggers for a function.
+							" style="max-width:100%">
+                              							
+                              							
+                              						
+                           </div>
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>Under <b>Confirm deploy to Lambda@Edge</b>, select the check box to acknowledge that
+                              							the trigger will be deployed and run your function in all AWS locations.
+                           </p>
+                           						
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>Choose <b>Deploy</b> to add the trigger and replicate the function to AWS
+                              							locations worldwide.
+                           </p>
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>Wait for the function to replicate. This typically takes a few minutes but can take
+                              up to 15
+                              							minutes.
+                           </p>
+                           						
+                           <p> You can check to see if replication is finished by going to the CloudFront console
+                              and viewing your
+                              							distribution:
+                           </p>
+                           						
+                           <div class="itemizedlist">
+                              							
+                              						
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    								
+                                    <p>Go to the CloudFront console at https://console.aws.amazon.com/cloudfront/.</p>
+                                    							
+                                 </li>
+                              </ul>
+                           </div>
+                           						
+                           <p>Check for the distribution status to change from <b>In Progress</b> back to
+                              								<b>Deployed</b>, which means that your function has been replicated. Then follow the
+                              							steps in the next section to verify that the function works.
+                           </p>
+                           					
+                        </li>
+                     </ol>
+                     
+                     			
+                     				
+                     <h2 id="lambda-edge-how-it-works-tutorial-verify"> Step 5: Verify that the Function Runs</h2>
+                     				
+                     <p>Now that you&apos;ve created your Lambda function and configured a trigger to run it for
+                        a CloudFront distribution,
+                        					check to make sure that the function is accomplishing what you expect it to.
+                        In this example, we check the
+                        					HTTP headers that are returned from the origin, to make sure that the security
+                        headers are added.
+                     </p>
+                     				<a id="lambda-edge-how-it-works-tutorial-verify-proc"></a><p class="title"><b> To verify that your Lambda@Edge function adds
+                           						security headers</b></p>
+                     <ol>
+                        <li>
+                           						
+                           <p>In a browser, type the URL for a file in your S3 bucket. For example, you might use
+                              a URL similar to
+                              								<code class="code">http://d111111abcdef8.cloudfront.net/image.jpg</code>.
+                           </p>
+                           						
+                           <p>For more information about the CloudFront domain name to use in the file URL, see
+                              <a href="LinkFormat.html">Customizing the URL Format for Files in CloudFront</a>.
+                           </p>
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>Open your browser&#x2019;s Web Developer toolbar. For example, in your browser window in
+                              Chrome, open the
+                              							context (right-click) menu, and then choose <b>Inspect</b>.
+                           </p>
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>Choose the <b>Network</b> tab.
+                           </p>
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>Reload the page to view your image, and then choose an HTTP request on the left pane.
+                              You will see
+                              							the HTTP headers displayed in a separate pane.
+                           </p>
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>Look through the list of HTTP headers to verify that the expected security headers
+                              are included in
+                              							the list. For example, you might see headers similar to those shown in the
+                              following
+                              							screenshot:
+                           </p>
+                           						
+                           <div class="mediaobject">
+                              							
+                              								<img src="../../..//img/lambda-at-edge-security-headers-list.png" alt="
+								HTTP headers list with the expected security headers highlighted.
+							" style="max-width:100%">
+                              							
+                              							
+                              						
+                           </div>
+                           					
+                        </li>
+                     </ol>
+                     				
+                     <p>If the security headers are included in your headers list, great! You&apos;ve successfully
+                        created your first
+                        					Lambda@Edge function. If, on the other hand, CloudFront returns errors or there
+                        are other issues, continue to the
+                        					next step to troubleshoot the issues.
+                     </p>
+                     			
+                     				
+                     <h2 id="lambda-edge-how-it-works-tutorial-troubleshoot">Step 6: Troubleshoot Issues</h2>
+                     				
+                     <p>If CloudFront returns errors or doesn&apos;t add the security headers as expected, you
+                        can investigate your function&#x2019;s
+                        					execution by looking at CloudWatch Logs. Be sure to use the logs stored in the
+                        AWS location that is closest to the
+                        					location where the function is executed.
+                     </p>
+                     				
+                     <p>For example, if you view the file from London, try changing the Region in the CloudWatch
+                        console to EU
+                        					(London).
+                     </p>
+                     				<a id="lambda-edge-how-it-works-tutorial-cloudwatch-proc"></a><p class="title"><b> To examine CloudWatch logs for your Lambda@Edge
+                           						function</b></p>
+                     <ol>
+                        <li>
+                           <p>Sign in to the AWS Management Console and open the CloudWatch console at
+                              <a href="https://console.aws.amazon.com/cloudwatch/" target="_blank">https://console.aws.amazon.com/cloudwatch/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           						
+                           <p>Change <b>Region</b> to the Region where the function is executing; that is, the
+                              							location that is shown when you view the file in your browser.
+                           </p>
+                           					
+                        </li>
+                        <li>
+                           						
+                           <p>In the left pane, choose <b>Logs</b> to view the logs for your distribution. 
+                           </p>
+                           					
+                        </li>
+                     </ol>
+                     				
+                     <p>For more information, see <a href="monitoring-using-cloudwatch.html">Monitoring CloudFront Activity Using CloudWatch</a>.
+                     </p>
+                     			
+                     				
+                     <h2 id="lambda-edge-how-it-works-tutorial-cleanup-resources"> Step 7: Clean Up Your Example
+                        						Resources
+                     </h2>
+                     				
+                     <p>If you created an S3 bucket and CloudFront distribution just for this tutorial, as
+                        a learning exercise, make sure
+                        					to delete the AWS resources that you allocated so that you no longer accrue charges.
+                        After you delete your
+                        					AWS resources, any content that you added is no longer available.
+                     </p>
+                     
+                     				
+                     <p><b>Tasks</b></p>
+                     				
+                     <div class="itemizedlist">
+                        					
+                        					
+                        				
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              						
+                              <p><a href="lambda-edge-how-it-works-tutorial.html#lambda-edge-how-it-works-tutorial-delete-bucket"> Delete the S3 Bucket</a>
+                                 						
+                              </p>
+                              					
+                           </li>
+                           <li class="listitem">
+                              						
+                              <p><a href="lambda-edge-how-it-works-tutorial.html#lambda-edge-how-it-works-tutorial-delete-distribution"> Delete the CloudFront
+                                    							Distribution</a></p>
+                              					
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     				
+                     					
+                     <h3 id="lambda-edge-how-it-works-tutorial-delete-bucket"> Delete the S3 Bucket</h3>
+                     
+                     					
+                     <p>Before you delete your S3 bucket, make sure that logging is disabled for the bucket.
+                        Otherwise, AWS
+                        						continues to write logs to your bucket as you delete it.
+                     </p>
+                     					<a id="lambda-edge-how-it-works-tutorial-delete-bucket-proc"></a><p class="title"><b> To disable logging for a
+                           							bucket</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon S3 console at
+                              <a href="https://console.aws.amazon.com/s3/" target="_blank">https://console.aws.amazon.com/s3/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           							
+                           <p>Select your bucket, and then choose <b>Properties</b>.
+                           </p>
+                           						
+                        </li>
+                        <li>
+                           							
+                           <p>From <b>Properties</b>, choose <b>Logging</b>.
+                           </p>
+                           						
+                        </li>
+                        <li>
+                           							
+                           <p>Clear the <b>Enabled</b> check box.
+                           </p>
+                           						
+                        </li>
+                        <li>
+                           							
+                           <p>Choose <b>Save</b>.
+                           </p>
+                           						
+                        </li>
+                     </ol>
+                     					
+                     <p>Now, you can delete your bucket. For more information, see <a href="./AmazonS3/latest/user-guide/delete-bucket.html">How Do I Delete an S3 Bucket?</a> in the <em>Amazon Simple Storage Service Console User
+                           							Guide</em>.
+                     </p>
+                     				
+                     
+                     				
+                     					
+                     <h3 id="lambda-edge-how-it-works-tutorial-delete-distribution"> Delete the CloudFront
+                        							Distribution
+                     </h3>
+                     					
+                     <p>Before you delete a CloudFront distribution, you must disable it. A disabled distribution
+                        is no longer
+                        						functional and does not accrue charges. You can enable a disabled distribution
+                        at any time. After you
+                        						delete a disabled distribution, it&apos;s no longer available.
+                     </p>
+                     					<a id="lambda-edge-how-it-works-tutorial-delete-distribution-proc"></a><p class="title"><b> To disable and delete a CloudFront
+                           							distribution</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the CloudFront console at
+                              <a href="https://console.aws.amazon.com/cloudfront/" target="_blank">
+                                 https://console.aws.amazon.com/cloudfront/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           							
+                           <p>Select the distribution that you want to disable, and then choose
+                              								<b>Disable</b>.
+                           </p>
+                           						
+                        </li>
+                        <li>
+                           							
+                           <p>When prompted for confirmation, choose <b>Yes, Disable</b>.
+                           </p>
+                           						
+                        </li>
+                        <li>
+                           							
+                           <p>Select the disabled distribution, and then choose <b>Delete</b>.
+                           </p>
+                           						
+                        </li>
+                        <li>
+                           							
+                           <p>When prompted for confirmation, choose <b>Yes, Delete</b>.
+                           </p>
+                           						
+                        </li>
+                     </ol>
+                     				
+                     			
+                     				
+                     <h2 id="lambda-edge-how-it-works-tutorial-resources"> Resources for Learning More</h2>
+                     				
+                     <p>Now that you have a basic idea of how Lambda@Edge functions work, learn more by reading
+                        the
+                        					following:
+                     </p>
+                     				
+                     <div class="itemizedlist">
+                        					
+                        					
+                        					
+                        				
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              						
+                              <p><a href="lambda-examples.html">Lambda@Edge Example Functions</a></p>
+                              					
+                           </li>
+                           <li class="listitem">
+                              						
+                              <p><a href="https://aws.amazon.com/blogs/networking-and-content-delivery/lambdaedge-design-best-practices/" target="_blank"> Lambda@Edge Design Best Practices</a></p>
+                              					
+                           </li>
+                           <li class="listitem">
+                              						
+                              <p><a href="https://aws.amazon.com/blogs/networking-and-content-delivery/reducing-latency-and-shifting-compute-to-the-edge-with-lambdaedge/" target="_blank"> Reducing Latency and Shifting Compute to the Edge with Lambda@Edge</a></p>
+                              					
+                           </li>
+                        </ul>
+                     </div>
+                     			
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="lambda-edge-how-it-works.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="lambda-edge-permissions.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Step 1: Sign Up for an AWS Account"><a class="pagetoc" href="#lambda-edge-how-it-works-tutorial-AWS">Step 1: Sign Up for an AWS Account</a></li>
+                        <li class="pagetoc" name=" Step 2: Create a CloudFront Distribution"><a class="pagetoc" href="#lambda-edge-how-it-works-tutorial-cloudfront"> Step 2: Create a CloudFront Distribution</a></li>
+                        <li class="pagetoc" name=" Step 3: Create Your Function"><a class="pagetoc" href="#lambda-edge-how-it-works-tutorial-create-function"> Step 3: Create Your Function</a></li>
+                        <li class="pagetoc" name=" Step 4: Add a CloudFront Trigger to Run the
+						Function"><a class="pagetoc" href="#lambda-edge-how-it-works-tutorial-add-trigger"> Step 4: Add a CloudFront Trigger to Run the
+                              						Function</a></li>
+                        <li class="pagetoc" name=" Step 5: Verify that the Function Runs"><a class="pagetoc" href="#lambda-edge-how-it-works-tutorial-verify"> Step 5: Verify that the Function Runs</a></li>
+                        <li class="pagetoc" name="Step 6: Troubleshoot Issues"><a class="pagetoc" href="#lambda-edge-how-it-works-tutorial-troubleshoot">Step 6: Troubleshoot Issues</a></li>
+                        <li class="pagetoc" name=" Step 7: Clean Up Your Example
+						Resources"><a class="pagetoc" href="#lambda-edge-how-it-works-tutorial-cleanup-resources">Step 6: Clean Up Resources</a></li>
+                        <li class="pagetoc" name=" Resources for Learning More"><a class="pagetoc" href="#lambda-edge-how-it-works-tutorial-resources">Resources for Learning More</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon CloudFront';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

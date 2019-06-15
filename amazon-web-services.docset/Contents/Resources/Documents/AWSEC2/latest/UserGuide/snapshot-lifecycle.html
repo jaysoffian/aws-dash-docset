@@ -1,0 +1,1379 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Automating the Amazon EBS Snapshot Lifecycle - Amazon Elastic Compute Cloud</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="EBSSnapshots.html" title="Amazon EBS Snapshots">
+      <link rel="prev" href="ebs-modifying-snapshot-permissions.html" title="Sharing an Amazon EBS Snapshot">
+      <link rel="next" href="EBSOptimized.html" title="Amazon EBS&#x2013;Optimized Instances">
+      <meta name="description" content="Use Amazon Data Lifecycle Manager to create, retain, and delete Amazon EBS snapshots.">
+      <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Elastic Compute Cloud">
+      <meta name="guide" content="User Guide for Linux Instances">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/snapshot-lifecycle.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <a href="EBSSnapshots.html">Amazon EBS Snapshots</a> &#xBB; <span class="breadcrumb">Automating the Amazon EBS Snapshot Lifecycle</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="snapshot-lifecycle">Automating the Amazon EBS Snapshot Lifecycle</h1>
+                     <p>You can use Amazon Data Lifecycle Manager (Amazon DLM) to automate the creation, retention,
+                        and deletion of snapshots
+                        taken to back up your Amazon EBS volumes. Automating snapshot management helps you
+                        to:
+                     </p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Protect valuable data by enforcing a regular backup schedule.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Retain backups as required by auditors or internal compliance.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Reduce storage costs by deleting outdated backups.</p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <p>Combined with the monitoring features of Amazon CloudWatch Events and AWS CloudTrail,
+                        Amazon DLM provides a complete
+                        backup solution for EBS volumes at no additional cost.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Contents</strong></p>
+                        <ul>
+                           <li><a href="#dlm-elements">Understanding Amazon DLM</a></li>
+                           <li><a href="#dlm-permissions">Permissions for Amazon DLM</a></li>
+                           <li><a href="#dlm-access-control">Permissions for IAM Users</a></li>
+                           <li><a href="#dlm-limits">Limits</a></li>
+                           <li><a href="#snapshot-lifecycle-console">Working with Amazon DLM Using the Console</a></li>
+                           <li><a href="#snaphot-lifecycle-cli">Working with Amazon DLM Using the Command Line</a></li>
+                           <li><a href="#snaphot-lifecycle-api">Working with Amazon DLM Using the API</a></li>
+                           <li><a href="#multivolume-lifecycle">Working with Amazon DLM to Create and Maintain
+                                 Multi-Volume Snapshots Using the Console</a></li>
+                           <li><a href="#snaphots-lifecycle-cli">Working with Amazon DLM to Create and Maintain
+                                 Multi-Volume Snapshots Using the CLI</a></li>
+                           <li><a href="#dlm-monitor-lifecycle">Monitoring the Snapshot Lifecycle</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="dlm-elements">Understanding Amazon DLM</h2>
+                     
+                     <p>The following are the key elements that you should understand before you get started
+                        with
+                        Amazon DLM.
+                     </p>
+                     
+                     
+                     <h3 id="dlm-ebs-snapshots">Snapshots</h3>
+                     
+                     <p>Snapshots are the primary means to back up data from your EBS volumes. To save storage
+                        costs, successive snapshots are incremental, containing only the volume data that
+                        changed
+                        since the previous snapshot. When you delete one snapshot in a series of snapshots
+                        for a
+                        volume, only the data unique to that snapshot is removed. The rest of the captured
+                        history
+                        of the volume is preserved.
+                     </p>
+                     
+                     <p>For more information, see <a href="./AWSEC2/latest/UserGuide/EBSSnapshots.html">Amazon EBS
+                           Snapshots</a>.
+                     </p>
+                     
+                     
+                     
+                     <h3 id="dlm-tagging-volumes">Target Resource Tags</h3>
+                     
+                     <p>Amazon DLM uses resource tags to identify the EBS volumes to back up. Tags are customizable
+                        metadata that you can assign to your AWS resources (including EBS volumes and snapshots).
+                        An
+                        Amazon DLM policy (described below) targets a volume for backup using a single tag.
+                        Multiple tags
+                        can be assigned to a volume if you want to run multiple policies on it.
+                     </p>
+                     
+                     <p>You can&apos;t use a &apos;\&apos; or &apos;=&apos; character in a tag key.</p>
+                     
+                     <p>For more information about tagging Amazon EC2 objects, see <a href="./AWSEC2/latest/UserGuide/Using_Tags.html">Tagging Your Amazon EC2 Resources</a>.
+                     </p>
+                     
+                     
+                     
+                     <h3 id="dlm-tagging-snapshots">Snapshot Tags</h3>
+                     
+                     <p>Amazon DLM applies the following tags to all snapshots created by a policy, to distinguish
+                        them from snapshots created by any other means:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><code class="code">aws:dlm:lifecycle-policy-id</code></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><code class="code">aws:dlm:lifecycle-schedule-name</code></p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>You can also specify custom tags to be applied to snapshots on creation.</p>
+                     
+                     <p>You can&apos;t use a &apos;\&apos; or &apos;=&apos; character in a tag key.</p>
+                     
+                     <p>The target tags that Amazon DLM uses to associate volumes with a policy can optionally
+                        be
+                        applied to snapshots created by the policy.
+                     </p>
+                     
+                     
+                     
+                     <h3 id="dlm-lifecycle-policies">Lifecycle Policies</h3>
+                     
+                     <div class="itemizedlist">
+                        
+                        <p>A lifecycle policy consists of these core settings:</p>
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Policy type&#x2014;Defines valid target resource types and actions a policy can
+                                 manage. Defaults to <code class="code">EBS_SNAPSHOT_MANAGEMENT</code> if not present. 
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Resource type&#x2014;The AWS resource managed by the policy. Supported values are EBS
+                                 volumes and EC2 instances.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Target tag&#x2014;The tag that must be associated with an EBS volume or an EC2
+                                 instance for it to be managed by the policy.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Schedule&#x2014;Defines how often to create snapshots and the maximum number of
+                                 snapshots to keep. Snapshot creation starts within an hour of the specified start
+                                 time.
+                                 If creating a new snapshot exceeds the maximum number of snapshots to keep for the
+                                 volume, the oldest snapshot is deleted.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <div class="itemizedlist">
+                        
+                        <p>The following considerations apply to lifecycle policies:</p>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>A policy does not begin creating snapshots until you set its activation status to
+                                 <em>enabled</em>. You can configure a policy to be enabled
+                                 upon creation.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Snapshots begin to be created by a policy within one hour following the specified
+                                 start time.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>If you modify a policy by removing or changing its target tag, the EBS volumes with
+                                 that tag are no longer affected by the policy.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>If you modify the schedule name for a policy, the snapshots created under the old
+                                 schedule name are no longer affected by the policy.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>You can create multiple policies to back up an EBS volume or an EC2 instance. For
+                                 example, if an EBS volume has two tags, where tag A is the target for policy A to
+                                 create
+                                 a snapshot every 12 hours, and tag B is the target for policy B to create a snapshot
+                                 every 24 hours, Amazon DLM creates snapshots according to the schedules for both
+                                 policies.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>When you copy a snapshot created by a policy, the retention schedule is not carried
+                                 over to the copy. This ensures that Amazon DLM does not delete snapshots that should
+                                 be
+                                 retained for a longer period of time.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>For example, you could create a policy that manages all EBS volumes with the tag
+                        <code class="code">account=Finance</code>, creates snapshots every 24 hours at 0900, and retains the
+                        five most recent snapshots. Snapshot creation could start as late as 0959.
+                     </p>
+                     
+                     
+                     
+                     <h2 id="dlm-permissions">Permissions for Amazon DLM</h2>
+                     
+                     <p>Amazon DLM uses an IAM role to get the permissions that are required to manage snapshots
+                        on
+                        your behalf. Amazon DLM creates the <b>AWSDataLifecycleManagerDefaultRole</b> role
+                        the first time that you create a lifecycle policy using the AWS Management Console.
+                        You can also create
+                        this role using the following <a href="./cli/latest/reference/dlm/create-default-role.html">create-default-role</a> command.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws dlm create-default-role</code></strong></code></pre>
+                     <p>Alternatively, you can create a custom IAM role with the required permissions and
+                        select
+                        it when you create a lifecycle policy. 
+                     </p>
+                     
+                     <p class="title"><b>To create a custom IAM role</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Create a role with the following permissions.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+   &quot;Version&quot;: &quot;2012-10-17&quot;,
+   &quot;Statement&quot;: [
+      {
+         &quot;Effect&quot;: &quot;Allow&quot;,
+         &quot;Action&quot;: [
+            &quot;ec2:CreateSnapshot&quot;,
+            &quot;ec2:CreateSnapshots&quot;,
+            &quot;ec2:DeleteSnapshot&quot;,
+            &quot;ec2:DescribeVolumes&quot;,
+            &quot;ec2:DescribeInstances&quot;,
+            &quot;ec2:DescribeSnapshots&quot;
+         ],
+         &quot;Resource&quot;: &quot;*&quot;
+      },
+      {
+         &quot;Effect&quot;: &quot;Allow&quot;,
+         &quot;Action&quot;: [
+            &quot;ec2:CreateTags&quot;
+         ],
+         &quot;Resource&quot;: &quot;arn:aws:ec2:*::snapshot/*&quot;
+      }
+   ]
+}</code></pre>
+                           <p>For more information, see <a href="./IAM/latest/UserGuide/id_roles_create_for-user.html">Creating a Role</a> in the <em>IAM User Guide</em>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Add a trust relationship to the role.</p>
+                           
+                           <ol>
+                              <li>
+                                 
+                                 <p>In the IAM console, choose <b>Roles</b>.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Select the role you created and then choose <b>Trust
+                                       relationships</b>.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Choose <b>Edit Trust Relationship</b>, add the following policy, and
+                                    then choose <b>Update Trust Policy</b>.
+                                 </p>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{ 
+   &quot;Version&quot;: &quot;2012-10-17&quot;,
+   &quot;Statement&quot;: [ 
+      { 
+         &quot;Effect&quot;: &quot;Allow&quot;, 
+         &quot;Principal&quot;: { 
+            &quot;Service&quot;: &quot;dlm.amazonaws.com&quot;
+         }, 
+         &quot;Action&quot;: &quot;sts:AssumeRole&quot; 
+      } 
+   ] 
+}</code></pre>
+                                 </li>
+                           </ol>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <h2 id="dlm-access-control">Permissions for IAM Users</h2>
+                     
+                     <p>An IAM user must have the following permissions to use Amazon DLM.</p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+   &quot;Version&quot;: &quot;2012-10-17&quot;,
+   &quot;Statement&quot;: [
+      {
+         &quot;Effect&quot;: &quot;Allow&quot;,
+         &quot;Action&quot;: [&quot;iam:PassRole&quot;, &quot;iam:ListRoles&quot;],
+         &quot;Resource&quot;: &quot;arn:aws:iam::<em class="replaceable"><code>123456789012</code></em>:role/AWSDataLifecycleManagerDefaultRole&quot;
+      },
+      {
+         &quot;Effect&quot;: &quot;Allow&quot;,
+         &quot;Action&quot;: &quot;dlm:*&quot;,
+         &quot;Resource&quot;: &quot;*&quot;
+      }
+   ]
+}</code></pre>
+                     <p>For more information, see <a href="./IAM/latest/UserGuide/id_users_change-permissions.html">Changing Permissions for an IAM User</a> in the
+                        <em>IAM User Guide</em>.
+                     </p>
+                     
+                     
+                     <h2 id="dlm-limits">Limits</h2>
+                     
+                     <p>Your AWS account has the following limits related to Amazon DLM:</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>You can create up to 100 lifecycle policies per Region.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>You can add up to 50 tags per resource.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>You can create one schedule per lifecycle policy.</p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <h2 id="snapshot-lifecycle-console">Working with Amazon DLM Using the Console</h2>
+                     
+                     <p>The following examples show how to use Amazon DLM to perform typical procedures to
+                        manage the
+                        backups of your EBS volumes.
+                     </p>
+                     <a id="console-create-policy"></a><p class="title"><b>To create a lifecycle policy</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>In the navigation pane, choose <b>Elastic Block Store</b>,
+                              <b>Lifecycle Manager</b>, <b>Create snapshot lifecycle
+                                 policy</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Provide the following information for your policy as needed:</p>
+                           
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p><b>Description</b>&#x2014;A description of the policy.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Target with tags</b>&#x2014;The resource tags
+                                       that identify the volumes or instances to back up.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Schedule Name</b>&#x2014;A name for the backup schedule.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Create snapshots every</b> <b><em>n</em></b>
+                                       <b>Hours</b>&#x2014;The number of hours between policy runs. The supported values are 2, 3, 4, 6, 8,
+                                       12, and 24.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Snapshot creation start time</b>
+                                       <b><em>hh</em></b>:<b><em>mm</em></b>
+                                       <b>UTC</b>&#x2014;The time of day when policy runs are scheduled to start. 
+                                       The policy runs start within an hour after the scheduled time.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Retention rule</b>&#x2014;The maximum number of snapshots to
+                                       retain for each volume or instance. The supported range is 1 to 1000. After the limit
+                                       is reached, 
+                                       the oldest snapshot is deleted when a new one is created.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Copy tags</b>&#x2014;Copy all user-defined tags on a source volume to snapshots of the volume created
+                                       by this policy.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Tag created snapshots</b>&#x2014;The resource tags to apply to 
+                                       the snapshots that are created. These tags are in addition to the tags applied by
+                                       Amazon DLM. You can also choose
+                                       variable tags that can automatically tag all of your snapshots with the corresponding
+                                       instance-id or timestamp.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>IAM role</b>&#x2014;An IAM role that has permissions to create, delete, and describe snapshots, 
+                                       and to describe volumes. AWS provides a default role, <b>AWSDataLifecycleManagerDefaultRole</b>, or
+                                       you can create a custom IAM role.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Policy status after creation</b>&#x2014;Choose 
+                                       <b>Enable policy</b> to start the policy runs at the next scheduled time 
+                                       or <b>Disable policy</b> to prevent the policy from running.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create Policy</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     <a id="console-view-policy"></a><p class="title"><b>To display a lifecycle policy</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>In the navigation pane, choose <b>Elastic Block Store</b>,
+                              <b>Lifecycle Manager</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Select a lifecycle policy from the list. The <b>Details</b> tab displays
+                              the following information about the policy:
+                           </p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p><b>Policy ID</b></p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Resource type</b></p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Policy type</b></p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Date created</b></p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Date modified</b></p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Target resource tags</b></p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Rule summary</b></p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Description</b></p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Policy state</b></p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Tags added to snapshots</b></p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                     </ol>
+                     <a id="console-modify-policy"></a><p class="title"><b>To modify a lifecycle policy</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>In the navigation pane, choose <b>Elastic Block Store</b>,
+                              <b>Lifecycle Manager</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Select a lifecycle policy from the list.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Actions</b>, <b>Modify policy</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In an existing lifecycle policy, you can modify the following policy values:</p>
+                           
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p><b>Description</b>&#x2014;A description of the policy.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Target with tags</b>&#x2014;The resource tags
+                                       that identify the volumes or instances to back up.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Schedule Name</b>&#x2014;A name for the backup schedule.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Create snapshots every</b> <b><em>n</em></b>
+                                       <b>Hours</b>&#x2014;The number of hours between policy runs. The supported values are 2, 3, 4, 6, 8,
+                                       12, and 24.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Snapshot creation start time</b>
+                                       <b><em>hh</em></b>:<b><em>mm</em></b>
+                                       <b>UTC</b>&#x2014;The time of day when policy runs are scheduled to start. 
+                                       The policy runs start within an hour after the scheduled time.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Retention rule</b>&#x2014;The maximum number of snapshots to
+                                       retain for each volume or instance. The supported range is 1 to 1000. After the limit
+                                       is reached, 
+                                       the oldest snapshot is deleted when a new one is created.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Copy tags</b>&#x2014;Copy all user-defined tags on a source volume to snapshots of the volume created
+                                       by this policy.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Tag created snapshots</b>&#x2014;The resource tags to apply to 
+                                       the snapshots that are created. These tags are in addition to the tags applied by
+                                       Amazon DLM. You can also choose
+                                       variable tags that can automatically tag all of your snapshots with the corresponding
+                                       instance-id or timestamp.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>IAM role</b>&#x2014;An IAM role that has permissions to create, delete, and describe snapshots, 
+                                       and to describe volumes. AWS provides a default role, <b>AWSDataLifecycleManagerDefaultRole</b>, or
+                                       you can create a custom IAM role.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Policy status after creation</b>&#x2014;Choose 
+                                       <b>Enable policy</b> to start the policy runs at the next scheduled time 
+                                       or <b>Disable policy</b> to prevent the policy from running.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                     </ol>
+                     <a id="console-delete-policy"></a><p class="title"><b>To delete a lifecycle policy</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>In the navigation pane, choose <b>Elastic Block Store</b>,
+                              <b>Lifecycle Manager</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Select a lifecycle policy from the list.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Actions</b>, <b>Delete policy</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <h2 id="snaphot-lifecycle-cli">Working with Amazon DLM Using the Command Line</h2>
+                     
+                     <p>The following examples show how to use Amazon DLM to perform typical procedures to
+                        manage the
+                        backups of your EBS volumes.
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example: Create a lifecycle policy</b></p>
+                        <div class="example-contents">
+                           <p>Use the <a href="./cli/latest/reference/dlm/create-lifecycle-policy.html">create-lifecycle-policy</a> command to create a lifecycle policy. To simplify the
+                              syntax, this example references a JSON file, <code>policyDetails.json</code>, that
+                              includes the policy details.
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws dlm create-lifecycle-policy --description &quot;<em class="replaceable"><code>My first policy</code></em>&quot; --state ENABLED --execution-role-arn arn:aws:iam::<em class="replaceable"><code>12345678910</code></em>:role/<em class="replaceable"><code>AWSDataLifecycleManagerDefaultRole</code></em> --policy-details file://<em class="replaceable"><code>policyDetails.json</code></em></code></strong></code></pre><p>The following is an example of the <code>policyDetails.json</code> file.
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+   &quot;ResourceTypes&quot;: [
+      &quot;VOLUME&quot;
+   ],
+   &quot;TargetTags&quot;: [
+      {
+         &quot;Key&quot;: &quot;<em class="replaceable"><code>costcenter</code></em>&quot;,
+         &quot;Value&quot;: &quot;<em class="replaceable"><code>115</code></em>&quot;
+      }
+   ],
+   &quot;Schedules&quot;:[
+      {
+         &quot;Name&quot;: &quot;<em class="replaceable"><code>DailySnapshots</code></em>&quot;,
+         &quot;TagsToAdd&quot;: [
+            {
+               &quot;Key&quot;: &quot;<em class="replaceable"><code>type</code></em>&quot;,
+               &quot;Value&quot;: &quot;<em class="replaceable"><code>myDailySnapshot</code></em>&quot;
+            }
+         ],
+         &quot;CreateRule&quot;: {
+            &quot;Interval&quot;: <em class="replaceable"><code>24</code></em>,
+            &quot;IntervalUnit&quot;: &quot;HOURS&quot;,
+            &quot;Times&quot;: [
+               &quot;<em class="replaceable"><code>03:00</code></em>&quot;
+            ]
+         },
+         &quot;RetainRule&quot;: {
+            &quot;Count&quot;:<em class="replaceable"><code>5</code></em>
+         },
+         &quot;CopyTags&quot;: false 
+      }
+   ]
+}</code></pre><p>Upon success, the command returns the ID of the newly created policy. The following
+                              is
+                              example output.
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+   &quot;PolicyId&quot;: &quot;policy-<em class="replaceable"><code>0123456789abcdef0</code></em>&quot;
+}</code></pre></div>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example: Display a lifecycle policy</b></p>
+                        <div class="example-contents">
+                           <p>Use the <a href="./cli/latest/reference/dlm/get-lifecycle-policy.html">get-lifecycle-policy</a> command to display information about a lifecycle
+                              policy.
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws dlm get-lifecycle-policy --policy-id policy-<em class="replaceable"><code>0123456789abcdef0</code></em></code></strong></code></pre><p>The following is example output. It includes the information that you specified, plus
+                              metadata inserted by AWS.
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+   &quot;Policy&quot;:{
+      &quot;Description&quot;: &quot;<em class="replaceable"><code>My first policy</code></em>&quot;,
+      &quot;DateCreated&quot;: &quot;2018-05-15T00:16:21+0000&quot;,
+      &quot;State&quot;: &quot;<em class="replaceable"><code>ENABLED</code></em>&quot;,
+      &quot;ExecutionRoleArn&quot;: &quot;arn:aws:iam::210774411744:role/<em class="replaceable"><code>AWSDataLifecycleManagerDefaultRole</code></em>&quot;,
+      &quot;PolicyId&quot;: &quot;policy-<em class="replaceable"><code>0123456789abcdef0</code></em>&quot;,
+      &quot;DateModified&quot;: &quot;2018-05-15T00:16:22+0000&quot;,
+      &quot;PolicyDetails&quot;: {
+        &quot;PolicyType&quot;:&quot;EBS_SNAPSHOT_MANAGEMENT&quot;,
+         &quot;ResourceTypes&quot;: [
+            &quot;VOLUME&quot;
+         ],
+         &quot;TargetTags&quot;: [
+            {
+               &quot;Value&quot;: &quot;<em class="replaceable"><code>115</code></em>&quot;,
+               &quot;Key&quot;: &quot;<em class="replaceable"><code>costcenter</code></em>&quot;
+            }
+         ],
+         &quot;Schedules&quot;: [
+            {
+               &quot;TagsToAdd&quot;: [
+                  {
+                     &quot;Value&quot;: &quot;<em class="replaceable"><code>myDailySnapshot</code></em>&quot;,
+                     &quot;Key&quot;: &quot;<em class="replaceable"><code>type</code></em>&quot;
+                  }
+               ],
+               &quot;RetainRule&quot;: {
+                  &quot;Count&quot;: <em class="replaceable"><code>5</code></em>
+               },
+               &quot;CopyTags&quot;: false, 
+               &quot;CreateRule&quot;: {
+                  &quot;Interval&quot;: <em class="replaceable"><code>24</code></em>,
+                  &quot;IntervalUnit&quot;: &quot;HOURS&quot;,
+                  &quot;Times&quot;: [
+                     &quot;<em class="replaceable"><code>03:00</code></em>&quot;
+                  ]
+               },
+               &quot;Name&quot;: &quot;<em class="replaceable"><code>DailySnapshots</code></em>&quot;
+            }
+         ]
+      }
+   }
+}</code></pre></div>
+                     </div>
+                     
+                     
+                     <div class="example">
+                        <p class="title"><b>Example To modify a lifecycle policy</b></p>
+                        <div class="example-contents">
+                           <p>Use the <a href="./cli/latest/reference/dlm/update-lifecycle-policy.html">update-lifecycle-policy</a> command to modify the information in a lifecycle policy.
+                              To simplify the syntax, this example references a JSON file,
+                              <code>policyDetailsUpdated.json</code>, that includes the policy details.
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws dlm update-lifecycle-policy --state DISABLED --execution-role-arn arn:aws:iam::<em class="replaceable"><code>12345678910</code></em>:role/<em class="replaceable"><code>AWSDataLifecycleManagerDefaultRole</code></em>&quot; --policy-details file://<em class="replaceable"><code>policyDetailsUpdated.json</code></em></code></strong></code></pre><p>The following is an example of the <code>policyDetailsUpdated.json</code>
+                              file.
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+   &quot;ResourceTypes&quot;:[
+      &quot;VOLUME&quot;
+   ],
+   &quot;TargetTags&quot;:[
+      {
+         &quot;Key&quot;: &quot;<em class="replaceable"><code>costcenter</code></em>&quot;,
+         &quot;Value&quot;: &quot;<em class="replaceable"><code>120</code></em>&quot;
+      }
+   ],
+   &quot;Schedules&quot;:[
+      {
+         &quot;Name&quot;: &quot;<em class="replaceable"><code>DailySnapshots</code></em>&quot;,
+         &quot;TagsToAdd&quot;: [
+            {
+               &quot;Key&quot;: &quot;<em class="replaceable"><code>type</code></em>&quot;,
+               &quot;Value&quot;: &quot;<em class="replaceable"><code>myDailySnapshot</code></em>&quot;
+            }
+         ],
+         &quot;CreateRule&quot;: {
+            &quot;Interval&quot;: <em class="replaceable"><code>12</code></em>,
+            &quot;IntervalUnit&quot;: &quot;HOURS&quot;,
+            &quot;Times&quot;: [
+               &quot;<em class="replaceable"><code>15:00</code></em>&quot;
+            ]
+         },
+         &quot;RetainRule&quot;: {
+            &quot;Count&quot; :<em class="replaceable"><code>5</code></em>
+         },
+         &quot;CopyTags&quot;: false 
+      }
+   ]
+}</code></pre><p>To view the updated policy, use the <code class="code">get-lifecycle-policy</code> command. You can
+                              see that the state, the value of the tag, the snapshot interval, and the snapshot
+                              start time
+                              were changed.
+                           </p>
+                        </div>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example: Delete a lifecycle policy</b></p>
+                        <div class="example-contents">
+                           <p>Use the <a href="./cli/latest/reference/dlm/delete-lifecycle-policy.html">delete-lifecycle-policy</a> command to delete a lifecycle policy and free up the
+                              target tags specified in the policy for reuse.
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws dlm delete-lifecycle-policy --policy-id policy-<em class="replaceable"><code>0123456789abcdef0</code></em></code></strong></code></pre></div>
+                     </div>
+                     
+                     
+                     <h2 id="snaphot-lifecycle-api">Working with Amazon DLM Using the API</h2>
+                     
+                     <p>The <a href="./dlm/latest/APIReference/">Amazon Data Lifecycle Manager API Reference</a>
+                        provides descriptions and syntax for each of the actions and data types for the Amazon
+                        DLM Query
+                        API.
+                     </p>
+                     
+                     <p>Alternatively, you can use one of the AWS SDKs to access an API that&apos;s tailored to
+                        the
+                        programming language or platform that you&apos;re using. For more information, see <a href="https://aws.amazon.com/tools/#SDKs" target="_blank">AWS SDKs</a>.
+                     </p>
+                     
+                     
+                     <h2 id="multivolume-lifecycle">Working with Amazon DLM to Create and Maintain
+                        Multi-Volume Snapshots Using the Console
+                     </h2>
+                     
+                     
+                     <p>You can create lifecycle policies to automate the creation and deletion of multi-volume
+                        
+                        snapshots by using the AWS Management Console, from the AWS CLI, or from the Data
+                        Lifecycle Management (DLM) 
+                        APIs. 
+                     </p>
+                     
+                     <p class="title"><b>Automate multi-volume snapshots using the console</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Sign in to the AWS Management Console and open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           <p>In the navigation pane, choose <b>Elastic Block Store</b>. Then choose
+                              <b>Lifecycle Manager</b> and <b>Create snapshot lifecycle
+                                 policy</b>.
+                           </p>
+                        </li>
+                        <li>
+                           <p>Provide the following information for your policy, as needed:
+                              
+                           </p>
+                           
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p><b>Description</b>&#x2014;A description of the policy.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Target with tags</b>&#x2014;The resource tags
+                                       that identify the volumes or instances to back up.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Schedule Name</b>&#x2014;A name for the backup schedule.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Create snapshots every</b> <b><em>n</em></b>
+                                       <b>Hours</b>&#x2014;The number of hours between policy runs. The supported values are 2, 3, 4, 6, 8,
+                                       12, and 24.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Snapshot creation start time</b>
+                                       <b><em>hh</em></b>:<b><em>mm</em></b>
+                                       <b>UTC</b>&#x2014;The time of day when policy runs are scheduled to start. 
+                                       The policy runs start within an hour after the scheduled time.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Retention rule</b>&#x2014;The maximum number of snapshots to
+                                       retain for each volume or instance. The supported range is 1 to 1000. After the limit
+                                       is reached, 
+                                       the oldest snapshot is deleted when a new one is created.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Copy tags</b>&#x2014;Copy all user-defined tags on a source volume to snapshots of the volume created
+                                       by this policy.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Tag created snapshots</b>&#x2014;The resource tags to apply to 
+                                       the snapshots that are created. These tags are in addition to the tags applied by
+                                       Amazon DLM. You can also choose
+                                       variable tags that can automatically tag all of your snapshots with the corresponding
+                                       instance-id or timestamp.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>IAM role</b>&#x2014;An IAM role that has permissions to create, delete, and describe snapshots, 
+                                       and to describe volumes. AWS provides a default role, <b>AWSDataLifecycleManagerDefaultRole</b>, or
+                                       you can create a custom IAM role.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Policy status after creation</b>&#x2014;Choose 
+                                       <b>Enable policy</b> to start the policy runs at the next scheduled time 
+                                       or <b>Disable policy</b> to prevent the policy from running.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                        </li>
+                        <li>
+                           <p>Choose <b>Create Policy</b>.
+                           </p>
+                        </li>
+                     </ol>
+                     
+                     
+                     <h2 id="snaphots-lifecycle-cli">Working with Amazon DLM to Create and Maintain
+                        Multi-Volume Snapshots Using the CLI
+                     </h2>
+                     
+                     <p>The following examples show how to use Amazon DLM to automate creation and deletion
+                        of
+                        multi-volume snapshots using the AWS CLI.
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example: Create a lifecycle policy</b></p>
+                        <div class="example-contents">
+                           <p>Use the <a href="./cli/latest/reference/dlm/create-lifecycle-policy.html">create-lifecycle-policy</a> command to create a lifecycle policy. To simplify the
+                              syntax, this example references a JSON file, <code>policyDetails.json</code>, which
+                              includes the policy details.
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws dlm create-lifecycle-policy --description <em class="replaceable"><code>My multi-volume snapshots policy</code></em> --state ENABLED --execution-role-arn arn:aws:iam::<em class="replaceable"><code>12345678910</code></em>:role/<em class="replaceable"><code>AWSDataLifecycleManagerDefaultRole</code></em> --policy-details file://<em class="replaceable"><code>multi-volume-policy.json</code></em></code></strong></code></pre><p>The following is an example of the <code>multi-volume-policy.json</code>
+                              file.
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+   &quot;ResourceTypes&quot;: [
+      &quot;INSTANCE&quot;
+   ],
+   &quot;TargetTags&quot;: [
+      {
+         &quot;Key&quot;: &quot;<em class="replaceable"><code>costcenter</code></em>&quot;,
+         &quot;Value&quot;: &quot;<em class="replaceable"><code>115</code></em>&quot;
+      }
+   ],
+   &quot;Schedules&quot;:[
+      {
+         &quot;Name&quot;: &quot;<em class="replaceable"><code>DailySnapshots</code></em>&quot;,
+         &quot;TagsToAdd&quot;: [
+            {
+               &quot;Key&quot;: &quot;<em class="replaceable"><code>type</code></em>&quot;,
+               &quot;Value&quot;: &quot;<em class="replaceable"><code>Daily-Multi-Volume Snapshots</code></em>&quot;
+            }
+         ],
+        &quot;VariableTags&quot;:[
+            {
+                &quot;Key&quot;: &quot;timestamp&quot;,
+                &quot;Value&quot;: &quot;$(timestamp)&quot;
+             },
+             {
+                &quot;Key&quot;: &quot;instance-id&quot;,
+                &quot;Value&quot;: &quot;$(instance-id)&quot;
+              },
+          ],
+              &quot;Interval&quot;: 24,
+              &quot;IntervalUnit&quot;: &quot;HOURS&quot;,
+              &quot;Times&quot;: [
+              &quot;03:00&quot;
+             ]
+         },
+         &quot;RetainRule&quot;: {
+            &quot;Count&quot;:<em class="replaceable"><code>5</code></em>
+         },
+         &quot;CopyTags&quot;: false 
+      }
+   ]
+    &quot;Parameters&quot;: {
+          &quot;ExcludeBootVolume&quot;: true
+  }
+}</code></pre><p>Upon success, the command returns the ID of the newly created policy. The following
+                              is
+                              example output.
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+   &quot;PolicyId&quot;: &quot;policy-<em class="replaceable"><code>0123456789abcdef0</code></em>&quot;
+}</code></pre></div>
+                     </div>
+                     
+                     
+                     <h2 id="dlm-monitor-lifecycle">Monitoring the Snapshot Lifecycle</h2>
+                     
+                     <p>You can use the following features to monitor the lifecycle of your snapshots.</p>
+                     
+                     
+                     <h3 id="monitor-console-cli">Console and AWS CLI</h3>
+                     
+                     <p>You can view your lifecycle policies using the Amazon EC2 console or the AWS CLI.
+                        Each snapshot
+                        created by a policy has a timestamp and policy-related tags. You can filter snapshots
+                        using
+                        tags to verify that your backups are being created as you intend. For information
+                        about
+                        viewing lifecycle policies using the console, see <a href="snapshot-lifecycle.html#console-view-policy">To display a lifecycle policy</a>. For information about displaying information about
+                        lifecycle policies using the CLI, see <a href="snapshot-lifecycle.html#display-policy-cli">Example: Display a lifecycle policy</a>.
+                     </p>
+                     
+                     
+                     
+                     
+                     <h3 id="monitor-cloudwatch-events">CloudWatch Events</h3>
+                     
+                     <p>Amazon EBS and Amazon DLM emit events related to lifecycle policy actions. You can
+                        use AWS Lambda
+                        and Amazon CloudWatch Events to handle event notifications programmatically. For more
+                        information, see the
+                        <a href="./AmazonCloudWatch/latest/events/">Amazon CloudWatch Events User Guide</a>.
+                     </p>
+                     
+                     <p>The following events are available:</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><code class="code">createSnapshot</code>&#x2014;An Amazon EBS event emitted when a
+                                 <code class="code">CreateSnapshot</code> action succeeds or fails. For more information, see <a href="./AWSEC2/latest/UserGuide/ebs-cloud-watch-events.html">Amazon CloudWatch Events for
+                                    Amazon EBS</a>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><code class="code">DLM Policy State Change</code>&#x2014;A Amazon DLM event emitted when a lifecycle policy
+                                 enters an error state. The event contains a description of what caused the error.
+                                 The
+                                 following is an example of an event when the permissions granted by the IAM role are
+                                 insufficient:
+                              </p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+   &quot;version&quot;: &quot;0&quot;,
+   &quot;id&quot;: &quot;01234567-0123-0123-0123-0123456789ab&quot;,
+   &quot;detail-type&quot;: &quot;DLM Policy State Change&quot;,
+   &quot;source&quot;: &quot;aws.dlm&quot;,
+   &quot;account&quot;: &quot;123456789012&quot;,
+   &quot;time&quot;: &quot;2018-05-25T13:12:22Z&quot;,
+   &quot;region&quot;: &quot;us-east-1&quot;,
+   &quot;resources&quot;: [
+      &quot;arn:aws:dlm:us-east-1:123456789012:policy/policy-0123456789abcdef&quot;
+   ],
+   &quot;detail&quot;: {
+      &quot;state&quot;: &quot;ERROR&quot;,
+      &quot;cause&quot;: &quot;Role provided does not have sufficient permissions&quot;,
+      &quot;policy_id&quot;: &quot;arn:aws:dlm:us-east-1:123456789012:policy/policy-0123456789abcdef&quot;
+   }
+}</code></pre>
+                              <p>The following is an example of an event when a limit is exceeded:</p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+   &quot;version&quot;: &quot;0&quot;,
+   &quot;id&quot;: &quot;01234567-0123-0123-0123-0123456789ab&quot;,
+   &quot;detail-type&quot;: &quot;DLM Policy State Change&quot;,
+   &quot;source&quot;: &quot;aws.dlm&quot;,
+   &quot;account&quot;: &quot;123456789012&quot;,
+   &quot;time&quot;: &quot;2018-05-25T13:12:22Z&quot;,
+   &quot;region&quot;: &quot;us-east-1&quot;,
+   &quot;resources&quot;: [
+      &quot;arn:aws:dlm:us-east-1:123456789012:policy/policy-0123456789abcdef&quot;
+   ],
+   &quot;detail&quot;:{
+      &quot;state&quot;: &quot;ERROR&quot;,
+      &quot;cause&quot;: &quot;Maximum allowed active snapshot limit exceeded&quot;,
+      &quot;policy_id&quot;: &quot;arn:aws:dlm:us-east-1:123456789012:policy/policy-0123456789abcdef&quot;
+   }
+}</code></pre>
+                              </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     
+                     
+                     <h3 id="monitor-lifecycle-cloudtrail">AWS CloudTrail</h3>
+                     
+                     <p>With AWS CloudTrail, you can track user activity and API usage to demonstrate compliance
+                        with
+                        internal policies and regulatory standards. For more information, see the
+                        <a href="./awscloudtrail/latest/userguide/">AWS CloudTrail User Guide</a>.
+                     </p>
+                     
+                     
+                     
+                     
+                     <h3 id="lifecycle-cloudformation">AWS CloudFormation</h3>
+                     
+                     <p>When deploying resource stacks with AWS CloudFormation, you can include Amazon DLM
+                        policies in your
+                        AWS CloudFormation templates. For more information, see <a href="./AWSCloudFormation/latest/UserGuide/cfn-reference-dlm.html">Amazon Data Lifecycle Manager Resource Types Reference</a>.
+                     </p>
+                     
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="ebs-modifying-snapshot-permissions.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="EBSOptimized.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Understanding Amazon DLM"><a class="pagetoc" href="#dlm-elements">Understanding Amazon DLM</a></li>
+                        <li class="pagetoc" name="Permissions for Amazon DLM"><a class="pagetoc" href="#dlm-permissions">Permissions for Amazon DLM</a></li>
+                        <li class="pagetoc" name="Permissions for IAM Users"><a class="pagetoc" href="#dlm-access-control">Permissions for IAM Users</a></li>
+                        <li class="pagetoc" name="Limits"><a class="pagetoc" href="#dlm-limits">Limits</a></li>
+                        <li class="pagetoc" name="Working with Amazon DLM Using the Console"><a class="pagetoc" href="#snapshot-lifecycle-console">Working with Amazon DLM Using the Console</a></li>
+                        <li class="pagetoc" name="Working with Amazon DLM Using the Command Line"><a class="pagetoc" href="#snaphot-lifecycle-cli">Working with Amazon DLM Using the Command Line</a></li>
+                        <li class="pagetoc" name="Working with Amazon DLM Using the API"><a class="pagetoc" href="#snaphot-lifecycle-api">Working with Amazon DLM Using the API</a></li>
+                        <li class="pagetoc" name="Working with Amazon DLM to Create and Maintain
+        Multi-Volume Snapshots Using the Console"><a class="pagetoc" href="#multivolume-lifecycle">Working with Amazon DLM to Create and Maintain
+                              Multi-Volume Snapshots Using the Console</a></li>
+                        <li class="pagetoc" name="Working with Amazon DLM to Create and Maintain
+        Multi-Volume Snapshots Using the CLI"><a class="pagetoc" href="#snaphots-lifecycle-cli">Working with Amazon DLM to Create and Maintain
+                              Multi-Volume Snapshots Using the CLI</a></li>
+                        <li class="pagetoc" name="Monitoring the Snapshot Lifecycle"><a class="pagetoc" href="#dlm-monitor-lifecycle">Monitoring the Snapshot Lifecycle</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Elastic Compute Cloud';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide for Linux Instances';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

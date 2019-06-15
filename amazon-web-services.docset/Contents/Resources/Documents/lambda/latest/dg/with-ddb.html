@@ -3,14 +3,17 @@
       <title>Using AWS Lambda with Amazon DynamoDB - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="use-cases.html" title="Examples of How to Use AWS Lambda">
-      <link rel="prev" href="with-kinesis-example-use-app-spec.html" title="Step 4: Deploy With AWS SAM and AWS CloudFormation">
-      <link rel="next" href="with-ddb-example.html" title="Tutorial: Using AWS Lambda with Amazon DynamoDB">
+      <link rel="up" href="lambda-services.html" title="Using AWS Lambda with Other Services">
+      <link rel="prev" href="services-config.html" title="Using AWS Lambda with AWS Config">
+      <link rel="next" href="with-ddb-example.html" title="Tutorial: Using AWS Lambda with Amazon DynamoDB Streams">
       <meta name="description" content="How to set up and start using the AWS Lambda service.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/with-ddb.html">
@@ -20,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,144 +35,350 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="use-cases.html">Examples of How to Use AWS Lambda</a> &#xBB; <span class="breadcrumb">Using AWS Lambda with Amazon DynamoDB</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-services.html">Using AWS Lambda with Other Services</a> &#xBB; <span class="breadcrumb">Using AWS Lambda with Amazon DynamoDB</span></div>
                            </td>
                         </tr>
                      </tbody></table>
-                     <div></div>
-                     <div id="language-filter" class="page-header" style="display:none">
-                        <form> Filter View: 
-                           <select name="filter-select" id="filter-select">
-                              <option selected="1">All</option>
-                              <option value="Node.js" selected>Node.js</option>
-                              <option value="Java" selected>Java</option>
-                              <option value="C#" selected>C#</option>
-                              <option value="Python" selected>Python</option>
-                              <option value="Go" selected>Go</option></select></form>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
                      </div>
+                     <div></div>
                      <h1 class="topictitle" id="with-ddb">Using AWS Lambda with Amazon DynamoDB</h1>
-                     <p> You can use Lambda functions as triggers for your Amazon DynamoDB table. Triggers
-                        are custom
-                        			actions you take in response to updates made to the DynamoDB table. To create a
-                        trigger,
-                        			first you enable Amazon DynamoDB Streams for your table. Then, you write a Lambda
-                        function to
-                        			process the updates published to the stream. 
+                     <p>You can use a AWS Lambda function to process records in a <a href="./amazondynamodb/latest/developerguide/Streams.html">Amazon DynamoDB Streams
+                           stream</a>. With DynamoDB Streams, you can trigger a Lambda function to perform additional work
+                        each time a DynamoDB table is
+                        updated.
                      </p>
-                     <p>Note the following about how the Amazon DynamoDB and AWS Lambda integration
-                        			works:
+                     <p>Lambda reads records from the stream and invokes your function <a href="invocation-options.html">synchronously</a> with an event that contains stream records. Lambda reads records in batches and invokes
+                        your
+                        function to process records from the batch.
                      </p>
+                     <div class="example">
+                        <p class="title"><b>Example DynamoDB Streams Record Event</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
+  &quot;Records&quot;: [
+    {
+      &quot;eventID&quot;: &quot;1&quot;,
+      &quot;eventVersion&quot;: &quot;1.0&quot;,
+      &quot;dynamodb&quot;: {
+        &quot;Keys&quot;: {
+          &quot;Id&quot;: {
+            &quot;N&quot;: &quot;101&quot;
+          }
+        },
+        &quot;NewImage&quot;: {
+          &quot;Message&quot;: {
+            &quot;S&quot;: &quot;New item!&quot;
+          },
+          &quot;Id&quot;: {
+            &quot;N&quot;: &quot;101&quot;
+          }
+        },
+        &quot;StreamViewType&quot;: &quot;NEW_AND_OLD_IMAGES&quot;,
+        &quot;SequenceNumber&quot;: &quot;111&quot;,
+        &quot;SizeBytes&quot;: 26
+      },
+      &quot;awsRegion&quot;: &quot;us-west-2&quot;,
+      &quot;eventName&quot;: &quot;INSERT&quot;,
+      &quot;eventSourceARN&quot;: eventsourcearn,
+      &quot;eventSource&quot;: &quot;aws:dynamodb&quot;
+    },
+    {
+      &quot;eventID&quot;: &quot;2&quot;,
+      &quot;eventVersion&quot;: &quot;1.0&quot;,
+      &quot;dynamodb&quot;: {
+        &quot;OldImage&quot;: {
+          &quot;Message&quot;: {
+            &quot;S&quot;: &quot;New item!&quot;
+          },
+          &quot;Id&quot;: {
+            &quot;N&quot;: &quot;101&quot;
+          }
+        },
+        &quot;SequenceNumber&quot;: &quot;222&quot;,
+        &quot;Keys&quot;: {
+          &quot;Id&quot;: {
+            &quot;N&quot;: &quot;101&quot;
+          }
+        },
+        &quot;SizeBytes&quot;: 59,
+        &quot;NewImage&quot;: {
+          &quot;Message&quot;: {
+            &quot;S&quot;: &quot;This item has changed&quot;
+          },
+          &quot;Id&quot;: {
+            &quot;N&quot;: &quot;101&quot;
+          }
+        },
+        &quot;StreamViewType&quot;: &quot;NEW_AND_OLD_IMAGES&quot;
+      },
+      &quot;awsRegion&quot;: &quot;us-west-2&quot;,
+      &quot;eventName&quot;: &quot;MODIFY&quot;,
+      &quot;eventSourceARN&quot;: sourcearn,
+      &quot;eventSource&quot;: &quot;aws:dynamodb&quot;
+    }</code></pre></div>
+                     </div>
+                     <p>Lambda polls shards in your DynamoDB Streams stream for records at a base rate of
+                        4 times per second. When records are
+                        available, Lambda invokes your function and waits for the result. If processing succeeds,
+                        Lambda resumes polling until
+                        it receives more records.
+                     </p>
+                     <p>If your function returns an error, Lambda retries the batch until processing succeeds
+                        or the data expires. Until
+                        the issue is resolved, no data in the shard is processed. Handle any record processing
+                        errors in your code to avoid
+                        stalled shards and potential data loss.
+                     </p>
+                     
+                     <h2 id="events-dynamodb-permissions">Execution Role Permissions</h2>
+                     
+                     <p>Lambda needs the following permissions to manage resources related to your DynamoDB
+                        Streams stream. Add them to your
+                        function&apos;s execution role.
+                     </p>
+                     
                      <div class="itemizedlist">
-                        				
-                        				
-                        				
-                        			
+                        
+                        
+                        
+                        
+                        
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
-                              					
-                              <p><b>Stream-based model</b> &#x2013; This is a
-                                 						 model (see <a href="invocation-options.html#intro-invocation-modes">Event Source Mapping</a>), where AWS Lambda polls the
-                                 
-                                 						stream at a rate of 4 times per second and, when it detects new records, invokes
-                                 your Lambda function by
-                                 
-                                 						passing the update event as parameter. 
-                              </p>
-                              					
-                              <p>In a stream-based model, you maintain event source mapping in AWS Lambda. The
-                                 						event source mapping describes which stream maps to which Lambda function.
-                                 						AWS Lambda provides an API (<a href="API_CreateEventSourceMapping.html">CreateEventSourceMapping</a>) for you to create the
-                                 						mapping. You can also use the AWS Lambda console to create event source
-                                 						mappings. 
-                              </p>
-                              				
+                              
+                              <p><a href="./amazondynamodb/latest/APIReference/API_streams_DescribeStream.html">dynamodb:DescribeStream</a></p>
+                              
                            </li>
                            <li class="listitem">
-                              					
-                              <p><b>Synchronous invocation</b> &#x2013; 
-                                 						AWS Lambda invokes a Lambda function using the <code class="code">RequestResponse</code> invocation type
-                                 						(synchronous invocation). For more information about invocation types, see <a href="invocation-options.html">Invocation Types</a>. 
-                              </p>
-                              				
+                              
+                              <p><a href="./amazondynamodb/latest/APIReference/API_streams_GetRecords.html">dynamodb:GetRecords</a></p>
+                              
                            </li>
                            <li class="listitem">
-                              					
-                              <p><b>Event structure</b> &#x2013; The event your
-                                 						Lambda function receives is the table update information AWS Lambda reads
-                                 						from your stream. When you configure event source mapping, the batch size
-                                 						you specify is the maximum number of records that you want your Lambda
-                                 						function to receive per invocation.
-                              </p>
-                              				
+                              
+                              <p><a href="./amazondynamodb/latest/APIReference/API_streams_GetShardIterator.html">dynamodb:GetShardIterator</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="./amazondynamodb/latest/APIReference/API_streams_ListStreams.html">dynamodb:ListStreams</a></p>
+                              
                            </li>
                         </ul>
                      </div>
-                     <p>Regardless of what invokes a Lambda function, AWS Lambda always executes a Lambda
-                        function on
-                        		your behalf. If your Lambda function needs to access any AWS resources, you need
-                        to grant
-                        		the relevant permissions to access those resources. You also need to grant AWS Lambda
-                        permissions to poll your
-                        		DynamoDB stream. You grant all of these permissions to an IAM role (execution role)
-                        that
-                        		AWS Lambda can assume to poll the stream and execute the Lambda function on your
-                        behalf. You
-                        		create this role first and then enable it at the time you create the Lambda function.
-                        For more
-                        		information, see <a href="intro-permission-model.html#lambda-intro-execution-role">Manage Permissions: Using an IAM Role
-                           (Execution Role)</a>.
+                     
+                     <p>The <code class="code">AWSLambdaDynamoDBExecutionRole</code> managed policy includes these permissions. For more
+                        information, see <a href="lambda-intro-execution-role.html">AWS Lambda Execution Role</a>.
                      </p>
-                     <p>The following diagram illustrates the application flow:</p>
-                     <div class="mediaobject">
-                        			
-                        				<img src="../../..//img/ddb-pull-model-10.png">
-                        			
-                        		
-                     </div>
-                     <div class="orderedlist">
-                        				
-                        				
-                        				
-                        				
-                        			
-                        <ol>
-                           <li>
-                              					
-                              <p>Custom app updates the DynamoDB table. </p>
-                              				
-                           </li>
-                           <li>
-                              					
-                              <p>Amazon DynamoDB publishes item updates to the stream. </p>
-                              				
-                           </li>
-                           <li>
-                              					
-                              <p>AWS Lambda polls the stream and invokes your Lambda function when it
-                                 						detects new records in the stream.
-                              </p>
-                              				
-                           </li>
-                           <li>
-                              					
-                              <p>AWS Lambda executes the Lambda function by assuming the execution role you
-                                 						specified at the time you created the Lambda function.
-                              </p>
-                              				
-                           </li>
-                        </ol>
-                     </div>
-                     <p>For a tutorial that walks you through an example setup, see <a href="with-ddb-example.html">Tutorial: Using AWS Lambda with Amazon DynamoDB</a>.
+                     
+                     
+                     <h2 id="services-dynamodb-eventsourcemapping">Configuring a Stream as an Event Source</h2>
+                     
+                     
+                     <p>Create an event source mapping to tell Lambda to send records from your stream to
+                        a Lambda function. You can
+                        create multiple event source mappings to process the same data with multiple Lambda
+                        functions, or process items
+                        from multiple streams with a single function.
                      </p>
+                     
+                     <p>To configure your function to read from DynamoDB Streams in the Lambda console, create
+                        a <b>DynamoDB</b>
+                        trigger.
+                     </p>
+                      
+                     <p class="title"><b>To create a trigger</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Lambda console <a href="https://console.aws.amazon.com/lambda/home#/functions" target="_blank">Functions page</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>Choose a function.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Under <b>Designer</b>, choose a trigger type to add a trigger to your function.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Under <b>Configure triggers</b>, configure the required options and then choose
+                              <b>Add</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Save</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <p>Lambda supports the following options for DynamoDB event sources.</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        <p class="title"><b>Event Source Options</b></p>
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><b>DynamoDB table</b> &#x2013; The DynamoDB table to read records from.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>Batch size</b> &#x2013; The number of records to read from a shard in each batch, up to
+                                 1,000. Lambda passes all of the records in the batch to the function in a single call,
+                                 as long as the total
+                                 size of the events doesn&apos;t exceed the <a href="limits.html">payload limit</a> for synchronous invocation
+                                 (6 MB).
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>Starting position</b> &#x2013; Process only new records, or all existing records.
+                              </p>
+                              
+                              <div class="itemizedlist">
+                                 
+                                 
+                                 
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       
+                                       <p><b>Latest</b> &#x2013; Process new records added to the stream.
+                                       </p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p><b>Trim horizon</b> &#x2013; Process all records in the stream.
+                                       </p>
+                                       
+                                    </li>
+                                 </ul>
+                              </div>
+                              
+                              <p>After processing any existing records, the function is caught up and continues to
+                                 process new
+                                 records.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>Enabled</b> &#x2013; Disable the event source to stop processing records. Lambda keeps
+                                 track of the last record processed and resumes processing from that point when the
+                                 mapping is
+                                 re-enabled.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>To manage the event source configuration later, choose the trigger in the designer.</p>
+                     
+                     
+                     <h2 id="services-dynamodb-api">Event Source Mapping APIs</h2>
+                      
+                     <p>To manage event source mappings with the AWS CLI or AWS SDK, use the following APIs.</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><a href="API_CreateEventSourceMapping.html">CreateEventSourceMapping</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="API_ListEventSourceMappings.html">ListEventSourceMappings</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="API_GetEventSourceMapping.html">GetEventSourceMapping</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="API_UpdateEventSourceMapping.html">UpdateEventSourceMapping</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="API_DeleteEventSourceMapping.html">DeleteEventSourceMapping</a></p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <p>The following example uses the AWS Command Line Interface to map a function named
+                        <code class="code">my-function</code> to an DynamoDB Streams stream
+                        specified by Amazon Resource Name (ARN), with a batch size of 500
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda create-event-source-mapping --function-name my-function --batch-size 500 --starting-position LATEST \
+--event-source-arn arn:aws:dynamodb:<em class="replaceable"><code>us-east-2:123456789012:table/my-table/stream/2019-06-10T19:26:16.525</code></em></code></strong>
+{
+    &quot;UUID&quot;: &quot;14e0db71-5d35-4eb5-b481-8945cf9d10c2&quot;,
+    &quot;BatchSize&quot;: 500,
+    &quot;EventSourceArn&quot;: &quot;arn:aws:dynamodb:us-east-2:123456789012:table/my-table/stream/2019-06-10T19:26:16.525&quot;,
+    &quot;FunctionArn&quot;: &quot;arn:aws:lambda:us-east-2:123456789012:function:my-function&quot;,
+    &quot;LastModified&quot;: 1560209851.963,
+    &quot;LastProcessingResult&quot;: &quot;No records processed&quot;,
+    &quot;State&quot;: &quot;Creating&quot;,
+    &quot;StateTransitionReason&quot;: &quot;User action&quot;
+}</code></pre>
+                     
+                     <h2 id="events-dynamodb-metrics">Amazon CloudWatch Metrics</h2>
+                     
+                      
+                     <p>Lambda emits the <code class="code">IteratorAge</code> metric when your function finishes processing a batch of records. The
+                        metric indicates how old the last record in the batch was when processing finished.
+                        If your function is processing
+                        new events, you can use the iterator age to estimate the latency between when a record
+                        is added, and when the
+                        function processes it.
+                     </p>
+                     
+                     <p>An increasing trend in iterator age can indicate issues with your function. For more
+                        information, see <a href="troubleshooting.html">Monitoring and Troubleshooting Lambda Applications</a>.
+                     </p> 
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -178,15 +387,31 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="with-kinesis-example-use-app-spec.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="with-ddb-example.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="services-config.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="with-ddb-example.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
             <div id="right-expanded">
-               <div id="right-content-wrapper"></div>
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Execution Role Permissions"><a class="pagetoc" href="#events-dynamodb-permissions">Execution Role Permissions</a></li>
+                        <li class="pagetoc" name="Configuring a Stream as an Event Source"><a class="pagetoc" href="#services-dynamodb-eventsourcemapping">Configuring a Stream as an Event Source</a></li>
+                        <li class="pagetoc" name="Event Source Mapping APIs"><a class="pagetoc" href="#services-dynamodb-api">Event Source Mapping APIs</a></li>
+                        <li class="pagetoc" name="Amazon CloudWatch Metrics"><a class="pagetoc" href="#events-dynamodb-metrics">Amazon CloudWatch Metrics</a></li>
+                     </ul>
+                  </div>
+               </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

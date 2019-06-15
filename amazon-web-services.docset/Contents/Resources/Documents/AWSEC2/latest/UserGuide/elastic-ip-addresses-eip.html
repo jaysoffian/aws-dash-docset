@@ -4,7 +4,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="EC2_Network_and_Security.html" title="Network and Security">
-      <link rel="prev" href="MultipleIP.html" title="Multiple IP Addresses">
+      <link rel="prev" href="ec2-byoip.html" title="Bring Your Own IP Addresses (BYOIP)">
       <link rel="next" href="using-eni.html" title="Elastic Network Interfaces">
       <meta name="description" content="You can quickly remap an Elastic IP address from one instance to another to work around problems with your instance or software.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
@@ -12,6 +12,8 @@
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="EC2_Network_and_Security.html">Network and Security</a> &#xBB; <span class="breadcrumb">Elastic IP Addresses</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="EC2_Network_and_Security.html">Network and Security</a> &#xBB; <span class="breadcrumb">Elastic IP Addresses</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="elastic-ip-addresses-eip">Elastic IP Addresses</h1>
                      <p>An <em>Elastic IP address</em> is a static IPv4 address designed for dynamic
@@ -59,7 +64,6 @@
                         <p><strong>Contents</strong></p>
                         <ul>
                            <li><a href="#eip-basics">Elastic IP Address Basics</a></li>
-                           <li><a href="#VPC_EIP_EC2_Differences">Elastic IP Address Differences for EC2-Classic and EC2-VPC</a></li>
                            <li><a href="#working-with-eips">Working with Elastic IP Addresses</a></li>
                            <li><a href="#Using_Elastic_Addressing_Reverse_DNS">Using Reverse DNS for Email Applications</a></li>
                            <li><a href="#using-instance-addressing-limit">Elastic IP Address Limit</a></li>
@@ -78,8 +82,9 @@
                         
                         
                         
+                        	
                         				
-                        				
+                        	
                         
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
@@ -92,10 +97,10 @@
                            <li class="listitem">
                               
                               <p>When you associate an Elastic IP address with an instance or its primary network
-                                 				interface, the instance&apos;s public IPv4 address (if it had one) is released
-                                 				back into Amazon&apos;s pool of public IPv4 addresses. You cannot reuse a public
-                                 				IPv4 address. For more information, see <a href="using-instance-addressing.html#concepts-public-addresses">Public IPv4 Addresses and External DNS
-                                    			Hostnames</a>.
+                                 					interface, the instance&apos;s public IPv4 address (if it had one) is released back
+                                 					into Amazon&apos;s pool of public IPv4 addresses. You cannot reuse a public IPv4
+                                 					address, and you cannot convert a public IPv4 address to an Elastic IP address.
+                                 					For more information, see <a href="using-instance-addressing.html#concepts-public-addresses">Public IPv4 Addresses and External DNS Hostnames</a>.
                               </p>
                               
                            </li>
@@ -134,9 +139,9 @@
                               
                            </li>
                            <li class="listitem">
-                              					
+                              	
                               <p>An Elastic IP address is for use in a specific region only. </p>
-                              				
+                              
                            </li>
                            <li class="listitem">
                               					
@@ -155,314 +160,18 @@
                               </p>
                               				
                            </li>
+                           <li class="listitem">
+                              		
+                              <p>When you allocate an Elastic IP address from an IP address pool that you have brought
+                                 to your AWS account, it does not count toward your Elastic IP address limits.
+                              </p>
+                              	
+                           </li>
                         </ul>
                      </div>
                      
                      
-                     <p>If your account supports EC2-Classic, the use and behavior of Elastic IP addresses
-                        for
-                        EC2-Classic and EC2-VPC may differ. For more information, see <a href="elastic-ip-addresses-eip.html#VPC_EIP_EC2_Differences">Elastic IP Address Differences for EC2-Classic and EC2-VPC</a>.
-                     </p>
-                     
-                     
-                     <h2 id="VPC_EIP_EC2_Differences">Elastic IP Address Differences for EC2-Classic and EC2-VPC</h2>
-                     
                      	
-                     <p>If your account supports EC2-Classic, there&apos;s one pool of Elastic IP addresses for
-                        use with
-                        			the EC2-Classic platform and another for use with the EC2-VPC platform. You can&apos;t
-                        			associate an Elastic IP address that you allocated for use with a VPC with an instance
-                        			in EC2-Classic, and vice- versa. However, you can migrate an Elastic IP address
-                        you&apos;ve
-                        			allocated for use in the EC2-Classic platform to the EC2-VPC platform. You cannot
-                        			migrate an Elastic IP address to another region. For more information about EC2-Classic
-                        			and EC2-VPC, see <a href="ec2-supported-platforms.html">Supported Platforms</a>.
-                     </p>
-                     
-                     <p>When you associate an Elastic IP address with an instance in EC2-Classic, a default
-                        VPC,
-                        			or an instance in a nondefault VPC in which you assigned a public IPv4 to the eth0
-                        			network interface during launch, the instance&apos;s current public IPv4 address is
-                        released
-                        			back into the public IP address pool. If you disassociate an Elastic IP address
-                        from the
-                        			instance, the instance is automatically assigned a new public IPv4 address within
-                        a few
-                        			minutes. However, if you have attached a second network interface to an instance
-                        in a
-                        			VPC, the instance is not automatically assigned a new public IPv4 address. For
-                        more
-                        			information about public IPv4 addresses, see <a href="using-instance-addressing.html#concepts-public-addresses">Public IPv4 Addresses and External DNS
-                           			Hostnames</a>.
-                     </p>
-                     
-                     <p>For information about using an Elastic IP address with an instance in a VPC, see <a href="./AmazonVPC/latest/UserGuide/vpc-ip-addressing.html#vpc-eips" target="_blank">Elastic IP Addresses</a> in the
-                        <em>Amazon VPC User Guide</em>.
-                     </p>
-                     
-                     
-                     
-                     
-                     		
-                     <p>The following table lists the differences between Elastic IP addresses on EC2-Classic
-                        and
-                        EC2-VPC. For more information about the differences between private and public IP
-                        addresses,
-                        see <a href="using-instance-addressing.html#differences">IP Address Differences Between EC2-Classic and
-                           			EC2-VPC</a>.
-                     </p>
-                     		
-                     <div class="table">
-                        <div class="table-contents">
-                           <table id="w185aac21c25c13c10">
-                              					
-                              <tbody><tr>
-                                 						
-                                 <th>Characteristic</th>
-                                 						
-                                 <th>EC2-Classic</th>
-                                 						
-                                 <th>EC2-VPC</th>
-                                 					
-                              </tr>
-                              				
-                              					
-                              <tr>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Allocating an Elastic IP address</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>When you allocate an Elastic IP address, it&apos;s for use in EC2-Classic; however, you
-                                       can
-                                       migrate an Elastic IP address to the EC2-VPC platform. For more information, see
-                                       <a href="elastic-ip-addresses-eip.html#migrating-eip">Migrating an Elastic IP Address from EC2-Classic to
-                                          EC2-VPC</a>.
-                                    </p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>When you allocate an Elastic IP address, it&apos;s for use only in a VPC.</p>
-                                    						
-                                 </td>
-                                 					
-                              </tr>
-                              					
-                              <tr>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Associating an Elastic IP address</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>You associate an Elastic IP address with an instance.</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>An Elastic IP address is a property of a network interface. You can associate an
-                                       								Elastic IP address with an instance by updating the network
-                                       								interface attached to the instance. For more information, see <a href="using-eni.html">Elastic Network Interfaces</a>.
-                                    </p>
-                                    						
-                                 </td>
-                                 					
-                              </tr>
-                              					
-                              <tr>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Reassociating an Elastic IP address</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>If you try to associate an Elastic IP address that&apos;s already associated with another
-                                       instance, the address is automatically associated with the new instance.
-                                    </p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>If your account supports EC2-VPC only, and you try to associate an Elastic IP address
-                                       that&apos;s already associated with another instance, the address is automatically
-                                       associated with the new instance. If you&apos;re using a VPC in an EC2-Classic account,
-                                       and you try to associate an Elastic IP address that&apos;s already associated with
-                                       another instance, it succeeds only if you allowed reassociation.
-                                    </p>
-                                    						
-                                 </td>
-                                 					
-                              </tr>
-                              					
-                              <tr>
-                                 						
-                                 <td>Associating an Elastic IP address with a target that has an existing
-                                    							Elastic IP address
-                                 </td>
-                                 						
-                                 <td>The existing Elastic IP address is disassociated from the instance,
-                                    							but remains allocated to your account.
-                                 </td>
-                                 						
-                                 <td>If your account supports EC2-VPC only, the existing Elastic IP
-                                    							address is disassociated from the instance, but remains allocated to
-                                    							your account. If you&apos;re using a VPC in an EC2-Classic account, you
-                                    							cannot associate an Elastic IP address with a network interface or
-                                    							instance that has an existing Elastic IP address.
-                                 </td>
-                                 					
-                              </tr>
-                              					
-                              <tr>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Stopping an instance</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>If you stop an instance, its Elastic IP address is disassociated, and you must
-                                       reassociate the Elastic IP address when you restart the instance.
-                                    </p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>If you stop an instance, its Elastic IP address remains associated.</p>
-                                    						
-                                 </td>
-                                 					
-                              </tr>
-                              					
-                              <tr>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Assigning multiple IP addresses</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Instances support only a single private IPv4 address and a corresponding Elastic IP
-                                       								address.
-                                    </p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Instances support multiple IPv4 addresses, and each one can have a corresponding
-                                       								Elastic IP address. For more information, see <a href="MultipleIP.html">Multiple IP Addresses</a>.
-                                    </p>
-                                    						
-                                 </td>
-                                 					
-                              </tr>
-                              					
-                              <tr>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Tagging Elastic IP addresses</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Does not support Elastic IP address tagging.</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Supports Elastic IP address tagging. This allows you to assign your own metadata 
-                                       								to each Elastic IP address.
-                                    </p>
-                                    						
-                                 </td>
-                                 					
-                              </tr>
-                              					
-                              					
-                              				
-                           </tbody></table>
-                        </div>
-                     </div>
-                     	
-                     
-                     
-                     
-                     <h3 id="migrating-eip">Migrating an Elastic IP Address from EC2-Classic to
-                        EC2-VPC
-                     </h3>
-                     
-                     
-                     <p>If your account supports EC2-Classic, you can migrate Elastic IP addresses that you&apos;ve
-                        allocated for use in the EC2-Classic platform to the EC2-VPC platform, within the
-                        same
-                        region. This can assist you to migrate your resources from EC2-Classic to a VPC; for
-                        example,
-                        you can launch new web servers in your VPC, and then use the same Elastic IP addresses
-                        that
-                        you used for your web servers in EC2-Classic for your new VPC web servers.
-                     </p>
-                     
-                     <p>After you&apos;ve migrated an Elastic IP address to EC2-VPC, you cannot use it in the
-                        EC2-Classic platform; however, if required, you can restore it to  EC2-Classic. After
-                        you&apos;ve
-                        restored an Elastic IP address to EC2-Classic, you cannot use it in EC2-VPC until
-                        you
-                        migrate it again. You can only migrate an Elastic IP address from EC2-Classic to EC2-VPC.
-                        You cannot migrate an Elastic IP address that was originally allocated for use in
-                        EC2-VPC to
-                        EC2-Classic. 
-                     </p>
-                     
-                     <p>To migrate an Elastic IP address, it must not be associated with an instance. For
-                        more
-                        information about disassociating an Elastic IP address from an instance, see <a href="elastic-ip-addresses-eip.html#using-instance-addressing-eips-associating-different">Disassociating an Elastic IP
-                           					Address and Reassociating with a Different Instance</a>.
-                     </p>
-                     
-                     <p>You can migrate as many EC2-Classic Elastic IP addresses as you can have in your account.
-                        However, when you migrate an Elastic IP address to EC2-VPC, it counts against your
-                        Elastic IP
-                        address limit for EC2-VPC. You cannot migrate an Elastic IP address if it will result
-                        in you
-                        exceeding your limit. Similarly, when you restore an Elastic IP address to EC2-Classic,
-                        it
-                        counts against your Elastic IP address limit for EC2-Classic. For more information,
-                        see <a href="elastic-ip-addresses-eip.html#using-instance-addressing-limit">Elastic IP Address Limit</a>. 
-                     </p>
-                     
-                     <p>You cannot migrate an Elastic IP address that has been allocated to your account for
-                        less
-                        				than 24 hours. 
-                     </p>
-                     
-                     <p>For more information, see <a href="elastic-ip-addresses-eip.html#using-eip-migration">Moving an Elastic IP Address</a>.
-                     </p>
-                     
-                     
-                     
                      <h2 id="working-with-eips">Working with Elastic IP Addresses</h2>
                      
                      
@@ -475,11 +184,9 @@
                            <li><a href="#using-instance-addressing-eips-allocating">Allocating an Elastic IP Address</a></li>
                            <li><a href="#using-instance-addressing-eips-describing">Describing Your Elastic IP Addresses</a></li>
                            <li><a href="#using-instance-addressing-eips-tagging">Tagging an Elastic IP Address</a></li>
-                           <li><a href="#using-instance-addressing-eips-associating">Associating an Elastic IP
-                                 			Address with a Running Instance</a></li>
+                           <li><a href="#using-instance-addressing-eips-associating">Associating an Elastic IP Address with a Running Instance</a></li>
                            <li><a href="#using-instance-addressing-eips-associating-different">Disassociating an Elastic IP
                                  					Address and Reassociating with a Different Instance</a></li>
-                           <li><a href="#using-eip-migration">Moving an Elastic IP Address</a></li>
                            <li><a href="#using-instance-addressing-eips-releasing">Releasing an Elastic IP
                                  			Address</a></li>
                            <li><a href="#using-eip-recovering">Recovering an Elastic IP Address</a></li>
@@ -489,52 +196,20 @@
                      	
                      	    
                      <h3 id="using-instance-addressing-eips-allocating">Allocating an Elastic IP Address</h3>
-                     
+                     		
+                     <p>You can allocate an Elastic IP address from Amazon&apos;s pool of public IPv4 addresses,
+                        or from a custom IP address 
+                        			pool that you have brought to your AWS account. For more information about bringing
+                        your own IP address 
+                        			range to your AWS account, see <a href="ec2-byoip.html">Bring Your Own IP Addresses (BYOIP)</a>.
+                     </p>
                      		
                      <p>You can allocate an Elastic IP address using the Amazon EC2 console or the command
-                        line. If your
-                        account supports EC2-Classic, you can allocate an address for use in EC2-Classic or
-                        in EC2-VPC.
+                        line.
                      </p>
-                     
-                     	
-                     <p class="title"><b>To allocate an Elastic IP address for use in EC2-VPC using the console</b></p>
-                     <ol>
-                        <li>
-                           <p>Open the Amazon EC2 console at
-                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
-                           </p>
-                        </li>
-                        <li>
-                           			
-                           <p>In the navigation pane, choose <b>Elastic IPs</b>. 
-                           </p>
-                           		
-                        </li>
-                        <li>
-                           			
-                           <p>Choose <b>Allocate new address</b>. 
-                           </p>
-                           		
-                        </li>
-                        <li>
-                           			
-                           <p>(EC2-Classic accounts) Choose <b>VPC</b>, and then choose
-                              							<b>Allocate</b>. Close the confirmation screen.
-                           </p>
-                           		
-                        </li>
-                        <li>
-                           
-                           <p>(VPC-only accounts) Choose <b>Allocate</b>, and close the confirmation
-                              						screen.
-                           </p>
-                           
-                        </li>
-                     </ol>
-                     	
                      		
-                     <p class="title"><b>To allocate an Elastic IP address for use in EC2-Classic using the console</b></p>
+                     <p class="title"><b>To allocate an Elastic IP address from Amazon&apos;s pool of public IPv4 addresses using
+                           the console</b></p>
                      <ol>
                         <li>
                            <p>Open the Amazon EC2 console at
@@ -549,19 +224,85 @@
                         </li>
                         <li>
                            				
-                           <p>Choose <b>Allocate new address</b>. 
+                           <p>Choose <b>Allocate new address</b>.
                            </p>
                            			
                         </li>
                         <li>
                            				
-                           <p>Select <b>Classic</b>, and then choose <b>Allocate</b>. Close
-                              						the confirmation screen.
+                           <p>For <b>IPv4 address pool</b>, choose <b>Amazon pool</b>.
                            </p>
                            			
                         </li>
-                     </ol>
-                     
+                        <li>
+                           				
+                           <p>Choose <b>Allocate</b>, and close the confirmation screen.
+                           </p>
+                           			
+                        </li>
+                     </ol> 	
+                     	  	
+                     <p class="title"><b>To allocate an Elastic IP address from an IP address pool that you own using the console</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           	  			
+                           <p>In the navigation pane, choose <b>Elastic IPs</b>.
+                           </p>
+                           	  		
+                        </li>
+                        <li>
+                           	  			
+                           <p>Choose <b>Allocate new address</b>.
+                           </p>
+                           	  		
+                        </li>
+                        <li>
+                           	  			
+                           <p>For <b>IPv4 address pool</b>, choose <b>Owned by me</b> 
+                              	  				and then select the IP address pool.
+                           </p>
+                           	  			
+                           <p>To see the IP address range of the selected address pool and the number of IP addresses
+                              
+                              	  				already allocated from the address pool, see <b>Address ranges</b>.
+                           </p>
+                           	  		
+                        </li>
+                        <li>
+                           	  			
+                           <p>For <b>IPv4 address</b>, do one of the following:
+                           </p>
+                           	  			
+                           <div class="itemizedlist">
+                              	  				
+                              	  				
+                              	  			
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    <p>To let Amazon EC2 select an IP address from the address pool, choose <b>No preference</b>.
+                                    </p>
+                                 </li>
+                                 <li class="listitem">
+                                    <p>To select a specific IP address from the address pool, choose <b>Select an address</b> 
+                                       	  					and then type the IP address.
+                                    </p>
+                                 </li>
+                              </ul>
+                           </div>
+                           	  		
+                        </li>
+                        <li>
+                           	          
+                           <p>Choose <b>Allocate</b>, and close the confirmation screen.
+                           </p>
+                           	        
+                        </li>
+                     </ol> 	
                      		
                      <div class="itemizedlist">
                         			
@@ -576,11 +317,11 @@
                         		
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
-                              <p><a href="./cli/latest/reference/ec2/allocate-address.html" target="_blank">allocate-address</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/allocate-address.html">allocate-address</a> (AWS CLI)
                               </p>
                            </li>
                            <li class="listitem">
-                              <p><a href="./powershell/latest/reference/items/New-EC2Address.html" target="_blank">New-EC2Address</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/New-EC2Address.html">New-EC2Address</a> (AWS Tools for Windows PowerShell)
                               </p>
                            </li>
                         </ul>
@@ -633,11 +374,11 @@
                         		
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
-                              <p><a href="./cli/latest/reference/ec2/describe-addresses.html" target="_blank">describe-addresses</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/describe-addresses.html">describe-addresses</a> (AWS CLI)
                               </p>
                            </li>
                            <li class="listitem">
-                              <p><a href="./powershell/latest/reference/items/Get-EC2Address.html" target="_blank">Get-EC2Address</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/Get-EC2Address.html">Get-EC2Address</a> (AWS Tools for Windows PowerShell)
                               </p>
                            </li>
                         </ul>
@@ -659,10 +400,7 @@
                         <p class="aws-note">Note</p>
                         <p>Cost allocation tracking using Elastic IP address tags is not supported.</p>
                      </div>	
-                     		
-                     <p>You can tag an Elastic IP address using the Amazon EC2 console or the command line
-                        				tools.
-                     </p>
+                     
                      		
                      <p class="title"><b>To tag an Elastic IP address using the console</b></p>
                      <ol>
@@ -703,20 +441,23 @@
                         			
                         <p class="title"><b>To tag an Elastic IP address using the command line</b></p>
                         			
-                        <p>Use one of the following commands:</p>
+                        <p>You can use one of the following commands. For more information about these command
+                           line interfaces,
+                           				see <a href="concepts.html#access-ec2">Accessing Amazon EC2</a>.
+                        </p>
                         			
                         			
                         		
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               				
-                              <p><a href="./cli/latest/reference/ec2/create-tags.html" target="_blank">create-tags</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/create-tags.html">create-tags</a> (AWS CLI)
                               </p>
                               				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws ec2 create-tags --resources <em class="replaceable"><code>eipalloc-12345678</code></em> --tags Key=<em class="replaceable"><code>Owner</code></em>,Value=<em class="replaceable"><code>TeamA</code></em></code></pre>
                               			</li>
                            <li class="listitem">
                               				
-                              <p><a href="./powershell/latest/reference/items/New-EC2Tag.html" target="_blank">New-EC2Tag</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/New-EC2Tag.html">New-EC2Tag</a> (AWS Tools for Windows PowerShell)
                               </p>
                               				
                               <p>The <code class="code">New-EC2Tag</code> command needs a <code class="code">Tag</code> 
@@ -731,11 +472,10 @@
                         </ul>
                      </div>
                      	
+                     
                      	
                      		
-                     <h3 id="using-instance-addressing-eips-associating">Associating an Elastic IP
-                        			Address with a Running Instance
-                     </h3>
+                     <h3 id="using-instance-addressing-eips-associating">Associating an Elastic IP Address with a Running Instance</h3>
                      
                      		
                      <p>You can associate an Elastic IP address to an instance using the Amazon EC2 console
@@ -743,10 +483,10 @@
                         command line.
                      </p>
                      
-                     <p>(VPC only) If you&apos;re associating an Elastic IP address with your instance to enable
+                     <p>If you&apos;re associating an Elastic IP address with your instance to enable
                         				communication with the internet, you must also ensure that your instance is in
                         a
-                        				public subnet. For more information, see <a href="./AmazonVPC/latest/UserGuide/VPC_Internet_Gateway.html" target="_blank">Internet Gateways</a> in the
+                        				public subnet. For more information, see <a href="./vpc/latest/userguide/VPC_Internet_Gateway.html">Internet Gateways</a> in the
                         					<em>Amazon VPC User Guide</em>.
                      </p>
                      		
@@ -794,11 +534,11 @@
                         		
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
-                              <p><a href="./cli/latest/reference/ec2/associate-address.html" target="_blank">associate-address</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/associate-address.html">associate-address</a> (AWS CLI)
                               </p>
                            </li>
                            <li class="listitem">
-                              <p><a href="./powershell/latest/reference/items/Register-EC2Address.html" target="_blank">Register-EC2Address</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/Register-EC2Address.html">Register-EC2Address</a> (AWS Tools for Windows PowerShell)
                               </p>
                            </li>
                         </ul>
@@ -812,7 +552,6 @@
                      <h3 id="using-instance-addressing-eips-associating-different">Disassociating an Elastic IP
                         					Address and Reassociating with a Different Instance
                      </h3>
-                     		
                      
                      		
                      <p>You can disassociate an Elastic IP address and then reassociate it using the Amazon
@@ -878,11 +617,11 @@
                         		
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
-                              <p><a href="./cli/latest/reference/ec2/disassociate-address.html" target="_blank">disassociate-address</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/disassociate-address.html">disassociate-address</a> (AWS CLI)
                               </p>
                            </li>
                            <li class="listitem">
-                              <p><a href="./powershell/latest/reference/items/Unregister-EC2Address.html" target="_blank">Unregister-EC2Address</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/Unregister-EC2Address.html">Unregister-EC2Address</a> (AWS Tools for Windows PowerShell)
                               </p>
                            </li>
                         </ul>
@@ -901,232 +640,17 @@
                         		
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
-                              <p><a href="./cli/latest/reference/ec2/associate-address.html" target="_blank">associate-address</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/associate-address.html">associate-address</a> (AWS CLI)
                               </p>
                            </li>
                            <li class="listitem">
-                              <p><a href="./powershell/latest/reference/items/Register-EC2Address.html" target="_blank">Register-EC2Address</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/Register-EC2Address.html">Register-EC2Address</a> (AWS Tools for Windows PowerShell)
                               </p>
                            </li>
                         </ul>
                      </div>
                      		
                      	
-                     
-                     
-                     	
-                     <h3 id="using-eip-migration">Moving an Elastic IP Address</h3>
-                     
-                     
-                     <p>You can move an Elastic IP address from EC2-Classic to EC2-VPC using the Amazon EC2
-                        console or
-                        				the Amazon VPC console. This option is only available if your account supports
-                        EC2-Classic.
-                     </p>
-                     
-                     <p class="title"><b>To move an Elastic IP address to EC2-VPC using the Amazon EC2 console</b></p>
-                     <ol>
-                        <li>
-                           <p>Open the Amazon EC2 console at
-                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
-                           </p>
-                        </li>
-                        <li>
-                           <p>In the navigation pane, choose <b>Elastic IPs</b>.
-                           </p>
-                        </li>
-                        <li>
-                           
-                           <p>Select the Elastic IP address, and choose <b>Actions</b>,
-                              							<b>Move to VPC scope</b>.
-                           </p>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>In the confirmation dialog box, choose <b>Move Elastic IP</b>.
-                           </p>
-                           
-                        </li>
-                     </ol>
-                     	
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p>You can tag an Elastic IP address after you have moved it from EC2-Classic to EC2-VPC.</p>
-                     </div>
-                     	
-                     <p>You can restore an Elastic IP address to EC2-Classic using the Amazon EC2 console
-                        or the Amazon VPC
-                        				console.
-                     </p>
-                     	
-                     <p class="title"><b>To restore an Elastic IP address to EC2-Classic using the Amazon EC2 console</b></p>
-                     <ol>
-                        <li>
-                           <p>Open the Amazon EC2 console at
-                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
-                           </p>
-                        </li>
-                        <li>
-                           <p>In the navigation pane, choose <b>Elastic IPs</b>.
-                           </p>
-                        </li>
-                        <li>
-                           					
-                           <p>Select the Elastic IP address, choose <b>Actions</b>, <b>Restore to
-                                 							EC2 scope</b>.
-                           </p>
-                           				
-                        </li>
-                        <li>
-                           					
-                           <p>In the confirmation dialog box, choose
-                              						<b>Restore</b>.
-                           </p>
-                           				
-                        </li>
-                     </ol>
-                     	
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p>If you choose to restore a previously migrated Elastic IP adddress to EC2-Classic,
-                           the tags
-                           					assigned to the Elastic IP address after migration are lost.
-                        </p>
-                     </div>
-                     	
-                     <p>After you&apos;ve performed the command to move or restore your Elastic IP address, the
-                        process
-                        of migrating the Elastic IP address can take a few minutes. Use the <a href="./cli/latest/reference/ec2/describe-moving-addresses.html" target="_blank">describe-moving-addresses</a>
-                        command to check whether your Elastic IP address is still moving, or has completed
-                        moving.
-                     </p>
-                     			
-                     <p>After you&apos;ve moved your Elastic IP address to EC2-VPC, you can view its
-                        				allocation ID on the <b>Elastic IPs</b> page in the
-                        					<b>Allocation ID</b> field.
-                     </p>
-                     
-                     <p>If the Elastic IP address is in a moving state for longer than 5 minutes, contact
-                        https://aws.amazon.com/premiumsupport/.
-                     </p>
-                     
-                     <div class="itemizedlist">
-                        
-                        <p class="title"><b>To move an Elastic IP address using the Amazon EC2 Query API or AWS CLI</b></p>
-                        
-                        <p>You can use one of the following commands. For more information about these command
-                           line
-                           interfaces, see <a href="concepts.html#access-ec2">Accessing Amazon EC2</a>.
-                        </p>
-                        
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              <p><a href="./cli/latest/reference/ec2/move-address-to-vpc.html" target="_blank">move-address-to-vpc</a> (AWS CLI)
-                              </p>
-                           </li>
-                           <li class="listitem">
-                              <p><a href="./AWSEC2/latest/APIReference/API_MoveAddressToVpc.html" target="_blank">MoveAddressToVpc</a> (Amazon EC2 Query API)
-                              </p>
-                           </li>
-                           <li class="listitem">
-                              <p><a href="./powershell/latest/reference/items/Move-EC2AddressToVpc.html" target="_blank">Move-EC2AddressToVpc</a> (AWS Tools for Windows PowerShell)
-                              </p>
-                           </li>
-                        </ul>
-                     </div>
-                     
-                     <div class="itemizedlist">
-                        
-                        <p class="title"><b>To restore an Elastic IP address to EC2-Classic using the Amazon EC2 Query API or
-                              AWS CLI</b></p>
-                        
-                        <p>You can use one of the following commands. For more information about these command
-                           line
-                           interfaces, see <a href="concepts.html#access-ec2">Accessing Amazon EC2</a>.
-                        </p>
-                        
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              <p><a href="./cli/latest/reference/ec2/restore-address-to-classic.html" target="_blank">restore-address-to-classic</a> (AWS CLI)
-                              </p>
-                           </li>
-                           <li class="listitem">
-                              <p><a href="./AWSEC2/latest/APIReference/API_RestoreAddressToClassic.html" target="_blank">RestoreAddressToClassic</a> (Amazon EC2 Query API)
-                              </p>
-                           </li>
-                           <li class="listitem">
-                              <p><a href="./powershell/latest/reference/items/Restore-EC2AddressToClassic.html" target="_blank">Restore-EC2AddressToClassic</a> (AWS Tools for Windows PowerShell)
-                              </p>
-                           </li>
-                        </ul>
-                     </div>
-                     
-                     <div class="itemizedlist">
-                        
-                        <p class="title"><b>To describe the status of your moving addresses using the Amazon EC2 Query API or
-                              AWS CLI</b></p>
-                        
-                        <p>You can use one of the following commands. For more information about these command
-                           line
-                           interfaces, see <a href="concepts.html#access-ec2">Accessing Amazon EC2</a>.
-                        </p>
-                        
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              <p><a href="./cli/latest/reference/ec2/describe-moving-addresses.html" target="_blank">describe-moving-addresses</a> (AWS CLI)
-                              </p>
-                           </li>
-                           <li class="listitem">
-                              <p><a href="./AWSEC2/latest/APIReference/API_DescribeMovingAddresses.html" target="_blank">DescribeMovingAddresses</a> (Amazon EC2 Query API)
-                              </p>
-                           </li>
-                           <li class="listitem">
-                              <p><a href="./powershell/latest/reference/items/Get-EC2Address.html" target="_blank">Get-EC2Address</a> (AWS Tools for Windows PowerShell)
-                              </p>
-                           </li>
-                        </ul>
-                     </div>
-                     
-                     
-                     <div class="itemizedlist">
-                        
-                        <p class="title"><b>To retrieve the allocation ID for your migrated Elastic IP address in EC2-VPC</b></p>
-                        
-                        <p>You can use one of the following commands. For more information about these command
-                           line
-                           interfaces, see <a href="concepts.html#access-ec2">Accessing Amazon EC2</a>.
-                        </p>
-                        
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              <p><a href="./cli/latest/reference/ec2/describe-addresses.html" target="_blank">describe-addresses</a> (AWS CLI)
-                              </p>
-                           </li>
-                           <li class="listitem">
-                              <p><a href="./AWSEC2/latest/APIReference/API_DescribeAddresses.html" target="_blank">DescribeAddresses</a> (Amazon EC2 Query
-                                 API)
-                              </p>
-                           </li>
-                           <li class="listitem">
-                              <p><a href="./powershell/latest/reference/items/Get-EC2Address.html" target="_blank">Get-EC2Address</a> (AWS Tools for Windows PowerShell)
-                              </p>
-                           </li>
-                        </ul>
-                     </div>
-                     
                      
                      	
                      	
@@ -1137,15 +661,9 @@
                      		
                      <p>If you no longer need an Elastic IP address, we recommend that you release it (the
                         address
-                        must not be associated with an instance). You incur charges for any Elastic IP address
-                        that&apos;s allocated for use with EC2-Classic but not associated with an instance.
+                        must not be associated with an instance).
                      </p>
                      
-                     		
-                     <p>You can release an Elastic IP address using the Amazon EC2 console or the command
-                        line.
-                     </p>
-                     		
                      		
                      <p class="title"><b>To release an Elastic IP address using the console</b></p>
                      <ol>
@@ -1184,11 +702,11 @@
                         		
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
-                              <p><a href="./cli/latest/reference/ec2/release-address.html" target="_blank">release-address</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/release-address.html">release-address</a> (AWS CLI)
                               </p>
                            </li>
                            <li class="listitem">
-                              <p><a href="./powershell/latest/reference/items/Remove-EC2Address.html" target="_blank">Remove-EC2Address</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/Remove-EC2Address.html">Remove-EC2Address</a> (AWS Tools for Windows PowerShell)
                               </p>
                            </li>
                         </ul>
@@ -1213,15 +731,9 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               				
-                              <p>You can only recover an Elastic IP address that was originally allocated for use in
-                                 					EC2-VPC, or that was moved from EC2-Classic to EC2-VPC.
-                              </p>
-                              			
-                           </li>
-                           <li class="listitem">
-                              				
                               <p>You cannot recover an Elastic IP address if it has been allocated to another AWS
-                                 					account, or if it will result you in exceeding your Elastic IP address limit.
+                                 						account, or if it will result in your exceeding your Elastic IP address
+                                 						limit.
                               </p>
                               			
                            </li>
@@ -1230,30 +742,44 @@
                               <p>You cannot recover tags associated with an Elastic IP address.</p>
                               			
                            </li>
+                           <li class="listitem">
+                              				
+                              <p>You can recover an Elastic IP address using the Amazon EC2 API or a command line tool
+                                 only.
+                              </p>
+                              			
+                           </li>
                         </ul>
                      </div>
                      		
-                     <p>Currently, you can recover an Elastic IP address using the Amazon EC2 API or a command
-                        line tool only.
-                     </p>
-                     		
-                     <p class="title"><b>To recover an Elastic IP address using the command line</b></p>
-                     <ol>
-                        <li>
-                           <p>(AWS CLI) Use the <a href="./cli/latest/reference/ec2/allocate-address.html" target="_blank">allocate-address</a>
-                              						command and specify the IP address using the <code class="code">--address</code>
-                              						parameter.
-                           </p>
-                           			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws ec2 allocate-address --domain vpc --address <em class="replaceable"><code>203.0.113.3</code></em></code></pre>
-                           			</li>
-                        <li>
-                           				
-                           <p>(AWS Tools for Windows PowerShell) Use the <a href="./powershell/latest/reference/items/New-EC2Address.html" target="_blank">New-EC2Address</a> command and specify the IP address using the
-                              							<code class="code">-Address</code> parameter.
-                           </p>
-                           				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">PS C:\&gt; </code>New-EC2Address -Address <em class="replaceable"><code>203.0.113.3</code></em> -Domain vpc -Region <em class="replaceable"><code>us-east-1</code></em></code></pre>
-                           			</li>
-                     </ol>
+                     <div class="itemizedlist">
+                        			
+                        <p class="title"><b>To recover an Elastic IP address using the command line</b></p>
+                        			
+                        <p>You can use one of the following commands. For more information about these command
+                           line interfaces,
+                           				see <a href="concepts.html#access-ec2">Accessing Amazon EC2</a>.
+                        </p>
+                        			
+                        			
+                        		
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              				
+                              <p><a href="./cli/latest/reference/ec2/allocate-address.html">allocate-address</a> (AWS CLI) &#x2014;
+                                 					Specify the IP address using the <code class="code">--address</code> parameter as follows.
+                              </p>
+                              			    <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws ec2 allocate-address --domain vpc --address <em class="replaceable"><code>203.0.113.3</code></em></code></pre>
+                              			</li>
+                           <li class="listitem">
+                              				
+                              <p><a href="./powershell/latest/reference/items/New-EC2Address.html">New-EC2Address</a> (AWS Tools for Windows PowerShell) &#x2014; 
+                                 					Specify the IP address using the <code class="code">-Address</code> parameter as follows.
+                              </p>
+                              				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">PS C:\&gt; </code>New-EC2Address -Address <em class="replaceable"><code>203.0.113.3</code></em> -Domain vpc -Region <em class="replaceable"><code>us-east-1</code></em></code></pre>
+                              			</li>
+                        </ul>
+                     </div>
                      	
                      
                      		
@@ -1305,15 +831,19 @@
                         			your use case so that we can understand your need for additional addresses.
                      </p>
                      	
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -1322,8 +852,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="MultipleIP.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="using-eni.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="ec2-byoip.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="using-eni.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -1333,7 +865,6 @@
                      <p>On this page:</p>
                      <ul class="pagetoc">
                         <li class="pagetoc" name="Elastic IP Address Basics"><a class="pagetoc" href="#eip-basics">Elastic IP Address Basics</a></li>
-                        <li class="pagetoc" name="Elastic IP Address Differences for EC2-Classic and EC2-VPC"><a class="pagetoc" href="#VPC_EIP_EC2_Differences">Elastic IP Address Differences for EC2-Classic and EC2-VPC</a></li>
                         <li class="pagetoc" name="Working with Elastic IP Addresses"><a class="pagetoc" href="#working-with-eips">Working with Elastic IP Addresses</a></li>
                         <li class="pagetoc" name="Using Reverse DNS for Email Applications"><a class="pagetoc" href="#Using_Elastic_Addressing_Reverse_DNS">Using Reverse DNS for Email Applications</a></li>
                         <li class="pagetoc" name="Elastic IP Address Limit"><a class="pagetoc" href="#using-instance-addressing-limit">Elastic IP Address Limit</a></li>
@@ -1342,6 +873,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

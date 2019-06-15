@@ -1,0 +1,330 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Sample Function Code - AWS Lambda</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="with-kinesis.html" title="Using AWS Lambda with Amazon Kinesis">
+      <link rel="prev" href="with-kinesis-example.html" title="Tutorial: Using AWS Lambda with Amazon Kinesis">
+      <link rel="next" href="with-kinesis-example-use-app-spec.html" title="AWS SAM Template for a Kinesis Application">
+      <meta name="description" content="Sample code is available for the following languages.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="AWS Lambda">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis-create-package.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-services.html">Using AWS Lambda with Other Services</a> &#xBB; <a href="with-kinesis.html">Using AWS Lambda with Amazon Kinesis</a> &#xBB; <span class="breadcrumb">Sample Function Code</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="with-kinesis-create-package">Sample Function Code</h1>
+                     <p>Sample code is available for the following languages.</p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#with-kinesis-example-deployment-pkg-nodejs">Node.js 8</a></li>
+                           <li><a href="#with-kinesis-example-deployment-pkg-java">Java 8</a></li>
+                           <li><a href="#with-kinesis-example-deployment-pkg-dotnet">C#</a></li>
+                           <li><a href="#with-kinesis-example-deployment-pkg-python">Python 3</a></li>
+                           <li><a href="#with-kinesis-example-deployment-pkg-go">Go</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="with-kinesis-example-deployment-pkg-nodejs">Node.js 8</h2>
+                     
+                     <p>The following example code receives a Kinesis event input and processes the messages
+                        that it contains. For
+                        illustration, the code writes some of the incoming event data to CloudWatch Logs.
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example index.js</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nodejs ">console.log(&apos;Loading function&apos;);
+
+exports.handler = function(event, context) {
+    //console.log(JSON.stringify(event, null, 2));
+    event.Records.forEach(function(record) {
+        // Kinesis data is base64 encoded so decode here
+        var payload = new Buffer(record.kinesis.data, &apos;base64&apos;).toString(&apos;ascii&apos;);
+        console.log(&apos;Decoded payload:&apos;, payload);
+    });
+};</code></pre></div>
+                     </div>
+                      
+                     <p>Zip up the sample code to create a deployment package. For instructions, see <a href="nodejs-create-deployment-pkg.html">AWS Lambda Deployment Package in Node.js</a>.
+                     </p>
+                     
+                     
+                     
+                     <h2 id="with-kinesis-example-deployment-pkg-java">Java 8</h2>
+                     
+                     <p>The following is example Java code that receives Kinesis event record data as input
+                        and processes it. For
+                        illustration, the code writes some of the incoming event data to CloudWatch Logs.
+                        
+                     </p>
+                     
+                     <p>In the code, <code class="code">recordHandler</code> is the handler. The handler uses the predefined
+                        <code class="code">KinesisEvent</code> class that is defined in the <code class="code">aws-lambda-java-events</code> library.
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example ProcessKinesisEvents.java</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="java ">package example;
+
+import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.amazonaws.services.lambda.runtime.events.KinesisEvent;
+import com.amazonaws.services.lambda.runtime.events.KinesisEvent.KinesisEventRecord;
+
+public class ProcessKinesisRecords implements RequestHandler&lt;KinesisEvent, Void&gt;{
+  @Override
+  public Void handleRequest(KinesisEvent event, Context context)
+  {
+    for(KinesisEventRecord rec : event.getRecords()) {
+      System.out.println(new String(rec.getKinesis().getData().array()));
+  }
+  return null;
+  }
+}</code></pre></div>
+                     </div>
+                     
+                     <p>If the handler returns normally without exceptions, Lambda considers the input batch
+                        of records as processed
+                        successfully and begins reading new records in the stream. If the handler throws an
+                        exception, Lambda considers the
+                        input batch of records as not processed and invokes the function with the same batch
+                        of records again. 
+                     </p>
+                      
+                     <div class="itemizedlist">
+                        <p class="title"><b>Dependencies</b></p>
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p><code class="code">aws-lambda-java-core</code></p>
+                           </li>
+                           <li class="listitem">
+                              <p><code class="code">aws-lambda-java-events</code></p>
+                           </li>
+                           <li class="listitem">
+                              <p><code class="code">aws-java-sdk-s3</code></p>
+                           </li>
+                        </ul>
+                     </div>
+                      
+                     <p>Build the code with the Lambda library dependencies to create a deployment package.
+                        For instructions, see <a href="lambda-java-how-to-create-deployment-package.html">AWS Lambda Deployment Package in Java</a>.
+                     </p>
+                     
+                     
+                     
+                     <h2 id="with-kinesis-example-deployment-pkg-dotnet">C#</h2>
+                     
+                     <p>The following is example C# code that receives Kinesis event record data as input
+                        and processes it. For
+                        illustration, the code writes some of the incoming event data to CloudWatch Logs.
+                        
+                     </p>
+                     
+                     <p> In the code, <code class="code">HandleKinesisRecord</code> is the handler. The handler uses the predefined
+                        <code class="code">KinesisEvent</code> class that is defined in the <code class="code">Amazon.Lambda.KinesisEvents</code> library. 
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example ProcessingKinesisEvents.cs</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">using System;
+using System.IO;
+using System.Text;
+ 
+using Amazon.Lambda.Core;
+using Amazon.Lambda.KinesisEvents;
+ 
+namespace KinesisStreams
+{
+    public class KinesisSample
+    {
+    	[LambdaSerializer(typeof(JsonSerializer))]
+        public void HandleKinesisRecord(KinesisEvent kinesisEvent)
+        {
+            Console.WriteLine($&quot;Beginning to process {kinesisEvent.Records.Count} records...&quot;);
+ 
+            foreach (var record in kinesisEvent.Records)
+            {
+                Console.WriteLine($&quot;Event ID: {record.EventId}&quot;);
+                Console.WriteLine($&quot;Event Name: {record.EventName}&quot;);
+ 
+                string recordData = GetRecordContents(record.Kinesis);
+                Console.WriteLine($&quot;Record Data:&quot;);
+                Console.WriteLine(recordData);
+            }
+            Console.WriteLine(&quot;Stream processing complete.&quot;);
+        }
+
+        private string GetRecordContents(KinesisEvent.Record streamRecord)
+        {
+            using (var reader = new StreamReader(streamRecord.Data, Encoding.ASCII))
+            {
+                return reader.ReadToEnd();
+            }
+        }
+    }
+}</code></pre><p>Replace the <code>Program.cs</code> in a .NET Core project with the above sample. For instructions, see <a href="lambda-dotnet-coreclr-deployment-package.html">.NET Core CLI</a>.
+                           </p>
+                        </div>
+                     </div>
+                     
+                     
+                     <h2 id="with-kinesis-example-deployment-pkg-python">Python 3</h2>
+                     
+                     <p> The following is example Python code that receives Kinesis event record data as input
+                        and processes it. For
+                        illustration, the code writes to some of the incoming event data to CloudWatch Logs.
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example ProcessKinesisRecords.py</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">from __future__ import print_function
+#import json
+import base64
+def lambda_handler(event, context):
+    for record in event[&apos;Records&apos;]:
+       #Kinesis data is base64 encoded so decode here
+       payload=base64.b64decode(record[&quot;kinesis&quot;][&quot;data&quot;])
+       print(&quot;Decoded payload: &quot; + str(payload))</code></pre></div>
+                     </div>
+                      
+                     <p>Zip up the sample code to create a deployment package. For instructions, see <a href="lambda-python-how-to-create-deployment-package.html">AWS Lambda Deployment Package in Python</a>.
+                     </p>
+                     
+                     
+                     
+                     <h2 id="with-kinesis-example-deployment-pkg-go">Go</h2>
+                     
+                     <p> The following is example Go code that receives Kinesis event record data as input
+                        and processes it. For
+                        illustration, the code writes to some of the incoming event data to CloudWatch Logs.
+                        
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example ProcessKinesisRecords.go</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">import (
+    &quot;strings&quot;
+    &quot;github.com/aws/aws-lambda-go/events&quot;
+)
+
+func handler(ctx context.Context, kinesisEvent events.KinesisEvent) {
+    for _, record := range kinesisEvent.Records {
+        kinesisRecord := record.Kinesis
+        dataBytes := kinesisRecord.Data
+        dataText := string(dataBytes)
+
+        fmt.Printf(&quot;%s Data = %s \n&quot;, record.EventName, dataText) 
+    }
+}</code></pre></div>
+                     </div>
+                      
+                     <p>Build the executable with <code class="code">go build</code> and create a deployment package. For instructions, see <a href="lambda-go-how-to-create-deployment-package.html">AWS Lambda Deployment Package in Go</a>.
+                     </p>
+                     
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="with-kinesis-example.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="with-kinesis-example-use-app-spec.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Node.js 8"><a class="pagetoc" href="#with-kinesis-example-deployment-pkg-nodejs">Node.js 8</a></li>
+                        <li class="pagetoc" name="Java 8"><a class="pagetoc" href="#with-kinesis-example-deployment-pkg-java">Java 8</a></li>
+                        <li class="pagetoc" name="C#"><a class="pagetoc" href="#with-kinesis-example-deployment-pkg-dotnet">C#</a></li>
+                        <li class="pagetoc" name="Python 3"><a class="pagetoc" href="#with-kinesis-example-deployment-pkg-python">Python 3</a></li>
+                        <li class="pagetoc" name="Go"><a class="pagetoc" href="#with-kinesis-example-deployment-pkg-go">Go</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='AWS Lambda';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

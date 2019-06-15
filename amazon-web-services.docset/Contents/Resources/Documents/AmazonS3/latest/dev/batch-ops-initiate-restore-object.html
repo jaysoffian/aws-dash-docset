@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Initiate Restore Object - Amazon Simple Storage Service</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="batch-ops-operations.html" title="Operations">
+      <link rel="prev" href="batch-ops-copy-object.html" title="PUT Object Copy">
+      <link rel="next" href="batch-ops-invoke-lambda.html" title="Invoking a Lambda Function from Amazon S3 Batch
+            Operations">
+      <meta name="description" content="Using Amazon S3 batch operations to restore objects from Glacier.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Simple Storage Service">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/batch-ops-initiate-restore-object.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="batch-ops.html">Performing Batch Operations</a> &#xBB; <a href="batch-ops-operations.html">Operations</a> &#xBB; <span class="breadcrumb">Initiate Restore Object</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="batch-ops-initiate-restore-object">Initiate Restore Object</h1>
+                     <p>The <code class="code">InitiateRestore</code> operation sends a restore request to Amazon S3 Glacier for each
+                        object that is specified in the manifest. To create an Initiate Restore Object job,
+                        you must
+                        include two elements with your request:
+                     </p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><b>ExpirationInDays</b></p>
+                              
+                              <div class="itemizedlist">
+                                 
+                                 
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem" style="list-style-type: none">
+                                       
+                                       <p>When you restore an object from S3 Glacier, the restored object is only a
+                                          temporary copy, which Amazon S3 deletes after a fixed period of time. This
+                                          element specifies how long the temporary copy will remain available in Amazon S3.
+                                          After the temporary copy expires, you can only retrieve the object by
+                                          restoring it from S3 Glacier again. For more information about object
+                                          restoration, see <a href="restoring-objects.html">Restoring Archived Objects</a>.
+                                       </p>
+                                       
+                                    </li>
+                                 </ul>
+                              </div>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>GlacierJobTier</b></p>
+                              
+                              <div class="itemizedlist">
+                                 
+                                 
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem" style="list-style-type: none">
+                                       
+                                       <p>Amazon S3 can restore objects from S3 Glacier according to three different
+                                          retrieval tiers: Expedited, Standard, and Bulk. Amazon S3 batch operations support
+                                          only
+                                          the Standard and Bulk tiers. For more information about S3 Glacier retrieval
+                                          tiers, see <a href="restoring-objects.html#restoring-objects-retrieval-options">Archive Retrieval Options</a>. For more
+                                          information about pricing for each tier, see the &quot;Retrieval pricing&quot; section
+                                          at
+                                          <a href="https://aws.amazon.com/glacier/pricing/" target="_blank">Amazon S3 Glacier pricing</a>.
+                                       </p>
+                                       
+                                    </li>
+                                 </ul>
+                              </div>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>The Initiate Restore Object job only initiates the request to restore objects.
+                           Amazon S3 batch operations report the job as complete for each object after the request
+                           has been
+                           initiated for that object. Amazon S3 doesn&apos;t update the job or otherwise notify you
+                           when the
+                           objects have been restored. However, you can use event notifications to receive
+                           notifications when the objects are available in Amazon S3. For more information, see
+                           <a href="NotificationHowTo.html"> Configuring Amazon S3 Event Notifications</a>.
+                        </p>
+                     </div>
+                     
+                     <h2 id="batch-ops-initiate-restore-object-in-progress">Overlapping Restores</h2>
+                     
+                     <p>If your Initiate Restore Object job tries to restore an object that is already in
+                        the
+                        process of being restored, Amazon S3 batch operations will behave as follows:
+                     </p>
+                     
+                     <p>The restore operation succeeds for the object if either of the following conditions
+                        are true:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Compared to the restoration request already in progress, this job&apos;s
+                                 <code class="code">ExpirationInDays</code> is the same and <code class="code">GlacierJobTier</code> is
+                                 faster.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The previous restoration request has already completed and the object is
+                                 currently available in Reduced Redundancy Storage mode. In this case,
+                                 Amazon S3 batch operations update the expiration date of the restored object to match
+                                 the
+                                 <code class="code">ExpirationInDays</code> specified in this job.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>The restore operation fails for the object if any of the following conditions are
+                        true:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>The restoration request already in progress has not yet completed and the
+                                 restoration duration for this job (specified by <code class="code">ExpirationInDays</code>)
+                                 is different than the restoration duration that is specified in the in-progress
+                                 restoration request.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The restoration tier for this job (specified by <code class="code">GlacierJobTier</code>)
+                                 is the same or slower than the restoration tier that is specified in the
+                                 in-progress restoration request.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <h2 id="batch-ops-initiate-restore-object-limitations">Limitations</h2>
+                     
+                     <p>Initiate Restore Object jobs have the following limitations:</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>You must create an Initiate Restore Object job in the same Region as the
+                                 archived objects.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Amazon S3 batch operations do not support S3 Glacier SELECT.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Amazon S3 batch operations do not support the Expedited retrieval tier.</p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="batch-ops-copy-object.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="batch-ops-invoke-lambda.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Overlapping Restores"><a class="pagetoc" href="#batch-ops-initiate-restore-object-in-progress">Overlapping Restores</a></li>
+                        <li class="pagetoc" name="Limitations"><a class="pagetoc" href="#batch-ops-initiate-restore-object-limitations">Limitations</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Simple Storage Service';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

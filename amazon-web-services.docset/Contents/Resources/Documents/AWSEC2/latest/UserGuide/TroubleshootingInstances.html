@@ -6,15 +6,17 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="ec2-instance-troubleshoot.html" title="Troubleshooting Instances">
-      <link rel="prev" href="TroubleshootingInstanceRecovery.html" title="Troubleshooting Instance Recovery
-   Failures">
-      <link rel="next" href="instance-capacity.html" title="Troubleshooting Instance Capacity">
+      <link rel="prev" href="TroubleshootingInstancesShuttingDown.html" title="Troubleshooting Terminating (Shutting Down)
+        Your Instance">
+      <link rel="next" href="instance-console.html" title="Getting Console Output">
       <meta name="description" content="Troubleshoot issues when your instance fails a status check.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstances.html">
@@ -24,7 +26,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -36,20 +38,31 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="ec2-instance-troubleshoot.html">Troubleshooting Instances</a> &#xBB; <span class="breadcrumb">Troubleshooting Instances with Failed Status
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="ec2-instance-troubleshoot.html">Troubleshooting Instances</a> &#xBB; <span class="breadcrumb">Troubleshooting Instances with Failed Status
                                     Checks</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="TroubleshootingInstances">Troubleshooting Instances with Failed Status
                         Checks
                      </h1>
+                     <p>The following information can help you troubleshoot issues if your instance fails
+                        a 
+                        status check. First determine whether your applications are exhibiting any problems.
+                        If 
+                        you verify that the instance is not running your applications as expected, review
+                        the 
+                        status check information and the system logs.
+                     </p>
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Topics</strong></p>
                         <ul>
-                           <li><a href="#InitialSteps">Initial Steps </a></li>
-                           <li><a href="#troubleshooting-retrieve-system-logs">Retrieving System Logs</a></li>
+                           <li><a href="#InitialSteps">Review Status Check Information</a></li>
+                           <li><a href="#troubleshooting-retrieve-system-logs">Retrieve the System Logs</a></li>
                            <li><a href="#system-log-errors-linux">Troubleshooting System Log Errors for Linux-Based
                                  Instances</a></li>
                            <li><a href="#MemoryOOM">Out of memory: kill process</a></li>
@@ -69,30 +82,23 @@
                            <li><a href="#FilesystemFschk">fsck: No such file or directory while trying to open... (File
                                  system not found)</a></li>
                            <li><a href="#FilesystemGeneral">General error mounting filesystems (Failed mount)</a></li>
-                           <li><a href="#FilesystemKernel">VFS: Unable to mount root fs on unknown-block (Root filesystem
-                                 mismatch)</a></li>
+                           <li><a href="#FilesystemKernel">VFS: Unable to mount root fs on unknown-block (Root filesystem mismatch)</a></li>
                            <li><a href="#FilesystemError">Error: Unable to determine major/minor number of root device...
-                                 (Root file system/device mismatch) </a></li>
+                                 (Root file system/device mismatch)</a></li>
                            <li><a href="#FilesystemXenbus">XENBUS: Device with no driver...</a></li>
-                           <li><a href="#FilesystemCheck">... days without being checked, check forced (File system check
-                                 required)</a></li>
+                           <li><a href="#FilesystemCheck">... days without being checked, check forced (File system check required)</a></li>
                            <li><a href="#FilesystemFschkDied">fsck died with exit status... (Missing device)</a></li>
                            <li><a href="#OpSystemGrub">GRUB prompt (grubdom&gt;)</a></li>
                            <li><a href="#OpSystemBringing">Bringing up interface eth0: Device eth0 has different MAC
                                  address than expected, ignoring. (Hard-coded MAC address) </a></li>
-                           <li><a href="#OpSystemUnable">Unable to load SELinux Policy. Machine is in enforcing mode.
-                                 Halting now. (SELinux misconfiguration)</a></li>
+                           <li><a href="#OpSystemUnable">Unable to load SELinux Policy. Machine is in enforcing mode. Halting now. (SELinux
+                                 misconfiguration)</a></li>
                            <li><a href="#OpSystemXenbus">XENBUS: Timeout connecting to devices (Xenbus timeout)</a></li>
                         </ul>
                      </div>
-                     <h2 id="InitialSteps">Initial Steps </h2>
                      
+                     <h2 id="InitialSteps">Review Status Check Information</h2>
                      
-                     <p>If your instance fails a status check, first determine whether your applications are
-                        exhibiting any problems. If you verify that the instance is not running your applications
-                        as
-                        expected, follow these steps:
-                     </p>
                      
                      <p class="title"><b>To investigate impaired instances using the Amazon EC2 console</b></p>
                      <ol>
@@ -128,11 +134,21 @@
                         
                         
                         
+                        
+                        
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p>Create an instance recovery alarm. For more information, see <a href="./AmazonCloudWatch/latest/DeveloperGuide/UsingAlarmActions.html" target="_blank">Create Alarms That Stop, Terminate, or Recover an
-                                    Instance</a> in the <em>Amazon CloudWatch User Guide</em>.
+                              <p>Create an instance recovery alarm. For more information, see <a href="UsingAlarmActions.html">Create Alarms That Stop, Terminate, Reboot, or Recover an Instance</a>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>If you changed the instance type to a <a href="instance-types.html#ec2-nitro-instances">Nitro-based instance</a>, 
+                                 status checks fail if you migrated from an instance that does not have the required
+                                 ENA and NVMe
+                                 drivers. For more information, see <a href="ec2-instance-resize.html#resize-limitations">Compatibility for Resizing Instances</a>.
                               </p>
                               
                            </li>
@@ -162,13 +178,23 @@
                            </li>
                            <li class="listitem">
                               
-                              <p>Retrieve the system log and look for errors. </p>
+                              <p>If your instance is in an Auto Scaling group, the Amazon EC2 Auto Scaling service
+                                 automatically launches a
+                                 replacement instance. For more information, see <a href="./autoscaling/ec2/userguide/healthcheck.html">Health Checks for Auto Scaling Instances</a> in the
+                                 <em>Amazon EC2 Auto Scaling User Guide</em>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Retrieve the system log and look for errors.</p>
                               
                            </li>
                         </ul>
                      </div>
                      
-                     <h2 id="troubleshooting-retrieve-system-logs">Retrieving System Logs</h2>
+                     
+                     <h2 id="troubleshooting-retrieve-system-logs">Retrieve the System Logs</h2>
                      
                      
                      <p>If an instance status check fails, you can reboot the instance and retrieve the system
@@ -357,14 +383,13 @@
                            </li>
                            <li class="listitem">
                               
-                              <p><a href="TroubleshootingInstances.html#FilesystemKernel">VFS: Unable to mount root fs on unknown-block (Root filesystem
-                                    mismatch)</a></p>
+                              <p><a href="TroubleshootingInstances.html#FilesystemKernel">VFS: Unable to mount root fs on unknown-block (Root filesystem mismatch)</a></p>
                               
                            </li>
                            <li class="listitem">
                               
                               <p><a href="TroubleshootingInstances.html#FilesystemError">Error: Unable to determine major/minor number of root device...
-                                    (Root file system/device mismatch) </a></p>
+                                    (Root file system/device mismatch)</a></p>
                               
                            </li>
                            <li class="listitem">
@@ -374,8 +399,7 @@
                            </li>
                            <li class="listitem">
                               
-                              <p><a href="TroubleshootingInstances.html#FilesystemCheck">... days without being checked, check forced (File system check
-                                    required)</a></p>
+                              <p><a href="TroubleshootingInstances.html#FilesystemCheck">... days without being checked, check forced (File system check required)</a></p>
                               
                            </li>
                            <li class="listitem">
@@ -408,8 +432,8 @@
                            </li>
                            <li class="listitem">
                               
-                              <p><a href="TroubleshootingInstances.html#OpSystemUnable">Unable to load SELinux Policy. Machine is in enforcing mode.
-                                    Halting now. (SELinux misconfiguration)</a></p>
+                              <p><a href="TroubleshootingInstances.html#OpSystemUnable">Unable to load SELinux Policy. Machine is in enforcing mode. Halting now. (SELinux
+                                    misconfiguration)</a></p>
                               
                            </li>
                            <li class="listitem">
@@ -441,7 +465,7 @@ rss:101196kB, file-rss:204kB</code></pre>
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c13b8b2">
+                           <table id="w306aac35c17c15b8b2">
                               
                               <tbody><tr>
                                  
@@ -598,7 +622,7 @@ initrd /boot/initramfs-2.6.35.14-95.38.amzn1.i686.img
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c19b6b2">
+                           <table id="w306aac35c17c21b6b2">
                               
                               <tbody><tr>
                                  
@@ -651,7 +675,7 @@ initrd /boot/initramfs-2.6.35.14-95.38.amzn1.i686.img
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c19b8b2">
+                           <table id="w306aac35c17c21b8b2">
                               
                               <tbody><tr>
                                  
@@ -781,7 +805,7 @@ JBD2: I/O error detected when updating journal superblock for drbd1-8.</code></p
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c21b6b2">
+                           <table id="w306aac35c17c23b6b2">
                               
                               <tbody><tr>
                                  
@@ -875,7 +899,7 @@ request_module: runaway loop modprobe binfmt-464c</code></pre>
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c25b6b2">
+                           <table id="w306aac35c17c27b6b2">
                               
                               <tbody><tr>
                                  
@@ -979,7 +1003,7 @@ Kernel panic - not syncing: Attempted to kill init!</code></pre>
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c27b8b2">
+                           <table id="w306aac35c17c29b8b2">
                               
                               <tbody><tr>
                                  
@@ -1147,7 +1171,7 @@ Enter &apos;help&apos; for a list of built-in commands.
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c29b8b2">
+                           <table id="w306aac35c17c31b8b2">
                               
                               <tbody><tr>
                                  
@@ -1312,7 +1336,7 @@ Error 15: File not found</code></pre>
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c31b8b2">
+                           <table id="w306aac35c17c33b8b2">
                               
                               <tbody><tr>
                                  
@@ -1450,7 +1474,7 @@ request_module: runaway loop modprobe binfmt-464c</code></pre>
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c35b6b2">
+                           <table id="w306aac35c17c37b6b2">
                               
                               <tbody><tr>
                                  
@@ -1606,7 +1630,7 @@ Give root password for maintenance
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c37b8b2">
+                           <table id="w306aac35c17c39b8b2">
                               
                               <tbody><tr>
                                  
@@ -1755,7 +1779,7 @@ Press enter for maintenance
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c39b6b2">
+                           <table id="w306aac35c17c41b6b2">
                               
                               <tbody><tr>
                                  
@@ -1854,7 +1878,7 @@ Press enter for maintenance
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c39b8b2">
+                           <table id="w306aac35c17c41b8b2">
                               
                               <tbody><tr>
                                  
@@ -1981,9 +2005,8 @@ Press enter for maintenance
                      </div>
                      
                      
-                     <h2 id="FilesystemKernel">VFS: Unable to mount root fs on unknown-block (Root filesystem
-                        mismatch)
-                     </h2>
+                     
+                     <h2 id="FilesystemKernel">VFS: Unable to mount root fs on unknown-block (Root filesystem mismatch)</h2>
                      
                      
                      <p>This condition is indicated by a system log similar to the one shown below.</p>
@@ -2000,7 +2023,7 @@ Registering block device major 8
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c41b6b2">
+                           <table id="w306aac35c17c43b7b2">
                               
                               <tbody><tr>
                                  
@@ -2084,12 +2107,13 @@ Registering block device major 8
                      </div>
                      
                      
-                     <h3 id="FilesystemKernel-suggested-actions">Suggested Actions</h3>
                      
+                     
+                     <h3 id="FilesystemKernel-suggested-actions">Suggested Actions</h3>    
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c41b8b2">
+                           <table id="w306aac35c17c43b9b3">
                               
                               <tbody><tr>
                                  
@@ -2172,8 +2196,9 @@ Registering block device major 8
                      </div>
                      
                      
+                     
                      <h2 id="FilesystemError">Error: Unable to determine major/minor number of root device...
-                        (Root file system/device mismatch) 
+                        (Root file system/device mismatch)
                      </h2>
                      
                      
@@ -2196,8 +2221,9 @@ You are being dropped to a recovery shell
     Type &apos;exit&apos; to try and continue booting
 sh: can&apos;t access tty; job control turned off
 <em class="replaceable"><code>[ramfs /]#</code></em></code></pre>
-                     <h3 id="FilesystemError-potential-cause">Potential Causes</h3>
                      
+                     
+                     <h3 id="FilesystemError-potential-cause">Potential Causes</h3>
                      
                      <div class="itemizedlist">
                         
@@ -2224,12 +2250,13 @@ sh: can&apos;t access tty; job control turned off
                      </div>
                      
                      
-                     <h3 id="FilesystemError-suggested-actions">Suggested Actions</h3>
                      
+                     
+                     <h3 id="FilesystemError-suggested-actions">Suggested Actions</h3>
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c43b8b2">
+                           <table id="w306aac35c17c45b9b3">
                               
                               <tbody><tr>
                                  
@@ -2331,6 +2358,7 @@ sh: can&apos;t access tty; job control turned off
                      </div>
                      
                      
+                     
                      <h2 id="FilesystemXenbus">XENBUS: Device with no driver...</h2>
                      
                      
@@ -2351,6 +2379,8 @@ You are being dropped to a recovery shell
     Type &apos;exit&apos; to try and continue booting
 sh: can&apos;t access tty; job control turned off
 <em class="replaceable"><code>[ramfs /]#</code></em></code></pre>
+                     
+                     
                      <h3 id="FilesystemXenbus-potential-cause">Potential Causes</h3>
                      
                      
@@ -2379,12 +2409,13 @@ sh: can&apos;t access tty; job control turned off
                      </div>
                      
                      
-                     <h3 id="FilesystemXenbus-suggested-actions">Suggested Actions</h3>
                      
+                     
+                     <h3 id="FilesystemXenbus-suggested-actions">Suggested Actions</h3>    
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c45b8b2">
+                           <table id="w306aac35c17c47b9b3">
                               
                               <tbody><tr>
                                  
@@ -2486,10 +2517,8 @@ sh: can&apos;t access tty; job control turned off
                      </div>
                      
                      
-                     <h2 id="FilesystemCheck">... days without being checked, check forced (File system check
-                        required)
-                     </h2>
                      
+                     <h2 id="FilesystemCheck">... days without being checked, check forced (File system check required)</h2>   
                      
                      <p>This condition is indicated by a system log similar to the one shown below.</p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">...
@@ -2503,8 +2532,9 @@ Checking all file systems.
                      <p>Filesystem check time passed; a filesystem check is being forced.</p>
                      
                      
-                     <h3 id="FilesystemCheck-suggested-actions">Suggested Actions</h3>
                      
+                     
+                     <h3 id="FilesystemCheck-suggested-actions">Suggested Actions</h3>
                      
                      <div class="itemizedlist">
                         
@@ -2529,8 +2559,8 @@ Checking all file systems.
                      </div>
                      
                      
-                     <h2 id="FilesystemFschkDied">fsck died with exit status... (Missing device)</h2>
                      
+                     <h2 id="FilesystemFschkDied">fsck died with exit status... (Missing device)</h2>   
                      
                      <p>This condition is indicated by a system log similar to the one shown below.</p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">Cleaning up ifupdown....
@@ -2541,6 +2571,8 @@ Checking file systems...fsck from util-linux-ng 2.16.2
 /sbin/fsck.xfs: /dev/sdh does not exist
 <em class="replaceable"><code>fsck died with exit status</code></em> 8
 [31mfailed (code 8).[39;49m</code></pre>
+                     
+                     
                      <h3 id="FilesystemFschkDied-potential-cause">Potential Causes</h3>
                      
                      
@@ -2569,12 +2601,13 @@ Checking file systems...fsck from util-linux-ng 2.16.2
                      </div>
                      
                      
-                     <h3 id="FilesystemFschkDied-suggested-actions">Suggested Actions</h3>
                      
+                     
+                     <h3 id="FilesystemFschkDied-suggested-actions">Suggested Actions</h3>    
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c49b8b2">
+                           <table id="w306aac35c17c51b9b3">
                               
                               <tbody><tr>
                                  
@@ -2687,6 +2720,7 @@ Checking file systems...fsck from util-linux-ng 2.16.2
                      </div>
                      
                      
+                     
                      <h2 id="OpSystemGrub">GRUB prompt (grubdom&gt;)</h2>
                      
                      
@@ -2702,12 +2736,13 @@ Checking file systems...fsck from util-linux-ng 2.16.2
          completions of a device/filename. ]
 
 <em class="replaceable"><code>grubdom&gt; </code></em></code></pre>
-                     <h3 id="OpSystem-potential-cause">Potential Causes</h3>
                      
+                     
+                     <h3 id="OpSystem-potential-cause">Potential Causes</h3>
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c53b6b2">
+                           <table id="w306aac35c17c55b7b3">
                               
                               <tbody><tr>
                                  
@@ -2810,12 +2845,13 @@ Checking file systems...fsck from util-linux-ng 2.16.2
                      
                      
                      
-                     <h3 id="OpSystem-suggested-actions">Suggested Actions</h3>
                      
+                     
+                     <h3 id="OpSystem-suggested-actions">Suggested Actions</h3>
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c53c10b2">
+                           <table id="w306aac35c17c55c11b3">
                               
                               <tbody><tr>
                                  
@@ -3031,18 +3067,20 @@ Bringing up loopback interface:  [  OK  ]
 [FAILED]</code></em>
 
 Starting auditd: [  OK  ]</code></pre>
-                     <h3 id="OpSystemBringing-potential-cause">Potential Causes</h3>
                      
+                     
+                     <h3 id="OpSystemBringing-potential-cause">Potential Causes</h3>
                      
                      <p>There is a hardcoded interface MAC in the AMI configuration</p>
                      
                      
-                     <h3 id="OpSystemBringing-suggested-actions">Suggested Actions</h3>
                      
+                     
+                     <h3 id="OpSystemBringing-suggested-actions">Suggested Actions</h3>    
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c55b8b2">
+                           <table id="w306aac35c17c57b8b3">
                               
                               <tbody><tr>
                                  
@@ -3168,8 +3206,9 @@ Starting auditd: [  OK  ]</code></pre>
                      </div>
                      
                      
-                     <h2 id="OpSystemUnable">Unable to load SELinux Policy. Machine is in enforcing mode.
-                        Halting now. (SELinux misconfiguration)
+                     
+                     <h2 id="OpSystemUnable">Unable to load SELinux Policy. Machine is in enforcing mode. Halting now. (SELinux
+                        misconfiguration)
                      </h2>
                      
                      
@@ -3177,8 +3216,9 @@ Starting auditd: [  OK  ]</code></pre>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">audit(1313445102.626:2): enforcing=1 old_enforcing=0 auid=4294967295
 <em class="replaceable"><code>Unable to load SELinux Policy. Machine is in enforcing mode. Halting now.
 Kernel panic - not syncing: Attempted to kill init!</code></em></code></pre>
-                     <h3 id="OpSystemUnable-potential-cause">Potential Causes</h3>
                      
+                     
+                     <h3 id="OpSystemUnable-potential-cause">Potential Causes</h3>
                      
                      <p>SELinux has been enabled in error:</p>
                      
@@ -3201,12 +3241,13 @@ Kernel panic - not syncing: Attempted to kill init!</code></em></code></pre>
                      </div>
                      
                      
-                     <h3 id="OpSystemUnable-suggested-actions">Suggested Actions</h3>
                      
+                     
+                     <h3 id="OpSystemUnable-suggested-actions">Suggested Actions</h3>    
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c57b8b2">
+                           <table id="w306aac35c17c59b9b3">
                               
                               <tbody><tr>
                                  
@@ -3338,6 +3379,7 @@ Kernel panic - not syncing: Attempted to kill init!</code></em></code></pre>
                      </div>
                      
                      
+                     
                      <h2 id="OpSystemXenbus">XENBUS: Timeout connecting to devices (Xenbus timeout)</h2>
                      
                      
@@ -3348,6 +3390,8 @@ Kernel panic - not syncing: Attempted to kill init!</code></em></code></pre>
 <em class="replaceable"><code>XENBUS: Timeout connecting to devices!</code></em>
 ...
 Kernel panic - not syncing: No init found.  Try passing init= option to kernel.</code></pre>
+                     
+                     
                      <h3 id="OpSystemXenbus-potential-cause">Potential Causes</h3>
                      
                      
@@ -3375,7 +3419,7 @@ Kernel panic - not syncing: No init found.  Try passing init= option to kernel.<
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac29c21c59b8b2">
+                           <table id="w306aac35c17c61b9b2">
                               
                               <tbody><tr>
                                  
@@ -3463,15 +3507,19 @@ Kernel panic - not syncing: No init found.  Try passing init= option to kernel.<
                      </div>
                      
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -3480,8 +3528,10 @@ Kernel panic - not syncing: No init found.  Try passing init= option to kernel.<
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="TroubleshootingInstanceRecovery.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="instance-capacity.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="TroubleshootingInstancesShuttingDown.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="instance-console.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -3490,8 +3540,8 @@ Kernel panic - not syncing: No init found.  Try passing init= option to kernel.<
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Initial Steps "><a class="pagetoc" href="#InitialSteps">Initial Steps </a></li>
-                        <li class="pagetoc" name="Retrieving System Logs"><a class="pagetoc" href="#troubleshooting-retrieve-system-logs">Retrieving System Logs</a></li>
+                        <li class="pagetoc" name="Review Status Check Information"><a class="pagetoc" href="#InitialSteps">Review Status Check Information</a></li>
+                        <li class="pagetoc" name="Retrieve the System Logs"><a class="pagetoc" href="#troubleshooting-retrieve-system-logs">Retrieve the System Logs</a></li>
                         <li class="pagetoc" name="Troubleshooting System Log Errors for Linux-Based
     Instances"><a class="pagetoc" href="#system-log-errors-linux">Troubleshooting System Log Errors for Linux-Based
                               Instances</a></li>
@@ -3518,30 +3568,29 @@ Kernel panic - not syncing: No init found.  Try passing init= option to kernel.<
     system not found)"><a class="pagetoc" href="#FilesystemFschk">fsck: No such file or directory while trying to open... (File
                               system not found)</a></li>
                         <li class="pagetoc" name="General error mounting filesystems (Failed mount)"><a class="pagetoc" href="#FilesystemGeneral">General error mounting filesystems (Failed mount)</a></li>
-                        <li class="pagetoc" name="VFS: Unable to mount root fs on unknown-block (Root filesystem
-    mismatch)"><a class="pagetoc" href="#FilesystemKernel">VFS: Unable to mount root fs on unknown-block (Root filesystem
-                              mismatch)</a></li>
+                        <li class="pagetoc" name="VFS: Unable to mount root fs on unknown-block (Root filesystem mismatch)"><a class="pagetoc" href="#FilesystemKernel">VFS: Unable to mount root fs on unknown-block (Root filesystem mismatch)</a></li>
                         <li class="pagetoc" name="Error: Unable to determine major/minor number of root device...
-    (Root file system/device mismatch) "><a class="pagetoc" href="#FilesystemError">Error: Unable to determine major/minor number of root device...
-                              (Root file system/device mismatch) </a></li>
+    (Root file system/device mismatch)"><a class="pagetoc" href="#FilesystemError">Error: Unable to determine major/minor number of root device...
+                              (Root file system/device mismatch)</a></li>
                         <li class="pagetoc" name="XENBUS: Device with no driver..."><a class="pagetoc" href="#FilesystemXenbus">XENBUS: Device with no driver...</a></li>
-                        <li class="pagetoc" name="... days without being checked, check forced (File system check
-    required)"><a class="pagetoc" href="#FilesystemCheck">... days without being checked, check forced (File system check
-                              required)</a></li>
+                        <li class="pagetoc" name="... days without being checked, check forced (File system check required)"><a class="pagetoc" href="#FilesystemCheck">... days without being checked, check forced (File system check required)</a></li>
                         <li class="pagetoc" name="fsck died with exit status... (Missing device)"><a class="pagetoc" href="#FilesystemFschkDied">fsck died with exit status... (Missing device)</a></li>
                         <li class="pagetoc" name="GRUB prompt (grubdom&gt;)"><a class="pagetoc" href="#OpSystemGrub">GRUB prompt (grubdom&gt;)</a></li>
                         <li class="pagetoc" name="Bringing up interface eth0: Device eth0 has different MAC
     address than expected, ignoring. (Hard-coded MAC address) "><a class="pagetoc" href="#OpSystemBringing">Bringing up interface eth0: Device eth0 has different MAC
                               address than expected, ignoring. (Hard-coded MAC address) </a></li>
-                        <li class="pagetoc" name="Unable to load SELinux Policy. Machine is in enforcing mode.
-    Halting now. (SELinux misconfiguration)"><a class="pagetoc" href="#OpSystemUnable">Unable to load SELinux Policy. Machine is in enforcing mode.
-                              Halting now. (SELinux misconfiguration)</a></li>
+                        <li class="pagetoc" name="Unable to load SELinux Policy. Machine is in enforcing mode. Halting now. (SELinux misconfiguration)"><a class="pagetoc" href="#OpSystemUnable">Unable to load SELinux Policy. Machine is in enforcing mode. Halting now. (SELinux
+                              misconfiguration)</a></li>
                         <li class="pagetoc" name="XENBUS: Timeout connecting to devices (Xenbus timeout)"><a class="pagetoc" href="#OpSystemXenbus">XENBUS: Timeout connecting to devices (Xenbus timeout)</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

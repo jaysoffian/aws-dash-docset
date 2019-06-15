@@ -1,0 +1,237 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Create a Lambda
+         REQUEST Authorizer Function - Amazon API Gateway
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="apigateway-websocket-api-control-access.html" title="Control Access to a WebSocket
+            API in API Gateway">
+      <link rel="prev" href="apigateway-websocket-control-access-iam.html" title="Use IAM Authorization">
+      <link rel="next" href="apigateway-websocket-api-logging.html" title="">
+      <meta name="description" content="A Lambda authorizer function in WebSocket APIs is similar to that for REST APIs , with the following exceptions:">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon API Gateway">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-lambda-auth.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-websocket-api.html">Creating, Deploying, and Invoking a WebSocket API
+                                    in Amazon API Gateway</a> &#xBB; <a href="apigateway-websocket-api-control-access.html">Control Access to a WebSocket
+                                    API in API Gateway</a> &#xBB; <span class="breadcrumb">Create a Lambda
+                                    REQUEST Authorizer Function</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="apigateway-websocket-api-lambda-auth">Create a Lambda
+                        <code class="code">REQUEST</code> Authorizer Function
+                     </h1>
+                     <p>A Lambda authorizer function in WebSocket APIs is similar to that for <a href="apigateway-use-lambda-authorizer.html#api-gateway-lambda-authorizer-lambda-function-create">REST APIs</a>,
+                        with the following exceptions:
+                     </p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>You cannot use path variables (<code class="code">event.pathParameters</code>), because the
+                                 path is fixed.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><code class="code">event.methodArn</code> is different from its REST API equivalent,
+                                 because it has no HTTP method. In the case of <code class="code">$connect</code>,
+                                 <code class="code">methodArn</code> ends with <code class="code">&quot;$connect&quot;</code>:
+                              </p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">arn:aws:execute-api:<em class="replaceable"><code>region</code></em>:<em class="replaceable"><code>account-id</code></em>:<em class="replaceable"><code>api-id</code></em>/<em class="replaceable"><code>stage-name</code></em>/$connect</code></pre>
+                              </li>
+                           <li class="listitem">
+                              
+                              <p>The context variables in <code class="code">event.requestContext</code> are different from
+                                 those for REST APIs.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <p>The following example Lambda authorizer function is a WebSocket version of the Lambda
+                        authorizer function for REST APIs in <a href="apigateway-use-lambda-authorizer.html#api-gateway-lambda-authorizer-lambda-function-create">Create an API Gateway
+                           Lambda Authorizer Function in the Lambda Console</a>:
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">exports.handler = function(event, context, callback) {        
+    console.log(&apos;Received event:&apos;, JSON.stringify(event, null, 2));
+
+   // A simple REQUEST authorizer example to demonstrate how to use request 
+   // parameters to allow or deny a request. In this example, a request is  
+   // authorized if the client-supplied HeaderAuth1 header, QueryString1 query parameter,
+   // stage variable of StageVar1 and the accountId in the request context all match
+   // specified values of &apos;headerValue1&apos;, &apos;queryValue1&apos;, &apos;stageValue1&apos;, and
+   // &apos;123456789012&apos;, respectively.
+
+   // Retrieve request parameters from the Lambda function input:
+   var headers = event.headers;
+   var queryStringParameters = event.queryStringParameters;
+   var stageVariables = event.stageVariables;
+   var requestContext = event.requestContext;
+       
+   // Parse the input for the parameter values
+   var tmp = event.methodArn.split(&apos;:&apos;);
+   var apiGatewayArnTmp = tmp[5].split(&apos;/&apos;);
+   var awsAccountId = tmp[4];
+   var region = tmp[3];
+   var restApiId = apiGatewayArnTmp[0];
+   var stage = apiGatewayArnTmp[1];
+   var route = apiGatewayArnTmp[2];
+       
+   // Perform authorization to return the Allow policy for correct parameters and 
+   // the &apos;Unauthorized&apos; error, otherwise.
+   var authResponse = {};
+   var condition = {};
+    condition.IpAddress = {};
+    
+   if (headers.HeaderAuth1 === &quot;headerValue1&quot;
+       &amp;&amp; queryStringParameters.QueryString1 === &quot;queryValue1&quot;
+       &amp;&amp; stageVariables.StageVar1 === &quot;stageValue1&quot;
+       &amp;&amp; requestContext.accountId === &quot;123456789012&quot;) {
+        callback(null, generateAllow(&apos;me&apos;, event.methodArn));
+    }  else {
+        callback(&quot;Unauthorized&quot;);
+    }
+}
+    
+// Help function to generate an IAM policy
+var generatePolicy = function(principalId, effect, resource) {
+   // Required output:
+   var authResponse = {};
+    authResponse.principalId = principalId;
+   if (effect &amp;&amp; resource) {
+       var policyDocument = {};
+        policyDocument.Version = &apos;2012-10-17&apos;; // default version
+       policyDocument.Statement = [];
+       var statementOne = {};
+        statementOne.Action = &apos;execute-api:Invoke&apos;; // default action
+       statementOne.Effect = effect;
+        statementOne.Resource = resource;
+        policyDocument.Statement[0] = statementOne;
+        authResponse.policyDocument = policyDocument;
+    }
+   // Optional output with custom properties of the String, Number or Boolean type.
+   authResponse.context = {
+       &quot;stringKey&quot;: &quot;stringval&quot;,
+       &quot;numberKey&quot;: 123,
+       &quot;booleanKey&quot;: true
+    };
+   return authResponse;
+}
+    
+var generateAllow = function(principalId, resource) {
+   return generatePolicy(principalId, &apos;Allow&apos;, resource);
+}
+    
+var generateDeny = function(principalId, resource) {
+   return generatePolicy(principalId, &apos;Deny&apos;, resource);
+}</code></pre><p>To configure the preceding Lambda function as a <code class="code">REQUEST</code> authorizer
+                        function for a WebSocket API, follow the same procedure as for <a href="configure-api-gateway-lambda-authorization-with-console.html">REST
+                           APIs</a>.
+                     </p>
+                     <p>To configure the <code class="code">$connect</code> route to use this Lambda authorizer in the
+                        console, select or create the <code class="code">$connect</code> route. Choose the route request and
+                        choose your authorizer in the <b>Authorization</b> dropdown menu.
+                     </p>
+                     <p>To test the authorizer, you&apos;ll need to create a new connection. Changing authorizer
+                        in
+                        <code class="code">$connect</code> does not affect the already connected client. When you connect
+                        to your WebSocket API, you&apos;ll need to provide values for any configured identity
+                        sources. For example, you can connect by sending a valid query string and header using
+                        <code class="code">wscat</code> as in the following example:
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">wscat -c &apos;wss://myapi.execute-api.us-east-1.amazonaws.com/beta?QueryAuth1=queryValue1&apos; -H HeaderAuth1:headerValue1</code></pre><p>If you attempt to connect without a valid identity value, you&apos;ll receive a
+                        <code class="code">401</code> response:
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">wscat -c wss://myapi.execute-api.us-east-1.amazonaws.com/beta
+error: Unexpected server response: 401</code></pre><div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="apigateway-websocket-control-access-iam.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="apigateway-websocket-api-logging.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper"></div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon API Gateway';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

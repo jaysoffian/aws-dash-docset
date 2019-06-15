@@ -1,19 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Enable CORS
-         on
-         a Resource Using the API Gateway Import API - Amazon API Gateway
+      <title>Enable CORS on a
+         Resource Using the API Gateway Import API - Amazon API Gateway
       </title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="how-to-cors.html" title="Enable CORS for an API Gateway Resource">
+      <link rel="up" href="how-to-cors.html" title="Enable CORS for an API Gateway REST API Resource">
       <link rel="prev" href="how-to-cors.html" title="">
-      <link rel="next" href="apigateway-use-lambda-authorizer.html" title="Use API Gateway Lambda Authorizers">
-      <meta name="description" content="If you are using the API Gateway Import API , you can set up CORS support using a Swagger file. You must first define an OPTIONS method in your resource that returns the required headers.">
+      <link rel="next" href="getting-started-client-side-ssl-authentication.html" title="Use Client-Side SSL
+            Certificates for Authentication by the Backend">
+      <meta name="description" content="If you are using the API Gateway Import API , you can set up CORS support using an OpenAPI file. You must first define an OPTIONS method in your resource that returns the required headers.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/enable-cors-for-resource-using-swagger-importer-tool.html">
@@ -23,7 +25,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -35,33 +37,41 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-control-access-to-api.html"> Controlling Access to an API in
-                                    			API Gateway</a> &#xBB; <a href="how-to-cors.html">Enable CORS for an API Gateway Resource</a> &#xBB; <span class="breadcrumb">Enable CORS
-                                    on
-                                    a Resource Using the API Gateway Import API</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="apigateway-control-access-to-api.html">Controlling and Managing Access to a REST
+                                    			API in API Gateway</a> &#xBB; <a href="how-to-cors.html">Enable CORS for an API Gateway REST API Resource</a> &#xBB; <span class="breadcrumb">Enable CORS on a
+                                    Resource Using the API Gateway Import API</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="enable-cors-for-resource-using-swagger-importer-tool">Enable CORS
-                        on
-                        a Resource Using the API Gateway Import API
+                     <h1 class="topictitle" id="enable-cors-for-resource-using-swagger-importer-tool">Enable CORS on a
+                        Resource Using the API Gateway Import API
                      </h1>
                      <p>If you are using the <a href="api-gateway-import-api.html">API Gateway Import API</a>,
-                        you can set up CORS support using a Swagger file. You must first define an OPTIONS
-                        method in your resource that returns the required headers.
+                        you can set up CORS support using an OpenAPI file. You must first define an
+                        <code class="code">OPTIONS</code> method in your resource that returns the required
+                        headers.
                      </p>
                      <div class="aws-note">
                         <p class="aws-note">Note</p>
                         <p>Web browsers expect Access-Control-Allow-Headers, and Access-Control-Allow-Origin
                            headers to be set up in each API method that accepts CORS requests. In addition,
-                           some browsers first make an HTTP request to an OPTIONS method in the same resource,
-                           and then expect to receive the same headers.
+                           some browsers first make an HTTP request to an <code class="code">OPTIONS</code> method in the
+                           same resource, and then expect to receive the same headers.
                         </p>
                      </div>
-                     <p>The following example creates an <code class="code">OPTIONS</code> method and specifies mock
-                        integration. For more information, see <a href="how-to-mock-integration.html">Set up Mock Integrations in API Gateway</a>.
-                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">/users 
+                     <p>The following example creates an <code class="code">OPTIONS</code> method for a mock
+                        integration.
+                     </p>
+                     <div class="option container">
+                        <div class="optionselector"><span class="optionanchor" id=""><span class="option  selected" data-tab="openapi-2.0">OpenAPI 2.0</span></span></div>
+                        <dl>
+                           <dt>OpenAPI 2.0</dt>
+                           <dd class="selected" data-tab="openapi-2.0"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">/users 
    options:
       summary: CORS support
       description: |
@@ -98,7 +108,10 @@
             Access-Control-Allow-Methods:
               type: &quot;string&quot;
             Access-Control-Allow-Origin:
-              type: &quot;string&quot;</code></pre><p>Once you have configured the <code class="code">OPTIONS</code> method for your resource, you can
+              type: &quot;string&quot;</code></pre></dd>
+                        </dl>
+                     </div>
+                     <p>Once you have configured the <code class="code">OPTIONS</code> method for your resource, you can
                         add the required headers to the other methods in the same resource that need to accept
                         CORS requests.
                      </p>
@@ -108,7 +121,12 @@
                            <p>Declare the <b>Access-Control-Allow-Origin</b> and
                               <b>Headers</b> to the response types.
                            </p>
-                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">      responses:
+                           
+                           <div class="option container">
+                              <div class="optionselector"><span class="optionanchor" id=""><span class="option  selected" data-tab="openapi-2.0">OpenAPI 2.0</span></span></div>
+                              <dl>
+                                 <dt>OpenAPI 2.0</dt>
+                                 <dd class="selected" data-tab="openapi-2.0"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">      responses:
         200:
           description: Default response for CORS method
           headers:
@@ -117,31 +135,46 @@
             Access-Control-Allow-Methods:
               type: &quot;string&quot;
             Access-Control-Allow-Origin:
-              type: &quot;string&quot;</code></pre>
-                           </li>
+              type: &quot;string&quot;</code></pre></dd>
+                              </dl>
+                           </div>
+                           
+                        </li>
                         <li>
                            
                            <p>In the <code class="code">x-amazon-apigateway-integration</code> tag, set up the mapping
                               for those headers to your static values:
                            </p>
-                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">        responses:
+                           
+                           <div class="option container">
+                              <div class="optionselector"><span class="optionanchor" id=""><span class="option  selected" data-tab="openapi-2.0">OpenAPI 2.0</span></span></div>
+                              <dl>
+                                 <dt>OpenAPI 2.0</dt>
+                                 <dd class="selected" data-tab="openapi-2.0"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">        responses:
           &quot;default&quot;:
             statusCode: &quot;200&quot;
             responseParameters:
               method.response.header.Access-Control-Allow-Headers : &quot;&apos;Content-Type,X-Amz-Date,Authorization,X-Api-Key&apos;&quot;
               method.response.header.Access-Control-Allow-Methods : &quot;&apos;*&apos;&quot;
-              method.response.header.Access-Control-Allow-Origin : &quot;&apos;*&apos;&quot;</code></pre>
-                           </li>
+              method.response.header.Access-Control-Allow-Origin : &quot;&apos;*&apos;&quot;</code></pre></dd>
+                              </dl>
+                           </div>
+                           
+                        </li>
                      </ol>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -150,8 +183,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="how-to-cors.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="apigateway-use-lambda-authorizer.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="how-to-cors.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="getting-started-client-side-ssl-authentication.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -159,6 +194,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

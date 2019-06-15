@@ -1,0 +1,402 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Error Processor Sample Application for AWS Lambda - AWS Lambda</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="deploying-lambda-apps.html" title="AWS Lambda Applications">
+      <link rel="prev" href="serverless_app.html" title="Using the AWS Serverless Application Model (AWS SAM)">
+      <link rel="next" href="build-pipeline.html" title="Building a Continuous Delivery Pipeline for a Lambda Application with
+      AWS CodePipeline">
+      <meta name="description" content="Deploy a sample application that uses CloudWatch Logs, X-Ray, Amazon S3, and AWS CloudFormation custom resources.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="AWS Lambda">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/sample-errorprocessor.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="deploying-lambda-apps.html">AWS Lambda Applications</a> &#xBB; <span class="breadcrumb">Error Processor Sample Application for AWS Lambda</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="sample-errorprocessor">Error Processor Sample Application for AWS Lambda</h1>
+                     <p>The Error Processor sample application demonstrates the use of AWS Lambda to handle
+                        events from an <a href="services-cloudwatchlogs.html">Amazon CloudWatch Logs subscription</a>. CloudWatch Logs lets you invoke a Lambda function when a log
+                        entry matches a pattern. The subscription in this application monitors the log group
+                        of a function for entries that
+                        contain the word <code class="code">ERROR</code>. It invokes a processor Lambda function in response. The processor function
+                        retrieves the full log stream and trace data for the request that caused the error,
+                        and stores them for later
+                        use.
+                     </p>
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/sample-errorprocessor.png">
+                        
+                        
+                     </div>
+                     <p>Function code is available in the following files:</p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Random error &#x2013; <a href="https://github.com/awsdocs/aws-lambda-developer-guide/blob/master/sample-apps/error-processor/random-error/index.js" target="_blank">random-error/index.js</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Processor &#x2013; <a href="https://github.com/awsdocs/aws-lambda-developer-guide/blob/master/sample-apps/error-processor/processor/index.js" target="_blank">processor/index.js</a></p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <p>You can deploy the sample in a few minutes with the AWS CLI and AWS CloudFormation.
+                        Follow the instructions in the <a href="https://github.com/awsdocs/aws-lambda-developer-guide/tree/master/sample-apps/error-processor" target="_blank">README</a> to download, configure, and deploy it in
+                        your account.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Sections</strong></p>
+                        <ul>
+                           <li><a href="#sample-errorprocessor-architecture">Architecture and Event Structure</a></li>
+                           <li><a href="#sample-errorprocessor-instrumentation">Instrumentation with AWS X-Ray</a></li>
+                           <li><a href="#sample-errorprocessor-template">AWS CloudFormation Template and Additional Resources</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="sample-errorprocessor-architecture">Architecture and Event Structure</h2>
+                     
+                     
+                     <p>The sample application uses the following AWS services.</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>AWS Lambda &#x2013; Runs function code, sends logs to CloudWatch Logs, and sends trace data
+                                 to X-Ray.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Amazon CloudWatch Logs &#x2013; Collects logs, and invokes a function when a log entry matches
+                                 a filter pattern.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>AWS X-Ray &#x2013; Collects trace data, indexes traces for search, and generates a service
+                                 map.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Amazon Simple Storage Service (Amazon S3) &#x2013; Stores deployment artifacts and application
+                                 output.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>AWS CloudFormation &#x2013; Creates application resources and deploys function code.</p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <p>A Lambda function in the application generates errors randomly. When CloudWatch Logs
+                        detects the word <code class="code">ERROR</code>
+                        in the function&apos;s logs, it sends an event to the processor function for processing.
+                     </p>
+                     
+                     
+                     <div class="example">
+                        <p class="title"><b>Example &#x2013; CloudWatch Logs Message Event</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
+    &quot;awslogs&quot;: {
+        &quot;data&quot;: &quot;H4sIAAAAAAAAAHWQT0/DMAzFv0vEkbLYcdJkt4qVXmCDteIAm1DbZKjS+kdpB0Jo350MhsQFyVLsZ+unl/fJWjeO5asrPgbH5...&quot;
+    }
+}</code></pre></div>
+                     </div>
+                     
+                     <p>When it&apos;s decoded, the data contains details about the log event. The function uses
+                        these details to identify
+                        the log stream, and parses the log message to get the ID of the request that caused
+                        the error.
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example &#x2013; Decoded CloudWatch Logs Event Data</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;messageType&quot;: &quot;DATA_MESSAGE&quot;,
+    &quot;owner&quot;: &quot;123456789012&quot;,
+    &quot;logGroup&quot;: &quot;/aws/lambda/lambda-error-processor-randomerror-1GD4SSDNACNP4&quot;,
+    &quot;logStream&quot;: &quot;<b>2019/04/04/[$LATEST]63311769a9d742f19cedf8d2e38995b9</b>&quot;,
+    &quot;subscriptionFilters&quot;: [
+        &quot;lambda-error-processor-subscription-15OPDVQ59CG07&quot;
+    ],
+    &quot;logEvents&quot;: [
+        {
+            &quot;id&quot;: &quot;34664632210239891980253245280462376874059932423703429141&quot;,
+            &quot;timestamp&quot;: 1554415868243,
+            &quot;message&quot;: &quot;2019-04-04T22:11:08.243Z\t<b>1d2c1444-efd1-43ec-b16e-8fb2d37508b8</b>\t<b>ERROR</b>\n&quot;
+        }
+    ]
+}</code></pre></div>
+                     </div>
+                     
+                     
+                     <p>The processor function uses information from the CloudWatch Logs event to download
+                        the full log stream and X-Ray trace
+                        for a request that caused an error. It stores both in an Amazon S3 bucket. To allow
+                        the log stream and trace time to
+                        finalize, the function waits for a short period of time before accessing the data.
+                     </p>
+                     
+                     
+                     <h2 id="sample-errorprocessor-instrumentation">Instrumentation with AWS X-Ray</h2>
+                     
+                     
+                     <p>The application uses <a href="lambda-x-ray.html">AWS X-Ray</a> to trace function invocations and the
+                        calls that functions make to AWS services. X-Ray uses the trace data that it receives
+                        from functions to create a
+                        service map that helps you identify errors. The following service map shows the random
+                        error function generating
+                        errors for some requests. It also shows the processor function calling X-Ray, CloudWatch
+                        Logs, and Amazon S3.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/sample-errorprocessor-servicemap.png">
+                        
+                        
+                     </div>
+                     
+                     
+                     <p>The two Node.js functions are configured for active tracing in the template, and are
+                        instrumented with the
+                        AWS X-Ray SDK for Node.js in code. With active tracing, Lambda tags adds a tracing
+                        header to incoming requests and sends a
+                        trace with timing details to X-Ray. Additionally, the random error function uses the
+                        X-Ray SDK to record the
+                        request ID and user information in annotations. The annotations are attached to the
+                        trace, and you can use them to
+                        locate the trace for a specific request.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/sample-errorprocessor-trace.png">
+                        
+                        
+                     </div>
+                     
+                     <p>The processor function gets the request ID from the CloudWatch Logs event, and uses
+                        the AWS SDK for JavaScript to search X-Ray for
+                        that request. It uses AWS SDK clients, which are instrumented with the X-Ray SDK,
+                        to download the trace and log
+                        stream. Then it stores them in the output bucket. The X-Ray SDK records these calls,
+                        and they appear as
+                        subsegments in the trace.
+                     </p>
+                     
+                     
+                     <h2 id="sample-errorprocessor-template">AWS CloudFormation Template and Additional Resources</h2>
+                     
+                     <p>The application is implemented in two Node.js modules&#x2014;an AWS CloudFormation template
+                        and supporting shell
+                        scripts. The template creates the processor function, the random error function, and
+                        the following supporting
+                        resources.
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Execution role &#x2013; An IAM role that grants the functions permission to access other
+                                 AWS
+                                 services.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Primer function &#x2013; An additional function that invokes the random error function to
+                                 create a log
+                                 group.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Custom resource &#x2013; A AWS CloudFormation custom resource that invokes the primer function
+                                 during deployment to
+                                 ensure that the log group exists.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>CloudWatch Logs subscription &#x2013; A subscription for the log stream that triggers the
+                                 processor function when
+                                 the word ERROR is logged.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Resource-based policy &#x2013; A permission statement on the processor function that allows
+                                 CloudWatch Logs to
+                                 invoke it.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Amazon S3 bucket &#x2013; A storage location for output from the processor function.</p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>View the template <a href="https://github.com/awsdocs/aws-lambda-developer-guide/blob/master/sample-apps/error-processor/error-processor.yaml" target="_blank">error-processor.yaml</a> on GitHub.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/sample-errorprocessor-stack.png">
+                        
+                        
+                     </div>
+                     
+                     
+                     <p>To work around a limitation of Lambda&apos;s integration with AWS CloudFormation, the template
+                        creates an additional function
+                        that runs during deployments. All Lambda functions come with a CloudWatch Logs log
+                        group that stores output from function
+                        executions. However, the log group isn&apos;t created until the function is invoked for
+                        the first time.
+                     </p>
+                     
+                     <p>To create the subscription, which depends on the existence of the log group, the application
+                        uses a third
+                        Lambda function to invoke the random error function. The template includes the code
+                        for the primer function inline.
+                        An AWS CloudFormation custom resource invokes it during deployment. <code class="code">DependsOn</code> properties ensure that the log
+                        stream and resource-based policy are created prior to the subscription.
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="serverless_app.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="build-pipeline.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Architecture and Event Structure"><a class="pagetoc" href="#sample-errorprocessor-architecture">Architecture and Event Structure</a></li>
+                        <li class="pagetoc" name="Instrumentation with AWS X-Ray"><a class="pagetoc" href="#sample-errorprocessor-instrumentation">Instrumentation with AWS X-Ray</a></li>
+                        <li class="pagetoc" name="AWS CloudFormation Template and Additional Resources"><a class="pagetoc" href="#sample-errorprocessor-template">AWS CloudFormation Template and Additional Resources</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='AWS Lambda';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

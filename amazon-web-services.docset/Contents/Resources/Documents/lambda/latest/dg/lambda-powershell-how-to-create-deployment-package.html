@@ -1,0 +1,312 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>AWS Lambda Deployment Package in
+         PowerShell - AWS Lambda
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="powershell-programming-model.html" title="Building Lambda Functions with PowerShell">
+      <link rel="prev" href="powershell-programming-model.html" title="Building Lambda Functions with PowerShell">
+      <link rel="next" href="lambda-powershell-setup-dev-environment.html" title="Setting Up a PowerShell Development Environment">
+      <meta name="description" content="A PowerShell Lambda deployment package is a ZIP file that contains your PowerShell script, PowerShell modules that are required for your PowerShell script, and the assemblies needed to host PowerShell Core.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="AWS Lambda">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/lambda-powershell-how-to-create-deployment-package.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="powershell-programming-model.html">Building Lambda Functions with PowerShell</a> &#xBB; <span class="breadcrumb">AWS Lambda Deployment Package in
+                                    PowerShell</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="lambda-powershell-how-to-create-deployment-package">AWS Lambda Deployment Package in
+                        PowerShell
+                     </h1>
+                     <p>A PowerShell Lambda deployment package is a ZIP file that contains your PowerShell
+                        script, PowerShell modules
+                        that are required for your PowerShell script, and the assemblies needed to host PowerShell
+                        Core.
+                     </p>
+                     <p><b>AWSLambdaPSCore</b> is a PowerShell module that you can install from the <a href="https://www.powershellgallery.com/packages/AWSLambdaPSCore" target="_blank"> PowerShell Gallery</a>. You use this module
+                        to create your PowerShell Lambda deployment package.
+                     </p>
+                     <p>You&apos;re required to use the <code class="code">#Requires</code> statement within your PowerShell scripts to indicate the
+                        modules that your scripts depend on. This statement performs two important tasks.
+                        1) It communicates to other
+                        developers which modules the script uses, and 2) it identifies the dependent modules
+                        that AWS PowerShell tools need
+                        to package with the script, as part of the deployment. For more information about
+                        the <code class="code">#Requires</code>
+                        statement in PowerShell, see <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_requires?view=powershell-6" target="_blank"> About Requires</a>. For more information about PowerShell deployment packages, see AWS Lambda Deployment Package in
+                        PowerShell.
+                     </p>
+                     <p>When your PowerShell Lambda function uses the AWS PowerShell cmdlets, be sure to set
+                        a <code class="code">#Requires</code>
+                        statement that references the <code class="code">AWSPowerShell.NetCore</code> module, which supports PowerShell Core&#x2014;and
+                        not the <code class="code">AWSPowerShell</code> module, which only supports Windows PowerShell. Also, be sure to use version
+                        3.3.270.0 or newer of <code class="code">AWSPowerShell.NetCore</code>, which optimizes the cmdlet import process. If you use an
+                        older version, you&apos;ll experience longer cold starts. For more information, see <a href="https://aws.amazon.com/documentation/powershell/?id=docs_gateway" target="_blank"> AWS Tools for PowerShell</a>.
+                     </p>
+                     <p>Before you get started, you must first set up a PowerShell development environment.
+                        For instructions on how to
+                        do this, see <a href="lambda-powershell-setup-dev-environment.html">Setting Up a PowerShell Development Environment</a>.
+                     </p>
+                     
+                     <h2 id="lambda-powershell-using-lam-mod-deployment-package">Using the AWSLambdaPSCore Module</h2>
+                     
+                     <p>The AWSLambdaPSCore module has the following new cmdlets to help author and publish
+                        PowerShell Lambda
+                        functions.
+                     </p>
+                     
+                     <div class="table">
+                        <p class="title"><b></b></p>
+                        <div class="table-contents">
+                           <table id="w306aac73c17c15b5">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Cmdlet Name</th>
+                                 
+                                 <th>Description</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Get&#x2011;AWSPowerShellLambdaTemplate</code></td>
+                                 
+                                 <td>Returns a list of getting started templates.</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">New&#x2011;AWSPowerShellLambda</code></td>
+                                 
+                                 <td>Creates an initial PowerShell script based on a template.</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Publish&#x2011;AWSPowerShellLambda</code></td>
+                                 
+                                 <td>Publishes a given PowerShell script to Lambda.</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">New&#x2011;AWSPowerShellLambdaPackage</code></td>
+                                 
+                                 <td>Creates a Lambda deployment package that can be used in a CI/CD system for deployment.</td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     <p>To help get started writing and invoking a PowerShell script with Lambda, you can
+                        use the
+                        <code class="code">New-AWSPowerShellLambda</code> cmdlet to create a starter script based on a template. You can use the
+                        <code class="code">Publish-AWSPowerShellLambda</code> cmdlet to deploy your script to AWS Lambda. Then you can test your
+                        script either through the command line or the console.
+                     </p>
+                     
+                     
+                     <p>To create a new PowerShell script, upload it, and test it, follow this procedure:</p>
+                     
+                     <ol>
+                        <li>
+                           
+                           <p><b>View available templates.</b></p>
+                           
+                           <p>Run the following command to view the list of available templates:</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">PS C:\&gt; Get-AWSPowerShellLambdaTemplate
+
+Template               Description
+--------               -----------
+Basic                  Bare bones script
+CodeCommitTrigger      Script to process AWS CodeCommit Triggers
+DetectLabels           Use Amazon Rekognition service to tag image files in Amazon S3 with detected labels.
+KinesisStreamProcessor Script to process an Amazon Kinesis stream
+S3Event                Script to process S3 events
+SNSSubscription        Script to be subscribed to an Amazon SNS topic
+SQSQueueProcessor      Script to be subscribed to an Amazon SQS queue</code></pre>
+                           <p>Note that new templates are being listed all the time, so this output is just an example.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p><b>Create a basic script.</b></p>
+                           
+                           <p>Run the following command to create a sample script based on the <code class="code">Basic</code> template:
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">New-AWSPowerShellLambda -ScriptName MyFirstPSScript -Template Basic</code></pre>
+                           <p>A new file named <code class="code">MyFirstPSScript.ps1</code> is created in a new subdirectory of the current
+                              directory. The name of the directory is based on the <code class="code">-ScriptName</code> parameter. You can use the
+                              <code class="code">-Directory</code> parameter to choose an alternative directory.
+                           </p>
+                           
+                           <p>You can see that the new file has the following contents:</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"># PowerShell script file to be executed as a AWS Lambda function. 
+# 
+# When executing in Lambda the following variables will be predefined.
+#   $LambdaInput - A PSObject that contains the Lambda function input data.
+#   $LambdaContext - An Amazon.Lambda.Core.ILambdaContext object that contains information about the currently running Lambda environment.
+#
+# The last item in the PowerShell pipeline will be returned as the result of the Lambda function.
+#
+# To include PowerShell modules with your Lambda function, like the AWSPowerShell.NetCore module, add a &quot;#Requires&quot; statement 
+# indicating the module and version.
+                
+#Requires -Modules @{ModuleName=&apos;AWSPowerShell.NetCore&apos;;ModuleVersion=&apos;3.3.343.0&apos;}
+
+# Uncomment to send the input to CloudWatch Logs
+# Write-Host (ConvertTo-Json -InputObject $LambdaInput -Compress -Depth 5)</code></pre>
+                           </li>
+                        <li>
+                           
+                           <p><b>Edit the sample script.</b></p>
+                           
+                           <p>To see how log messages from your PowerShell script are sent to CloudWatch Logs, uncomment
+                              the
+                              <code class="code">Write-Host</code> line of the sample script.
+                           </p>
+                           
+                           <p>To demonstrate how you can return data back from your Lambda functions, add a new
+                              line at the end of the
+                              script with <code class="code">$PSVersionTable</code>. This adds the <code class="code">$PSVersionTable</code> to the PowerShell
+                              pipeline. After the PowerShell script is complete, the last object in the PowerShell
+                              pipeline is the return
+                              data for the Lambda function. <code class="code">$PSVersionTable</code> is a PowerShell global variable that also provides
+                              information about the running environment.
+                           </p>
+                           
+                           <p>After making these changes, the last two lines of the sample script look like this:</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">Write-Host (ConvertTo-Json -InputObject $LambdaInput -Compress -Depth 5)
+$PSVersionTable</code></pre>
+                           </li>
+                        <li>
+                           
+                           <p><b>Publish to AWS Lambda.</b></p>
+                           
+                           <p>After editing the <code class="code">MyFirstPSScript.ps1</code> file, change the directory to the script&apos;s location.
+                              Then run the following command to publish the script to AWS Lambda:
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">Publish-AWSPowerShellLambda -ScriptPath .\MyFirstPSScript.ps1 -Name  MyFirstPSScript -Region us-east-1</code></pre>
+                           <p>Note that the <code class="code">-Name</code> parameter specifies the Lambda function name, which appears in the Lambda
+                              console. You can use this function to invoke your script manually.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p><b>Test the Lambda function.</b></p>
+                           
+                           <p>You can test the PowerShell Lambda function that you just published by using the <b>dotnet</b> CLI from a command prompt. Use the <code class="code">lambda invoke-function</code> command to invoke
+                              your function.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&gt; dotnet lambda invoke-function MyFirstPSScript</code></pre>
+                           <p>For more information about the dotnet CLI extension, see <a href="lambda-dotnet-coreclr-deployment-package.html">.NET Core CLI</a>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="powershell-programming-model.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="lambda-powershell-setup-dev-environment.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Using the AWSLambdaPSCore Module"><a class="pagetoc" href="#lambda-powershell-using-lam-mod-deployment-package">Using the AWSLambdaPSCore Module</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='AWS Lambda';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

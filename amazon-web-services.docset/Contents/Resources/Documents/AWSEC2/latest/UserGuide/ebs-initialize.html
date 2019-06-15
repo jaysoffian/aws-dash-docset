@@ -12,6 +12,8 @@
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-initialize.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,31 +35,32 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <a href="EBSPerformance.html">Amazon EBS Volume Performance on Linux Instances</a> &#xBB; <span class="breadcrumb">Initializing Amazon EBS Volumes</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <a href="EBSPerformance.html">Amazon EBS Volume Performance on Linux Instances</a> &#xBB; <span class="breadcrumb">Initializing Amazon EBS Volumes</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="ebs-initialize">Initializing Amazon EBS Volumes</h1>
                      <p>New EBS volumes receive their maximum performance the moment that they are available
                         and
-                        do not require initialization (formerly known as pre-warming). However, storage blocks
-                        on
-                        volumes that were restored from snapshots must be initialized (pulled down from Amazon
-                        S3 and
-                        written to the volume) before you can access the block. This preliminary action takes
-                        time and
-                        can cause a significant increase in the latency of an I/O operation the first time
-                        each block
-                        is accessed. For most applications, amortizing this cost over the lifetime of the
-                        volume is
-                        acceptable. Performance is restored after the data is accessed once.
+                        do not require initialization (formerly known as pre-warming).
                      </p>
-                     <p>You can avoid this performance hit in a production environment by reading from all
-                        of the
-                        blocks on your volume before you use it; this process is called
-                        <em>initialization</em>. For a new volume created from a snapshot, you should
-                        read all the blocks that have data before using the volume.
+                     <p>However, storage blocks on volumes that were restored from snapshots must be pulled
+                        down 
+                        		from Amazon S3 and written to the volume before they can be accessed. This preliminary
+                        action 
+                        		takes time and can significantly increase the latency of I/O operations. For most
+                        applications, 
+                        		amortizing this cost over the lifetime of the volume is acceptable. The volume&apos;s
+                        performance 
+                        		is restored after all of the blocks have been downloaded and written to the volume.
+                        To avoid 
+                        		this initial performance hit in a production environment, you can perform an initialization
+                        
+                        		to read all of the blocks on the volume before you use it.
                      </p>
                      <div class="aws-note">
                         <p class="aws-note">Important</p>
@@ -69,6 +72,7 @@
                            <code class="code">io1</code> volumes while you are initializing them. For more information, see <a href="monitoring-volume-status.html#monitoring-volume-checks">Monitoring Volumes with Status Checks</a>.
                         </p>
                      </div>
+                     
                      <h2 id="ebs-initialize-linux">Initializing Amazon EBS Volumes on Linux</h2>
                      
                      
@@ -136,7 +140,7 @@ xvda1 202:1    0   8G  0 disk /</code></code></pre>
                            </div>
                            <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo dd if=/dev/<em class="replaceable"><code>xvdf</code></em> of=/dev/null bs=1M</code></strong></code></pre>
                            <p>[<b>fio</b>] If you have <b>fio</b> installed on your
-                              system, use the following command initialize your volume. The <code class="code">--filename</code>
+                              system, use the following command to initialize your volume. The <code class="code">--filename</code>
                               (input file) parameter should be set to the drive you wish to initialize.
                            </p>
                            <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo fio --filename=/dev/<em class="replaceable"><code>xvdf</code></em> --rw=read --bs=128k --iodepth=32 --ioengine=libaio --direct=1 --name=volume-initialize</code></strong></code></pre>
@@ -147,21 +151,25 @@ xvda1 202:1    0   8G  0 disk /</code></code></pre>
                            </p>
                            <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">sudo apt-get install -y fio</code></pre>
                            <p>When the operation is finished, you will see a report of the read operation. Your
-                              volume is now ready for use. For more information, see <a href="ebs-using-volumes.html">Making an Amazon EBS Volume Available for Use on <span>Linux</span></a>.
+                              volume is now ready for use. For more information, see <a href="ebs-using-volumes.html">Making an Amazon EBS Volume Available for Use on Linux</a>.
                            </p>
                            
                         </li>
                      </ol>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -171,7 +179,9 @@ xvda1 202:1    0   8G  0 disk /</code></code></pre>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="ebs-io-characteristics.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="raid-config.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -186,6 +196,10 @@ xvda1 202:1    0   8G  0 disk /</code></code></pre>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

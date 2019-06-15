@@ -12,6 +12,8 @@
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-network-security.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,117 +35,83 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="EC2_Network_and_Security.html">Network and Security</a> &#xBB; <span class="breadcrumb">Amazon EC2 Security Groups for Linux Instances</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="EC2_Network_and_Security.html">Network and Security</a> &#xBB; <span class="breadcrumb">Amazon EC2 Security Groups for Linux Instances</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="using-network-security">Amazon EC2 Security Groups for <span>Linux</span> Instances
                      </h1>
                      <p>A <em>security group</em> acts as a virtual firewall that controls the traffic
-                        		for one or more instances. When you launch an instance, you associate one or more
+                        		for one or more instances. When you launch an instance, you can specify one or more
                         security
-                        		groups with the instance. You add rules to each security group that allow traffic
-                        to or from
-                        		its associated instances. You can modify the rules for a security group at any time;
-                        the new
-                        		rules are automatically applied to all instances that are associated with the security
-                        group
-                        		after a short period. When we decide whether to allow traffic to reach an instance,
-                        we
-                        		evaluate all the rules from all the security groups that are associated with the
-                        		instance.
+                        		groups; otherwise, we use the default security group. You can add rules to each
+                        security group 
+                        		that allow traffic to or from its associated instances. You can modify the rules
+                        for a 
+                        		security group at any time; the new rules are automatically applied to all instances
+                        that are 
+                        		associated with the security group. When we decide whether to allow traffic to reach
+                        an instance, 
+                        		we evaluate all the rules from all the security groups that are associated with
+                        the instance.
                      </p>
-                     <p>If you need to allow traffic to a Windows instance, see <a href="./AWSEC2/latest/WindowsGuide/using-network-security.html" target="_blank">Amazon EC2 Security Groups for Windows
-                           			Instances</a> in the <em>Amazon EC2 User Guide for Windows Instances</em>.
+                     <p>When you launch an instance in a VPC, you must specify a security group that&apos;s created
+                        for
+                        		that VPC. After you launch an instance, you can change its security groups. Security
+                        		groups are associated with network interfaces. Changing an instance&apos;s security groups
+                        		changes the security groups associated with the primary network interface (eth0).
+                        For
+                        		more information, see <a href="./vpc/latest/userguide/VPC_SecurityGroups.html#SG_Changing_Group_Membership">Changing an
+                           			Instance&apos;s Security Groups</a> in the <em>Amazon VPC User Guide</em>. You
+                        		can also change the security groups associated with any other network interface.
+                        For
+                        		more information, see <a href="using-eni.html#eni_security_group">Changing the Security Group</a>.
                      </p>
-                     <div class="highlights">
-                        <p><strong>Topics</strong></p>
-                        <ul>
-                           <li><a href="#ec2-classic-security-groups">Security Groups for EC2-Classic</a></li>
-                           <li><a href="#vpc-security-groups">Security Groups for EC2-VPC</a></li>
-                           <li><a href="#security-group-rules">Security Group Rules</a></li>
-                           <li><a href="#default-security-group">Default Security Groups</a></li>
-                           <li><a href="#creating-your-own-security-groups">Custom Security Groups</a></li>
-                           <li><a href="#working-with-security-groups">Working with Security Groups</a></li>
-                           <li><a href="security-group-rules-reference.html">Security Group Rules Reference</a></li>
-                        </ul>
-                     </div>
                      <p>If you have requirements that aren&apos;t met by security groups, you can maintain your
                         own
                         		firewall on any of your instances in addition to using security groups.
                      </p>
-                     <p>Your account may support EC2-Classic in some regions, depending on when you created
-                        it.
-                        		For more information, see <a href="ec2-supported-platforms.html">Supported Platforms</a>. Security groups for EC2-Classic are separate
-                        		to security groups for EC2-VPC.
+                     <p>If you need to allow traffic to a Windows instance, see <a href="./AWSEC2/latest/WindowsGuide/using-network-security.html">Amazon EC2 Security Groups for Windows
+                           			Instances</a> in the <em>Amazon EC2 User Guide for Windows Instances</em>.
                      </p>
-                     <h2 id="ec2-classic-security-groups">Security Groups for EC2-Classic</h2>
+                     <div class="highlights">
+                        <p><strong>Contents</strong></p>
+                        <ul>
+                           <li><a href="using-network-security.html#security-group-rules">Security Group Rules</a><ul>
+                                 <li><a href="using-network-security.html#security-group-connection-tracking">Connection Tracking</a></li>
+                              </ul>
+                           </li>
+                           <li><a href="using-network-security.html#default-security-group">Default Security Groups</a></li>
+                           <li><a href="using-network-security.html#creating-your-own-security-groups">Custom Security Groups</a></li>
+                           <li><a href="using-network-security.html#working-with-security-groups">Working with Security Groups</a><ul>
+                                 <li><a href="using-network-security.html#creating-security-group">Creating a Security Group</a></li>
+                                 <li><a href="using-network-security.html#describing-security-group">Describing Your Security Groups</a></li>
+                                 <li><a href="using-network-security.html#adding-security-group-rule">Adding Rules to a Security Group</a></li>
+                                 <li><a href="using-network-security.html#updating-security-group-rules">Updating Security Group Rules</a></li>
+                                 <li><a href="using-network-security.html#deleting-security-group-rule">Deleting Rules from a Security Group</a></li>
+                                 <li><a href="using-network-security.html#deleting-security-group">Deleting a Security Group</a></li>
+                              </ul>
+                           </li>
+                           <li><a href="security-group-rules-reference.html">Security Group Rules Reference</a><ul>
+                                 <li><a href="security-group-rules-reference.html#sg-rules-web-server">Web Server Rules</a></li>
+                                 <li><a href="security-group-rules-reference.html#sg-rules-db-server">Database Server Rules</a></li>
+                                 <li><a href="security-group-rules-reference.html#sg-rules-local-access">Rules to Connect to Instances from Your Computer</a></li>
+                                 <li><a href="security-group-rules-reference.html#sg-rules-other-instances">Rules to Connect to Instances from an Instance with the Same Security Group</a></li>
+                                 <li><a href="security-group-rules-reference.html#sg-rules-path-mtu">Rules for Path MTU Discovery</a></li>
+                                 <li><a href="security-group-rules-reference.html#sg-rules-ping">Rules for Ping/ICMP</a></li>
+                                 <li><a href="security-group-rules-reference.html#sg-rules-dns">DNS Server Rules</a></li>
+                                 <li><a href="security-group-rules-reference.html#sg-rules-efs">Amazon EFS Rules</a></li>
+                                 <li><a href="security-group-rules-reference.html#sg-rules-elb">Elastic Load Balancing Rules</a></li>
+                              </ul>
+                           </li>
+                        </ul>
+                     </div>
                      		
-                     		
-                     <p>If you&apos;re using EC2-Classic, you must use security groups created specifically for
-                        			EC2-Classic. When you launch an instance in EC2-Classic, you must specify a security
-                        			group in the same region as the instance. You can&apos;t specify a security group that
-                        you
-                        			created for a VPC when you launch an instance in EC2-Classic.
-                     </p>
-                     
-                     		
-                     <p>After you launch an instance in EC2-Classic, you can&apos;t change its security groups.
-                        However,
-                        			you can add rules to or remove rules from a security group, and those changes are
-                        			automatically applied to all instances that are associated with the security group
-                        after
-                        			a short period.
-                     </p>
-                     
-                     		
-                     <p>In EC2-Classic, you can have up to 500 security groups in each region for each
-                        			account. You can associate an instance with up to 500 security groups and add up
-                        to 100
-                        			rules to a security group.
-                     </p>
-                     
-                     
-                     	
-                     <h2 id="vpc-security-groups">Security Groups for EC2-VPC</h2>
-                     		
-                     		
-                     <p>When you launch an instance in a VPC, you must specify a security group that&apos;s created
-                        for
-                        the VPC. If your account supports EC2-Classic, you can&apos;t specify a security group
-                        that
-                        you created for EC2-Classic when you launch an instance in a VPC. Security groups
-                        for
-                        EC2-VPC have additional capabilities that aren&apos;t supported by security groups for
-                        EC2-Classic. For more information, see <a href="./AmazonVPC/latest/UserGuide/VPC_SecurityGroups.html#VPC_Security_Group_Differences" target="_blank">Differences Between Security Groups for EC2-Classic and EC2-VPC</a> in the
-                        <em>Amazon VPC User Guide</em>.
-                     </p>
-                     		
-                     <p>After you launch an instance in a VPC, you can change its security groups. Security
-                        			groups are associated with network interfaces. Changing an instance&apos;s security
-                        groups
-                        			changes the security groups associated with the primary network interface (eth0).
-                        For
-                        			more information, see <a href="./AmazonVPC/latest/UserGuide/VPC_SecurityGroups.html#SG_Changing_Group_Membership" target="_blank">Changing an
-                           				Instance&apos;s Security Groups</a> in the <em>Amazon VPC User Guide</em>. You
-                        			can also change the security groups associated with any other network interface.
-                        For
-                        			more information, see <a href="using-eni.html#eni_security_group">Changing the Security Group</a>.
-                     </p>
-                     		
-                     <p>Security groups for EC2-VPC have separate limits. For more information, see <a href="./AmazonVPC/latest/UserGuide/VPC_Appendix_Limits.html" target="_blank">Amazon VPC Limits</a> in the
-                        				<em>Amazon VPC User Guide</em>. The security groups for EC2-Classic do not
-                        			count against the security group limit for EC2-VPC.
-                     </p>
-                     		
-                     <p>Your VPC can be enabled for IPv6. For more information, see <a href="./AmazonVPC/latest/UserGuide/vpc-ip-addressing.html" target="_blank">IP addressing in Your VPC</a> in the
-                        				<em>Amazon VPC User Guide</em>. You can add rules to your VPC security groups
-                        			to enable inbound and outbound IPv6 traffic. 
-                     </p>
-                     	
                      <h2 id="security-group-rules">Security Group Rules</h2>
-                     		
                      
                      		
                      <p>The rules of a security group control the inbound traffic that&apos;s allowed to reach
@@ -154,26 +122,18 @@
                      </p>
                      		
                      <p>The following are the characteristics of security group rules:</p>
+                     		
                      <div class="itemizedlist">
                         				
                         				
                         				
                         				
                         				
-                        				
-                        
                         			
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
                               <p>By default, security groups allow all outbound traffic.</p>
-                              				
-                           </li>
-                           <li class="listitem">
-                              					
-                              <p>You can&apos;t change the outbound rules for an EC2-Classic security
-                                 						group.
-                              </p>
                               				
                            </li>
                            <li class="listitem">
@@ -195,9 +155,9 @@
                            </li>
                            <li class="listitem">
                               					
-                              <p>You can add and remove rules at any time. Your changes are automatically
-                                 						applied to the instances associated with the security group after a short
-                                 						period. 
+                              <p>You can add and remove rules at any time. Your changes are automatically applied to
+                                 the
+                                 					instances associated with the security group.
                               </p>
                               					
                               <div class="aws-note">
@@ -287,8 +247,8 @@
                                     </li>
                                     <li class="listitem">
                                        						
-                                       <p>(VPC only) An individual IPv6 address. You must use the <code class="code">/128</code> prefix length;
-                                          for example <code class="code">2001:db8:1234:1a00::123/128</code>.
+                                       <p>An individual IPv6 address. You must use the <code class="code">/128</code> prefix length; for
+                                          							example <code class="code">2001:db8:1234:1a00::123/128</code>.
                                        </p>
                                        					
                                     </li>
@@ -301,15 +261,16 @@
                                     </li>
                                     <li class="listitem">
                                        						
-                                       <p>(VPC only) A range of IPv6 addresses, in CIDR block notation, for
-                                          							example, <code class="code">2001:db8:1234:1a00::/64</code>.
+                                       <p>A range of IPv6 addresses, in CIDR block notation, for example,
+                                          								<code class="code">2001:db8:1234:1a00::/64</code>.
                                        </p>
                                        					
                                     </li>
                                     <li class="listitem">
                                        
-                                       <p>(VPC only) The prefix list ID for the AWS service; for example,
-                                          <code class="code">pl-1a2b3c4d</code>. For more information, see <a href="./AmazonVPC/latest/UserGuide/vpce-gateway.html" target="_blank">Gateway VPC Endpoints</a> in the <em>Amazon VPC User Guide</em>.
+                                       <p>The prefix list ID for the AWS service; for example,
+                                          								<code class="code">pl-1a2b3c4d</code>. For more information, see <a href="./vpc/latest/userguide/vpce-gateway.html">Gateway VPC Endpoints</a>
+                                          							in the <em>Amazon VPC User Guide</em>.
                                        </p>
                                        
                                     </li>
@@ -326,34 +287,21 @@
                                           							
                                           							
                                           							
-                                          							
                                           						
                                           <ul class="itemizedlist" type="disc">
                                              <li class="listitem">
                                                 								
-                                                <p>The current security group.</p>
+                                                <p>The current security group</p>
                                                 							
                                              </li>
                                              <li class="listitem">
                                                 								
-                                                <p>EC2-Classic: A different security group for EC2-Classic in
-                                                   									the same region.
-                                                </p>
+                                                <p>A different security group for the same VPC</p>
                                                 							
                                              </li>
                                              <li class="listitem">
                                                 								
-                                                <p>EC2-Classic: A security group for another AWS account in the
-                                                   									same region (add the AWS account ID as a prefix; for example,
-                                                   										<code class="code">111122223333/sg-edcd9784</code>).
-                                                </p>
-                                                							
-                                             </li>
-                                             <li class="listitem">
-                                                								
-                                                <p>EC2-VPC: A different security group for the same VPC or a
-                                                   									peer VPC in a VPC peering connection.
-                                                </p>
+                                                <p>A different security group for a peer VPC in a VPC peering connection</p>
                                                 							
                                              </li>
                                           </ul>
@@ -384,8 +332,8 @@
                         			security group (and not the public IP or Elastic IP addresses). For more information
                         			about IP addresses, see <a href="using-instance-addressing.html">Amazon EC2 Instance IP Addressing</a>. If your security group rule references
                         			a security group in a peer VPC, and the referenced security group or VPC peering
-                        			connection is deleted, the rule is marked as stale. For more information, see <a href="./AmazonVPC/latest/PeeringGuide/vpc-peering-security-groups.html#vpc-peering-stale-groups" target="_blank">Working with Stale Security Group Rules</a> in the
-                        				<em>Amazon VPC Peering Guide</em>.
+                        			connection is deleted, the rule is marked as stale. For more information, see <a href="./vpc/latest/peering/vpc-peering-security-groups.html#vpc-peering-stale-groups">Working with Stale Security Group Rules</a> in the
+                        			<em>Amazon VPC Peering Guide</em>.
                      </p>
                      
                      		
@@ -395,7 +343,9 @@
                         				<code class="code">203.0.113.1</code> and another rule that allows access to <span>TCP port 22</span> from everyone,
                         			everyone has access to <span>TCP port 22</span>.
                      </p>
+                     
                      		
+                     			
                      <h3 id="security-group-connection-tracking">Connection Tracking</h3>
                      			
                      			
@@ -432,7 +382,7 @@
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w185aac21c17c17c15b8">
+                           <table id="w306aac27b9c13c17b9">
                               							
                               <tbody><tr bgcolor="#eeeeee">
                                  								
@@ -546,23 +496,25 @@
                         				of inbound security group rules, because it&#x2019;s regarded as response traffic.
                      </p>
                      			
-                     <p>For VPC security groups, to ensure that traffic is immediately interrupted when
-                        				you remove a security group rule, or to ensure that all inbound traffic is subject
-                        				to firewall rules, you can use a network ACL for your subnet &#x2014; network ACLs
-                        				are stateless and therefore do not automatically allow response traffic. For more
-                        				information, see <a href="./AmazonVPC/latest/UserGuide/VPC_ACLs.html" target="_blank">Network ACLs</a> in
-                        				the <em>Amazon VPC User Guide</em>.
+                     <p>To ensure that traffic is immediately interrupted when you remove a security group
+                        rule, or
+                        				to ensure that all inbound traffic is subject to firewall rules, you can use a
+                        				network ACL for your subnet &#x2014; network ACLs are stateless and therefore do not
+                        				automatically allow response traffic. For more information, see <a href="./vpc/latest/userguide/VPC_ACLs.html">Network ACLs</a> in the
+                        					<em>Amazon VPC User Guide</em>.
                      </p>
                      		
                      	
+                     		
                      <h2 id="default-security-group">Default Security Groups</h2>
                      		
                      		
-                     <p>Your AWS account automatically has a <em>default security group</em> per
-                        			VPC and per region for EC2-Classic. If you don&apos;t specify a security group when
-                        you
-                        			launch an instance, the instance is automatically associated with the default security
-                        			group.
+                     <p>Your AWS account automatically has a <em>default security group</em> for the
+                        			default VPC in each region. If you don&apos;t specify a security group when you launch
+                        an
+                        			instance, the instance is automatically associated with the default security group
+                        for
+                        			the VPC.
                      </p>
                      
                      		
@@ -592,19 +544,15 @@
                      </div>
                      
                      		
-                     <p>You can add or remove the inbound rules for any EC2-Classic default security group.
-                        You can
-                        add or remove outbound rules for any VPC default security group.
-                     </p>
+                     <p>You can add or remove inbound and outbound rules for any default security group.</p>
                      		
-                     <p>You can&apos;t delete a default security group. If you try to delete the EC2-Classic
-                        			default security group, you&apos;ll get the following error:
-                        				<code class="code">Client.InvalidGroup.Reserved: The security group &apos;default&apos; is reserved</code>.
-                        			If you try to delete a VPC default security group, you&apos;ll get the following error:
-                        				<code class="code">Client.CannotDelete: the specified group: &quot;sg-51530134&quot; name: &quot;default&quot; cannot
-                           				be deleted by a user</code>. 
+                     <p>You can&apos;t delete a default security group. If you try to delete a default security
+                        group,
+                        			you&apos;ll get the following error: <code class="code">Client.CannotDelete: the specified group:
+                           				&quot;sg-51530134&quot; name: &quot;default&quot; cannot be deleted by a user</code>. 
                      </p>
                      	
+                     		
                      <h2 id="creating-your-own-security-groups">Custom Security Groups</h2>
                      		
                      		
@@ -623,28 +571,11 @@
                         			limited to the following characters:
                      </p>
                      		
-                     <div class="itemizedlist">
-                        			
-                        			
-                        		
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              				
-                              <p>EC2-Classic: ASCII characters</p>
-                              			
-                           </li>
-                           <li class="listitem">
-                              				
-                              <p>EC2-VPC: a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&amp;;{}!$*</p>
-                              			
-                           </li>
-                        </ul>
-                     </div>
+                     <p>a-z, A-Z, 0-9, spaces, and ._-:/()#,@[]+=&amp;;{}!$*</p>
                      
-                     <p>A security group name cannot start with <code class="code">sg-</code>. For EC2-Classic, the
-                        security group name must be unique within your account for the region. For EC2-VPC,
-                        the
-                        name must be unique within the VPC.
+                     		
+                     <p>A security group name cannot start with <code class="code">sg-</code>. A security group name must be
+                        			unique for the VPC.
                      </p>
                      
                      		
@@ -670,14 +601,16 @@
                      		
                      <p>After you&apos;ve created a security group, you can change its inbound rules to reflect
                         the
-                        			type of inbound traffic that you want to reach the associated instances. In EC2-VPC,
-                        			you can also change its outbound rules. 
+                        			type of inbound traffic that you want to reach the associated instances. You can
+                        also 
+                        			change its outbound rules.
                      </p>
                      		
-                     <p>For more information about the types of rules you can add to security groups, see
-                        				<a href="security-group-rules-reference.html">Security Group Rules Reference</a>.
+                     <p>For more information about the rules you can add to a security group, see
+                        			<a href="security-group-rules-reference.html">Security Group Rules Reference</a>.
                      </p>
                      	
+                     		
                      <h2 id="working-with-security-groups">Working with Security Groups</h2>
                      		
                      		
@@ -686,24 +619,23 @@
                      </p>
                      		
                      <div class="highlights" id="inline-topiclist">
-                        <p><strong>Contents</strong></p>
+                        <p><strong>Tasks</strong></p>
                         <ul>
                            <li><a href="#creating-security-group">Creating a Security Group</a></li>
                            <li><a href="#describing-security-group">Describing Your Security Groups</a></li>
                            <li><a href="#adding-security-group-rule">Adding Rules to a Security Group</a></li>
                            <li><a href="#updating-security-group-rules">Updating Security Group Rules</a></li>
-                           <li><a href="#deleting-security-group-rule">Deleting Rules from a Security
-                                 				Group</a></li>
+                           <li><a href="#deleting-security-group-rule">Deleting Rules from a Security Group</a></li>
                            <li><a href="#deleting-security-group">Deleting a Security Group</a></li>
                         </ul>
                      </div>
                      		
+                     			
                      <h3 id="creating-security-group">Creating a Security Group</h3>
                      			
                      			
-                     <p>You can create a custom security group using the Amazon EC2 console. For EC2-VPC,
-                        you
-                        				must specify the VPC for which you&apos;re creating the security group. 
+                     <p>You can create a custom security group using the Amazon EC2 console. You
+                        				must specify the VPC for which you&apos;re creating the security group.
                      </p>
                      
                      			
@@ -717,29 +649,23 @@
                         <li>
                            					
                            <p>In the navigation pane, choose <b>Security Groups</b>.
-                              					
                            </p>
                            				
                         </li>
                         <li>
                            					
-                           <p>Choose <b>Create Security Group</b>. 
+                           <p>Choose <b>Create Security Group</b>.
                            </p>
                            				
                         </li>
                         <li>
                            					
-                           <p>Specify a name and description for the security group. </p>
+                           <p>Specify a name and description for the security group.</p>
                            				
                         </li>
                         <li>
                            					
-                           <p>(EC2-Classic only) To create a security group for use in EC2-Classic,
-                              						choose <b>No VPC</b>.
-                           </p>
-                           					
-                           <p>(EC2-VPC) For <b>VPC</b>, choose a VPC ID to create a
-                              						security group for that VPC. 
+                           <p>For <b>VPC</b>, choose the ID of the VPC.
                            </p>
                            				
                         </li>
@@ -762,13 +688,13 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
-                              <p><a href="./cli/latest/reference/ec2/create-security-group.html" target="_blank">create-security-group</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/create-security-group.html">create-security-group</a> (AWS CLI)
                               </p>
                               				
                            </li>
                            <li class="listitem">
                               					
-                              <p><a href="./powershell/latest/reference/items/New-EC2SecurityGroup.html" target="_blank">New-EC2SecurityGroup</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/New-EC2SecurityGroup.html">New-EC2SecurityGroup</a> (AWS Tools for Windows PowerShell)
                               </p>
                               				
                            </li>
@@ -803,12 +729,10 @@
                         </li>
                         <li>
                            					
-                           <p>The <b>Create Security Group</b> dialog opens, and is
-                              						populated with the rules from the existing security group. Specify a name
-                              						and description for your new security group. In the <b>VPC</b>
-                              						list, choose <b>No VPC</b> to create a security group for
-                              						EC2-Classic, or choose a VPC ID to create a security group for that VPC.
-                              						When you are done, choose <b>Create</b>.
+                           <p>The <b>Create Security Group</b> dialog opens, and is populated with the
+                              						rules from the existing security group. Specify a name and description for
+                              						your new security group. For <b>VPC</b>, choose the ID of the
+                              						VPC. When you are done, choose <b>Create</b>.
                            </p>
                            				
                         </li>
@@ -821,37 +745,13 @@
                         				which you&apos;ve assigned the security group.
                      </p>
                      			
-                     <p>After you launch an instance in EC2-Classic, you can&apos;t change its security
-                        				groups. After you launch an instance in a VPC, you can change its security groups.
-                        				For more information, see <a href="./AmazonVPC/latest/UserGuide/VPC_SecurityGroups.html#SG_Changing_Group_Membership" target="_blank">Changing an Instance&apos;s Security Groups</a> in the
-                        					<em>Amazon VPC User Guide</em>.
+                     <p>After you launch an instance, you can change its security groups.
+                        				For more information, see <a href="./vpc/latest/userguide/VPC_SecurityGroups.html#SG_Changing_Group_Membership">Changing an Instance&apos;s Security Groups</a> in the <em>Amazon VPC User Guide</em>.
                      </p>
-                     			
-                     <div class="itemizedlist">
-                        				
-                        <p class="title"><b>[EC2-VPC] To modify the security groups for an instance using the command
-                              					line</b></p>
-                        				
-                        				
-                        			
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              					
-                              <p><a href="./cli/latest/reference/ec2/modify-instance-attribute.html" target="_blank">modify-instance-attribute</a> (AWS CLI)
-                              </p>
-                              				
-                           </li>
-                           <li class="listitem">
-                              					
-                              <p><a href="./powershell/latest/reference/items/Edit-EC2InstanceAttribute.html" target="_blank">Edit-EC2InstanceAttribute</a> (AWS Tools for Windows PowerShell)
-                              </p>
-                              				
-                           </li>
-                        </ul>
-                     </div>
                      		
                      
                      		
+                     			
                      <h3 id="describing-security-group">Describing Your Security Groups</h3>
                      			
                      <p>You can view information about your security groups using the Amazon EC2 console or
@@ -859,7 +759,7 @@
                         				command line.
                      </p>
                      			
-                     <p class="title"><b>To describe your security groups for EC2-Classic using the console</b></p>
+                     <p class="title"><b>To describe your security groups using the console</b></p>
                      <ol>
                         <li> 
                            <p>Open the Amazon EC2 console at
@@ -875,41 +775,8 @@
                         </li>
                         <li>
                            					
-                           <p>Select <b>Network Platforms</b> from the filter list, then
-                              						choose <b>EC2-Classic</b>.
-                           </p>
-                           				
-                        </li>
-                        <li>
-                           					
-                           <p>Select a security group. The <b>Description</b> tab displays
-                              						general information. The <b>Inbound</b> tab displays the
-                              						inbound rules. 
-                           </p>
-                           				
-                        </li>
-                     </ol>
-                     
-                     
-                     			
-                     <p class="title"><b>To describe your security groups for EC2-VPC using the console</b></p>
-                     <ol>
-                        <li> 
-                           <p>Open the Amazon EC2 console at
-                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
-                           </p> 
-                        </li>
-                        <li>
-                           					
-                           <p>In the navigation pane, choose <b>Security Groups</b>.
-                              					
-                           </p>
-                           				
-                        </li>
-                        <li>
-                           					
-                           <p>Select <b>Network Platforms</b> from the filter list, then
-                              						choose <b>EC2-VPC</b>. 
+                           <p>(Optional) Select <b>VPC ID</b> from the filter list, then
+                              						choose the ID of the VPC.
                            </p>
                            				
                         </li>
@@ -917,12 +784,14 @@
                            					
                            <p>Select a security group. We display general information in the
                               							<b>Description</b> tab, inbound rules on the
-                              							<b>Inbound</b> tab, and outbound rules on the
-                              							<b>Outbound</b> tab.
+                              							<b>Inbound</b> tab, outbound rules on the
+                              							<b>Outbound</b> tab, and tags on the
+                              							<b>Tags</b> tab.
                            </p>
                            				
                         </li>
                      </ol>
+                     
                      			
                      <div class="itemizedlist">
                         				
@@ -933,13 +802,13 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
-                              <p><a href="./cli/latest/reference/ec2/describe-security-groups.html" target="_blank">describe-security-groups</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/describe-security-groups.html">describe-security-groups</a> (AWS CLI)
                               </p>
                               				
                            </li>
                            <li class="listitem">
                               					
-                              <p><a href="./powershell/latest/reference/items/Get-EC2SecurityGroup.html" target="_blank">Get-EC2SecurityGroup</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/Get-EC2SecurityGroup.html">Get-EC2SecurityGroup</a> (AWS Tools for Windows PowerShell)
                               </p>
                               				
                            </li>
@@ -949,8 +818,8 @@
                      		
                      
                      		
-                     <h3 id="adding-security-group-rule">Adding Rules to a Security Group</h3>
                      			
+                     <h3 id="adding-security-group-rule">Adding Rules to a Security Group</h3>
                      
                      			
                      <p>When you add a rule to a security group, the new rule is automatically applied to
@@ -1093,7 +962,7 @@
                         </li>
                         <li>
                            					
-                           <p>For a VPC security group, you can also specify outbound rules. On the
+                           <p>You can also specify outbound rules. On the
                               							<b>Outbound tab</b>, choose <b>Edit</b>,
                               							<b>Add Rule</b>, and do the following:
                            </p>
@@ -1205,13 +1074,13 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
-                              <p><a href="./cli/latest/reference/ec2/authorize-security-group-ingress.html" target="_blank">authorize-security-group-ingress</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/authorize-security-group-ingress.html">authorize-security-group-ingress</a> (AWS CLI)
                               </p>
                               				
                            </li>
                            <li class="listitem">
                               					
-                              <p><a href="./powershell/latest/reference/items/Grant-EC2SecurityGroupIngress.html" target="_blank">Grant-EC2SecurityGroupIngress</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/Grant-EC2SecurityGroupIngress.html">Grant-EC2SecurityGroupIngress</a> (AWS Tools for Windows PowerShell)
                               </p>
                               				
                            </li>
@@ -1220,7 +1089,7 @@
                      			
                      <div class="itemizedlist">
                         				
-                        <p class="title"><b>[EC2-VPC] To add one or more egress rules to a security group using the
+                        <p class="title"><b>To add one or more egress rules to a security group using the
                               					command line</b></p>
                         				
                         				
@@ -1228,13 +1097,13 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
-                              <p><a href="./cli/latest/reference/ec2/authorize-security-group-egress.html" target="_blank">authorize-security-group-egress</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/authorize-security-group-egress.html">authorize-security-group-egress</a> (AWS CLI)
                               </p>
                               				
                            </li>
                            <li class="listitem">
                               					
-                              <p><a href="./powershell/latest/reference/items/Grant-EC2SecurityGroupEgress.html" target="_blank">Grant-EC2SecurityGroupEgress</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/Grant-EC2SecurityGroupEgress.html">Grant-EC2SecurityGroupEgress</a> (AWS Tools for Windows PowerShell)
                               </p>
                               				
                            </li>
@@ -1291,7 +1160,7 @@
                         				the Amazon EC2 API or a command line tool, you cannot modify the rule. Instead,
                         you must
                         				delete the existing rule and add a new rule. To update the rule description only,
-                        				you can use the <a href="./cli/latest/reference/ec2/update-security-group-rule-descriptions-ingress.html" target="_blank">update-security-group-rule-descriptions-ingress</a> and <a href="./cli/latest/reference/ec2/update-security-group-rule-descriptions-egress.html" target="_blank">update-security-group-rule-descriptions-egress</a> commands. 
+                        				you can use the <a href="./cli/latest/reference/ec2/update-security-group-rule-descriptions-ingress.html">update-security-group-rule-descriptions-ingress</a> and <a href="./cli/latest/reference/ec2/update-security-group-rule-descriptions-egress.html">update-security-group-rule-descriptions-egress</a> commands. 
                      </p>
                      			
                      <div class="itemizedlist">
@@ -1304,13 +1173,13 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
-                              <p><a href="./cli/latest/reference/ec2/update-security-group-rule-descriptions-ingress.html" target="_blank">update-security-group-rule-descriptions-ingress</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/update-security-group-rule-descriptions-ingress.html">update-security-group-rule-descriptions-ingress</a> (AWS CLI)
                               </p>
                               				
                            </li>
                            <li class="listitem">
                               			        
-                              <p><a href="./powershell/latest/reference/items/Update-EC2SecurityGroupRuleIngressDescription.html" target="_blank">Update-EC2SecurityGroupRuleIngressDescription</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/Update-EC2SecurityGroupRuleIngressDescription.html">Update-EC2SecurityGroupRuleIngressDescription</a> (AWS Tools for Windows PowerShell)
                               </p>
                               			    
                            </li>
@@ -1319,7 +1188,7 @@
                      			
                      <div class="itemizedlist">
                         				
-                        <p class="title"><b>[EC2-VPC] To update the description for an egress security group rule using
+                        <p class="title"><b>To update the description for an egress security group rule using
                               					the command line</b></p>
                         				
                         			    
@@ -1327,13 +1196,13 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
-                              <p><a href="./cli/latest/reference/ec2/update-security-group-rule-descriptions-egress.html" target="_blank">update-security-group-rule-descriptions-egress</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/update-security-group-rule-descriptions-egress.html">update-security-group-rule-descriptions-egress</a> (AWS CLI)
                               </p>
                               				
                            </li>
                            <li class="listitem">
                               			        
-                              <p><a href="./powershell/latest/reference/items/Update-EC2SecurityGroupRuleEgressDescription.html" target="_blank">Update-EC2SecurityGroupRuleEgressDescription</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/Update-EC2SecurityGroupRuleEgressDescription.html">Update-EC2SecurityGroupRuleEgressDescription</a> (AWS Tools for Windows PowerShell)
                               </p>
                               			    
                            </li>
@@ -1341,17 +1210,14 @@
                      </div>
                      		
                      
-                     
                      		
-                     <h3 id="deleting-security-group-rule">Deleting Rules from a Security
-                        				Group
-                     </h3>
                      			
+                     <h3 id="deleting-security-group-rule">Deleting Rules from a Security Group</h3>
                      
                      			
                      <p>When you delete a rule from a security group, the change is automatically applied
                         to any
-                        				instances associated with the security group after a short period.
+                        				instances associated with the security group.
                      </p>
                      
                      			
@@ -1401,13 +1267,13 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
-                              <p><a href="./cli/latest/reference/ec2/revoke-security-group-ingress.html" target="_blank">revoke-security-group-ingress</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/revoke-security-group-ingress.html">revoke-security-group-ingress</a> (AWS CLI)
                               </p>
                               				
                            </li>
                            <li class="listitem">
                               					
-                              <p><a href="./powershell/latest/reference/items/Revoke-EC2SecurityGroupIngress.html" target="_blank">Revoke-EC2SecurityGroupIngress</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/Revoke-EC2SecurityGroupIngress.html">Revoke-EC2SecurityGroupIngress</a> (AWS Tools for Windows PowerShell)
                               </p>
                               				
                            </li>
@@ -1416,7 +1282,7 @@
                      			
                      <div class="itemizedlist">
                         				
-                        <p class="title"><b>[EC2-VPC] To remove one or more egress rules from a security group using the
+                        <p class="title"><b>To remove one or more egress rules from a security group using the
                               					command line</b></p>
                         				
                         				
@@ -1424,13 +1290,13 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
-                              <p><a href="./cli/latest/reference/ec2/revoke-security-group-egress.html" target="_blank">revoke-security-group-egress</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/revoke-security-group-egress.html">revoke-security-group-egress</a> (AWS CLI)
                               </p>
                               				
                            </li>
                            <li class="listitem">
                               					
-                              <p><a href="./powershell/latest/reference/items/Revoke-EC2SecurityGroupEgress.html" target="_blank">Revoke-EC2SecurityGroupEgress</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/Revoke-EC2SecurityGroupEgress.html">Revoke-EC2SecurityGroupEgress</a> (AWS Tools for Windows PowerShell)
                               </p>
                               				
                            </li>
@@ -1440,8 +1306,8 @@
                      		
                      
                      		
-                     <h3 id="deleting-security-group">Deleting a Security Group</h3>
                      			
+                     <h3 id="deleting-security-group">Deleting a Security Group</h3>
                      
                      			
                      <p>You can&apos;t delete a security group that is associated with an instance. You can&apos;t
@@ -1481,7 +1347,6 @@
                            				
                         </li>
                      </ol>
-                     
                      		
                      			
                      <div class="itemizedlist">
@@ -1493,13 +1358,13 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
-                              <p><a href="./cli/latest/reference/ec2/delete-security-group.html" target="_blank">delete-security-group</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/delete-security-group.html">delete-security-group</a> (AWS CLI)
                               </p>
                               				
                            </li>
                            <li class="listitem">
                               					
-                              <p><a href="./powershell/latest/reference/items/Remove-EC2SecurityGroup.html" target="_blank">Remove-EC2SecurityGroup</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/Remove-EC2SecurityGroup.html">Remove-EC2SecurityGroup</a> (AWS Tools for Windows PowerShell)
                               </p>
                               				
                            </li>
@@ -1508,15 +1373,19 @@
                      
                      		
                      	
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -1526,7 +1395,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="ec2-key-pairs.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="security-group-rules-reference.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -1535,8 +1406,6 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Security Groups for EC2-Classic"><a class="pagetoc" href="#ec2-classic-security-groups">Security Groups for EC2-Classic</a></li>
-                        <li class="pagetoc" name="Security Groups for EC2-VPC"><a class="pagetoc" href="#vpc-security-groups">Security Groups for EC2-VPC</a></li>
                         <li class="pagetoc" name="Security Group Rules"><a class="pagetoc" href="#security-group-rules">Security Group Rules</a></li>
                         <li class="pagetoc" name="Default Security Groups"><a class="pagetoc" href="#default-security-group">Default Security Groups</a></li>
                         <li class="pagetoc" name="Custom Security Groups"><a class="pagetoc" href="#creating-your-own-security-groups">Custom Security Groups</a></li>
@@ -1546,6 +1415,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

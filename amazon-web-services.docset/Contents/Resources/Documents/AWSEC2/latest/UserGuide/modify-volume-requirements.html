@@ -1,0 +1,340 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Requirements When Modifying Volumes - Amazon Elastic Compute Cloud</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="ebs-modify-volume.html" title="Modifying the Size, Performance, or Type of an EBS
+      Volume">
+      <link rel="prev" href="ebs-modify-volume.html" title="Modifying the Size, Performance, or Type of an EBS
+      Volume">
+      <link rel="next" href="requesting-ebs-volume-modifications.html" title="Requesting Modifications to Your EBS
+        Volumes">
+      <meta name="description" content="Requirements and limitations when modifying volumes.">
+      <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Elastic Compute Cloud">
+      <meta name="guide" content="User Guide for Linux Instances">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/modify-volume-requirements.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <a href="EBSVolumes.html">Amazon EBS Volumes</a> &#xBB; <a href="ebs-modify-volume.html">Modifying the Size, Performance, or Type of an EBS
+                                    Volume</a> &#xBB; <span class="breadcrumb">Requirements When Modifying Volumes</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="modify-volume-requirements">Requirements When Modifying Volumes</h1>
+                     <p>The following requirements and limitations apply when you modify an Amazon EBS volume.
+                        
+                        To learn more about the general requirements for EBS volumes, see <a href="volume_constraints.html">Constraints on the Size and Configuration of an EBS
+                           Volume</a>.
+                     </p>
+                     
+                     <h2 id="instance-support">Amazon EC2 Instance Support</h2>
+                     
+                     <p>Elastic Volumes are supported on the following instances:</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>All <a href="instance-types.html#current-gen-instances">current-generation instances</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Previous-generation instance families C1, C3, CC2, CR1, G2, I2, M1, M3, and
+                                 R3
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>If your instance type does not support Elastic Volumes, 
+                        see <a href="requesting-ebs-volume-modifications.html#modify-volume-stop-start">Modifying an EBS Volume If Elastic Volumes Is
+                           Unsupported</a>.
+                     </p>      
+                     
+                     
+                     <h2 id="linux-volumes">Requirements for Linux Volumes</h2>
+                     
+                     <p>Linux AMIs require a GUID partition table (GPT) and GRUB 2 for boot volumes that are
+                        2
+                        TiB (2,048 GiB) or larger. Many Linux AMIs today still use the MBR partitioning scheme,
+                        which only supports boot volume sizes up to 2 TiB. If your instance does not boot
+                        with a
+                        boot volume larger than 2 TiB, the AMI you are using may be limited to a boot volume
+                        size of
+                        less than 2 TiB. Non-boot volumes do not have this limitation on Linux instances.
+                        For
+                        requirements affecting Windows volumes, see <a href="./AWSEC2/latest/WindowsGuide/volume_constraints.html">Requirements for Windows Volumes</a> in
+                        the <em>Amazon EC2 User Guide for Windows Instances</em>.
+                     </p>
+                     
+                     <p>Before attempting to resize a boot volume beyond 2 TiB, you can determine whether
+                        the
+                        volume is using MBR or GPT partitioning by running the following command on your
+                        instance:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo gdisk -l /dev/xvda</code></strong></code></pre>
+                     <p>An Amazon Linux instance with GPT partitioning returns the following information:</p>
+                     <pre class="screen">GPT fdisk (gdisk) version 0.8.10
+  
+  Partition table scan:
+    MBR: protective
+    BSD: not present
+    APM: not present
+    GPT: present
+  
+  Found valid GPT with protective MBR; using GPT.</pre>
+                     <p>A SUSE instance with MBR partitioning returns the following information:</p>
+                     <pre class="screen">GPT fdisk (gdisk) version 0.8.8
+  
+  Partition table scan:
+    MBR: MBR only
+    BSD: not present
+    APM: not present
+    GPT: not present</pre>
+                     
+                     <h2 id="elastic-volumes-limitations">Limitations</h2>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>The new volume size cannot exceed the supported volume capacity. For more
+                                 information, see <a href="volume_constraints.html">Constraints on the Size and Configuration of an EBS
+                                    Volume</a>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>If the volume was attached before November 2, 2016, you must initialize Elastic
+                                 Volumes support. For more information, see <a href="requesting-ebs-volume-modifications.html#initialize-modification-support">Initializing Elastic Volumes
+                                    Support</a>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>If you are using an unsupported previous-generation instance type, or if you
+                                 encounter an error while attempting a volume modification, see <a href="requesting-ebs-volume-modifications.html#modify-volume-stop-start">Modifying an EBS Volume If Elastic Volumes Is
+                                    Unsupported</a>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>A <code class="code">gp2</code> volume that is attached to an instance as a root volume cannot be modified
+                                 to an <code class="code">st1</code> or <code class="code">sc1</code> volume. If detached and modified to <code class="code">st1</code> or <code class="code">sc1</code>, it cannot be
+                                 attached to an instance as the root volume.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>A <code class="code">gp2</code> volume cannot be modified to an <code class="code">st1</code> or <code class="code">sc1</code> volume if the requested
+                                 volume size is below the minimum size for <code class="code">st1</code> and <code class="code">sc1</code> volumes.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>In some cases, you must detach the volume or stop the instance for modification to
+                                 proceed. If you encounter an error message while attempting to modify an EBS volume,
+                                 or
+                                 if you are modifying an EBS volume attached to a previous-generation instance type,
+                                 take
+                                 one of the following steps:
+                              </p>
+                              
+                              <div class="itemizedlist">
+                                 
+                                 
+                                 
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       
+                                       <p>For a non-root volume, detach the volume from the instance, apply the
+                                          modifications, and then re-attach the volume.
+                                       </p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p>For a root (boot) volume, stop the instance, apply the modifications, and then
+                                          restart the instance.
+                                       </p>
+                                       
+                                    </li>
+                                 </ul>
+                              </div>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>After provisioning over 32,000 IOPS on an existing <code class="code">io1</code>
+                                 volume, you may need to do one of the following to see the full performance
+                                 improvements:
+                              </p>
+                              
+                              <div class="itemizedlist">
+                                 
+                                 
+                                 
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       
+                                       <p>Detach and attach the volume.</p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p>Restart the instance.</p>
+                                       
+                                    </li>
+                                 </ul>
+                              </div>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Decreasing the size of an EBS volume is not supported. However, you can create a
+                                 smaller volume and then migrate your data to it using an application-level tool such
+                                 as
+                                 <span>rsync</span>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Modification time is increased if you modify a volume that has not been fully
+                                 initialized. For more information see <a href="./AWSEC2/latest/UserGuide/ebs-initialize.html">Initializing Amazon EBS Volumes</a>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>After modifying a volume, wait at least six hours and ensure that the volume is in
+                                 the <code class="code">in-use</code> or <code class="code">available</code> state before making additional
+                                 modifications to the same volume.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              <p>While <code class="code">m3.medium</code> instances fully support volume modification, 
+                                 <code class="code">m3.large</code>, <code class="code">m3.xlarge</code>, and <code class="code">m3.2xlarge</code> instances might not support all volume modification features.
+                              </p>
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="ebs-modify-volume.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="requesting-ebs-volume-modifications.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Amazon EC2 Instance Support"><a class="pagetoc" href="#instance-support">Amazon EC2 Instance Support</a></li>
+                        <li class="pagetoc" name="Requirements for Linux Volumes"><a class="pagetoc" href="#linux-volumes">Requirements for Linux Volumes</a></li>
+                        <li class="pagetoc" name="Limitations"><a class="pagetoc" href="#elastic-volumes-limitations">Limitations</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Elastic Compute Cloud';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide for Linux Instances';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

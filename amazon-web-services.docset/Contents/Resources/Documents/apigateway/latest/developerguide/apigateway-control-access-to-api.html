@@ -1,12 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title> Controlling Access to an API in
-         			API Gateway - Amazon API Gateway
+      <title>Controlling and Managing Access to a REST
+         			API in API Gateway - Amazon API Gateway
       </title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="welcome.html" title="What Is Amazon API Gateway?">
-      <link rel="prev" href="api-gateway-import-api-errors-warnings.html" title="Errors and Warnings during Import">
+      <link rel="up" href="apigateway-rest-api.html" title="Creating, Deploying, and Invoking a REST API
+            in Amazon API Gateway">
+      <link rel="prev" href="api-gateway-import-api-errors-warnings.html" title="Errors and Warnings during
+                Import">
       <link rel="next" href="apigateway-resource-policies.html" title="Control Access to an API with Amazon API Gateway
             Resource Policies">
       <meta name="description" content="Learn how to enable and configure access control of an API in Amazon API Gateway.">
@@ -14,6 +16,8 @@
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-to-api.html">
@@ -23,7 +27,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -35,37 +39,148 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb"> Controlling Access to an API in
-                                    			API Gateway</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <span class="breadcrumb">Controlling and Managing Access to a REST
+                                    			API in API Gateway</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="apigateway-control-access-to-api"> Controlling Access to an API in
-                        			API Gateway
+                     <h1 class="topictitle" id="apigateway-control-access-to-api">Controlling and Managing Access to a REST
+                        			API in API Gateway
                      </h1>
-                     <p>API Gateway supports multiple mechanisms of access control, including metering or
-                        tracking API
-                        		uses by clients using API keys. The standard AWS IAM roles and policies offer flexible
-                        		and robust access controls that can be applied to an entire API set or individual
-                        methods.
-                        		Lambda authorizers and Amazon Cognito user pools provide customizable authorization
-                        and
-                        		authentication solutions.
+                     <p>API Gateway supports multiple mechanisms for controlling and managing access to your
+                        API.
                      </p>
-                     <div class="highlights">
-                        <p><strong>Topics</strong></p>
-                        <ul>
-                           <li><a href="apigateway-resource-policies.html">Control Access to an API with Amazon API Gateway
-                                 Resource Policies</a></li>
-                           <li><a href="permissions.html">Control Access to an API with IAM Permissions</a></li>
-                           <li><a href="how-to-cors.html">Enable CORS for an API Gateway Resource</a></li>
-                           <li><a href="apigateway-use-lambda-authorizer.html">Use API Gateway Lambda Authorizers</a></li>
-                           <li><a href="apigateway-integrate-with-cognito.html">Use Amazon Cognito User Pools</a></li>
-                           <li><a href="getting-started-client-side-ssl-authentication.html">Use Client-Side SSL
-                                 Certificates for Authentication by the Backend</a></li>
-                           <li><a href="api-gateway-api-usage-plans.html">Create and Use API Gateway Usage Plans</a></li>
+                     <p>The following mechanisms can be used for authentication and authorization:</p>
+                     <div class="itemizedlist">
+                        		
+                        		
+                        		
+                        		
+                        		
+                        		
+                        	
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              			
+                              <p><b>Resource policies</b> let you create resource-based
+                                 				policies to allow or deny access to your APIs and methods from specified source
+                                 IP
+                                 				addresses or VPC endpoints. For more information, see <a href="apigateway-resource-policies.html">Control Access to an API with Amazon API Gateway
+                                    Resource Policies</a>.
+                              </p>
+                              		
+                           </li>
+                           <li class="listitem">
+                              			
+                              <p><b>Standard AWS IAM roles and policies</b> offer
+                                 				flexible and robust access controls that can be applied to an entire API or
+                                 				individual methods. IAM roles and policies can be used for controlling who can
+                                 				create and manage your APIs as well as who can invoke them. For more information,
+                                 				see <a href="permissions.html">Control Access to an API with IAM Permissions</a>.
+                              </p>
+                              		
+                           </li>
+                           <li class="listitem">
+                              			
+                              <p><b>IAM tags</b> can be used together with IAM
+                                 				policies to control access. For more information, see <a href="apigateway-tagging-iam-policy.html">Using Tags to Control Access to API Gateway
+                                    Resources</a>.
+                              </p>
+                              		
+                           </li>
+                           <li class="listitem">
+                              			
+                              <p><b>Endpoint Policies for Interface VPC Endpoints</b>
+                                 				allow you to attach IAM resource policies to interface VPC endpoints to improve
+                                 				the security of your <a href="./apigateway/latest/developerguide/apigateway-private-apis.html">private
+                                    					APIs</a>. For more information, see <a href="apigateway-vpc-endpoint-policies.html">Use VPC Endpoint Policies for Private
+                                    APIs in API Gateway</a>.
+                              </p>
+                              		
+                           </li>
+                           <li class="listitem">
+                              			
+                              <p><b>Lambda authorizers</b> are Lambda functions that
+                                 				control access to REST API methods using bearer token authentication as well as
+                                 				information described by headers, paths, query strings, stage variables, or context
+                                 				variables request parameters. Lambda authorizers are used to control who can invoke
+                                 				REST API methods. For more information, see <a href="apigateway-use-lambda-authorizer.html">Use API Gateway Lambda Authorizers</a>.
+                              </p>
+                              		
+                           </li>
+                           <li class="listitem">
+                              			
+                              <p><b>Amazon Cognito user pools</b> let you create customizable
+                                 				authentication and authorization solutions for your REST APIs. Amazon Cognito
+                                 user pools are
+                                 				used to control who can invoke REST API methods. For more information, see <a href="apigateway-integrate-with-cognito.html">Control Access to a REST API Using
+                                    Amazon Cognito User Pools as Authorizer</a>.
+                              </p>
+                              		
+                           </li>
                         </ul>
+                     </div>
+                     <p>The following mechanisms can be used for performing other tasks related to access
+                        		control:
+                     </p>
+                     <div class="itemizedlist">
+                        		
+                        		
+                        		
+                        	
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              			
+                              <p><b>Cross-origin resource sharing (CORS)</b> lets you
+                                 				control how your REST API responds to cross-domain resource requests. For more
+                                 				information, see <a href="how-to-cors.html">Enable CORS for an API Gateway REST API Resource</a>.
+                              </p>
+                              		
+                           </li>
+                           <li class="listitem">
+                              			
+                              <p><b>Client-side SSL certificates</b> can be used to
+                                 				verify that HTTP requests to your backend system are from API Gateway. For more
+                                 				information, see <a href="getting-started-client-side-ssl-authentication.html">Use Client-Side SSL
+                                    Certificates for Authentication by the Backend</a>.
+                              </p>
+                              		
+                           </li>
+                           <li class="listitem">
+                              			
+                              <p><b>AWS WAF</b> can be used to protect your API Gateway API from
+                                 				common web exploits. For more information, see <a href="apigateway-control-access-aws-waf.html">Use AWS WAF to Protect Your Amazon API Gateway API
+                                    from Common Web Exploits</a>.
+                              </p>
+                              		
+                           </li>
+                        </ul>
+                     </div>
+                     <p>The following mechanisms can be used for tracking and limiting the access that you
+                        have
+                        		granted to authorized clients:
+                     </p>
+                     <div class="itemizedlist">
+                        		
+                        	
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              			
+                              <p><b>Usage plans</b> let you provide <b>API keys</b> to your customers &#x2014; and then track and limit usage
+                                 				of your API stages and methods for each API key. For more information, see <a href="api-gateway-api-usage-plans.html">Create and Use Usage Plans with API
+                                    Keys</a>.
+                              </p>
+                              		
+                           </li>
+                        </ul>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
                   </div>
                   <noscript>
@@ -73,9 +188,10 @@
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -85,7 +201,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="api-gateway-import-api-errors-warnings.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="apigateway-resource-policies.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -93,6 +211,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

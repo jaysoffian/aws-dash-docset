@@ -5,13 +5,15 @@
       <link rel="home" href="#top">
       <link rel="up" href="Configure_Instance.html" title="Configuring Your Amazon Linux Instance">
       <link rel="prev" href="processor_state_control.html" title="Processor State Control for Your EC2 Instance">
-      <link rel="next" href="set-hostname.html" title="Changing the Hostname of Your Linux Instance">
+      <link rel="next" href="instance-optimize-cpu.html" title="Optimizing CPU Options">
       <meta name="description" content="Set the time or change the time zone for an Amazon Linux instance.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-time.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="Configure_Instance.html">Configuring Your Amazon Linux Instance</a> &#xBB; <span class="breadcrumb">Setting the Time for Your Linux Instance</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="Configure_Instance.html">Configuring Your Amazon Linux Instance</a> &#xBB; <span class="breadcrumb">Setting the Time for Your Linux Instance</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="set-time">Setting the Time for Your Linux Instance</h1>
                      <p>A consistent and accurate time reference is crucial for many server tasks and
@@ -49,33 +54,46 @@
                         not
                         match the date of the request, and AWS rejects the request. 
                      </p>
-                     <p>Amazon provides the Amazon Time Sync Service, which you can access from your instance.
-                        This service uses a fleet of satellite-connected and atomic reference clocks in each
-                        AWS
-                        Region to deliver accurate current time readings of the Coordinated Universal Time
-                        (UTC)
-                        global standard through Network Time Protocol (NTP). The Amazon Time Sync Service
-                        automatically smooths any leap seconds that are added to UTC.
+                     <p>Amazon provides the Amazon Time Sync Service, which is accessible from all EC2 instances,
+                        and is also used by other AWS services. This service uses a fleet of satellite-connected
+                        and
+                        atomic reference clocks in each Region to deliver accurate current time readings of
+                        the
+                        Coordinated Universal Time (UTC) global standard through Network Time Protocol (NTP).
+                        The
+                        Amazon Time Sync Service automatically smooths any leap seconds that are added to
+                        UTC.
                      </p>
                      <p>The Amazon Time Sync Service is available through NTP at the <code class="code">169.254.169.123</code>
                         IP address for any instance running in a VPC. Your instance does not require access
                         to the
                         internet, and you do not have to configure your security group rules or your network
                         ACL
-                        rules to allow access. Use the following procedures to configure the Amazon Time Sync
-                        Service on your instance using the <code class="code">chrony</code> client.
+                        rules to allow access. The latest versions of Amazon Linux 2 and Amazon Linux AMIs
+                        synchronize with the Amazon Time Sync Service by default.
                      </p>
-                     <p>Alternatively, you can use external NTP sources. For more information about NTP and
+                     <p>Use the following procedures to configure the Amazon Time Sync Service on your instance
+                        
+                        using the <code class="code">chrony</code> client.
+                        Alternatively, you can use external NTP sources. For more information about NTP and
                         public time sources, see <a href="http://www.ntp.org/" target="_blank">http://www.ntp.org/</a>.
                         An instance needs access to the internet for the external NTP time sources to work.
                         
                      </p>
                      
-                     <h2 id="configure-amazon-time-service-amazon-linux">Configuring the Amazon Time Sync Service on Amazon Linux</h2>
+                     <h2 id="configure-amazon-time-service-amazon-linux">Configuring the Amazon Time Sync
+                        Service on Amazon Linux AMI
+                     </h2>
                      
-                     <p>On Amazon Linux 2, the default <code class="code">chrony</code> configuration is already set up to use the
-                        Amazon Time Sync Service IP address. On Amazon Linux, you must edit the <code class="code">chrony</code>
-                        configuration file to add a server entry for the Amazon Time Sync Service.
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>On Amazon Linux 2, the default <code class="code">chrony</code> configuration is already set up to use
+                           the Amazon Time Sync Service IP address.
+                        </p>
+                     </div>
+                     
+                     <p> With the Amazon Linux AMI, you must edit the <code class="code">chrony</code> configuration file to add
+                        a server entry for the Amazon Time Sync Service.
                      </p>
                      
                      <p class="title"><b>To configure your instance to use the Amazon Time Sync Service</b></p>
@@ -83,7 +101,7 @@
                         <li>
                            
                            <p>Connect to your instance and uninstall the NTP service.</p>
-                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo yum erase ntp*</code></strong></code></pre>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo yum erase &apos;ntp*&apos;</code></strong></code></pre>
                            </li>
                         <li>
                            
@@ -97,7 +115,7 @@
                               <b>vim</b> or <b>nano</b>). Verify that the file includes the
                               following line:
                            </p>
-                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">server 169.254.169.123 prefer iburst</code></pre>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">server 169.254.169.123 prefer iburst minpoll 4 maxpoll 4</code></pre>
                            <p>If the line is present, then the Amazon Time Sync Service is already
                               configured and you can go to the next step. If not, add the line after any other
                               <code class="code">server</code> or <code class="code">pool</code> statements that are already present in
@@ -205,7 +223,7 @@ Leap status     : Normal</code></pre>
                               before any other <code class="code">server</code> or <code class="code">pool</code> statements that are
                               already present in the file, and save your changes:
                            </p>
-                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">server 169.254.169.123 prefer iburst</code></pre>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">server 169.254.169.123 prefer iburst minpoll 4 maxpoll 4</code></pre>
                            </li>
                         <li>
                            
@@ -277,7 +295,7 @@ Leap status     : Normal</code></pre>
                         <b>vim</b> or <b>nano</b>). Verify that the file
                         contains the following line:
                      </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">server 169.254.169.123 prefer iburst</code></pre>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">server 169.254.169.123 prefer iburst minpoll 4 maxpoll 4</code></pre>
                      <p>If this line is not present, add it. Comment out any other server or pool lines.
                         Open yast and enable the chrony service.
                      </p>
@@ -383,15 +401,19 @@ Arctic      EET      GMT0       Israel       Navajo    right       W-SU
                            </li>
                      </ol>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -400,8 +422,10 @@ Arctic      EET      GMT0       Israel       Navajo    right       W-SU
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="processor_state_control.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="set-hostname.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="processor_state_control.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="instance-optimize-cpu.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -410,7 +434,9 @@ Arctic      EET      GMT0       Israel       Navajo    right       W-SU
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Configuring the Amazon Time Sync Service on Amazon Linux"><a class="pagetoc" href="#configure-amazon-time-service-amazon-linux">Configuring the Amazon Time Sync Service on Amazon Linux</a></li>
+                        <li class="pagetoc" name="Configuring the Amazon Time Sync
+                Service on Amazon Linux AMI"><a class="pagetoc" href="#configure-amazon-time-service-amazon-linux">Configuring the Amazon Time Sync
+                              Service on Amazon Linux AMI</a></li>
                         <li class="pagetoc" name="Configuring the Amazon Time Sync Service on Ubuntu"><a class="pagetoc" href="#configure-amazon-time-service-ubuntu">Configuring the Amazon Time Sync Service on Ubuntu</a></li>
                         <li class="pagetoc" name="Configuring the Amazon Time Sync Service on SUSE Linux"><a class="pagetoc" href="#configure-amazon-time-service-suse">Configuring the Amazon Time Sync Service on SUSE Linux</a></li>
                         <li class="pagetoc" name="Changing the Time Zone on Amazon Linux"><a class="pagetoc" href="#change_time_zone">Changing the Time Zone on Amazon Linux</a></li>
@@ -419,6 +445,10 @@ Arctic      EET      GMT0       Israel       Navajo    right       W-SU
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

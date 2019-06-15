@@ -1,0 +1,820 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Working with Capacity Reservations - Amazon Elastic Compute Cloud</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="ec2-capacity-reservations.html" title="On-Demand Capacity Reservations">
+      <link rel="prev" href="capacity-reservations-pricing-biling.html" title="">
+      <link rel="next" href="ec2-instance-lifecycle.html" title="Instance Lifecycle">
+      <meta name="description" content="Creating, using, and canceling Capacity Reservations.">
+      <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Elastic Compute Cloud">
+      <meta name="guide" content="User Guide for Linux Instances">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/capacity-reservations-using.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="instance-purchasing-options.html">Instance Purchasing Options</a> &#xBB; <a href="ec2-capacity-reservations.html">On-Demand Capacity Reservations</a> &#xBB; <span class="breadcrumb">Working with Capacity Reservations</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="capacity-reservations-using">Working with Capacity Reservations</h1>
+                     <p>To start using Capacity Reservations, you need to create the capacity reservation
+                        in the required Availability Zone. 
+                        			After you created a Capacity Reservation, you can launch instances into the reserved
+                        capacity, view its capacity 
+                        			utilization in real time, and increase or decrease its capacity as needed. 
+                     </p>
+                     <p>By default, Capacity Reservations automatically match new instances and running instances
+                        that have matching attributes (instance type, platform, and 
+                        		Availability Zone). In other words, instances that have matching attributes automatically
+                        run in the Capacity Reservation&apos;s capacity. However, 
+                        		you can also target a Capacity Reservation for specific workloads. This enables
+                        you to explicitly control which instances are allowed to run 
+                        		in that reserved capacity.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Contents</strong></p>
+                        <ul>
+                           <li><a href="capacity-reservations-using.html#capacity-reservations-create">Creating a Capacity Reservation</a></li>
+                           <li><a href="capacity-reservations-using.html#capacity-reservations-launch">Launching an Instance into an Existing Capacity Reservation</a></li>
+                           <li><a href="capacity-reservations-using.html#capacity-reservations-modify">Modifying a Capacity Reservation</a></li>
+                           <li><a href="capacity-reservations-using.html#capacity-reservations-modify-instance">Modifying an Instance&apos;s Capacity Reservation Settings</a></li>
+                           <li><a href="capacity-reservations-using.html#capacity-reservations-view">Viewing a Capacity Reservation</a></li>
+                           <li><a href="capacity-reservations-using.html#capacity-reservations-release">Canceling a Capacity Reservation</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="capacity-reservations-create">Creating a Capacity Reservation</h2> 
+                     	
+                     <p>Creating a Capacity Reservation in your account creates a capacity reservation in
+                        a specific
+                        				Availability Zone. After it is created, you can launch instances into the reserved
+                        				capacity as needed.
+                     </p>
+                     	
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>Your request to create a Capacity Reservation could fail if Amazon EC2 does not have
+                           sufficient capacity to fulfil the request. If 
+                           		your request fails due to Amazon EC2 capacity constraints, either try again at a
+                           later time, try in a different Availability 
+                           		Zone, or request a smaller capacity reservation. If your application is flexible
+                           across instance types and sizes, try to
+                           		create a Capacity Reservation with different instance attributes.
+                        </p>
+                        <p>Your request could also fail if the requested quantity exceeds your On-Demand Instance
+                           limit for
+                           				the selected instance type. If your request fails due to limit constraints, increase
+                           				your On-Demand Instance limit for the required instance type and try again. For
+                           more information
+                           				about increasing your instance limits, see <a href="ec2-resource-limits.html">Amazon EC2 Service Limits</a>.
+                        </p>
+                     </div>
+                     	
+                     <p>After you create the Capacity Reservation, the capacity is available immediately.
+                        The capacity remains reserved for your use as 
+                        		long as the Capacity Reservation is active, and you can launch instances into it
+                        at any time. If the Capacity Reservation is <code class="code">open</code>, new instances 
+                        		and existing instances that have matching attributes automatically run in the Capacity
+                        Reservation&apos;s capacity. If the Capacity Reservation is 
+                        		<code class="code">targeted</code>, instances must specifically target it to run in the reserved capacity.
+                     </p>
+                     	
+                     	
+                     <p>You can create a Capacity Reservation using the Amazon EC2 console or the AWS CLI.</p>
+                     	
+                     <p class="title"><b>To create a Capacity Reservation using the console</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           					
+                           <p>Choose <b>Capacity Reservations</b>, choose <b>Create
+                                 						Capacity Reservation</b>.
+                           </p>
+                           				
+                        </li>
+                        <li>
+                           					
+                           <p>On the Create a Capacity Reservation page, configure the following settings in the
+                              							<b>Instance details</b> section:
+                           </p>
+                           					
+                           <ol>
+                              <li>
+                                 							
+                                 <p><b>Instance Type</b>&#x2014;Specify the type of
+                                    								instance to launch into the reserved capacity.
+                                 </p>
+                                 						
+                              </li>
+                              <li>
+                                 							
+                                 <p><b>Launch EBS-optimized instances</b>&#x2014;Specify
+                                    								whether to reserve the capacity for EBS-optimized instances. This
+                                    								option is selected by default for some instance types. For more
+                                    								information about EBS-optimized instances, see <a href="AmazonEBS.html">Amazon Elastic Block Store</a>.
+                                 </p>
+                                 						
+                              </li>
+                              <li>
+                                 							
+                                 <p><b>Attach instance store at
+                                       								launch</b>&#x2014;Indicate whether instances launched into
+                                    								the Capacity Reservation use temporary block-level storage. The data on an
+                                    instance
+                                    								store volume persists only during the life of the associated
+                                    								instance.
+                                 </p>
+                                 						
+                              </li>
+                              <li>
+                                 							
+                                 <p><b>Platform</b>&#x2014;Specify the operating system
+                                    								for your intended instances.
+                                 </p>
+                                 						
+                              </li>
+                              <li>
+                                 							
+                                 <p><b>Availability Zone</b>&#x2014;Specify the
+                                    								Availability Zone in which to reserve the capacity.
+                                 </p>
+                                 						
+                              </li>
+                              <li>
+                                 							
+                                 <p><b>Tenancy</b>&#x2014;Specify whether you want to run a shared hardware
+                                    								instance (default) or a dedicated instance.
+                                 </p>
+                                 						
+                              </li>
+                              <li>
+                                 							
+                                 <p><b>Quantity</b>&#x2014;Specify the number instances
+                                    								for which to reserve capacity. If you specify a quantity that
+                                    								exceeds your remaining On-Demand Instance limit for the selected instance
+                                    type,
+                                    								the request will be denied.
+                                 </p>
+                                 						
+                              </li>
+                           </ol>
+                           				
+                        </li>
+                        <li>
+                           					
+                           <p>Configure the following settings in the <b>Reservation
+                                 							details</b> section:
+                           </p>
+                           					
+                           <ol>
+                              <li>
+                                 							
+                                 <p><b>Reservation Ends</b>&#x2014;Choose one of the
+                                    								following options:
+                                 </p>
+                                 							
+                                 <div class="itemizedlist">
+                                    								
+                                    																	
+                                    							
+                                    <ul class="itemizedlist" type="disc">
+                                       <li class="listitem">
+                                          									
+                                          <p><b>Manually</b>&#x2014;Reserve the capacity 
+                                             										until you explicitly cancel it.
+                                          </p>
+                                          								
+                                       </li>
+                                       <li class="listitem">
+                                          									
+                                          <p><b>Specific time</b>&#x2014;Cancels the capacity reservation
+                                             										automatically. The capacity reservation is released
+                                             										automatically at the specified date and time. The Capacity Reservation is
+                                             										canceled within an hour from the specified time. For
+                                             										example, if you specify 5/31/2019, 13:30:55, the Capacity Reservation is
+                                             										guaranteed to end between 13:30:55 and 14:30:55 on
+                                             										5/31/2019.
+                                          </p>
+                                          								
+                                       </li>
+                                    </ul>
+                                 </div>
+                                 							
+                                 <div class="aws-note">
+                                    <p class="aws-note">Note</p>
+                                    <p>After the reservation ends, you can no longer target instances to the 
+                                       									Capacity Reservation. Instances running in the reserved capacity continue
+                                       to run uninterrupted. 
+                                       									If instances targeting a Capacity Reservation are stopped, you cannot restart
+                                       them until you 
+                                       									remove their Capacity Reservation targeting preference or configure them
+                                       to target a 
+                                       									different Capacity Reservation.
+                                    </p>
+                                 </div>
+                                 						
+                              </li>
+                              <li>
+                                 							
+                                 <p><b>Instance eligibility</b>&#x2014;Choose one of the
+                                    								following options:
+                                 </p>
+                                 							
+                                 <div class="itemizedlist">
+                                    								
+                                    								
+                                    							
+                                    <ul class="itemizedlist" type="disc">
+                                       <li class="listitem">
+                                          									
+                                          <p><b>open</b>&#x2014;(Default) The Capacity Reservation
+                                             										matches any instance that has matching attributes (instance
+                                             										type, platform, and Availability Zone). If you launch an
+                                             										instance with matching attributes, it is placed into the
+                                             										reserved capacity automatically.
+                                          </p>
+                                          								
+                                       </li>
+                                       <li class="listitem">
+                                          									
+                                          <p><b>targeted</b>&#x2014;The Capacity Reservation only accepts
+                                             										instances that have matching attributes (instance type,
+                                             										platform, and Availability Zone), and explicitly target the
+                                             										reservation.
+                                          </p>
+                                          								
+                                       </li>
+                                    </ul>
+                                 </div>
+                                 						
+                              </li>
+                           </ol>
+                           				
+                        </li>
+                        <li>
+                           					
+                           <p>Choose <b>Request reservation</b>.
+                           </p>
+                           				
+                        </li>
+                     </ol>
+                     	
+                     		
+                     <p class="title"><b>To create a Capacity Reservation using the AWS CLI</b></p>
+                     		
+                     <p>Use the <a href="./cli/latest/reference/ec2/create-capacity-reservation.html">create-capacity-reservation</a> command:
+                     </p>
+                     	
+                     	<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><span><code class="prompt" copy="false">$ </code></span> aws ec2 create-capacity-reservation --instance-type <em class="replaceable"><code>instance_type</code></em> --instance-platform <em class="replaceable"><code>platform_type</code></em> --availability-zone <em class="replaceable"><code>az</code></em> --instance-count <em class="replaceable"><code>quantity</code></em></code></pre>
+                     
+                     	
+                     	
+                     	
+                     	
+                     
+                     <h2 id="capacity-reservations-launch">Launching an Instance into an Existing Capacity Reservation</h2>
+                     	
+                     <p>You can launch an instance into a Capacity Reservation if it has matching attributes
+                        (instance type,
+                        				platform, and Availability Zone) and sufficient capacity. Launching an instance
+                        into
+                        				a Capacity Reservation reduces its available capacity by the number of instances
+                        launched. For
+                        				example, if you launch three instances, the Capacity Reservation&apos;s available capacity
+                        is reduced by
+                        				three.
+                     </p>
+                     	
+                     <p>You can launch an instance into a Capacity Reservation that you previously created
+                        using the Amazon EC2
+                        				console or the command line.
+                     </p>
+                     	
+                     <p class="title"><b>To launch an instance into an existing Capacity Reservation using the console</b></p>
+                     <ol>
+                        <li>
+                           					
+                           <p>Open the Launch Instance wizard by doing one of the following:</p>
+                           					
+                           <div class="itemizedlist">
+                              						
+                              						
+                              					
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    							
+                                    <p>Choose <b>Instances</b>, <b>Launch
+                                          									Instance</b>.
+                                    </p>
+                                    						
+                                 </li>
+                                 <li class="listitem">
+                                    							
+                                    <p>Choose <b>Capacity Reservations</b>, <b>Launch
+                                          									Instance</b>.
+                                    </p>
+                                    						
+                                 </li>
+                              </ul>
+                           </div>
+                           				
+                        </li>
+                        <li>
+                           					
+                           <p>Complete the instance details to suit your requirements.</p>
+                           				
+                        </li>
+                        <li>
+                           					
+                           <p>On the <b>Configure Instance Details</b> page, for
+                              							<b>Capacity Reservation</b>, do one of the following:
+                           </p>
+                           					
+                           <div class="itemizedlist">
+                              						
+                              						
+                              						
+                              					
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    							
+                                    <p>Choose <b>Open</b> to launch the instance into any
+                                       									<code class="code">open</code> Capacity Reservation that has matching attributes (instance
+                                       								type, platform, and Availability Zone) and sufficient
+                                       								capacity.
+                                    </p>
+                                    							
+                                    <div class="aws-note">
+                                       <p class="aws-note">Note</p>
+                                       <p>If you do not have a matching <code class="code">open</code> Capacity Reservation with
+                                          									sufficient capacity, the instance launches into On-Demand capacity.
+                                       </p>
+                                    </div>
+                                    						
+                                 </li>
+                                 <li class="listitem">
+                                    							
+                                    <p>Choose <b>None</b> to prevent the instance from 
+                                       								launching into a Capacity Reservation.
+                                    </p>
+                                    						
+                                 </li>
+                                 <li class="listitem">
+                                    							
+                                    <p>Choose the specific Capacity Reservation into which to launch the instance.</p>
+                                    							
+                                    <div class="aws-note">
+                                       <p class="aws-note">Note</p>
+                                       <p>If the selected Capacity Reservation does not have sufficient capacity, the
+                                          									instance launch fails.
+                                       </p>
+                                    </div>
+                                    						
+                                 </li>
+                              </ul>
+                           </div>
+                           				
+                        </li>
+                        <li>
+                           					
+                           <p>Choose <b>Review and Launch</b>,
+                              						<b>Launch</b>.
+                           </p>
+                           				
+                        </li>
+                        <li>
+                           					
+                           <p>When prompted, select an existing key pair or create a new one, and choose
+                              							<b>Launch Instances</b>.
+                           </p>
+                           				
+                        </li>
+                     </ol>       	
+                     	
+                     		
+                     <p class="title"><b>To launch an instance into an existing Capacity Reservation using the AWS CLI</b></p>
+                     		
+                     <p>Use the <a href="./cli/latest/reference/ec2/run-instances.html">run-instances</a> command and specify the <code class="code">--capacity-reservation-specification</code> parameter.
+                     </p>
+                     	
+                     	
+                     <p>The following example launches a <code class="code">t2.micro</code> instance into any
+                        					<code class="code">open</code> Capacity Reservation that has matching attributes and available
+                        				capacity:
+                     </p>
+                     	<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><span><code class="prompt" copy="false">$ </code></span> aws ec2 run-instances --image-id <em class="replaceable"><code>ami-abc12345</code></em> --count <em class="replaceable"><code>1</code></em> --instance-type <em class="replaceable"><code>t2.micro</code></em> --key-name <em class="replaceable"><code>MyKeyPair</code></em> --availability-zone <em class="replaceable"><code>us-east-1b</code></em> --capacity-reservation-specification CapacityReservationPreference=<em class="replaceable"><code>open</code></em></code></pre>
+                     	<p>The following example launches a t2.micro instance into a <code class="code">targeted</code>
+                        				Capacity Reservation:
+                     </p>
+                     	<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><span><code class="prompt" copy="false">$ </code></span> aws ec2 run-instances --image-id <em class="replaceable"><code>ami-abc12345</code></em> --count <em class="replaceable"><code>1</code></em> --instance-type <em class="replaceable"><code>t2.micro</code></em> --key-name <em class="replaceable"><code>MyKeyPair</code></em> --availability-zone <em class="replaceable"><code>us-east-1b</code></em> --capacity-reservation-specification CapacityReservationTarget=[{CapacityReservationId=<em class="replaceable"><code>cr-a1234567</code></em>}]</code></pre>
+                     
+                     		<h2 id="capacity-reservations-modify">Modifying a Capacity Reservation</h2> 
+                     	
+                     <p>You can change an active Capacity Reservation&apos;s attributes after you have created
+                        it. You cannot
+                        				modify a Capacity Reservation after it has expired or after you have explicitly
+                        canceled it.
+                     </p>
+                     		
+                     <p>When modifying a Capacity Reservation, you can only increase or decrease the quantity
+                        and change the way
+                        				in which it is released. You cannot change a Capacity Reservation&apos;s instance type,
+                        EBS optimization,
+                        				instance store settings, platform, Availability Zone, or instance eligibility.
+                        If
+                        				you need to modify any of these attributes, we recommend that you cancel the
+                        				reservation, and then create a new one with the required attributes.
+                     </p>
+                     	
+                     <p>You can modify a Capacity Reservation using the Amazon EC2 console and the AWS CLI.</p>
+                     	
+                     <p class="title"><b>To modify a Capacity Reservation using the console</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           					
+                           <p>Choose <b>Capacity Reservations</b>, select the Capacity Reservation to modify, and then
+                              						choose <b>Edit</b>.
+                           </p>
+                           				
+                        </li>
+                        <li>
+                           					
+                           <p>Modify the <b>Quantity</b> or <b>Reservation
+                                 							ends</b> options as needed, and choose <b>Save
+                                 							changes</b>.
+                           </p>
+                           					
+                           <div class="aws-note">
+                              <p class="aws-note">Note</p>
+                              <p>If you specify a new quantity that exceeds your remaining On-Demand Instance limit
+                                 							for the selected instance type, the update fails.
+                              </p>
+                           </div>
+                           				
+                        </li>
+                     </ol>
+                     		
+                     			
+                     <p class="title"><b>To modify a Capacity Reservation using the AWS CLI</b></p>
+                     			
+                     <p>Use the <a href="./cli/latest/reference/ec2/modify-capacity-reservations.html">modify-capacity-reservations</a> command:
+                     </p>
+                     		
+                     		<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><span><code class="prompt" copy="false">$ </code></span> aws ec2 modify-capacity-reservation --capacity-reservation-id <em class="replaceable"><code>reservation_id</code></em> --instance-count <em class="replaceable"><code>quantity</code></em> --end-date-type <em class="replaceable"><code>limited|unlimited</code></em> --end-date <em class="replaceable"><code>expiration_date</code></em></code></pre>
+                     	
+                     		<h2 id="capacity-reservations-modify-instance">Modifying an Instance&apos;s Capacity Reservation Settings</h2>
+                     		
+                     <p>You can modify an existing instance&apos;s Capacity Reservation settings at any time. You
+                        can modify a stopped instance to do the following:
+                     </p>
+                     		
+                     <div class="itemizedlist">
+                        			
+                        			
+                        			
+                        		
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p>Target a specific Capacity Reservation. The instance cannot launch outside of the
+                                 targeted Capacity Reservation.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p>Launch on any Capacity Reservation that has matching attributes (instance type, platform,
+                                 and Availability
+                                 						Zone) and available capacity.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p>Avoid launching in a Capacity Reservation. The instance is prevented from launching
+                                 in any Capacity Reservation, even if the
+                                 						reservation is open and has matching attributes (instance type, platform,
+                                 						and Availability Zone).
+                              </p>
+                           </li>
+                        </ul>
+                     </div>
+                     		
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>You can only modify an instance&apos;s Capacity Reservation settings while it is stopped.</p>
+                     </div>
+                     		
+                     <p>You can modify an instance&apos;s Capacity Reservation settings using the Amazon EC2 console
+                        and the AWS CLI.
+                     </p>
+                     		
+                     <p class="title"><b>To modify an instance&apos;s Capacity Reservation settings using the console</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           <p>Choose <b>Instances</b>, select the instance to modify, and then choose
+                              							<b>Actions</b>, <b>Modify Capacity Reservation
+                                 						Settings</b>.
+                           </p>
+                        </li>
+                        <li>
+                           				
+                           <p>For <b>Capacity Reservation</b>, do one of the following:
+                           </p>
+                           				
+                           <div class="itemizedlist">
+                              					
+                              					
+                              					
+                              				
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    						
+                                    <p>Choose <b>Open</b> to configure the instance to run in any <code class="code">open</code> Capacity Reservation that has matching attributes 
+                                       							(instance type, platform, and Availability Zone) and sufficient capacity.
+                                    </p>
+                                    						
+                                    <div class="aws-note">
+                                       <p class="aws-note">Note</p>
+                                       <p>If you do not have a matching <code class="code">open</code> Capacity Reservation with sufficient capacity, the instance launches into On-Demand
+                                          capacity.
+                                       </p>
+                                    </div>
+                                    					
+                                 </li>
+                                 <li class="listitem">
+                                    						
+                                    <p>Choose <b>None</b> to prevent the instance from launching into a Capacity Reservation.
+                                    </p>
+                                    					
+                                 </li>
+                                 <li class="listitem">
+                                    						
+                                    <p>Choose the specific Capacity Reservation in which the instance should run.</p>
+                                    						
+                                    <div class="aws-note">
+                                       <p class="aws-note">Note</p>
+                                       <p>If the instance attributes (instance type, platform, and Availability Zone) do not
+                                          match those
+                                          							of the selected Capacity Reservation, or if the selected Capacity Reservation
+                                          does not have sufficient capacity, the instance launch fails.
+                                       </p>
+                                    </div>
+                                    					
+                                 </li>
+                              </ul>
+                           </div>	 
+                           			
+                        </li>
+                     </ol>
+                     		
+                     			
+                     <p class="title"><b>To modify an instance&apos;s Capacity Reservation settings using the AWS CLI</b></p>
+                     			
+                     <p>Use the <a href="./cli/latest/reference/ec2/modify-instance-capacity-reservation-attributes.html">modify-instance-capacity-reservation-attributes</a> command:
+                     </p>
+                     		
+                     		<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><span><code class="prompt" copy="false">$ </code></span> aws ec2 modify-instance-capacity-reservation-attributes --instance-id <em class="replaceable"><code>instance_id</code></em> --capacity-reservation-specification &apos;CapacityReservationPreference=<em class="replaceable"><code>none</code></em>|<em class="replaceable"><code>open</code></em>&apos;</code></pre>
+                     	
+                     		<h2 id="capacity-reservations-view">Viewing a Capacity Reservation</h2>
+                     		
+                     <p>Capacity Reservations have three possible states:</p>
+                     		
+                     <div class="itemizedlist">
+                        			
+                        			
+                        			
+                        			
+                        			
+                        		
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p><code class="code">active</code>&#x2014;The Capacity Reservation is active and the capacity is available for your
+                                 						use.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p><code class="code">expired</code>&#x2014;The Capacity Reservation expired automatically at the date and time
+                                 						specified in your reservation request. The reserved capacity is no longer
+                                 						available for your use.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p><code class="code">cancelled</code>&#x2014;The Capacity Reservation was manually canceled. The reserved capacity is no
+                                 						longer available for your use.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p><code class="code">pending</code>&#x2014;The Capacity Reservation request was successful but the capacity 
+                                 				provisioning is still pending.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p><code class="code">failed</code>&#x2014;The Capacity Reservation request has failed. A request might fail 
+                                 				due to invalid request parameters, capacity constraints, or instance limit constraints.
+                                 
+                                 				Failed requests are retained for 60 minutes.
+                              </p>
+                           </li>
+                        </ul>
+                     </div>
+                     		
+                     <p>You can view your active Capacity Reservations using the Amazon EC2 console and the
+                        AWS CLI.
+                     </p>
+                     		
+                     <p class="title"><b>To view your Capacity Reservations using the console</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           					
+                           <p>Choose <b>Capacity Reservations</b> and select a Capacity Reservation to view.
+                           </p>
+                           				
+                        </li>
+                        <li>
+                           					
+                           <p>Choose <b>View launched instances for this
+                                 						reservation</b>.
+                           </p>
+                           				
+                        </li>
+                     </ol>
+                     		
+                     			
+                     <p class="title"><b>To view your Capacity Reservations using the AWS CLI</b></p>
+                     			
+                     <p>Use the <a href="./cli/latest/reference/ec2/describe-capacity-reservations.html">describe-capacity-reservations</a> command:
+                     </p>
+                     		
+                     		<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><span><code class="prompt" copy="false">$ </code></span> aws ec2 describe-capacity-reservations</code></pre>
+                     	
+                     <h2 id="capacity-reservations-release">Canceling a Capacity Reservation</h2> 
+                     	
+                     <p>You can cancel a Capacity Reservation at any time if you no longer need the reserved
+                        capacity.
+                        		When you cancel a Capacity Reservation, the capacity is released immediately, and
+                        it is no longer
+                        				reserved for your use.
+                     </p>
+                     			
+                     <p>You can cancel empty Capacity Reservations and Capacity Reservations that have running
+                        instances. If you cancel 
+                        				a Capacity Reservation that has running instances, the instances continue to run
+                        normally outside 
+                        				of the capacity reservation at standard On-Demand Instance rates or at a discounted
+                        rate if you 
+                        				have an active matching Regional RI.
+                     </p>
+                     	
+                     <p>After you cancel a Capacity Reservation, instances that target it can no longer launch.
+                        Modify these
+                        				instances so that they either target a different Capacity Reservation, launch
+                        into any &apos;open&apos; Capacity Reservation
+                        				with matching attributes and sufficient capacity, or avoid launching into a Capacity
+                        Reservation. 
+                        				For more information, see <a href="capacity-reservations-using.html#capacity-reservations-modify-instance">Modifying an Instance&apos;s Capacity Reservation Settings</a>.
+                     </p>
+                     	
+                     <p>You can cancel a Capacity Reservation using the Amazon EC2 console and the AWS CLI.</p>
+                     	
+                     <p class="title"><b>To cancel a Capacity Reservation using the console</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           					
+                           <p>Choose <b>Capacity Reservations</b> and select the Capacity Reservation to cancel.
+                           </p>
+                           				
+                        </li>
+                        <li>
+                           					
+                           <p>Choose <b>Cancel reservation</b>, <b>Cancel
+                                 							reservation</b>.
+                           </p>
+                           				
+                        </li>
+                     </ol>
+                     	
+                     		
+                     <p class="title"><b>To cancel a Capacity Reservation using the AWS CLI</b></p>
+                     		
+                     <p>Use the <a href="./cli/latest/reference/ec2/cancel-capacity-reservation.html">cancel-capacity-reservation</a> command:
+                     </p>        		
+                     	
+                     	<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><span><code class="prompt" copy="false">$ </code></span> aws ec2 cancel-capacity-reservation --capacity-reservation-id <em class="replaceable"><code>reservation_id</code></em></code></pre>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="capacity-reservations-pricing-biling.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="ec2-instance-lifecycle.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Creating a Capacity Reservation"><a class="pagetoc" href="#capacity-reservations-create">Creating a Capacity Reservation</a></li>
+                        <li class="pagetoc" name="Launching an Instance into an Existing Capacity Reservation"><a class="pagetoc" href="#capacity-reservations-launch">Launching an Instance into an Existing Capacity Reservation</a></li>
+                        <li class="pagetoc" name="Modifying a Capacity Reservation"><a class="pagetoc" href="#capacity-reservations-modify">Modifying a Capacity Reservation</a></li>
+                        <li class="pagetoc" name="Modifying an Instance&apos;s Capacity Reservation Settings"><a class="pagetoc" href="#capacity-reservations-modify-instance">Modifying an Instance&apos;s Capacity Reservation Settings</a></li>
+                        <li class="pagetoc" name="Viewing a Capacity Reservation"><a class="pagetoc" href="#capacity-reservations-view">Viewing a Capacity Reservation</a></li>
+                        <li class="pagetoc" name="Canceling a Capacity Reservation"><a class="pagetoc" href="#capacity-reservations-release">Canceling a Capacity Reservation</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Elastic Compute Cloud';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide for Linux Instances';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

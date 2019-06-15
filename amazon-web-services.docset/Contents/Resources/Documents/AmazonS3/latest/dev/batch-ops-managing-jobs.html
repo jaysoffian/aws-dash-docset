@@ -1,0 +1,508 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Managing Batch Operations Jobs - Amazon Simple Storage Service</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="batch-ops.html" title="Performing Batch Operations">
+      <link rel="prev" href="batch-ops-put-object-tagging.html" title="Put Object Tagging">
+      <link rel="next" href="batch-ops-examples.html" title="Amazon S3 Batch Operations Examples">
+      <meta name="description" content="Use Amazon S3 batch operations to manage batch-operation jobs.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Simple Storage Service">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/batch-ops-managing-jobs.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="batch-ops.html">Performing Batch Operations</a> &#xBB; <span class="breadcrumb">Managing Batch Operations Jobs</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="batch-ops-managing-jobs">Managing Batch Operations Jobs</h1>
+                     <p>Amazon S3 provides a robust set of tools to help you manage your batch operations
+                        jobs after you have
+                        created them. This section describes the operations you can use to manage your jobs.
+                        You can
+                        perform all of the operations listed in this section using the AWS Management Console,
+                        AWS CLI, AWS SDKs,
+                        or REST APIs.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#batch-ops-list-jobs">Listing Jobs</a></li>
+                           <li><a href="#batch-ops-job-details">Viewing Job Details</a></li>
+                           <li><a href="#batch-ops-job-priority">Assigning Job Priority</a></li>
+                           <li><a href="#batch-ops-job-status">Job Status</a></li>
+                           <li><a href="#batch-ops-job-status-failure">Tracking Job Failure</a></li>
+                           <li><a href="#batch-ops-notifications">Notifications and Logging</a></li>
+                           <li><a href="#batch-ops-completion-report">Completion Reports</a></li>
+                        </ul>
+                     </div>
+                     <div class="mediaobject">
+                        
+                        <iframe width="600" height="350" frameborder="0" allowfullscreen webkitallowfullscreen="" mozallowfullscreen="" src="//www.youtube.com/embed/CuMDH6c0zm4/"></iframe>
+                        
+                        
+                        
+                     </div>
+                     
+                     <h2 id="batch-ops-list-jobs">Listing Jobs</h2>
+                     
+                     <p>You can retrieve a list of your batch operations jobs. The list includes jobs that
+                        haven&apos;t yet finished and jobs that finished within the last 90 days. The job list
+                        includes information for each job, such as its ID, description, priority, current
+                        status, and the number of tasks that have succeeded and failed. You can filter your
+                        job
+                        list by status. When you retrieve a job list through the console, you can also search
+                        your jobs by description or ID and filter them by AWS Region.
+                     </p>
+                     
+                     
+                     
+                     <h2 id="batch-ops-job-details">Viewing Job Details</h2>
+                     
+                     <p>If you want more information about a job than you can retrieve by listing jobs, you
+                        can view all of the details for a single job. In addition to the information returned
+                        in
+                        a job list, a single job&apos;s details include other items. This information includes
+                        the
+                        operation parameters, details about the manifest, information about the completion
+                        report (if you configured one when you created the job), and the Amazon Resource Name
+                        (ARN) of the user role that you assigned to run the job. By viewing an individual
+                        job&apos;s
+                        details, you can access a job&apos;s entire configuration. 
+                     </p>
+                     
+                     
+                     
+                     <h2 id="batch-ops-job-priority">Assigning Job Priority</h2>
+                     
+                     <p>You can assign each job a numeric priority, which can be any positive integer.
+                        Amazon S3 batch operations prioritize jobs according to the assigned priority. Jobs
+                        with
+                        a higher priority (or a higher numeric value for the priority parameter) are evaluated
+                        first. Priority is determined in descending order. For example, a job queue with a
+                        priority value of 10 is given scheduling preference over a job queue with a priority
+                        value of 1. 
+                     </p>
+                     
+                     <p>You can change a job&apos;s priority while it is running. If you submit a new job with
+                        a
+                        higher priority while a job is running, the lower-priority job can pause to allow
+                        the
+                        higher-priority job to run.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>Amazon S3 batch operations honor job priorities on a best-effort basis. Although
+                           jobs with higher priorities generally take precedence over jobs with lower
+                           priorities, Amazon S3 does not guarantee strict ordering of jobs.
+                        </p>
+                     </div>
+                     
+                     
+                     
+                     <h2 id="batch-ops-job-status">Job Status</h2>
+                     
+                     <p>After you create a job, it progresses through a series of statuses. The following
+                        table
+                        describes the statuses that jobs can have and the possible transitions between job
+                        statuses.
+                     </p>
+                     
+                     <div class="table">
+                        <p class="title"><b></b></p>
+                        <div class="table-contents">
+                           <table id="w203aac32c23c15b5">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Status</th>
+                                 
+                                 <th>Description</th>
+                                 
+                                 <th>Transitions</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">New</code></td>
+                                 
+                                 <td>A job begins in the <code class="code">New</code> state when you create
+                                    it.
+                                 </td>
+                                 
+                                 <td>A job automatically moves to the <code class="code">Preparing</code> state when
+                                    Amazon S3 begins processing the manifest object.
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Preparing</code></td>
+                                 
+                                 <td>Amazon S3 is processing the manifest object and other job parameters to set up
+                                    and run the job.
+                                 </td>
+                                 
+                                 <td>A job automatically moves to the <code class="code">Ready</code> state after Amazon S3
+                                    finishes processing the manifest and other parameters. It is then ready to
+                                    begin running the specified operation on the objects listed in the
+                                    manifest.
+                                    <p>If the job requires confirmation before running, such as
+                                       when you create a job using the Amazon S3 console, then the job transitions
+                                       from <code class="code">Preparing</code> to <code class="code">Suspended</code>. It remains in the
+                                       <code class="code">Suspended</code> state until you confirm that you want to run
+                                       it.
+                                    </p>
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Suspended</code></td>
+                                 
+                                 <td>The job requires confirmation, but you have not yet confirmed that you
+                                    want to run it. Only jobs that you create using the Amazon S3 console require
+                                    confirmation. A job that is created using the console enters the
+                                    <code class="code">Suspended</code> state immediately after <code class="code">Preparing</code>.
+                                    After you confirm that you want to run the job and the job becomes
+                                    <code class="code">Ready</code>, it never returns to the <code class="code">Suspended</code>
+                                    state.
+                                 </td>
+                                 
+                                 <td>After you confirm that you want to run the job, its status changes to
+                                    <code class="code">Ready</code>.
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Ready</code></td>
+                                 
+                                 <td>Amazon S3 is ready to begin running the requested object
+                                    operations.
+                                 </td>
+                                 
+                                 <td>A job automatically moves to <code class="code">Active</code> when Amazon S3 begins
+                                    to run it. The amount of time that a job remains in the
+                                    <code class="code">Ready</code> state depends on whether you have
+                                    higher-priority jobs running already and how long those jobs take to
+                                    complete.
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Active</code></td>
+                                 
+                                 <td>Amazon S3 is executing the requested operation on the objects listed in the
+                                    manifest. While a job is <code class="code">Active</code>, you can monitor its progress
+                                    using the Amazon S3 console or the <code class="code">DescribeJob</code> operation through the
+                                    REST API, AWS CLI, or AWS SDKs.
+                                 </td>
+                                 
+                                 <td>A job moves out of the <code class="code">Active</code> state when it is no longer
+                                    running operations on objects. This can happen automatically, such as when a
+                                    job completes successfully or fails. Or it can occur as a result of user
+                                    actions, such as canceling a job. The state that the job moves to depends on
+                                    the reason for the transition.
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Pausing</code></td>
+                                 
+                                 <td>The job is transitioning to <code class="code">Paused</code> from another
+                                    state.
+                                 </td>
+                                 
+                                 <td>A job automatically moves to <code class="code">Paused</code> when the
+                                    <code class="code">Pausing</code> stage is finished.
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Paused</code></td>
+                                 
+                                 <td>A job can become <code class="code">Paused</code> if you submit another job
+                                    with a higher priority while the current job is running.
+                                 </td>
+                                 
+                                 <td>A <code class="code">Paused</code> job automatically returns to
+                                    <code class="code">Active</code> after any higher-priority jobs that are
+                                    blocking the job&apos;s&apos; execution complete, fail, or are
+                                    suspended.
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Complete</code></td>
+                                 
+                                 <td>The job has finished executing the requested operation on all objects in
+                                    the manifest. The operation might have succeeded or failed for each object.
+                                    If you configured the job to generate a completion report, the report is
+                                    available as soon as the job is <code class="code">Complete</code>.
+                                 </td>
+                                 
+                                 <td><code class="code">Complete</code> is a terminal state. Once a job reaches
+                                    <code class="code">Complete</code>, it does not transition to any other
+                                    state.
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Cancelling</code></td>
+                                 
+                                 <td>The job is transitioning to the <code class="code">Cancelled</code>
+                                    state.
+                                 </td>
+                                 
+                                 <td>A job automatically moves to <code class="code">Cancelled</code> when the
+                                    <code class="code">Cancelling</code> stage is finished.
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Cancelled</code></td>
+                                 
+                                 <td>You requested that the job be cancelled, and Amazon S3 batch operations has
+                                    successfully cancelled the job. The job will not submit any new
+                                    requests to Amazon S3.
+                                 </td>
+                                 
+                                 <td><code class="code">Cancelled</code> is a terminal state. After a job reaches
+                                    <code class="code">Cancelled</code>, it will not transition to any other
+                                    state.
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Failing</code></td>
+                                 
+                                 <td>The job is transitioning to the <code class="code">Failed</code>
+                                    state.
+                                 </td>
+                                 
+                                 <td>A job automatically moves to <code class="code">Failed</code> once the
+                                    <code class="code">Failing</code> stage is finished.
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Failed</code></td>
+                                 
+                                 <td>The job has failed and is no longer running. For more information
+                                    about job failures, see <a href="batch-ops-managing-jobs.html#batch-ops-job-status-failure">Tracking Job Failure</a>.
+                                 </td>
+                                 
+                                 <td><code class="code">Failed</code> is a terminal state. After a job reaches
+                                    <code class="code">Failed</code>, it will not transition to any other state.
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <h2 id="batch-ops-job-status-failure">Tracking Job Failure</h2>
+                     
+                     <p>If a batch operations job encounters a problem that prevents it from running
+                        successfully, such as not being able to read the specified manifest, the job fails.
+                        When
+                        a job fails, it generates one or more failure codes or failure reasons. Amazon S3
+                        batch operations
+                        store the failure codes and reasons with the job so that you can view them by requesting
+                        the job&apos;s details. If you requested a completion report for the job, the failure codes
+                        and reasons also appear there.
+                     </p>
+                     
+                     <p>To prevent jobs from running a large number of unsuccessful operations, Amazon S3
+                        imposes a
+                        task-failure threshold on every batch operations job. When a job has executed at least
+                        1,000
+                        tasks, Amazon S3 monitors the task failure rate. If, at any point, the failure rate
+                        (the
+                        number of tasks that have failed as a proportion of the total number of tasks that
+                        have
+                        executed) exceeds 50 percent, then the job fails. If your job fails because it exceeded
+                        the task-failure threshold, you can identify the cause of the failures. For example,
+                        you
+                        might have accidentally included some objects in the manifest that don&apos;t exist in
+                        the
+                        specified bucket. After fixing the errors, you can resubmit the job.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>Amazon S3 batch operations operate asynchronously and the tasks don&apos;t necessarily
+                           execute in
+                           the order that the objects are listed in the manifest. Therefore, you can&apos;t use the
+                           manifest ordering to determine which objects&apos; tasks succeeded and which ones failed.
+                           Instead, you can examine the job&apos;s completion report (if you requested one) or view
+                           your AWS CloudTrail event logs to help determine the source of the failures.
+                        </p>
+                     </div>
+                     
+                     
+                     <h2 id="batch-ops-notifications">Notifications and Logging</h2>
+                     
+                     <p>In addition to requesting completion reports, you can also capture, review, and audit
+                        batch operations activity using Amazon S3 events. As a job progresses, it emits events
+                        that you can
+                        capture using AWS CloudTrail, Amazon Simple Notification Service (Amazon SNS), and
+                        Amazon Simple Queue Service (Amazon SQS). Because batch
+                        operations use existing Amazon S3 APIs to perform tasks, those tasks also emit the
+                        same
+                        events that they would if you called them directly. Thus, you can track and record
+                        the
+                        progress of your job and all of its tasks using the same notification, logging, and
+                        auditing tools and processes that you already use with Amazon S3. For more information
+                        about
+                        Amazon S3 events, see <a href="NotificationHowTo.html"> Configuring Amazon S3 Event Notifications</a>.
+                        
+                     </p>
+                     
+                     
+                     <h2 id="batch-ops-completion-report">Completion Reports</h2>
+                     
+                     <p>When you create a job, you can request a completion report. Then as long as
+                        Amazon S3 batch operations successfully invoke at least one task, Amazon S3 generates
+                        a
+                        completion report after it finishes running tasks, fails, or is canceled. You can
+                        configure the completion report to include all tasks or only failed tasks. 
+                     </p>
+                     
+                     <p>The completion report includes the job configuration and status and information for
+                        each task, including the object key and version, status, error codes, and descriptions
+                        of any errors. If you don&apos;t configure a completion report, you can still monitor and
+                        audit your job and its tasks using CloudTrail, Amazon CloudWatch, Amazon SNS, and
+                        Amazon SQS. However, completion
+                        reports provide an easy way to view the results of your tasks in a consolidated format
+                        with no additional setup required. For an example of a completion report, see
+                        <a href="batch-ops-examples-reports.html">Amazon S3 Batch Operations Completion Report
+                           Examples</a>.
+                        
+                     </p>
+                     
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="batch-ops-put-object-tagging.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="batch-ops-examples.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Listing Jobs"><a class="pagetoc" href="#batch-ops-list-jobs">Listing Jobs</a></li>
+                        <li class="pagetoc" name="Viewing Job Details"><a class="pagetoc" href="#batch-ops-job-details">Viewing Job Details</a></li>
+                        <li class="pagetoc" name="Assigning Job Priority"><a class="pagetoc" href="#batch-ops-job-priority">Assigning Job Priority</a></li>
+                        <li class="pagetoc" name="Job Status"><a class="pagetoc" href="#batch-ops-job-status">Job Status</a></li>
+                        <li class="pagetoc" name="Tracking Job Failure"><a class="pagetoc" href="#batch-ops-job-status-failure">Tracking Job Failure</a></li>
+                        <li class="pagetoc" name="Notifications and Logging"><a class="pagetoc" href="#batch-ops-notifications">Notifications and Logging</a></li>
+                        <li class="pagetoc" name="Completion Reports"><a class="pagetoc" href="#batch-ops-completion-report">Completion Reports</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Simple Storage Service';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

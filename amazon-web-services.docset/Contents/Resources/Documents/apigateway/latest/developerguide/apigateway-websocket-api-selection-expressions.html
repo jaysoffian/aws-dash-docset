@@ -1,0 +1,664 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>WebSocket Selection
+         Expressions in API Gateway - Amazon API Gateway
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="apigateway-websocket-api.html" title="Creating, Deploying, and Invoking a WebSocket API
+            in Amazon API Gateway">
+      <link rel="prev" href="apigateway-websocket-api-logging.html" title="">
+      <link rel="next" href="apigateway-websocket-api-mapping-template-reference.html" title="API Gateway WebSocket API
+            Mapping Template Reference">
+      <meta name="description" content="API Gateway uses selection expressions as a way to evaluate request and response context and produce a key. The key is then used to select from a set of possible values, typically provided by you, the API developer. The exact set of supported variables will vary depending on the particular expression. Each expression is discussed in more detail below.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon API Gateway">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-selection-expressions.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-websocket-api.html">Creating, Deploying, and Invoking a WebSocket API
+                                    in Amazon API Gateway</a> &#xBB; <span class="breadcrumb">WebSocket Selection
+                                    Expressions in API Gateway</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="apigateway-websocket-api-selection-expressions">WebSocket Selection
+                        Expressions in API Gateway
+                     </h1>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#apigateway-websocket-api-route-selection-expressions">Route Selection
+                                 Expressions</a></li>
+                           <li><a href="#apigateway-websocket-api-model-selection-expressions">Model Selection
+                                 Expressions</a></li>
+                           <li><a href="#apigateway-websocket-api-template-selection-expressions">Template
+                                 Selection Expressions</a></li>
+                           <li><a href="#apigateway-websocket-api-route-response-selection-expressions">Route
+                                 Response Selection Expressions</a></li>
+                           <li><a href="#apigateway-websocket-api-apikey-selection-expressions">API Key
+                                 Selection Expressions</a></li>
+                           <li><a href="#apigateway-websocket-api-mapping-selection-expressions">API Mapping
+                                 Selection Expressions</a></li>
+                           <li><a href="#apigateway-websocket-api-integration-response-selection-expressions">Integration Response Selection Expressions</a></li>
+                           <li><a href="#apigateway-websocket-api-selection-expression-table">WebSocket
+                                 Selection Expression Summary</a></li>
+                        </ul>
+                     </div>
+                     <p>API Gateway uses selection expressions as a way to evaluate request and response context
+                        and
+                        produce a key. The key is then used to select from a set of possible values, typically
+                        provided by you, the API developer. The exact set of supported variables will vary
+                        depending
+                        on the particular expression. Each expression is discussed in more detail below.
+                     </p>
+                     <p>For all of the expressions, the language follows the same set of rules:</p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>A variable is prefixed with <code class="code">&quot;$&quot;</code>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Curly braces can be used to explicitly define variable boundaries, e.g.,
+                                 <code class="code">&quot;${request.body.version}-beta&quot;</code>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Multiple variables are supported, but evaluation occurs only once (no recursive
+                                 evaluation).
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>A dollar sign (<code class="code">$</code>) can be escaped with <code class="code">&quot;\&quot;</code>. This is most
+                                 useful when defining an expression that maps to the reserved <code class="code">$default</code>
+                                 key, e.g., <code class="code">&quot;\$default&quot;</code>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>In some cases, a pattern format is required. In this case, the expression should
+                                 be wrapped with forward slashes (<code class="code">&quot;/&quot;</code>), e.g. <code class="code">&quot;/2\d\d/&quot;</code> to
+                                 match <code class="code">2<em><em class="replaceable"><code>XX</code></em></em></code> status
+                                 codes.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="apigateway-websocket-api-route-selection-expressions">Route Selection
+                        Expressions
+                     </h2>
+                     
+                     <p>A <em>route selection expression</em> is evaluated when the service is
+                        selecting the route to follow for an incoming message. The service will use the route
+                        whose <code class="code">routeKey</code> exactly matches the evaluated value. If none match, and a
+                        route with the <code class="code">$default</code> route key exists, that will be selected. If no
+                        routes match the evaluated value and there is no <code class="code">$default</code> route, the
+                        service will return an error. For WebSocket-based APIs, the expression should be of
+                        the
+                        form
+                        <code class="code">$request.body.<em class="replaceable"><code>{path_to_body_element}</code></em></code>.
+                     </p>
+                     
+                     <p>For example, suppose you are sending the following JSON message:</p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;service&quot; : &quot;chat&quot;,
+    &quot;action&quot; : &quot;join&quot;,
+    &quot;data&quot; : {
+        &quot;room&quot; : &quot;room1234&quot;
+   }
+}</code></pre>
+                     <p>You might want to select your API&apos;s behavior based on the <code class="code">action</code>
+                        property. In that case, you might define the following route selection
+                        expression:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$request.body.action</code></pre>
+                     <p>In this example, <code class="code">request.body</code> refers to your message&apos;s JSON payload, and
+                        <code class="code">.action</code> is a <a href="https://goessner.net/articles/JsonPath/" target="_blank">JSONPath</a> expression. You can use any JSON path expression after
+                        <code class="code">request.body</code>, but keep in mind that the result will be stringified. For
+                        example, if your JSONPath expression returns an array of two elements, that will be
+                        presented as the string <code class="code">&quot;[item1, item2]&quot;</code>. For this reason, it is good
+                        practice to have your expression evaluate to a value and not an array or an
+                        object.
+                     </p>
+                     
+                     <p>You can simply use a static value, or you can use multiple variables. The following
+                        table shows examples and their evaluated results against the above payload.
+                     </p>
+                     
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w468aac15c25c11c17">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Expression</th>
+                                 
+                                 <th>Evaluated Result</th>
+                                 
+                                 <th>Description</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">$request.body.action</code></td>
+                                 
+                                 <td><code class="code">join</code></td>
+                                 
+                                 <td>An unwrapped variable</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">${request.body.action}</code></td>
+                                 
+                                 <td><code class="code">join</code></td>
+                                 
+                                 <td>A wrapped variable</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">${request.body.service}/${request.body.action}</code></td>
+                                 
+                                 <td><code class="code">chat</code>/<code class="code">join</code></td>
+                                 
+                                 <td>Multiple variables with static values</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">${request.body.action}-${request.body.invalidPath}
+                                       </code></td>
+                                 
+                                 <td><code class="code">join</code></td>
+                                 
+                                 <td>If the JSONPath is not found, the variable will be resolved as
+                                    &quot;&quot;.
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">action</code></td>
+                                 
+                                 <td><code class="code">action</code></td>
+                                 
+                                 <td>Static value</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">\$default</code></td>
+                                 
+                                 <td><code class="code">$default</code></td>
+                                 
+                                 <td>Static value</td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     <p>The evaluated result will be used to find a route. If there is a route with a matching
+                        route key, the route will be selected to process the message. If no matching route
+                        is
+                        found, then API Gateway will try to find the <code class="code">$default</code> route if available. If the
+                        <code class="code">$default</code> route is not defined, then API Gateway will return an error.
+                     </p>
+                     
+                     
+                     <h2 id="apigateway-websocket-api-model-selection-expressions">Model Selection
+                        Expressions
+                     </h2>
+                     
+                     <p>When you define a <a href="apigateway-websocket-api-route-route-request.html">route</a> for a WebSocket API, you can optionally specify a <em>model
+                           selection expression</em>. This expression is evaluated to select the model to
+                        be used for body validation when a request is received. The expression evaluates to
+                        one
+                        of the entries in a route&apos;s <a href="./apigatewayv2/latest/api-reference/apis-apiid-routes.html#apis-apiid-routes-prop-route-requestmodels"><code class="code">requestmodels</code></a>.
+                     </p>
+                     
+                     <p>A model is expressed as a <a href="https://tools.ietf.org/html/draft-zyp-json-schema-04" target="_blank">JSON schema</a> and
+                        describes the data structure of the request body. The nature of this selection
+                        expressions allows you to dynamically choose the model to validate against at runtime
+                        for a particular route. For information about how to create a model, see <a href="models-mappings.html">Create Models and Mapping Templates for Request and
+                           Response Mappings</a>. 
+                     </p>
+                     
+                     
+                     <h2 id="apigateway-websocket-api-template-selection-expressions">Template
+                        Selection Expressions
+                     </h2>
+                     
+                     <p>When you define an <a href="apigateway-websocket-api-integration-requests.html">integration request</a> or <a href="apigateway-websocket-api-integration-responses.html">integration response</a>
+                        for a WebSocket API, you can optionally specify a template selection expression. This
+                        expression is evaluated to determine the input or output template (if any) to use
+                        to
+                        transform either the request body into the integration request body (via an input
+                        template) or the integration response body to the route response body (via an output
+                        template).
+                     </p>
+                     
+                     <p><code class="code">Integration.TemplateSelectionExpression</code> supports <code class="code">${request.body.jsonPath}</code> and static values.
+                     </p>
+                     
+                     <p><code class="code">IntegrationResponse.TemplateSelectionExpression</code> supports <code class="code">${request.body.jsonPath}</code>, <code class="code">${integration.response.statuscode}</code>, <code class="code">${integration.response.header.headerName}</code>, <code class="code">${integration.response.multivalueheader.headerName}</code>, and static values.
+                     </p>
+                     
+                     
+                     <h2 id="apigateway-websocket-api-route-response-selection-expressions">Route
+                        Response Selection Expressions
+                     </h2>
+                     
+                     <p>A <a href="apigateway-websocket-api-route-response.html">route response</a> is
+                        used for modeling a response from the backend to the client. For WebSocket APIs, a
+                        route
+                        response is optional. When defined, it signals to API Gateway that it should return
+                        a response
+                        to a client upon receiving a WebSocket message.
+                     </p>
+                     
+                     <p>Evaluation of the <em>route response selection expression</em> produces a
+                        route response key. Eventually, this key will be used to choose from one of the <a href="./apigatewayv2/latest/api-reference/apis-apiid-routes-routeid-routeresponses.html"><code class="code">RouteResponses</code></a> associated with the API. However, currently
+                        only the <code class="code">$default</code> key is supported.
+                     </p>
+                     
+                     
+                     <h2 id="apigateway-websocket-api-apikey-selection-expressions">API Key
+                        Selection Expressions
+                     </h2>
+                     
+                     <p>This expression is evaluated when the service determines the given request should
+                        proceed only if the client provides a valid <a href="api-gateway-basic-concept.html#apigateway-definition-api-key">API key</a>.
+                     </p>
+                     
+                     <p>Currently the only two supported values are <code class="code">$request.header.x-api-key</code> and
+                        <code class="code">$context.authorizer.usageIdentifierKey</code>.
+                     </p>
+                     
+                     
+                     <h2 id="apigateway-websocket-api-mapping-selection-expressions">API Mapping
+                        Selection Expressions
+                     </h2>
+                     
+                     <p>This expression is evaluated to determine which API stage is selected when a request
+                        is made using a custom domain.
+                     </p>
+                     
+                     <p>Currently, the only supported value is <code class="code">$request.basepath</code>.
+                     </p>
+                     
+                     
+                     <h2 id="apigateway-websocket-api-integration-response-selection-expressions">Integration Response Selection Expressions</h2>
+                     
+                     <p>When you <a href="apigateway-websocket-api-integration-responses.html">set up an
+                           integration response</a> for a WebSocket API, you can optionally specify an
+                        integration response selection expression. This expression determines what <code class="code"><a href="./apigatewayv2/latest/api-reference/apis-apiid-integrations-integrationid-integrationresponses-integrationresponseid.html"><code class="code">IntegrationResponse</code></a></code> should be selected when an
+                        integration returns. The value of this expression is currently restricted by API
+                        Gateway, as defined below. Realize that this expression is only relevant for
+                        <em>non-proxy integrations</em>; a proxy integration simply passes the
+                        response payload back to the caller without modeling or modification.
+                     </p>
+                     
+                     
+                     <p>Unlike the other selection expressions outlined above, this expression currently
+                        supports a <em>pattern-matching</em> format. The expression should be
+                        wrapped with forward slashes.
+                     </p>
+                     
+                     
+                     
+                     <p>Currently the value is fixed depending on the <code class="code"><a href="./apigatewayv2/latest/api-reference/apis-apiid-integrations-integrationid.html#apis-apiid-integrations-integrationid-prop-integration-integrationtype"><code class="code">integrationType</code></a></code>:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>For Lambda-based integrations, it is
+                                 <code class="code">$integration.response.body.errorMessage</code>.
+                              </p>
+                              
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>For <code class="code">HTTP</code> and <code class="code">MOCK</code> integrations, it is
+                                 <code class="code">$integration.response.statuscode</code>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>For <code class="code">HTTP_PROXY</code> and <code class="code">AWS_PROXY</code>, the expression is not
+                                 utilized, because you are requesting that the payload pass through to the
+                                 caller.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <h2 id="apigateway-websocket-api-selection-expression-table">WebSocket
+                        Selection Expression Summary
+                     </h2>
+                     
+                     <p>The following table summarizes the use cases for selection expressions in WebSocket
+                        APIs:
+                     </p>
+                     
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w468aac15c25c25b5">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Selection Expression</th>
+                                 
+                                 <th>Evaluates to Key For</th>
+                                 
+                                 <th>Notes</th>
+                                 
+                                 <th>Example Use Case</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Api.RouteSelectionExpression</code></td>
+                                 
+                                 <td><code class="code">Route.RouteKey</code></td>
+                                 
+                                 <td><code class="code">$default</code> is supported as a catch-all route.
+                                 </td>
+                                 
+                                 <td>Route WebSocket messages based on the context of a client
+                                    request.
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Route.ModelSelectionExpression</code></td>
+                                 
+                                 <td>Key for <code class="code">Route.RequestModels</code></td>
+                                 
+                                 <td>
+                                    <p>Optional.</p>
+                                    
+                                    <p>If provided for non-proxy integration, model validation
+                                       occurs.
+                                    </p>
+                                    
+                                    <p><code class="code">$default</code> is supported as a catch-all.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>Perform request validation dynamically within the same route.</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Integration.TemplateSelectionExpression</code></td>
+                                 
+                                 <td>Key for <code class="code">Integration.RequestTemplates</code></td>
+                                 
+                                 <td>
+                                    
+                                    <p>Optional.</p>
+                                    
+                                    <p>May be provided for non-proxy integration to manipulate incoming
+                                       payloads.
+                                    </p>
+                                    
+                                    <p><code class="code">${request.body.jsonPath}</code> and static values are supported.
+                                    </p>
+                                    
+                                    <p><code class="code">$default</code> is supported as a catch-all.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>Manipulate the caller&apos;s request based on dynamic properties of the
+                                    request.
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Integration.IntegrationResponseSelectionExpression</code></td>
+                                 
+                                 <td><code class="code">IntegrationResponse.IntegrationResponseKey</code></td>
+                                 
+                                 <td>
+                                    
+                                    <p>Optional. May be provided for non-proxy integration.</p>
+                                    
+                                    <p>Acts as a pattern match for error messages (from Lambda) or status
+                                       codes (from HTTP integrations).
+                                    </p>
+                                    
+                                    <p><code class="code">$default</code> is required for non-proxy integrations to
+                                       act as the catch-all for successful responses.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Manipulate the response from the backend.</p>
+                                    
+                                    <p>Choose the action to occur based on the dynamic response of the
+                                       backend (e.g., handling certain errors distinctly).
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">IntegrationResponse.TemplateSelectionExpression</code></td>
+                                 
+                                 <td>Key for <code class="code">IntegrationResponse.ResponseTemplates</code></td>
+                                 
+                                 <td>Optional. May be provided for non-proxy integration. 
+                                    <p>$default
+                                       is supported.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>In some cases, a dynamic property of the response may dictate
+                                       different transformations within the same route and associated
+                                       integration.
+                                    </p>
+                                    
+                                    <p><code class="code">${request.body.jsonPath}</code>, <code class="code">${integration.response.statuscode}</code>, <code class="code">${integration.response.header.headerName}</code>, <code class="code">${integration.response.multivalueheader.headerName}</code>, and static values are supported.
+                                    </p>
+                                    
+                                    <p><code class="code">$default</code> is supported as a catch-all.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">Route.RouteResponseSelectionExpression</code></td>
+                                 
+                                 <td><code class="code">RouteResponse.RouteResponseKey</code></td>
+                                 
+                                 <td>
+                                    
+                                    <p>Should be provided to initiate two-way communication for a WebSocket route.</p>
+                                    
+                                    <p>Currently, this value is restricted to <code class="code">$default</code> only.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td></td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">RouteResponse.ModelSelectionExpression</code></td>
+                                 
+                                 <td>Key for <code class="code">RouteResponse.RequestModels</code></td>
+                                 
+                                 <td>Currently unsupported.</td>
+                                 
+                                 <td></td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="apigateway-websocket-api-logging.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="apigateway-websocket-api-mapping-template-reference.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Route Selection
+                Expressions"><a class="pagetoc" href="#apigateway-websocket-api-route-selection-expressions"></a></li>
+                        <li class="pagetoc" name="Model Selection
+                Expressions"><a class="pagetoc" href="#apigateway-websocket-api-model-selection-expressions"></a></li>
+                        <li class="pagetoc" name="Template
+                Selection Expressions"><a class="pagetoc" href="#apigateway-websocket-api-template-selection-expressions"></a></li>
+                        <li class="pagetoc" name="Route
+                Response Selection Expressions"><a class="pagetoc" href="#apigateway-websocket-api-route-response-selection-expressions"></a></li>
+                        <li class="pagetoc" name="API Key
+                Selection Expressions"><a class="pagetoc" href="#apigateway-websocket-api-apikey-selection-expressions"></a></li>
+                        <li class="pagetoc" name="API Mapping
+                Selection Expressions"><a class="pagetoc" href="#apigateway-websocket-api-mapping-selection-expressions"></a></li>
+                        <li class="pagetoc" name="Integration Response Selection Expressions"><a class="pagetoc" href="#apigateway-websocket-api-integration-response-selection-expressions"></a></li>
+                        <li class="pagetoc" name="WebSocket
+                Selection Expression Summary"><a class="pagetoc" href="#apigateway-websocket-api-selection-expression-table"></a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon API Gateway';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

@@ -1,17 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Logging (Node.js) - AWS Lambda</title>
+      <title>AWS Lambda Function Logging in Node.js - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="programming-model.html" title="Programming Model(Node.js)">
-      <link rel="prev" href="nodejs-prog-model-context.html" title="The Context Object
-                (Node.js)">
-      <link rel="next" href="nodejs-prog-mode-exceptions.html" title="Function Errors (Node.js)">
-      <meta name="description" content="Your Lambda function can contain logging statements. AWS Lambda writes these logs to CloudWatch. If you use the Lambda console to invoke your Lambda function, the console displays the same logs.">
+      <link rel="up" href="programming-model.html" title="Building Lambda Functions with Node.js">
+      <link rel="prev" href="nodejs-prog-model-context.html" title="AWS Lambda Context Object in Node.js">
+      <link rel="next" href="nodejs-prog-mode-exceptions.html" title="AWS Lambda Function Errors in Node.js">
+      <meta name="description" content="To output logs from your function code, you can use methods on the console object , or any logging library that writes to stdout or stderr . The following example logs the values of environment variables and the event object.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-logging.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,184 +35,201 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-introduction-function.html">Lambda Functions</a> &#xBB; <a href="lambda-app.html">Building Lambda Functions</a> &#xBB; <a href="programming-model-v2.html">Programming Model</a> &#xBB; <a href="programming-model.html">Programming Model(Node.js)</a> &#xBB; <span class="breadcrumb">Logging (Node.js)</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="programming-model.html">Building Lambda Functions with Node.js</a> &#xBB; <span class="breadcrumb">AWS Lambda Function Logging in Node.js</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="nodejs-prog-model-logging">Logging (Node.js)</h1>
-                     <p> Your Lambda function can contain logging statements. AWS Lambda writes these logs
-                        to CloudWatch. If you use the Lambda console to invoke your Lambda function, the console
-                        displays the same logs.
+                     <h1 class="topictitle" id="nodejs-prog-model-logging">AWS Lambda Function Logging in Node.js</h1>
+                     <p>Your Lambda function comes with a CloudWatch Logs log group, with a log stream for
+                        each
+                        instance of your function. The runtime sends details about each invocation to the
+                        log stream, and relays logs and
+                        other output from your function&apos;s code.
                      </p>
-                     <p> The following Node.js statements generate log entries: </p>
-                     <div class="itemizedlist">
-                        
-                        
-                        
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              
-                              <p><code class="code">console.log()</code></p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p><code class="code">console.error()</code></p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p><code class="code">console.warn()</code></p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p><code class="code">console.info()</code></p>
-                              
-                           </li>
-                        </ul>
-                     </div>
-                     <p> For example, consider the following Node.js code examples: </p>
-                     <div class="itemizedlist">
-                                
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              
-                              <p>The first sample can be written using either runtime version 6.10 or 4.3.
-                                 
-                              </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">console.log(&apos;Loading function&apos;);
-
-exports.handler = function(event, context, callback) {
-    //console.log(&apos;Received event:&apos;, JSON.stringify(event, null, 2));
-    console.log(&apos;value1 =&apos;, event.key1);
-    console.log(&apos;value2 =&apos;, event.key2);
-    console.log(&apos;value3 =&apos;, event.key3);
-    callback(null, event.key1); // Echo back the first key value
-    
-};</code></pre></li>
-                           <li class="listitem">      
-                              
-                              <p>The second sample uses the Node.js <code class="code">async</code> feature, available only in runtime versions 8.10 or later.
-                              </p>
-                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">console.log(&apos;Loading function&apos;);
-
-exports.handler = async function(event) {
-    //console.log(&apos;Received event:&apos;, JSON.stringify(event, null, 2));
-    console.log(&apos;value1 =&apos;, event.key1);
-    console.log(&apos;value2 =&apos;, event.key2);
-    console.log(&apos;value3 =&apos;, event.key3);
-    return event.key1 // Echo back the first key value   
-};
-
-    
-</code></pre>
-                              </li>
-                        </ul>
-                     </div>
-                     <p>In either case, the following screenshot shows an example&#xA0;<b>Log output</b> section in the Lambda console. You can examine the same information in CloudWatch
-                        Logs. For more information,
-                        see&#xA0;<a href="monitoring-functions-logs.html">Accessing Amazon CloudWatch Logs for AWS Lambda</a>. 
+                     <p>To output logs from your function code, you can use methods on <a href="https://developer.mozilla.org/en-US/docs/Web/API/Console" target="_blank">the console object</a>, or any logging library
+                        that writes to <code class="code">stdout</code> or <code class="code">stderr</code>. The following example logs the values of environment
+                        variables and the event object.
                      </p>
-                     <div class="mediaobject">
-                        
-                        <img src="../../..//img/logging-nodejs-console-output.png">
-                        
-                        
+                     <div class="example">
+                        <p class="title"><b>Example index.js &#x2013; logging</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="javascript ">exports.handler = async function(event, context) {
+  console.log(&quot;ENVIRONMENT VARIABLES\n&quot; + JSON.stringify(process.env, null, 2))
+  console.log(&quot;EVENT\n&quot; + JSON.stringify(event, null, 2))
+  return context.logStreamName
+};</code></pre></div>
                      </div>
-                     <p> The console uses the&#xA0; <code class="code">RequestResponse</code> &#xA0;invocation type (synchronous
-                        invocation) when invoking the function, therefore it gets the return value
-                        (<code class="code">value1</code>) back from AWS Lambda which the console displays. 
+                     <div class="example">
+                        <p class="title"><b>Example Log Format</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">START RequestId: c793869b-ee49-115b-a5b6-4fd21e8dedac Version: $LATEST
+2019-06-07T19:11:20.562Z	c793869b-ee49-115b-a5b6-4fd21e8dedac	INFO	ENVIRONMENT VARIABLES
+{
+  &quot;AWS_LAMBDA_FUNCTION_VERSION&quot;: &quot;$LATEST&quot;,
+  &quot;AWS_LAMBDA_LOG_GROUP_NAME&quot;: &quot;/aws/lambda/my-function&quot;,
+  &quot;AWS_LAMBDA_LOG_STREAM_NAME&quot;: &quot;2019/06/07/[$LATEST]e6f4a0c4241adcd70c262d34c0bbc85c&quot;,
+  &quot;AWS_EXECUTION_ENV&quot;: &quot;AWS_Lambda_nodejs10.x&quot;,
+  &quot;AWS_LAMBDA_FUNCTION_NAME&quot;: &quot;my-function&quot;,
+  &quot;PATH&quot;: &quot;/var/lang/bin:/usr/local/bin:/usr/bin/:/bin:/opt/bin&quot;,
+  &quot;NODE_PATH&quot;: &quot;/opt/nodejs/node10/node_modules:/opt/nodejs/node_modules:/var/runtime/node_modules&quot;,
+  ...
+}
+2019-06-07T19:11:20.563Z	c793869b-ee49-115b-a5b6-4fd21e8dedac	INFO	EVENT
+{
+  &quot;key&quot;: &quot;value&quot;
+}
+END RequestId: c793869b-ee49-115b-a5b6-4fd21e8dedac
+REPORT RequestId: c793869b-ee49-115b-a5b6-4fd21e8dedac	Duration: 170.19 ms	Billed Duration: 200 ms 	Memory Size: 128 MB	Max Memory Used: 73 MB</code></pre></div>
+                     </div>
+                     <p>The Node.js runtime logs the <code class="code">START</code>, <code class="code">END</code>, and <code class="code">REPORT</code> lines for each
+                        invocation, and adds a timestamp, request ID, and log level to each entry logged by
+                        the function.
                      </p>
-                     <p class="title"><b>To test the preceding Node.js code in AWS Lambda console</b></p>
+                     <p>You can view logs in the Lambda console, in the CloudWatch Logs console, or from the
+                        command line.
+                     </p>
+                     
+                     <h2 id="nodejs-logging-console">Viewing Logs in the AWS Management Console</h2>
+                      
+                     <p>The Lambda console shows log output when you test a function on the function
+                        configuration page. To view logs for all invocations, use the CloudWatch Logs console.
+                     </p>
+                     
+                     <p class="title"><b>To view your Lambda function&apos;s logs</b></p>
                      <ol>
                         <li>
                            
-                           <p>In the console, create a Lambda function using the hello-world blueprint.
-                              Make sure to select the Node.js as the&#xA0;<b>runtime</b>. For instructions on how to do this, see 
-                              <a href="get-started-create-function.html">Create a Simple Lambda
-                                 			Function</a>.
+                           <p>Open the <a href="https://console.aws.amazon.com/cloudwatch/home?#logs:" target="_blank">Logs page of the CloudWatch
+                                 console</a>.
                            </p>
                            
                         </li>
                         <li>
                            
-                           <p>Test the Lambda function using the <b>Sample event
-                                 template</b> called <b>Hello World</b>&#xA0;provided in
-                              the Lambda console. You can also update the
-                              code and try other logging methods and properties discussed in this
-                              section.
+                           <p>Choose the log group for your function
+                              (<b>/aws/lambda/<em class="replaceable"><code>function-name</code></em></b>).
                            </p>
                            
                         </li>
+                        <li>
+                           
+                           <p>Choose the first stream in the list.</p>
+                           
+                        </li>
                      </ol>
-                     <p>For step-by-step instructions, see <a href="getting-started.html">Getting Started</a>.
+                     
+                     <p>Each log stream corresponds to an <a href="running-lambda-code.html">instance of your function</a>. New streams appear 
+                        when you update your function and when additional instances are created to handle
+                        multiple concurrent invocations. To find
+                        logs for specific invocations, you can instrument your function with X-Ray and record
+                        details about the request and
+                        log stream in the trace. For a sample application that correlates logs and traces
+                        with X-Ray, see <a href="sample-errorprocessor.html">Error Processor Sample Application for AWS Lambda</a>.
+                     </p> 
+                     
+                     <h2 id="nodejs-logging-cli">Using the AWS CLI</h2>
+                      
+                     <p>To get logs for an invocation from the command line, use the <code class="code">--log-type</code> option. The response
+                        includes a <code class="code">LogResult</code> field that contains up to 4 KB of base64-encoded logs from the invocation.
                      </p>
-                     <h2 id="nodejs-prog-model-logging-finding-logs">Finding
-                        Logs
-                     </h2>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda invoke --function-name my-function out --log-type Tail</code></strong>
+{
+    &quot;StatusCode&quot;: 200,
+    &quot;LogResult&quot;: &quot;U1RBUlQgUmVxdWVzdElkOiA4N2QwNDRiOC1mMTU0LTExZTgtOGNkYS0yOTc0YzVlNGZiMjEgVmVyc2lvb...&quot;,
+    &quot;ExecutedVersion&quot;: &quot;$LATEST&quot;
+}</code></pre>
+                     <p>You can use the <code class="code">base64</code> utility to decode the logs.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda invoke --function-name my-function out --log-type Tail \
+--query &apos;LogResult&apos; --output text |  base64 -d</code></strong>
+START RequestId: 57f231fb-1730-4395-85cb-4f71bd2b87b8 Version: $LATEST
+  &quot;AWS_SESSION_TOKEN&quot;: &quot;AgoJb3JpZ2luX2VjELj...&quot;, &quot;_X_AMZN_TRACE_ID&quot;: &quot;Root=1-5d02e5ca-f5792818b6fe8368e5b51d50;Parent=191db58857df8395;Sampled=0&quot;&quot;,ask/lib:/opt/lib&quot;,
+END RequestId: 57f231fb-1730-4395-85cb-4f71bd2b87b8
+REPORT RequestId: 57f231fb-1730-4395-85cb-4f71bd2b87b8  Duration: 79.67 ms      Billed Duration: 100 ms         Memory Size: 128 MB     Max Memory Used: 73 MB</code></pre>
+                     <p><code class="code">base64</code> is available on Linux, macOS, and <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10" target="_blank">Ubuntu on Windows</a>. For macOS, the command
+                        is <code class="code">base64 -D</code>.
+                     </p>
+                      
+                     <p>To get full log events from the command line, you can include the log stream name
+                        in the output of your
+                        function, as shown in the preceding example. The following example script invokes
+                        a function named
+                        <code class="code">my-function</code> and downloads the last 5 log events.
+                     </p>
                      
-                     
-                     <p>You can find the logs that your Lambda function writes, as follows:</p>
-                     
-                     <div class="itemizedlist">
-                        
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              
-                              <p><span class="topcom">In the AWS Lambda console</span> &#x2013;
-                                 The&#xA0;<b> Log output</b> &#xA0;section in the AWS Lambda
-                                 console shows the logs. 
-                              </p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p><span class="topcom">In the response header, when you invoke a Lambda
-                                    function programmatically</span> &#x2013; If you invoke a Lambda
-                                 function programmatically, you can add the&#xA0;<code class="code">LogType</code>
-                                 parameter to retrieve the last 4 KB of log data that is written to
-                                 CloudWatch Logs. AWS Lambda returns this log information in
-                                 the&#xA0;<code class="code">x-amz-log-results</code>&#xA0;header in the response. For more
-                                 information, see&#xA0;<a href="./lambda/latest/dg/API_Invoke.html" target="_blank">Invoke</a>.
-                              </p>
-                              
-                              <p>If you use AWS CLI to invoke the function, you can specify
-                                 the<code class="code">&#xA0;--log-type&#xA0;parameter</code> with
-                                 value&#xA0;<code class="code">Tail</code>&#xA0;to retrieve the same information.
-                              </p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p><span class="topcom">In CloudWatch Logs</span> &#x2013; To find your
-                                 logs in CloudWatch you need to know the log group name and log stream
-                                 name. You can get that information by adding the
-                                 <code class="code">context.logGroupName</code>, and
-                                 <code class="code">context.logStreamName</code> methods in your code. When you
-                                 run your Lambda function, the resulting logs in the console or CLI will
-                                 show you the log group name and log stream name. 
-                              </p>
-                              
-                           </li>
-                        </ul>
+                     <div class="example">
+                        <p class="title"><b>Example get-logs.sh</b></p>
+                        <div class="example-contents">
+                           <p>This example requires that <code class="code">my-function</code> returns a log stream ID.
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws lambda invoke --function-name my-function --payload &apos;{&quot;key&quot;: &quot;value&quot;}&apos; out
+sed -i &apos;s/&quot;//g&apos; out
+sleep 15
+aws logs get-log-events --log-group-name /aws/lambda/my-function --log-stream-name=file://out --limit 5</code></pre></div>
                      </div>
                      
+                     <p>The script uses <code class="code">sed</code> to remove quotes from the output file, and sleeps for 15 seconds to allow
+                        time for the logs to be available. The output includes the response from Lambda, and
+                        the output from the
+                        <code class="code">get-log-events</code> command.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>./get-log.sh</code></strong>
+{
+    &quot;StatusCode&quot;: 200,
+    &quot;ExecutedVersion&quot;: &quot;$LATEST&quot;
+}
+{
+    &quot;events&quot;: [
+        {
+            &quot;timestamp&quot;: 1559763003171,
+            &quot;message&quot;: &quot;START RequestId: 4ce9340a-b765-490f-ad8a-02ab3415e2bf Version: $LATEST\n&quot;,
+            &quot;ingestionTime&quot;: 1559763003309
+        },
+        {
+            &quot;timestamp&quot;: 1559763003173,
+            &quot;message&quot;: &quot;2019-06-05T19:30:03.173Z\t4ce9340a-b765-490f-ad8a-02ab3415e2bf\tINFO\tENVIRONMENT VARIABLES\r{\r  \&quot;AWS_LAMBDA_FUNCTION_VERSION\&quot;: \&quot;$LATEST\&quot;,\r ...&quot;,
+            &quot;ingestionTime&quot;: 1559763018353
+        },
+        {
+            &quot;timestamp&quot;: 1559763003173,
+            &quot;message&quot;: &quot;2019-06-05T19:30:03.173Z\t4ce9340a-b765-490f-ad8a-02ab3415e2bf\tINFO\tEVENT\r{\r  \&quot;key\&quot;: \&quot;value\&quot;\r}\n&quot;,
+            &quot;ingestionTime&quot;: 1559763018353
+        },
+        {
+            &quot;timestamp&quot;: 1559763003218,
+            &quot;message&quot;: &quot;END RequestId: 4ce9340a-b765-490f-ad8a-02ab3415e2bf\n&quot;,
+            &quot;ingestionTime&quot;: 1559763018353
+        },
+        {
+            &quot;timestamp&quot;: 1559763003218,
+            &quot;message&quot;: &quot;REPORT RequestId: 4ce9340a-b765-490f-ad8a-02ab3415e2bf\tDuration: 26.73 ms\tBilled Duration: 100 ms \tMemory Size: 128 MB\tMax Memory Used: 75 MB\t\n&quot;,
+            &quot;ingestionTime&quot;: 1559763018353
+        }
+    ],
+    &quot;nextForwardToken&quot;: &quot;f/34783877304859518393868359594929986069206639495374241795&quot;,
+    &quot;nextBackwardToken&quot;: &quot;b/34783877303811383369537420289090800615709599058929582080&quot;
+}</code></pre> 
+                     <h2 id="nodejs-logging-delete">Deleting Logs</h2>
+                      
+                     <p>Log groups are not deleted automatically when you delete a function. To avoid storing
+                        logs indefinitely, delete
+                        the log group, or <a href="./AmazonCloudWatch/latest/logs/Working-with-log-groups-and-streams.html#SettingLogRetention">configure
+                           a retention period</a> after which logs are deleted automatically.
+                     </p> 
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -220,7 +239,9 @@ exports.handler = async function(event) {
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="nodejs-prog-model-context.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="nodejs-prog-mode-exceptions.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -229,14 +250,18 @@ exports.handler = async function(event) {
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Finding
-                    Logs"><a class="pagetoc" href="#nodejs-prog-model-logging-finding-logs">Finding
-                              Logs</a></li>
+                        <li class="pagetoc" name="Viewing Logs in the AWS Management Console"><a class="pagetoc" href="#nodejs-logging-console">Viewing Logs in the AWS Management Console</a></li>
+                        <li class="pagetoc" name="Using the AWS CLI"><a class="pagetoc" href="#nodejs-logging-cli">Using the AWS CLI</a></li>
+                        <li class="pagetoc" name="Deleting Logs"><a class="pagetoc" href="#nodejs-logging-delete">Deleting Logs</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

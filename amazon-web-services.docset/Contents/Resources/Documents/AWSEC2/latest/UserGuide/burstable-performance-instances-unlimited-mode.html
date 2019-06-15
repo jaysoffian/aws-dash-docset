@@ -1,0 +1,820 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Unlimited Mode for Burstable Performance Instances - Amazon Elastic Compute Cloud</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="burstable-performance-instances.html" title="Burstable Performance Instances">
+      <link rel="prev" href="burstable-credits-baseline-concepts.html" title="CPU Credits and Baseline Performance for
+            Burstable Performance Instances">
+      <link rel="next" href="unlimited-mode-examples.html" title="Examples: Unlimited Mode">
+      <meta name="description" content="A burstable performance instance configured as unlimited can sustain high CPU performance for any period of time whenever required. The hourly instance price automatically covers all CPU usage spikes if the average CPU utilization of the instance is at or below the baseline over a rolling 24-hour period or the instance lifetime, whichever is shorter.">
+      <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Elastic Compute Cloud">
+      <meta name="guide" content="User Guide for Linux Instances">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-performance-instances-unlimited-mode.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="instance-types.html">Instance Types</a> &#xBB; <a href="general-purpose-instances.html">General Purpose Instances</a> &#xBB; <a href="burstable-performance-instances.html">Burstable Performance Instances</a> &#xBB; <span class="breadcrumb">Unlimited Mode for Burstable Performance Instances</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="burstable-performance-instances-unlimited-mode">Unlimited Mode for Burstable Performance Instances</h1>
+                     <p>A burstable performance instance configured as <code class="code">unlimited</code> can sustain high
+                        CPU performance for any period of time whenever required. The hourly instance price
+                        automatically covers all CPU usage spikes if the average CPU utilization of the instance
+                        is
+                        at or below the baseline over a rolling 24-hour period or the instance lifetime, whichever
+                        is shorter.
+                     </p>
+                     <p>For the vast majority of general-purpose workloads, instances configured as
+                        <code class="code">unlimited</code> provide ample performance without any additional charges. If the
+                        instance runs at higher CPU utilization for a prolonged period, it can do so for a
+                        <a href="https://aws.amazon.com/ec2/pricing/on-demand/#T2/T3_Unlimited_Mode_Pricing" target="_blank">flat
+                           additional rate</a> per vCPU-hour. For information about instance pricing, see <a href="https://aws.amazon.com/ec2/pricing/" target="_blank">Amazon EC2 Pricing</a> and the section for Unlimited
+                        pricing in <a href="https://aws.amazon.com/ec2/pricing/on-demand/#T2/T3_Unlimited_Mode_Pricing" target="_blank">Amazon EC2 On-Demand
+                           Pricing</a>.
+                     </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>If you use a <code class="code">t2.micro</code> instance under the <a href="https://aws.amazon.com/free/" target="_blank">AWS Free Tier</a> offer and configure it as
+                           <code class="code">unlimited</code>, charges may apply if your average utilization over a rolling 24-hour period
+                           exceeds the baseline of the instance.
+                        </p>
+                     </div>
+                     <div class="highlights">
+                        <p><strong>Contents</strong></p>
+                        <ul>
+                           <li><a href="#burstable-performance-instances-unlimited-mode-concepts">Unlimited Mode Concepts</a></li>
+                           <li><a href="unlimited-mode-examples.html">Examples: Unlimited Mode</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="burstable-performance-instances-unlimited-mode-concepts">Unlimited Mode Concepts</h2>
+                     
+                     <p>The <code class="code">unlimited</code> mode is a credit configuration option for burstable
+                        performance instances. It can be enabled or disabled at any time for a running or
+                        stopped instance.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>T3 and T3a instances are launched as
+                           <code class="code">unlimited</code> by default. T2 instances are launched as
+                           <code class="code">standard</code> by default.
+                        </p>
+                     </div>
+                     
+                     
+                     
+                     <h3 id="how-burstable-performance-instances-unlimited-works">How Unlimited Burstable Performance Instances Work</h3>
+                     
+                     <p>If a burstable performance instance configured as <code class="code">unlimited</code> depletes
+                        its CPU credit balance, it can spend <em>surplus</em>
+                        credits to burst beyond the baseline. When its CPU utilization falls below the
+                        baseline, it uses the CPU credits that it earns to pay down the surplus credits that
+                        it spent earlier. The ability to earn CPU credits to pay down surplus credits enables
+                        Amazon EC2 to average the CPU utilization of an instance over a 24-hour period. If
+                        the
+                        average CPU usage over a 24-hour period exceeds the baseline, the instance is billed
+                        for the additional usage at a <a href="https://aws.amazon.com/ec2/pricing/on-demand/#T2/T3_Unlimited_Mode_Pricing" target="_blank">flat
+                           additional rate</a> per vCPU-hour.
+                     </p>
+                     
+                     <p>The following graph shows the CPU usage of a <code class="code">t3.large</code>. The baseline
+                        CPU utilization for a <code class="code">t3.large</code> is 30%. If the instance runs at 30% CPU
+                        utilization or less on average over a 24-hour period, there is no additional charge
+                        because the cost is already covered by the instance hourly price. However, if the
+                        instance runs at 40% CPU utilization on average over a 24-hour period, as shown in
+                        the graph, the instance is billed for the additional 10% CPU usage at a <a href="https://aws.amazon.com/ec2/pricing/on-demand/#T2/T3_Unlimited_Mode_Pricing" target="_blank">flat
+                           additional rate</a> per vCPU-hour.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/t3-cpu-usage.png">
+                        
+                        
+                     </div>
+                     
+                     <p>For more information about the baseline performance per vCPU for each instance
+                        type and how many credits each instance type earns, see the <a href="burstable-credits-baseline-concepts.html#burstable-performance-instances-credit-table">credit table</a>.
+                     </p>
+                     
+                     
+                     
+                     
+                     <h3 id="when-to-use-unlimited-mode">When to Use Unlimited Mode vs Fixed
+                        CPU
+                     </h3>
+                     
+                     <p>When determining whether you should use a burstable performance instance in
+                        <code class="code">unlimited</code> mode, such as a T3, or a fixed performance instance, such
+                        as an M5, you need to determine the breakeven CPU usage. The breakeven CPU usage for
+                        a burstable performance instance is the point at which a burstable performance
+                        instance costs the same as a fixed performance instance. The breakeven CPU usage
+                        helps you determine the following:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>If the average CPU usage over a 24-hour period is at or below the breakeven
+                                 CPU usage, use a burstable performance instance in <code class="code">unlimited</code> mode
+                                 so that you can benefit from the lower price of a burstable performance
+                                 instance while getting the same performance as a fixed performance
+                                 instance.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>If the average CPU usage over a 24-hour period is above the breakeven CPU
+                                 usage, the burstable performance instance will cost more than the
+                                 equivalently-sized fixed performance instance. If a T3 instance continuously
+                                 bursts at 100% CPU, you end up paying approximately 1.5 times the price of an
+                                 equivalently-sized M5 instance.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>The following graph shows the breakeven CPU usage point where a
+                        <code class="code">t3.large</code> costs the same as an <code class="code">m5.large</code>. The breakeven
+                        CPU usage point for a <code class="code">t3.large</code> is 42.5%. If the average CPU usage is at
+                        42.5%, the cost of running the <code class="code">t3.large</code> is the same as an
+                        <code class="code">m5.large</code>, and is more expensive if the average CPU usage is above
+                        42.5%. If the workload needs less than 42.5% average CPU usage, you can benefit from
+                        the lower price of the <code class="code">t3.large</code> while getting the same performance as an
+                        <code class="code">m5.large</code>.
+                     </p>
+                     
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/T3-unltd-when-to-use.png">
+                        
+                        
+                     </div>    
+                     
+                     
+                     <p>The following table shows how to calculate the breakeven CPU usage threshold so
+                        that you can determine when it&apos;s less expensive to use a burstable performance
+                        instance in <code class="code">unlimited</code> mode or a fixed performance instance. The columns
+                        in the table are labeled A through K.
+                     </p>
+                     
+                     <div class="table">
+                        <p class="title"><b></b></p>
+                        <div class="table-contents">
+                           <table id="w306aac20c11c27c33c19c11b9c13">
+                              
+                              <tbody><tr>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>Instance type</p>
+                                    
+                                 </th>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>vCPUs</p>
+                                    
+                                 </th>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>T3 price*/hour</p>
+                                    
+                                 </th>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>M5 price*/hour</p>
+                                    
+                                 </th>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>Price difference</p>
+                                    
+                                 </th>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>T3 baseline performance per vCPU (%)</p>
+                                    
+                                 </th>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>Charge per vCPU hour for surplus credits</p>
+                                    
+                                 </th>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>Charge per vCPU minute</p>
+                                    
+                                 </th>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>Additional burst minutes available per vCPU</p>
+                                    
+                                 </th>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>Additional CPU % available</p>
+                                    
+                                 </th>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>Breakeven CPU %</p>
+                                    
+                                 </th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>A</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>B</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>C</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>D </p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>E = D - C</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>F</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>G</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>H = G / 60</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>I = E / H</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>J = (I / 60) / B</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>K = F + J</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p><code class="code">t3.large</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>$0.0835</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>$0.096</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>$0.0125</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>30%</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>$0.05</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>$0.000833 </p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>15</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>12.5%</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>42.5%</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w306aac20c11c27c33c19c11b9c15">
+                              
+                              <tbody><tr>
+                                 
+                                 <td>* Price is based on us-east-1 and Linux OS.</td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     <p>The table provides the following information:</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Column A shows the instance type, <code class="code">t3.large</code>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Column B shows the number of vCPUs for the <code class="code">t3.large</code>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Column C shows the price of a <code class="code">t3.large</code> per hour.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Column D shows the price of an <code class="code">m5.large</code> per hour.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Column E shows the price difference between the <code class="code">t3.large</code> and
+                                 the <code class="code">m5.large</code>. 
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Column F shows the baseline performance per vCPU of the
+                                 <code class="code">t3.large</code>, which is 30%. At the baseline, the hourly cost of the
+                                 instance covers the cost of the CPU usage.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Column G shows the flat additional rate per vCPU-hour that an instance is
+                                 charged if it bursts at 100% CPU after it has depleted its earned
+                                 credits.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Column H shows the flat additional rate per vCPU-minute that an instance is
+                                 charged if it bursts at 100% CPU after it has depleted its earned
+                                 credits.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Column I shows the number of additional minutes that the
+                                 <code class="code">t3.large</code> can burst per hour at 100% CPU while paying the same
+                                 price per hour as an <code class="code">m5.large</code>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Column J shows the additional CPU usage (in %) over baseline that the
+                                 instance can burst while paying the same price per hour as an
+                                 <code class="code">m5.large</code>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Column K shows the breakeven CPU usage (in %) that the <code class="code">t3.large</code>
+                                 can burst without paying more than the <code class="code">m5.large</code>. Anything above
+                                 this, and the <code class="code">t3.large</code> costs more than the
+                                 <code class="code">m5.large</code>.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <p>The following table shows the breakeven CPU usage (in %) for T3 instance types
+                        compared to the similarly-sized M5 instance types.
+                     </p>
+                     
+                     <div class="table">
+                        <p class="title"><b></b></p>
+                        <div class="table-contents">
+                           <table id="w306aac20c11c27c33c19c11b9c23">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>T3 instance type</th>
+                                 
+                                 <th>Breakeven CPU usage (in %) for T3 compared to M5</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.large</code></td>
+                                 
+                                 <td>42.5%</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.xlarge</code></td>
+                                 
+                                 <td>52.5%</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.2xlarge</code></td>
+                                 
+                                 <td>52.5%</td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     
+                     
+                     <h3 id="unlimited-mode-surplus-credits">Surplus Credits Can Incur Charges</h3>
+                     
+                     <p>If the average CPU utilization of an instance is at or below the baseline, the
+                        instance incurs no additional charges. Because an instance earns a <a href="burstable-credits-baseline-concepts.html#burstable-performance-instances-credit-table">maximum number of
+                           credits</a> in a 24-hour period (for example, a <code class="code">t3.micro</code> instance
+                        can earn a maximum of 288 credits in a 24-hour period), it can spend surplus credits
+                        up to that maximum without being charged.
+                     </p>
+                     
+                     <p>However, if CPU utilization stays above the baseline, the instance cannot earn enough
+                        credits to pay down the surplus credits that it has spent. The surplus credits that
+                        are
+                        not paid down are charged at a flat additional rate per vCPU-hour.
+                     </p>
+                     
+                     <p>Surplus credits that were spent earlier are charged when any of the following
+                        occurs:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>The spent surplus credits exceed the <a href="burstable-credits-baseline-concepts.html#burstable-performance-instances-credit-table">maximum number of credits</a> the instance can earn in a 24-hour period.
+                                 Spent surplus credits above the maximum are charged at the end of the hour.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The instance is stopped or terminated.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The instance is switched from <code class="code">unlimited</code> to
+                                 <code class="code">standard</code>.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>Spent surplus credits are tracked by the CloudWatch metric
+                        <code class="code">CPUSurplusCreditBalance</code>. Surplus credits that are charged are tracked by
+                        the CloudWatch metric <code class="code">CPUSurplusCreditsCharged</code>. For more information, see <a href="burstable-performance-instances-monitoring-cpu-credits.html#burstable-performance-instances-cw-metrics">Additional CloudWatch Metrics for
+                           Burstable Performance Instances</a>.
+                     </p>
+                     
+                     
+                     
+                     
+                     <h3 id="unlimited-mode-no-launch-credits">No Launch Credits for T2 Unlimited</h3>
+                     
+                     <p>T2 Standard instances receive <a href="burstable-performance-instances-standard-mode.html#launch-credits">launch
+                           credits</a>, but T2 Unlimited instances do not. A T2 Unlimited instance can burst
+                        beyond the baseline at any time with no additional charge, as long as its average
+                        CPU
+                        utilization is at or below the baseline over a rolling 24-hour window or its
+                        lifetime, whichever is shorter. As such, T2 Unlimited instances do not require launch
+                        credits to achieve high performance immediately after launch.
+                     </p>
+                     
+                     <p>If a T2 instance is switched from <code class="code">standard</code> to <code class="code">unlimited</code>,
+                        any accrued launch credits are removed from the <code class="code">CPUCreditBalance</code> before the
+                        remaining <code class="code">CPUCreditBalance</code> is carried over.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>T3 and T3a instances never receive launch credits.</p>
+                     </div>
+                     
+                     
+                     
+                     
+                     <h3 id="unlimited-mode-enabling">Enabling Unlimited Mode</h3>
+                     
+                     <p>T3 and T3a instances launch as
+                        <code class="code">unlimited</code> by default. T2 instances launch as <code class="code">standard</code> by
+                        default, but you can enable <code class="code">unlimited</code> at launch.
+                     </p>
+                     
+                     <p>You can switch from <code class="code">unlimited</code> to <code class="code">standard</code>, and from
+                        <code class="code">standard</code> to <code class="code">unlimited</code>, at any time on a running or stopped
+                        instance. For more information, see <a href="burstable-performance-instances-how-to.html#launch-burstable-performance-instances">Launching a Burstable
+                           Performance Instance as Unlimited or Standard</a> and <a href="burstable-performance-instances-how-to.html#modify-burstable-performance-instances">Modifying the Credit
+                           Specification of a Burstable Performance Instance</a>. 
+                     </p>
+                     
+                     <p>You can check whether your burstable performance instance is configured as <code class="code">unlimited</code> 
+                        or <code class="code">standard</code> using the Amazon EC2 console or the AWS CLI. For more information, see
+                        <a href="burstable-performance-instances-how-to.html#describe-burstable-performance-instances">Viewing the Credit
+                           Specification of a Burstable Performance Instance</a>.
+                     </p>
+                     
+                     
+                     
+                     
+                     <h3 id="unlimited-mode-switching-and-credits">What Happens to Credits when Switching between Unlimited and Standard</h3>
+                     
+                     <p><code class="code">CPUCreditBalance</code> is a CloudWatch metric that tracks the number of credits
+                        accrued by an instance. <code class="code">CPUSurplusCreditBalance</code> is a CloudWatch metric
+                        that tracks the number of surplus credits spent by an instance.
+                     </p>
+                     
+                     <p>When you change an instance configured as <code class="code">unlimited</code> to <code class="code">standard</code>,
+                        the following occurs:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>The <code class="code">CPUCreditBalance</code> value remains unchanged and is carried over. 
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The <code class="code">CPUSurplusCreditBalance</code> value is immediately charged.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>When a <code class="code">standard</code> instance is switched to <code class="code">unlimited</code>, the
+                        following occurs:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>The <code class="code">CPUCreditBalance</code> value containing accrued earned credits is
+                                 carried over.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>For T2 Standard instances, any launch credits are removed from the
+                                 <code class="code">CPUCreditBalance</code> value, and the remaining
+                                 <code class="code">CPUCreditBalance</code> value containing accrued earned credits is
+                                 carried over.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     
+                     
+                     <h3 id="unlimited-mode-monitoring-credit-usage">Monitoring Credit Usage</h3>
+                     
+                     <p>To see if your instance is spending more credits than the baseline provides, you
+                        can use CloudWatch metrics to track usage, and you can set up hourly alarms to be
+                        notified
+                        of credit usage. For more information, see <a href="burstable-performance-instances-monitoring-cpu-credits.html">Monitoring Your CPU Credits</a>.
+                     </p>
+                     
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="burstable-credits-baseline-concepts.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="unlimited-mode-examples.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Unlimited Mode Concepts"><a class="pagetoc" href="#burstable-performance-instances-unlimited-mode-concepts">Unlimited Mode Concepts</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Elastic Compute Cloud';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide for Linux Instances';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

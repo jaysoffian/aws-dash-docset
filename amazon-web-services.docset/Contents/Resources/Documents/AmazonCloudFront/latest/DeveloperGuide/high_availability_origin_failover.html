@@ -1,0 +1,333 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Optimizing High Availability with CloudFront Origin Failover - Amazon CloudFront</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="ConfiguringCaching.html" title="Optimizing Content Caching and Availability">
+      <link rel="prev" href="Expiration.html" title="Managing How Long Content Stays in an Edge Cache (Expiration)">
+      <link rel="next" href="RangeGETs.html" title="How CloudFront Processes Partial Requests for an Object (Range GETs)">
+      <meta name="description" content="You can set up CloudFront with origin failover for scenarios that require high availability. To get started, create an origin group in which you designate a primary origin for CloudFront plus a second origin that CloudFront automatically switches to when the primary origin returns specific HTTP status code failure responses.">
+      <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon CloudFront">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/high_availability_origin_failover.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="ConfiguringCaching.html">Optimizing Content Caching and Availability</a> &#xBB; <span class="breadcrumb">Optimizing High Availability with CloudFront Origin Failover</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="high_availability_origin_failover">Optimizing High Availability with CloudFront Origin Failover</h1>
+                     <p>You can set up CloudFront with origin failover for scenarios that require high availability.
+                        To get
+                        		started, create an <em>origin group</em> in which you designate a primary origin 
+                        		for CloudFront plus a second origin that CloudFront automatically switches to when
+                        the primary origin returns 
+                        		specific HTTP status code failure responses.
+                     </p>
+                     <p>To set up origin failover, you must have a distribution with at least two origins.
+                        Next, you create 
+                        		an origin group for your distribution that includes the two origins, setting one
+                        as the primary. 
+                        		Finally, you define a cache behavior in which you specify the origin group as your
+                        origin. For more
+                        		information about specifying origin groups for distributions, see <a href="distribution-web-values-specify.html#DownloadDistValuesId">Origin ID</a>.
+                     </p>
+                     <p>The two origins in the origin group can be any combination of the following: AWS origins,
+                        like Amazon S3 
+                        		buckets or Amazon EC2 instances, or custom origins, like your own HTTP web server.
+                        When you create the origin 
+                        		group, you configure CloudFront to failover to the second origin for GET, HEAD,
+                        and OPTIONS HTTP methods when 
+                        		the primary origin returns specific status codes that you configure. 
+                     </p>
+                     <p>To see the steps for setting up origin groups with specific origin failover options,
+                        see 
+                        			<a href="high_availability_origin_failover.html#concept_origin_groups.creating">Creating an Origin Group</a>.
+                     </p>
+                     <p>After you configure origin failover for a cache behavior, CloudFront does the following
+                        for viewer requests:
+                     </p>
+                     <div class="itemizedlist">
+                        		
+                        		
+                        		
+                        		
+                        	
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p>When there&#x2019;s a cache hit, CloudFront returns the requested file.</p>
+                           </li>
+                           <li class="listitem">
+                              <p>When there&#x2019;s a cache miss, CloudFront routes the request to the primary origin that
+                                 
+                                 			you identified in the origin group.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p>When a status code that has not been configured for failover is returned, such as
+                                 			an HTTP 2xx or HTTP 3xx status code, CloudFront serves the requested content.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p>When the primary origin returns an HTTP status code that you&#x2019;ve configured for 
+                                 			failover, or after a timeout, CloudFront routes the request to the backup origin
+                                 in the origin group.
+                              </p>
+                              			
+                              <div class="aws-note">
+                                 <p class="aws-note">Note</p>
+                                 <p>CloudFront issues a connect timeout when it cannot connect to the origin after three
+                                    
+                                    				consecutive attempts for a single request. CloudFront waits up to 10 seconds between
+                                    connection 
+                                    				attempts.
+                                 </p>
+                              </div>
+                           </li>
+                        </ul>
+                     </div>
+                     <p>CloudFront routes all incoming requests to the primary origin, even when an earlier
+                        request has failed 
+                        		over to a second origin. CloudFront only sends requests to the second origin after
+                        an attempt to route to 
+                        		the primary origin returns a status code configured for failover or times out.
+                     </p>
+                     <p>The following diagram illustrates how origin failover works.</p>
+                     <div class="mediaobject">
+                        		
+                        		
+                        			<img src="../../..//img/origingroups-overview.png" alt="
+			How origin failover works
+		">
+                        			
+                        			
+                        		
+                        		
+                        	
+                     </div>
+                     <p>For more information, see the following:</p>
+                     <div class="itemizedlist">
+                        			
+                        			
+                        		
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p><b>Cache hits and misses:</b> <a href="cache-hit-ratio-explained.html">How Caching Works with CloudFront Edge Caches</a></p>
+                           </li>
+                           <li class="listitem">
+                              <p><b>Request and response behavior with origin failover:</b> 
+                                 				<a href="RequestAndResponseBehaviorOriginGroups.html">Request and Response Behavior for Origin Groups</a></p>
+                           </li>
+                        </ul>
+                     </div>
+                     			
+                     <h2 id="concept_origin_groups.creating">Creating an Origin Group</h2> 
+                     			
+                     			
+                     <p>You create an origin group with two origins. You specify one as the primary origin,
+                        				plus a second origin that CloudFront automatically switches to 
+                        				when the primary origin returns specific HTTP status code failure responses. 
+                     </p>
+                     			<a id="create-origin-groups-procedure"></a><p class="title"><b>To create an origin group</b></p>
+                     <ol>
+                        <li> 
+                           					
+                           <p>On the <b>Origin and Origin Groups</b> tab, choose <b>Create origin group</b>.
+                           </p>
+                           				
+                        </li>
+                        <li>
+                           					
+                           <p>Choose the origins for the origin group, and then choose the <b>Priority</b> arrows to
+                              						set one of them as the Primary origin.
+                           </p> 
+                        </li>
+                        <li>
+                           <p>Select one or more HTTP status codes as the failover criteria. You can choose any
+                              combination of the 
+                              					following status codes: 500, 502, 503, 504, 404, or 403.
+                           </p>
+                        </li>
+                        <li>
+                           <p>Enter a unique descriptive id for the origin group. You can&apos;t use an id that is already
+                              being
+                              					used for an origin or for another origin group.
+                           </p>
+                        </li>
+                     </ol>
+                     			
+                     <p>For information about specifying an origin group for a distribution, see <a href="distribution-web-values-specify.html#DownloadDistValuesId">Origin ID</a>.
+                     </p>
+                     			
+                     		
+                     <h2 id="concept_origin_groups.lambda">Use
+                        		Origin Failover with Lambda@Edge Functions
+                     </h2>
+                     		
+                     		
+                     <p>You can use Lambda@Edge functions with CloudFront distributions that you&#x2019;ve set up
+                        with origin groups. To use 
+                        			a Lambda function, specify it in an origin request or origin response trigger for
+                        an origin group when 
+                        			you create the cache behavior.
+                     </p>
+                     		
+                     <p>The Lambda function is triggered for the primary origin when CloudFront routes a request
+                        to it on a cache miss. 
+                        			If the primary origin returns an HTTP status code that you&#x2019;ve configured for failover,
+                        the Lambda function is 
+                        			triggered again, when CloudFront re-routes the request to the second origin.
+                     </p>
+                     		
+                     <p>The following diagram illustrates how origin failover works when you include a Lambda@Edge
+                        
+                        			function in an origin request or response trigger.
+                     </p>
+                     		
+                     <div class="mediaobject">
+                        			
+                        			
+                        				<img src="../../..//img/origingroups-with-lambda-edge.png" alt="
+				How origin failover works with Lambda@Edge functions
+			">
+                        				
+                        				
+                        			
+                        			
+                        		
+                     </div>
+                     	
+                     <p>For more information about using Lambda@Edge triggers, see <a href="lambda-edge-add-triggers.html">Adding Triggers for a Lambda@Edge Function</a>.
+                     </p>
+                     <h2 id="concept_origin_groups.custom-error">Use
+                        		Origin Failover with Custom Error Pages
+                     </h2>
+                     	
+                     <p>You can use custom error pages with origin groups similarly to how you use them with
+                        origins that are not 
+                        		set up for origin failover. 
+                     </p>
+                     <p>When you use origin failover, CloudFront can be configured to return a custom error
+                        page for the primary or 
+                        		secondary origin (or both):
+                     </p>
+                     <div class="itemizedlist">
+                        		
+                        		
+                        	
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p><b>Return a custom error page for the primary origin.</b> If the 
+                                 			primary origin returns an HTTP status code error that you have not configured for
+                                 failover, CloudFront returns the 
+                                 			custom error page to viewers.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p><b>Return a custom error page for the secondary origin.</b> If CloudFront
+                                 			fails over to the second origin, CloudFront returns a custom error page.
+                              </p>
+                           </li>
+                        </ul>
+                     </div>
+                     <p>For more information about using custom error pages with CloudFront, see <a href="GeneratingCustomErrorResponses.html">Generating Custom Error Responses</a>.
+                     </p>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="Expiration.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="RangeGETs.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Creating an Origin Group"><a class="pagetoc" href="#concept_origin_groups.creating">Creating an Origin Group</a></li>
+                        <li class="pagetoc" name="Use
+		Origin Failover with Lambda@Edge Functions"><a class="pagetoc" href="#concept_origin_groups.lambda">Use
+                              		Origin Failover with Lambda@Edge Functions</a></li>
+                        <li class="pagetoc" name="Use
+		Origin Failover with Custom Error Pages"><a class="pagetoc" href="#concept_origin_groups.custom-error">Use
+                              		Origin Failover with Custom Error Pages</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon CloudFront';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

@@ -1,16 +1,18 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Server Access Log Format - Amazon Simple Storage Service</title>
+      <title>Amazon S3 Server Access Log Format - Amazon Simple Storage Service</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="ServerLogs.html" title="Server Access Logging">
+      <link rel="up" href="ServerLogs.html" title="Amazon S3 Server Access Logging">
       <link rel="prev" href="enable-logging-programming.html" title="Enabling Logging Programmatically">
-      <link rel="next" href="deleting-log-files-lifecycle.html" title="Deleting Log Files">
+      <link rel="next" href="deleting-log-files-lifecycle.html" title="Deleting Amazon S3 Log Files">
       <meta name="description" content="Reports information on requests to access the server for the buckets that you own.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/LogFormat.html">
@@ -20,7 +22,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,23 +34,35 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="ServerLogs.html">Server Access Logging</a> &#xBB; <span class="breadcrumb">Server Access Log Format</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="ServerLogs.html">Amazon S3 Server Access Logging</a> &#xBB; <span class="breadcrumb">Amazon S3 Server Access Log Format</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="LogFormat">Server Access Log Format</h1>
-                     <p>The server access log files consist of a sequence of new-line delimited log records.
-                        
-                        Each log record represents one request and consists of space delimited fields. 
-                        The following is an example log consisting of six log records. 
+                     <h1 class="topictitle" id="LogFormat">Amazon S3 Server Access Log Format</h1>
+                     <p>This section describes the Amazon S3 server access log files.</p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#AdditionalLoggingforCopyOperations">Additional Logging for Copy Operations </a></li>
+                           <li><a href="#LogFormatCustom">Custom Access Log Information</a></li>
+                           <li><a href="#LogFormatExtensible">Programming Considerations for Extensible Server Access Log Format</a></li>
+                        </ul>
+                     </div>
+                     <p>The server access log files consist of a sequence of newline-delimited log records.
+                        Each
+                        log record represents one request and consists of space-delimited fields. The following
+                        is
+                        an example log consisting of five log records. 
                      </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">
-79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be mybucket [06/Feb/2014:00:00:38 +0000] 192.0.2.3 79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be 3E57427F3EXAMPLE REST.GET.VERSIONING - &quot;GET /mybucket?versioning HTTP/1.1&quot; 200 - 113 - 7 - &quot;-&quot; &quot;S3Console/0.4&quot; -
-79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be mybucket [06/Feb/2014:00:00:38 +0000] 192.0.2.3 79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be 891CE47D2EXAMPLE REST.GET.LOGGING_STATUS - &quot;GET /mybucket?logging HTTP/1.1&quot; 200 - 242 - 11 - &quot;-&quot; &quot;S3Console/0.4&quot; -
-79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be mybucket [06/Feb/2014:00:00:38 +0000] 192.0.2.3 79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be A1206F460EXAMPLE REST.GET.BUCKETPOLICY - &quot;GET /mybucket?policy HTTP/1.1&quot; 404 NoSuchBucketPolicy 297 - 38 - &quot;-&quot; &quot;S3Console/0.4&quot; -
-79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be mybucket [06/Feb/2014:00:01:00 +0000] 192.0.2.3 79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be 7B4A0FABBEXAMPLE REST.GET.VERSIONING - &quot;GET /mybucket?versioning HTTP/1.1&quot; 200 - 113 - 33 - &quot;-&quot; &quot;S3Console/0.4&quot; -
-79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be mybucket [06/Feb/2014:00:01:57 +0000] 192.0.2.3 79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be DD6CC733AEXAMPLE REST.PUT.OBJECT s3-dg.pdf &quot;PUT /mybucket/s3-dg.pdf HTTP/1.1&quot; 200 - - 4406583 41754 28 &quot;-&quot; &quot;S3Console/0.4&quot; -
-79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be mybucket [06/Feb/2014:00:03:21 +0000] 192.0.2.3 79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be BC3C074D0EXAMPLE REST.GET.VERSIONING - &quot;GET /mybucket?versioning HTTP/1.1&quot; 200 - 113 - 28 - &quot;-&quot; &quot;S3Console/0.4&quot; -</code></pre><div class="aws-note">
+79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be awsexamplebucket [06/Feb/2019:00:00:38 +0000] 192.0.2.3 79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be 3E57427F3EXAMPLE REST.GET.VERSIONING - &quot;GET /awsexamplebucket?versioning HTTP/1.1&quot; 200 - 113 - 7 - &quot;-&quot; &quot;S3Console/0.4&quot; - s9lzHYrFp76ZVxRcpX9+5cjAnEH2ROuNkd2BHfIa6UkFVdtjf5mKR3/eTPFvsiP/XV/VLi31234= SigV2 ECDHE-RSA-AES128-GCM-SHA256 AuthHeader awsexamplebucket.s3.amazonaws.com TLSV1.1
+79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be awsexamplebucket [06/Feb/2019:00:00:38 +0000] 192.0.2.3 79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be 891CE47D2EXAMPLE REST.GET.LOGGING_STATUS - &quot;GET /awsexamplebucket?logging HTTP/1.1&quot; 200 - 242 - 11 - &quot;-&quot; &quot;S3Console/0.4&quot; - 9vKBE6vMhrNiWHZmb2L0mXOcqPGzQOI5XLnCtZNPxev+Hf+7tpT6sxDwDty4LHBUOZJG96N1234= SigV2 ECDHE-RSA-AES128-GCM-SHA256 AuthHeader awsexamplebucket.s3.amazonaws.com TLSV1.1
+79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be awsexamplebucket [06/Feb/2019:00:00:38 +0000] 192.0.2.3 79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be A1206F460EXAMPLE REST.GET.BUCKETPOLICY - &quot;GET /awsexamplebucket?policy HTTP/1.1&quot; 404 NoSuchBucketPolicy 297 - 38 - &quot;-&quot; &quot;S3Console/0.4&quot; - BNaBsXZQQDbssi6xMBdBU2sLt+Yf5kZDmeBUP35sFoKa3sLLeMC78iwEIWxs99CRUrbS4n11234= SigV2 ECDHE-RSA-AES128-GCM-SHA256 AuthHeader awsexamplebucket.s3.amazonaws.com TLSV1.1
+79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be awsexamplebucket [06/Feb/2019:00:01:00 +0000] 192.0.2.3 79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be 7B4A0FABBEXAMPLE REST.GET.VERSIONING - &quot;GET /awsexamplebucket?versioning HTTP/1.1&quot; 200 - 113 - 33 - &quot;-&quot; &quot;S3Console/0.4&quot; - Ke1bUcazaN1jWuUlPJaxF64cQVpUEhoZKEG/hmy/gijN/I1DeWqDfFvnpybfEseEME/u7ME1234= SigV2 ECDHE-RSA-AES128-GCM-SHA256 AuthHeader awsexamplebucket.s3.amazonaws.com TLSV1.1
+79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be awsexamplebucket [06/Feb/2019:00:01:57 +0000] 192.0.2.3 79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be DD6CC733AEXAMPLE REST.PUT.OBJECT s3-dg.pdf &quot;PUT /awsexamplebucket/s3-dg.pdf HTTP/1.1&quot; 200 - - 4406583 41754 28 &quot;-&quot; &quot;S3Console/0.4&quot; - 10S62Zv81kBW7BB6SX4XJ48o6kpcl6LPwEoizZQQxJd5qDSCTLX0TgS37kYUBKQW3+bPdrg1234= SigV4 ECDHE-RSA-AES128-SHA AuthHeader awsexamplebucket.s3.amazonaws.com TLSV1.1</code></pre><div class="aws-note">
                         <p class="aws-note">Note</p>
                         <p>Any field can be set to <code class="code">-</code> to indicate that the data was unknown or unavailable, or that the
                            field was not applicable to this request. 
@@ -75,13 +89,25 @@
                         
                         
                         
+                        
+                        
+                        
+                        
+                        
+                        
                         <dl>
                            
                            <dt><b><span class="term">Bucket Owner</span></b></dt>
                            
                            <dd>
                               
-                              <p>The canonical user ID of the owner of the source bucket.</p>
+                              <p>The canonical user ID of the owner of the source bucket. The canonical user ID
+                                 is another form of the AWS account ID. For more information about the canonical
+                                 user ID, see <a href="./general/latest/gr/acct-identifiers.html">AWS Account
+                                    Identifiers</a>. For information about how to find the canonical user ID
+                                 for your account, see <a href="./general/latest/gr/acct-identifiers.html#FindingCanonicalId">Finding Your
+                                    Account Canonical User ID</a>.
+                              </p>
                               
                               <p><b>Example Entry</b></p>
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be</code></pre>
@@ -98,7 +124,7 @@
                               </p>
                               
                               <p><b>Example Entry</b></p>
-                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">mybucket</code></pre>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">awsexamplebucket</code></pre>
                               </dd>
                            
                            
@@ -111,7 +137,7 @@
                                     %z]</code></p>
                               
                               <p><b>Example Entry</b></p>
-                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">[06/Feb/2014:00:00:38 +0000]</code></pre>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">[06/Feb/2019:00:00:38 +0000]</code></pre>
                               </dd>
                            
                            
@@ -119,7 +145,7 @@
                            
                            <dd>
                               
-                              <p>The apparent Internet address of the requester. Intermediate proxies and
+                              <p>The apparent internet address of the requester. Intermediate proxies and
                                  firewalls might obscure the actual address of the machine making the
                                  request.
                               </p>
@@ -134,9 +160,9 @@
                            <dd>
                               
                               <p>The canonical user ID of the requester, or a <code class="code">-</code> for
-                                 unauthenticated requests. If the requester was an IAM user, this field will
-                                 return the requester&apos;s IAM user name along with the AWS root account that the
-                                 IAM user belongs to. This identifier is the same one used for access control
+                                 unauthenticated requests. If the requester was an IAM user, this field returns
+                                 the requester&apos;s IAM user name along with the AWS root account that the IAM user
+                                 belongs to. This identifier is the same one used for access control
                                  purposes.
                               </p>
                               
@@ -149,9 +175,7 @@
                            
                            <dd>
                               
-                              <p>The request ID is a string generated by Amazon S3 to uniquely identify each
-                                 request.
-                              </p>
+                              <p>A string generated by Amazon S3 to uniquely identify each request.</p>
                               
                               <p><b>Example Entry</b></p>
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">3E57427F33A59F07</code></pre>
@@ -182,7 +206,7 @@
                               </p>
                               
                               <p><b>Example Entry</b></p>
-                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">/photos/2014/08/puppy.jpg</code></pre>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">/photos/2019/08/puppy.jpg</code></pre>
                               </dd>
                            
                            
@@ -193,7 +217,7 @@
                               <p>The Request-URI part of the HTTP request message.</p>
                               
                               <p><b>Example Entry</b></p>
-                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">&quot;GET /mybucket/photos/2014/08/puppy.jpg?x-foo=bar HTTP/1.1&quot;</code></pre>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">&quot;GET /awsexamplebucket/photos/2019/08/puppy.jpg?x-foo=bar HTTP/1.1&quot;</code></pre>
                               </dd>
                            
                            
@@ -279,9 +303,9 @@
                            
                            <dd>
                               
-                              <p>The value of the HTTP Referrer header, if present. HTTP user-agents (e.g.
-                                 browsers) typically set this header to the URL of the linking or embedding
-                                 page when making a request.
+                              <p>The value of the HTTP Referrer header, if present. HTTP user-agents (for
+                                 example, browsers) typically set this header to the URL of the linking or
+                                 embedding page when making a request.
                               </p>
                               
                               <p><b>Example Entry</b></p>
@@ -312,35 +336,84 @@
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">3HL4kqtJvjVBH40Nrjfkd</code></pre>
                               </dd>
                            
+                           
+                           <dt><b><span class="term">Host Id</span></b></dt>
+                           
+                           <dd>
+                              
+                              <p>The x-amz-id-2 or Amazon S3 extended request ID. </p>
+                              
+                              <p><b>Example Entry</b></p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">s9lzHYrFp76ZVxRcpX9+5cjAnEH2ROuNkd2BHfIa6UkFVdtjf5mKR3/eTPFvsiP/XV/VLi31234=</code></pre>
+                              </dd>
+                           
+                           
+                           <dt><b><span class="term">Signature Version</span></b></dt>
+                           
+                           <dd>
+                              
+                              <p>The signature version, <code class="code">SigV2</code> or <code class="code">SigV4</code>, that was used
+                                 to authenticate the request or a <code class="code">-</code> for unauthenticated
+                                 requests.
+                              </p>
+                              
+                              <p><b>Example Entry</b></p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">SigV2</code></pre>
+                              </dd>
+                           
+                           
+                           <dt><b><span class="term">Cipher Suite</span></b></dt>
+                           
+                           <dd>
+                              
+                              <p>The Secure Sockets Layer (SSL) cipher that was negotiated for HTTPS request or a <code class="code">-</code> for HTTP.
+                              </p>
+                              
+                              <p><b>Example Entry</b></p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">ECDHE-RSA-AES128-GCM-SHA256</code></pre> 
+                              </dd>
+                           
+                           
+                           <dt><b><span class="term">Authentication Type</span></b></dt>
+                           
+                           <dd>
+                              
+                              <p>The type of request authentication used, <code class="code">AuthHeader</code> for authentication headers,
+                                 <code class="code">QueryString</code> for query string (pre-signed URL) or a <code class="code">-</code> for unauthenticated requests.
+                              </p>
+                              
+                              <p><b>Example Entry</b></p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">AuthHeader</code></pre> 
+                              </dd>
+                           
+                           
+                           <dt><b><span class="term">Host Header</span></b></dt>
+                           
+                           <dd>
+                              
+                              <p>The endpoint used to connect to Amazon S3</p>
+                              
+                              <p><b>Example Entry</b></p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">s3-us-west-2.amazonaws.com</code></pre> 
+                              
+                              </dd>
+                           
+                           
+                           <dt><b><span class="term">TLS version</span></b></dt>
+                           
+                           <dd>
+                              
+                              <p>The Transport Layer Security (TLS) version negotiated by the client. The value
+                                 is one of following: <code class="code">TLSv1</code>, <code class="code">TLSv1.1</code>,
+                                 <code class="code">TLSv1.2</code>; or <code class="code">-</code> if TLS wasn&apos;t used.
+                              </p>
+                              
+                              <p><b>Example Entry</b></p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">TLSv1.2</code></pre> 
+                              </dd>
+                           
                         </dl>
                      </div>
-                     <h2 id="LogFormatCustom">Custom Access Log Information</h2>
-                     
-                     
-                     <p>You can include custom information to be stored in the access log record for a request
-                        by adding a custom query-string parameter to the URL for the request. Amazon S3 will
-                        ignore
-                        query-string parameters that begin with &quot;x-&quot;, but will include those parameters in
-                        the
-                        access log record for the request, as part of the <code class="code">Request-URI</code> field of the
-                        log record. For example, a <code class="code">GET</code> request for
-                        &quot;s3.amazonaws.com/mybucket/photos/2014/08/puppy.jpg?x-user=johndoe&quot; will work the
-                        same as the
-                        same request for &quot;s3.amazonaws.com/mybucket/photos/2014/08/puppy.jpg&quot;, except that
-                        the
-                        &quot;x-user=johndoe&quot; string will be included in the <code class="code">Request-URI</code> field for the
-                        associated log record. This functionality is available in the REST interface
-                        only.
-                     </p>
-                     
-                     <h2 id="LogFormatExtensible">Programming Considerations for Extensible Server Access Log Format</h2>
-                     
-                     
-                     <p>From time to time, we might extend the access log record format by adding new fields
-                        to the end of each line. Code that parses server access logs must be written to handle
-                        trailing fields that it does not understand. 
-                     </p>
-                     
                      <h2 id="AdditionalLoggingforCopyOperations">Additional Logging for Copy Operations </h2>
                      
                      
@@ -372,13 +445,25 @@
                         
                         
                         
+                        
+                        
+                        
+                        
+                        
+                        
                         <dl>
                            
                            <dt><b><span class="term">Bucket Owner</span></b></dt>
                            
                            <dd>
                               
-                              <p>The canonical user ID of the bucket that stores the object being copied.</p>
+                              <p>The canonical user ID of the bucket that stores the object being copied.
+                                 The canonical user ID is another form of the AWS account ID. For more
+                                 information about the canonical user ID, see <a href="./general/latest/gr/acct-identifiers.html">AWS Account
+                                    Identifiers</a>. For information about how to find the canonical user ID
+                                 for your account, see <a href="./general/latest/gr/acct-identifiers.html#FindingCanonicalId">Finding Your
+                                    Account Canonical User ID</a>.
+                              </p>
                               
                               <p><b>Example Entry</b></p>
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">79a59df900b949e55d96a1e698fbacedfd6e09d98eacf8f8d5218e7cd47ef2be</code></pre>
@@ -392,7 +477,7 @@
                               <p>The name of the bucket that stores the object being copied.</p>
                               
                               <p><b>Example Entry</b></p>
-                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">mybucket</code></pre>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">awsexamplebucket</code></pre>
                               </dd>
                            
                            
@@ -405,7 +490,7 @@
                                     %z]</code></p>
                               
                               <p><b>Example Entry</b></p>
-                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">[06/Feb/2014:00:00:38 +0000]</code></pre>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">[06/Feb/2019:00:00:38 +0000]</code></pre>
                               </dd>
                            
                            
@@ -413,8 +498,8 @@
                            
                            <dd>
                               
-                              <p>The apparent Internet address of the requester. Intermediate proxies
-                                 and firewalls might obscure the actual address of the machine making the
+                              <p>The apparent internet address of the requester. Intermediate proxies and
+                                 firewalls might obscure the actual address of the machine making the
                                  request.
                               </p>
                               
@@ -443,9 +528,7 @@
                            
                            <dd>
                               
-                              <p>The request ID is a string generated by Amazon S3 to uniquely identify
-                                 each request.
-                              </p>
+                              <p>A string generated by Amazon S3 to uniquely identify each request.</p>
                               
                               <p><b>Example Entry</b></p>
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">3E57427F33A59F07</code></pre>
@@ -476,7 +559,7 @@
                               </p>
                               
                               <p><b>Example Entry</b></p>
-                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">/photos/2014/08/puppy.jpg</code></pre>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">/photos/2019/08/puppy.jpg</code></pre>
                               </dd>
                            
                            
@@ -487,7 +570,7 @@
                               <p>The Request-URI part of the HTTP request message.</p>
                               
                               <p><b>Example Entry</b></p>
-                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">&quot;GET /mybucket/photos/2014/08/puppy.jpg?x-foo=bar&quot;</code></pre>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">&quot;GET /awsexamplebucket/photos/2019/08/puppy.jpg?x-foo=bar&quot;</code></pre>
                               </dd>
                            
                            
@@ -576,8 +659,8 @@
                            
                            <dd>
                               
-                              <p>The value of the HTTP Referrer header, if present. HTTP user-agents
-                                 (e.g. browsers) typically set this header to the URL of the linking or
+                              <p>The value of the HTTP Referrer header, if present. HTTP user-agents (for
+                                 example, browsers) typically set this header to the URL of the linking or
                                  embedding page when making a request.
                               </p>
                               
@@ -602,26 +685,131 @@
                            <dd>
                               
                               <p>The version ID of the object being copied or &quot;-&quot; if the
-                                 x-amz-copy-source header didn&#x2019;t specify a  <code class="code">versionId</code> parameter as part of the copy source.
+                                 <code class="code">x-amz-copy-source</code> header didn&#x2019;t specify a
+                                 <code class="code">versionId</code> parameter as part of the copy source.
                               </p>
                               
                               <p><b>Example Entry</b></p>
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">3HL4kqtJvjVBH40Nrjfkd</code></pre>
                               </dd>
                            
+                           
+                           <dt><b><span class="term">Host Id</span></b></dt>
+                           
+                           <dd>
+                              
+                              <p>The x-amz-id-2 or Amazon S3 extended request ID.</p>
+                              
+                              <p><b>Example Entry</b></p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">s9lzHYrFp76ZVxRcpX9+5cjAnEH2ROuNkd2BHfIa6UkFVdtjf5mKR3/eTPFvsiP/XV/VLi31234=</code></pre>
+                              </dd>
+                           
+                           
+                           <dt><b><span class="term">Signature Version</span></b></dt>
+                           
+                           <dd>
+                              
+                              <p>The signature version, <code class="code">SigV2</code> or <code class="code">SigV4</code>, that was
+                                 used to authenticate the request or a <code class="code">-</code> for unauthenticated
+                                 requests.
+                              </p>
+                              
+                              <p><b>Example Entry</b></p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">SigV2</code></pre>
+                              </dd>
+                           
+                           
+                           <dt><b><span class="term">Cipher Suite</span></b></dt>
+                           
+                           <dd>
+                              
+                              <p>The Secure Sockets Layer (SSL) cipher that was negotiated for HTTPS request or a <code class="code">-</code> for HTTP.
+                              </p>
+                              
+                              <p><b>Example Entry</b></p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">ECDHE-RSA-AES128-GCM-SHA256</code></pre> 
+                              </dd>
+                           
+                           
+                           <dt><b><span class="term">Authentication Type</span></b></dt>
+                           
+                           <dd>
+                              
+                              <p>The type of request authentication used, <code class="code">AuthHeader</code> for authentication headers,
+                                 <code class="code">QueryString</code> for query string (pre-signed URL) or a <code class="code">-</code> for unauthenticated requests.
+                              </p>
+                              
+                              <p><b>Example Entry</b></p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">AuthHeader</code></pre> 
+                              </dd>
+                           
+                           
+                           <dt><b><span class="term">Host Header</span></b></dt>
+                           
+                           <dd>
+                              
+                              <p>The endpoint used to connect to Amazon S3</p>
+                              
+                              <p><b>Example Entry</b></p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">s3-us-west-2.amazonaws.com</code></pre> 
+                              
+                              </dd>
+                           
+                           
+                           <dt><b><span class="term">TLS version</span></b></dt>
+                           
+                           <dd>
+                              
+                              <p>The Transport Layer Security (TLS) version negotiated by the client. The value
+                                 is one of following: <code class="code">TLSv1</code>, <code class="code">TLSv1.1</code>,
+                                 <code class="code">TLSv1.2</code>; or <code class="code">-</code> if TLS wasn&apos;t used.
+                              </p>
+                              
+                              <p><b>Example Entry</b></p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">TLSv1.2</code></pre> 
+                              </dd>
+                           
                         </dl>
-                     </div> 
+                     </div>
+                     
+                     <h2 id="LogFormatCustom">Custom Access Log Information</h2>
                      
                      
+                     <p>You can include custom information to be stored in the access log record for a request
+                        by adding a custom query-string parameter to the URL for the request. Amazon S3 ignores
+                        query-string parameters that begin with &quot;x-&quot;, but includes those parameters in the
+                        access log record for the request, as part of the <code class="code">Request-URI</code> field of the
+                        log record. For example, a <code class="code">GET</code> request for
+                        &quot;s3.amazonaws.com/awsexamplebucket/photos/2019/08/puppy.jpg?x-user=johndoe&quot; works
+                        the same as
+                        the same request for &quot;s3.amazonaws.com/awsexamplebucket/photos/2019/08/puppy.jpg&quot;,
+                        except that
+                        the &quot;x-user=johndoe&quot; string is included in the <code class="code">Request-URI</code> field for the
+                        associated log record. This functionality is available in the REST interface
+                        only.
+                     </p>
+                     
+                     <h2 id="LogFormatExtensible">Programming Considerations for Extensible Server Access Log Format</h2>
+                     
+                     
+                     <p>From time to time, we might extend the access log record format by adding new fields
+                        to the end of each line. Code that parses server access logs must be written to handle
+                        trailing fields that it does not understand. 
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -631,7 +819,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="enable-logging-programming.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="deleting-log-files-lifecycle.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -640,14 +830,18 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
+                        <li class="pagetoc" name="Additional Logging for Copy Operations "><a class="pagetoc" href="#AdditionalLoggingforCopyOperations">Additional Logging for Copy Operations </a></li>
                         <li class="pagetoc" name="Custom Access Log Information"><a class="pagetoc" href="#LogFormatCustom">Custom Access Log Information</a></li>
                         <li class="pagetoc" name="Programming Considerations for Extensible Server Access Log Format"><a class="pagetoc" href="#LogFormatExtensible">Programming Considerations for Extensible Server Access Log Format</a></li>
-                        <li class="pagetoc" name="Additional Logging for Copy Operations "><a class="pagetoc" href="#AdditionalLoggingforCopyOperations">Additional Logging for Copy Operations </a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

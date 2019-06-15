@@ -1,0 +1,344 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Using Tags to Control Access to API Gateway
+         Resources - Amazon API Gateway
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="apigateway-tagging.html" title="Tagging Your API Gateway Resources">
+      <link rel="prev" href="apigateway-tagging-supported-resources.html" title="API Gateway Resources That Can Be
+                Tagged">
+      <link rel="next" href="api-ref.html" title="">
+      <meta name="description" content="Conditions in AWS Identity and Access Management policies are part of the syntax that you use to specify permissions to API Gateway resources. For details about specifying IAM policies, see . In API Gateway, resources can have tags, and some actions can include tags. When you create an IAM policy, you can use tag condition keys to control:">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon API Gateway">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-tagging-iam-policy.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-tagging.html">Tagging Your API Gateway Resources</a> &#xBB; <span class="breadcrumb">Using Tags to Control Access to API Gateway
+                                    Resources</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="apigateway-tagging-iam-policy">Using Tags to Control Access to API Gateway
+                        Resources
+                     </h1>
+                     <p>Conditions in AWS Identity and Access Management policies are part of the syntax that
+                        you use to specify
+                        permissions to API Gateway resources. For details about specifying IAM policies, see
+                        <a href="permissions.html">Control Access to an API with IAM Permissions</a>. In API Gateway, resources can have tags, and some actions can
+                        include tags. When you create an IAM policy, you can use tag condition keys to
+                        control:
+                     </p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Which users can perform actions on an API Gateway resource, based on tags that the
+                                 resource already has.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>What tags can be passed in an action&apos;s request.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Whether specific tag keys can be used in a request.</p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <p>Using tag-based access control can allow for finer control than API-level control
+                        as
+                        well as more dynamic control than resource-based access control. IAM policies can
+                        be
+                        created that allow or disallow an operation based on tags provided in the request
+                        (request tags) or tags on the resource that is being operated on (resource tags).
+                        In
+                        general, resource tags are for resources that already exist. Request tags are for
+                        when
+                        you&apos;re creating new resources.
+                     </p>
+                     <p>For the complete syntax and semantics of tag condition keys, see <a href="./IAM/latest/UserGuide/access_tags.html">Controlling Access
+                           Using Tags</a> in the <em>IAM User Guide</em>.
+                     </p>
+                     <p>The following examples demonstrate how to specify tag conditions in policies for API
+                        Gateway
+                        users.
+                     </p>
+                     
+                     <h2 id="apigateway-tagging-iam-policy-example-1">Example 1: Limit actions
+                        based on resource tags
+                     </h2>
+                     
+                     <p>The following example policy grants users permission to perform <code class="code">GET</code>
+                        actions on all resources. In addition, if a resource has a tag named
+                        <code class="code">iamrole</code> with a value of <code class="code">readWrite</code>, the policy grants
+                        users permission to perform all actions on the resource.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Action&quot;: &quot;apigateway:GET&quot;,
+      &quot;Resource&quot;: &quot;*&quot;
+    },
+    {
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Action&quot;: &quot;apigateway:*&quot;,
+      &quot;Resource&quot;: &quot;*&quot;,
+      &quot;Condition&quot;: {
+        &quot;StringEquals&quot;: {
+          &quot;aws:ResourceTag/iamrole&quot;: &quot;readWrite&quot;
+        }
+      }
+    }
+  ]
+}</code></pre>
+                     
+                     <h2 id="apigateway-tagging-iam-policy-example-2">Example 2: Limit actions
+                        based on tags in the request
+                     </h2>
+                     
+                     <p>The following example policy specifies that:</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>When the user creates a new stage, the request to create the stage must
+                                 contain a tag named <code class="code">stage</code>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The value of the <code class="code">stage</code> tag must be <code class="code">beta</code>,
+                                 <code class="code">gamma</code>, or <code class="code">prod</code>. Otherwise, the request to
+                                 create the stage is denied.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Action&quot;: [
+        &quot;apigateway:*&quot;
+      ],
+      &quot;Resource&quot;: [
+        &quot;*&quot;
+      ]
+    },
+    {
+      &quot;Effect&quot;: &quot;Deny&quot;,
+      &quot;Action&quot;: &quot;apigateway:POST&quot;,
+      &quot;Resource&quot;: &quot;arn:aws:apigateway:*::/restapis/*/stages&quot;,
+      &quot;Condition&quot;: {
+        &quot;Null&quot;: {
+          &quot;aws:RequestTag/stage&quot;: &quot;true&quot;
+        }
+      }
+    },
+    {
+      &quot;Effect&quot;: &quot;Deny&quot;,
+      &quot;Action&quot;: &quot;apigateway:POST&quot;,
+      &quot;Resource&quot;: &quot;arn:aws:apigateway:*::/restapis/*/stages&quot;,
+      &quot;Condition&quot;: {
+        &quot;ForAnyValue:StringNotEquals&quot;: {
+          &quot;aws:RequestTag/stage&quot;: [
+            &quot;beta&quot;,
+            &quot;gamma&quot;,
+            &quot;prod&quot;
+          ]
+        }
+      }
+    }
+  ]
+}</code></pre>
+                     
+                     <h2 id="apigateway-tagging-iam-policy-example-3">Example 3: Deny actions
+                        based on resource tags
+                     </h2>
+                     
+                     <p>The following example policy allows users to perform all actions on API Gateway
+                        resources by default. If a resource has a tag named <code class="code">stage</code> with a value
+                        of <code class="code">prod</code>, users are denied permission to perform modifications
+                        (<code class="code">PATCH</code>, <code class="code">PUT</code>, <code class="code">POST</code>, <code class="code">DELETE</code>)
+                        on the resource.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Action&quot;: &quot;apigateway:*&quot;,
+      &quot;Resource&quot;: &quot;*&quot;
+    },
+    {
+      &quot;Effect&quot;: &quot;Deny&quot;,
+      &quot;Action&quot;: [
+        &quot;apigateway:PATCH&quot;,
+        &quot;apigateway:PUT&quot;,
+        &quot;apigateway:POST&quot;,
+        &quot;apigateway:DELETE&quot;
+      ],
+      &quot;Resource&quot;: &quot;*&quot;,
+      &quot;Condition&quot;: {
+        &quot;StringEquals&quot;: {
+          &quot;aws:ResourceTag/stage&quot;: &quot;prod&quot;
+        }
+      }
+    }
+  ]
+}</code></pre>
+                     
+                     <h2 id="apigateway-tagging-iam-policy-example-4">Example 4: Allow actions
+                        based on resource tags
+                     </h2>
+                     
+                     <p>This example policy allows users to perform all actions on all API Gateway resources
+                        by
+                        default. If a resource has a tag named <code class="code">environment</code> whose value is
+                        <code class="code">prod</code>, users are not allowed to perform any operations on the
+                        resource.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Action&quot;: &quot;apigateway:*&quot;,
+      &quot;Resource&quot;: &quot;*&quot;
+    },
+    {
+      &quot;Effect&quot;: &quot;Deny&quot;,
+      &quot;Action&quot;: [
+        &quot;apigateway:*&quot;
+      ],
+      &quot;Resource&quot;: &quot;*&quot;,
+      &quot;Condition&quot;: {
+        &quot;StringEquals&quot;: {
+          &quot;aws:ResourceTag/environment&quot;: &quot;prod&quot;
+        }
+      }
+    }
+  ]
+}</code></pre>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="apigateway-tagging-supported-resources.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="api-ref.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Example 1: Limit actions
+                    based on resource tags"><a class="pagetoc" href="#apigateway-tagging-iam-policy-example-1">Example 1: Limit actions
+                              based on resource tags</a></li>
+                        <li class="pagetoc" name="Example 2: Limit actions
+                    based on tags in the request"><a class="pagetoc" href="#apigateway-tagging-iam-policy-example-2">Example 2: Limit actions
+                              based on tags in the request</a></li>
+                        <li class="pagetoc" name="Example 3: Deny actions
+                    based on resource tags"><a class="pagetoc" href="#apigateway-tagging-iam-policy-example-3">Example 3: Deny actions
+                              based on resource tags</a></li>
+                        <li class="pagetoc" name="Example 4: Allow actions
+                    based on resource tags"><a class="pagetoc" href="#apigateway-tagging-iam-policy-example-4">Example 4: Allow actions
+                              based on resource tags</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon API Gateway';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

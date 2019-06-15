@@ -1,20 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>CRR Walkthrough 4: Direct Amazon S3 to Replicate Objects
-         Created with Server-Side Encryption Using AWS KMS-Managed Encryption Keys - Amazon Simple Storage Service
-      </title>
+      <title>Example 4: Replicating Encrypted Objects - Amazon Simple Storage Service</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="crr-addtional-walkthroughs.html" title="Cross-Region Replication: Additional
-        Walkthroughs">
-      <link rel="prev" href="crr-walkthrough-3.html" title="Walkthrough 3: Change Replica Owner to Destination Bucket
-        Owner">
-      <link rel="next" href="crr-using-console.html" title="Setting Up Cross-Region Replication Using the Console">
-      <meta name="description" content="You can have objects in your source bucket that are created using server-side encryption using AWS KMS-managed keys. By default, Amazon S3 does not replicate these objects. But you can add optional configuration to the bucket replication configuration to direct Amazon S3 to replicate these objects.">
+      <link rel="up" href="crr-example-walkthroughs.html" title="Cross-Region Replication (CRR) Walkthroughs">
+      <link rel="prev" href="crr-walkthrough-3.html" title="Example 3: Change Replica Owner When Source and
+            Destination Buckets Are Owned by Different AWS Accounts">
+      <link rel="next" href="crr-status.html" title="Cross-Region Replication Status Information">
+      <meta name="description" content="TBD">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/crr-walkthrough-4.html">
@@ -24,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -36,56 +35,323 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="crr.html">Cross-Region Replication (CRR)</a> &#xBB; <a href="crr-example-walkthroughs.html">Cross-Region Replication Examples</a> &#xBB; <a href="crr-addtional-walkthroughs.html">Cross-Region Replication: Additional
-                                    Walkthroughs</a> &#xBB; <span class="breadcrumb">CRR Walkthrough 4: Direct Amazon S3 to Replicate Objects
-                                    Created with Server-Side Encryption Using AWS KMS-Managed Encryption Keys</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="crr.html">Cross-Region Replication</a> &#xBB; <a href="crr-example-walkthroughs.html">Cross-Region Replication (CRR) Walkthroughs</a> &#xBB; <span class="breadcrumb">Example 4: Replicating Encrypted Objects</span></div>
                            </td>
                         </tr>
                      </tbody></table>
-                     <div></div>
-                     <h1 class="topictitle" id="crr-walkthrough-4">CRR Walkthrough 4: Direct Amazon S3 to Replicate Objects
-                        Created with Server-Side Encryption Using AWS KMS-Managed Encryption Keys
-                     </h1>
-                     <p>You can have objects in your source bucket that are created using server-side
-                        encryption using AWS KMS-managed keys. By default, Amazon S3 does not replicate these
-                        objects.
-                        But you can add optional configuration to the bucket replication configuration to
-                        direct
-                        Amazon S3 to replicate these objects. 
-                     </p>
-                     <p>For this exercise, you first set up replication configuration in a cross-account
-                        scenario (source and destination buckets are owned by different AWS accounts). This
-                        section then provides instructions for you to update the configuration to direct Amazon
-                        S3 to
-                        replicate objects encrypted with AWS KMS-managed keys.
-                     </p>
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p>Although this example uses an existing walkthrough to set up CRR in a cross-account
-                           scenario, replication of SSE-KMS encrypted objects can be also configured when both
-                           the
-                           source and destination buckets have the same owner.
-                        </p>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
                      </div>
-                     <ol>
-                        <li>
-                           <p>Complete CRR walkthrough 2. For instructions, see <a href="crr-walkthrough-2.html">Walkthrough 2: Configure Cross-Region Replication Where Source
-                                 and Destination Buckets Are Owned by Different AWS Accounts</a>.
+                     <div></div>
+                     <h1 class="topictitle" id="crr-walkthrough-4">Example 4: Replicating Encrypted Objects</h1>
+                     <p>By default, Amazon S3 doesn&apos;t replicate objects that are stored at rest using server-side
+                        encryption with AWS KMS-managed keys. To replicate encrypted objects, you modify the
+                        bucket
+                        replication configuration to tell Amazon S3 to replicate these objects. This example
+                        explains how
+                        to use the Amazon S3 console and the AWS Command Line Interface (AWS CLI) to change
+                        the bucket replication
+                        configuration to enable replicating encrypted objects. For more information, see <a href="crr-replication-config-for-kms-objects.html">CRR Additional Configuration:
+                           Replicating Objects Created with Server-Side Encryption (SSE) Using AWS KMS-Managed
+                           Encryption Keys</a>. 
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul></ul>
+                     </div>
+                     <div class="collapsible">
+                        <div id="crr-ex4-console" class="collapsible-header">Replicating Encrypted Objects (Console)</div>
+                        <div class="collapsible-content">
+                           
+                           
+                           <p>For step-by-step instructions, see <a href="./AmazonS3/latest/user-guide/enable-crr.html">How
+                                 Do I Add a Cross-Region Replication (CRR) Rule to an S3 Bucket?</a> in the
+                              <em>Amazon Simple Storage Service Console User Guide</em>. This topic provides
+                              instructions for setting replication configuration when buckets are owned by same
+                              and different AWS accounts.
                            </p>
                            
-                        </li>
-                        <li>
+                        </div>
+                        <div id="crr-ex4-cli" class="collapsible-header">Replicating Encrypted Objects (AWS CLI)</div>
+                        <div class="collapsible-content">
                            
-                           <p>Replace the replication configuration on the source bucket with the following
-                              (which adds the options that direct Amazon S3 to replicate source objects encrypted
-                              using
-                              AWS KMS keys). 
+                           
+                           <p>To replicate encrypted objects with the AWS CLI, you create buckets, enable
+                              versioning on the buckets, create an IAM role that gives Amazon S3 permission to
+                              replicate objects, and add the replication configuration to the source bucket. The
+                              replication configuration provides information related to replicating objects
+                              encrypted using KMS keys. The IAM role permission include necessary permissions to
+                              replicate the encrypted objects. You also test the setup.
                            </p>
                            
-                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"> &lt;ReplicationConfiguration&gt;
-  &lt;Role&gt;<em class="replaceable"><code>IAM role ARN</code></em>&lt;/Role&gt;
+                           <p class="title"><b>To replicate encrypted objects (AWS CLI)</b></p>
+                           <ol>
+                              <li>
+                                 
+                                 <p>In this example, we create both the <em class="replaceable"><code>source</code></em> and
+                                    <em class="replaceable"><code>destination</code></em> buckets in the same AWS account.
+                                    Set a credentials profile for the AWS CLI. In this example, we use the profile
+                                    name <code class="code">acctA</code>. For more information about setting credential
+                                    profiles, see <a href="./cli/latest/userguide/cli-multiple-profiles.html">Named Profiles</a> in the AWS Command Line Interface User Guide. 
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Create the <em class="replaceable"><code>source</code></em> bucket and enable versioning
+                                    on it. In this example, we create the <em class="replaceable"><code>source</code></em>
+                                    bucket in the US East (N. Virginia) (us-east-1) Region.
+                                 </p>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws s3api create-bucket \
+--bucket <em class="replaceable"><code>source</code></em> \
+--region us-east-1 \
+--profile acctA</code></pre>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws s3api put-bucket-versioning \
+--bucket <em class="replaceable"><code>source</code></em> \
+--versioning-configuration Status=Enabled \
+--profile acctA</code></pre>
+                                 </li>
+                              <li>
+                                 
+                                 <p>Create the <em class="replaceable"><code>destination</code></em> bucket and enable
+                                    versioning on it. In this example, we create the
+                                    <em class="replaceable"><code>destination</code></em> bucket in the US West (Oregon)
+                                    (us-west-2) Region. 
+                                 </p>
+                                 
+                                 <div class="aws-note">
+                                    <p class="aws-note">Note</p>
+                                    <p>To set up replication configuration when both
+                                       <em class="replaceable"><code>source</code></em> and
+                                       <em class="replaceable"><code>destination</code></em> buckets are in the same AWS
+                                       account, you use the same profile. In this example, we use
+                                       <code class="code">acctA</code>. To test replication configuration when the
+                                       buckets are owned by different AWS accounts, you specify different
+                                       profiles for each. 
+                                    </p>
+                                 </div>
+                                 
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws s3api create-bucket \
+--bucket <em class="replaceable"><code>destination</code></em> \
+--region us-west-2 \
+--create-bucket-configuration LocationConstraint=us-west-2 \
+--profile acctA</code></pre>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws s3api put-bucket-versioning \
+--bucket <em class="replaceable"><code>destination</code></em> \
+--versioning-configuration Status=Enabled \
+--profile acctA</code></pre>
+                                 </li>
+                              <li>
+                                 
+                                 <p>Create an IAM role. You specify this role in the replication
+                                    configuration that you add to the <em class="replaceable"><code>source</code></em> bucket
+                                    later. Amazon S3 assumes this role to replicate objects on your behalf. You
+                                    create an IAM role in two steps:
+                                 </p>
+                                 
+                                 <div class="itemizedlist">
+                                    
+                                    
+                                    
+                                    <ul class="itemizedlist" type="disc">
+                                       <li class="listitem">
+                                          
+                                          <p>Create a role</p>
+                                          
+                                       </li>
+                                       <li class="listitem">
+                                          
+                                          <p>Attach a
+                                             permissions
+                                             policy to the role
+                                          </p>
+                                          
+                                       </li>
+                                    </ul>
+                                 </div>
+                                 
+                                 <ol>
+                                    <li>
+                                       
+                                       <p>Create an IAM role.</p>
+                                       
+                                       <ol>
+                                          <li>
+                                             
+                                             <p>Copy the following trust policy and save it to a file
+                                                called <code class="code">s3-role-trust-policy-kmsobj.json</code> in the
+                                                current directory on your local computer. This policy grants
+                                                Amazon S3 service principal permissions to assume the role so
+                                                Amazon S3 can perform tasks on your behalf.
+                                             </p>
+                                             <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+   &quot;Version&quot;:&quot;2012-10-17&quot;,
+   &quot;Statement&quot;:[
+      {
+         &quot;Effect&quot;:&quot;Allow&quot;,
+         &quot;Principal&quot;:{
+            &quot;Service&quot;:&quot;s3.amazonaws.com&quot;
+         },
+         &quot;Action&quot;:&quot;sts:AssumeRole&quot;
+      }
+   ]
+}</code></pre>
+                                             </li>
+                                          <li>
+                                             
+                                             <p>Create a role:</p>
+                                             <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">$ </code>aws iam create-role \
+--role-name <em class="replaceable"><code>crrRolekmsobj</code></em> \
+--assume-role-policy-document file://s3-role-trust-policy-kmsobj.json  \
+--profile acctA</code></pre>
+                                             </li>
+                                       </ol>
+                                       
+                                    </li>
+                                    <li>
+                                       
+                                       <p>Attach a permissions policy to the role. This policy grants
+                                          permissions for various Amazon S3 bucket and object actions. 
+                                       </p>
+                                       
+                                       <ol>
+                                          <li>
+                                             
+                                             <p>Copy the following permissions policy and save it to a
+                                                file named
+                                                <code class="code">s3-role-permissions-policykmsobj.json</code> in
+                                                the current directory on your local computer. You create an
+                                                IAM role and attach the policy to it later. 
+                                             </p>
+                                             
+                                             <div class="aws-note">
+                                                <p class="aws-note">Important</p>
+                                                <p>
+                                                   In the permission policy you specify the AWS KMS key IDs that will be used for encryption
+                                                   of <em>source</em>
+                                                   and <code class="code">destination</code> buckets. You must create two separate KMS keys for the <code class="code">source</code> and <code class="code">destination</code>
+                                                   buckets.  KMS keys are never shared outside the AWS Region in which they were created.
+                                                   
+                                                </p>
+                                             </div>
+                                             <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+   &quot;Version&quot;:&quot;2012-10-17&quot;,
+   &quot;Statement&quot;:[
+      {
+         &quot;Action&quot;:[
+            &quot;s3:ListBucket&quot;,
+            &quot;s3:GetReplicationConfiguration&quot;,
+            &quot;s3:GetObjectVersionForReplication&quot;,
+            &quot;s3:GetObjectVersionAcl&quot;
+         ],
+         &quot;Effect&quot;:&quot;Allow&quot;,
+         &quot;Resource&quot;:[
+            &quot;arn:aws:s3:::<em class="replaceable"><code>source</code></em>&quot;,
+            &quot;arn:aws:s3:::<em class="replaceable"><code>source</code></em>/*&quot;
+         ]
+      },
+      {
+         &quot;Action&quot;:[
+            &quot;s3:ReplicateObject&quot;,
+            &quot;s3:ReplicateDelete&quot;,
+            &quot;s3:ReplicateTags&quot;,
+            &quot;s3:GetObjectVersionTagging&quot;
+         ],
+         &quot;Effect&quot;:&quot;Allow&quot;,
+         &quot;Condition&quot;:{
+            &quot;StringLikeIfExists&quot;:{
+               &quot;s3:x-amz-server-side-encryption&quot;:[
+                  &quot;aws:kms&quot;,
+                  &quot;AES256&quot;
+               ],
+               &quot;s3:x-amz-server-side-encryption-aws-kms-key-id&quot;:[
+                  &quot;<em class="replaceable"><code>AWS KMS key IDs(in ARN format) to use for encrypting object replicas</code></em>&quot;  
+               ]
+            }
+         },
+         &quot;Resource&quot;:&quot;arn:aws:s3:::<em class="replaceable"><code>destination</code></em>/*&quot;
+      },
+      {
+         &quot;Action&quot;:[
+            &quot;kms:Decrypt&quot;
+         ],
+         &quot;Effect&quot;:&quot;Allow&quot;,
+         &quot;Condition&quot;:{
+            &quot;StringLike&quot;:{
+               &quot;kms:ViaService&quot;:&quot;s3.us-east-1.amazonaws.com&quot;,
+               &quot;kms:EncryptionContext:aws:s3:arn&quot;:[
+                  &quot;arn:aws:s3:::<em class="replaceable"><code>source</code></em>/*&quot;
+               ]
+            }
+         },
+         &quot;Resource&quot;:[
+            &quot;<em class="replaceable"><code>AWS KMS key IDs(in ARN format) used to encrypt source objects.</code></em>&quot; 
+         ]
+      },
+      {
+         &quot;Action&quot;:[
+            &quot;kms:Encrypt&quot;
+         ],
+         &quot;Effect&quot;:&quot;Allow&quot;,
+         &quot;Condition&quot;:{
+            &quot;StringLike&quot;:{
+               &quot;kms:ViaService&quot;:&quot;s3.us-west-2.amazonaws.com&quot;,
+               &quot;kms:EncryptionContext:aws:s3:arn&quot;:[
+                  &quot;arn:aws:s3:::<em class="replaceable"><code>destination</code></em>/*&quot;
+               ]
+            }
+         },
+         &quot;Resource&quot;:[
+            &quot;<em class="replaceable"><code>AWS KMS key IDs(in ARN format) to use for encrypting object replicas</code></em>&quot; 
+         ]
+      }
+   ]
+}</code></pre>
+                                             </li>
+                                          <li>
+                                             
+                                             <p>Create a policy and attach it to the role:</p>
+                                             <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">$ </code>aws iam put-role-policy \
+--role-name crrRolekmsobj \
+--policy-document file://s3-role-permissions-policykmsobj.json \
+--policy-name crrRolechangeownerPolicy \
+--profile acctA</code></pre>
+                                             </li>
+                                       </ol>
+                                       
+                                    </li>
+                                 </ol>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Add the following replication configuration to the
+                                    <em class="replaceable"><code>source</code></em> bucket. It tells Amazon S3 to replicate
+                                    objects with the <code class="code">Tax/</code> prefix to the
+                                    <em class="replaceable"><code>destination</code></em> bucket. 
+                                 </p>
+                                 
+                                 <div class="aws-note">
+                                    <p class="aws-note">Important</p>
+                                    <p>In the replication configuration you specify the IAM role that Amazon S3
+                                       can assume. You can do this only if you have the
+                                       <code class="code">iam:PassRole</code> permission. The profile you specify in the
+                                       CLI command must have the permission. For more information, see <a href="./IAM/latest/UserGuide/id_roles_use_passrole.html">Granting a User
+                                          Permissions to Pass a Role to an AWS Service</a> in the
+                                       <em>IAM User Guide</em>.
+                                    </p>
+                                 </div>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="xml "> &lt;ReplicationConfiguration&gt;
+  &lt;Role&gt;<em class="replaceable"><code>IAM-Role-ARN</code></em>&lt;/Role&gt;
   &lt;Rule&gt;
-    &lt;Prefix&gt;Tax&lt;/Prefix&gt;
+    &lt;Status&gt;Enabled&lt;/Status&gt;
+    &lt;Priority&gt;1&lt;/Priority&gt;
+    &lt;DeleteMarkerReplication&gt;
+       &lt;Status&gt;Disabled&lt;/Status&gt;
+    &lt;/DeleteMarkerReplication&gt;
+    &lt;Filter&gt;
+       &lt;Prefix&gt;Tax&lt;/Prefix&gt;
+    &lt;/Filter&gt;
     &lt;Status&gt;Enabled&lt;/Status&gt;
     &lt;SourceSelectionCriteria&gt;
       &lt;SseKmsEncryptedObjects&gt;
@@ -95,204 +361,143 @@
     &lt;Destination&gt;
       &lt;Bucket&gt;arn:aws:s3:::<em class="replaceable"><code>dest-bucket-name</code></em>&lt;/Bucket&gt;
       &lt;EncryptionConfiguration&gt;
-        &lt;ReplicaKmsKeyID&gt;<em class="replaceable"><code>AWS KMS key ID to use for encrypting object replicas.</code></em>&lt;/ReplicaKmsKeyID&gt;
+        &lt;ReplicaKmsKeyID&gt;<em class="replaceable"><code>AWS KMS key IDs to use for encrypting object replicas</code></em>&lt;/ReplicaKmsKeyID&gt;
       &lt;/EncryptionConfiguration&gt;
     &lt;/Destination&gt;
   &lt;/Rule&gt;
 &lt;/ReplicationConfiguration&gt;</code></pre>
-                           
-                           <p>In this example, you can use either the AWS CLI or the AWS SDK to add the replication
-                              configuration. 
-                           </p>
-                           
-                           <div class="itemizedlist">
-                              
-                              
-                              
-                              <ul class="itemizedlist" type="disc">
-                                 <li class="listitem">
-                                    
-                                    <p>Using AWS CLI. </p>
-                                    
-                                    <p>The AWS CLI requires you to specify the replication configuration as JSON. Save
-                                       the following JSON in a file (<code class="code">replication.json</code>). 
-                                    </p>
-                                    <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
-  &quot;Role&quot;: &quot;<em class="replaceable"><code>IAM role ARN</code></em>&quot;,
-  &quot;Rules&quot;: [
-    {
-      &quot;Prefix&quot;: &quot;Tax&quot;,
-      &quot;Status&quot;: &quot;Enabled&quot;,
-	  &quot;SourceSelectionCriteria&quot;: {
-	     &quot;SseKmsEncryptedObjects&quot; : {
-		    &quot;Status&quot; : &quot;Enabled&quot;
-		 }
-	  },
-      &quot;Destination&quot;: {
-        &quot;Bucket&quot;: &quot;arn:aws:s3:::<em class="replaceable"><code>dest-bucket-name</code></em>&quot;,
-		&quot;EncryptionConfiguration&quot; : {
-		   &quot;ReplicaKmsKeyID&quot;: &quot;<em class="replaceable"><code>AWS KMS key ARN(created in the same region as the destination bucket).</code></em>&quot;
-		}
+                                 <p>To add replication configuration to the <em class="replaceable"><code>source</code></em>
+                                    bucket, do the following:
+                                 </p>
+                                 
+                                 <ol>
+                                    <li>
+                                       
+                                       <p>The AWS CLI requires you to specify the replication configuration as
+                                          JSON. Save the following JSON in a file
+                                          (<code class="code">replication.json</code>) in the current directory on your
+                                          local computer. 
+                                       </p>
+                                       <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+   &quot;Role&quot;:&quot;<em class="replaceable"><code>IAM-Role-ARN</code></em>&quot;,
+   &quot;Rules&quot;:[
+      {
+         &quot;Status&quot;:&quot;Enabled&quot;,
+         &quot;Priority&quot;:1,
+         &quot;DeleteMarkerReplication&quot;:{
+            &quot;Status&quot;:&quot;Disabled&quot;
+         },
+         &quot;Filter&quot;:{
+            &quot;Prefix&quot;:&quot;Tax&quot;
+         },
+         &quot;Destination&quot;:{
+            &quot;Bucket&quot;:&quot;arn:aws:s3:::<em class="replaceable"><code>destination</code></em>&quot;,
+            &quot;EncryptionConfiguration&quot;:{
+               &quot;ReplicaKmsKeyID&quot;:&quot;<em class="replaceable"><code>AWS KMS key IDs(in ARN format)  to use for encrypting object replicas</code></em>&quot;
+            }
+         },
+         &quot;SourceSelectionCriteria&quot;:{
+            &quot;SseKmsEncryptedObjects&quot;:{
+               &quot;Status&quot;:&quot;Enabled&quot;
+            }
+         }
       }
-    }
-  ]
+   ]
 }</code></pre>
-                                    <p>Update the JSON by providing the bucket name and role ARN. Then, run the AWS CLI
-                                       command to add replication configuration to your source bucket:
-                                    </p>
-                                    <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ aws s3api put-bucket-replication \
---bucket <em class="replaceable"><code>source-bucket</code></em>&#xA0;\
---replication-configuration file://replication.json  \
---profile accountA</code></pre>
-                                    <p>For instructions on how to set up the AWS CLI, see <a href="policy-eval-walkthrough-download-awscli.html">Setting Up the Tools for the Example Walkthroughs</a>.
-                                    </p>
-                                    
-                                    <p>Account A can use the <code class="code">get-bucket-replication</code> command to retrieve
-                                       the replication configuration:
-                                    </p>
-                                    <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ aws s3api get-bucket-replication \
---bucket <em class="replaceable"><code>source-bucket</code></em> \
---profile accountA</code></pre>
+                                       </li>
+                                    <li>
+                                       
+                                       <p>Edit the JSON to provide values for the
+                                          <em class="replaceable"><code>destination</code></em> bucket, <em class="replaceable"><code>KMS ID ARN</code></em> and
+                                          <em class="replaceable"><code>IAM-role-ARN</code></em>. Save the
+                                          changes.
+                                       </p>
+                                       
                                     </li>
-                                 <li class="listitem">
-                                    
-                                    <p>Using the AWS SDK for Java.</p>
-                                    
-                                    <p>For a code example, see <a href="crr-using-java.html">Setting Up Cross-Region Replication Using the AWS SDK for Java</a>. 
-                                    </p>
-                                    
-                                 </li>
-                              </ul>
-                           </div>
+                                    <li>
+                                       
+                                       <p>Add the replication configuration to your
+                                          <em class="replaceable"><code>source</code></em> bucket. Be sure to provide the
+                                          <em class="replaceable"><code>source</code></em> bucket name.
+                                       </p>
+                                       <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">$ </code>aws s3api put-bucket-replication \
+--replication-configuration file://replication.json \
+--bucket <em class="replaceable"><code>source</code></em> \
+--profile acctA</code></pre>
+                                       </li>
+                                 </ol>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Test the setup to verify that encrypted objects are replicated. In the
+                                    Amazon S3 console:
+                                 </p>
+                                 
+                                 <ol>
+                                    <li>
+                                       
+                                       <p>Sign in to the AWS Management Console and open the Amazon S3
+                                          console at <a href="https://console.aws.amazon.com/s3/" target="_blank">https://console.aws.amazon.com/s3/</a>.
+                                       </p>
+                                       
+                                    </li>
+                                    <li>
+                                       
+                                       <p>In the <em class="replaceable"><code>source</code></em> bucket, create a folder
+                                          named <code>Tax</code>. 
+                                       </p>
+                                       
+                                    </li>
+                                    <li>
+                                       
+                                       <p>Add sample objects to the folder. Be sure to choose the encryption
+                                          option and specify your KMS key to encrypt the objects. 
+                                       </p>
+                                       
+                                    </li>
+                                    <li>
+                                       
+                                       <p>Verify that the <em class="replaceable"><code>destination</code></em> bucket
+                                          contains the object replicas and that they are encrypted using the
+                                          KMS encryption key that you specified in the configuration.
+                                       </p>
+                                       
+                                    </li>
+                                 </ol>
+                                 
+                              </li>
+                           </ol>
                            
-                        </li>
-                        <li>
-                           <p>Update the permission policy of the IAM role by adding the permissions for AWS KMS
-                              actions. 
+                        </div>
+                        <div id="crr-ex4-sdk" class="collapsible-header">Replicating Encrypted Objects (AWS SDK)</div>
+                        <div class="collapsible-content">
+                           
+                           
+                           <p>
+                              For code example to add replication configuration, see <a href="crr-walkthrough1.html#crr-ex1-sdk">Configure CRR When Source and Destination Buckets Are
+                                 Owned by the Same AWS Account (AWS SDK)</a>. You will need to 
+                              modify replication configuration appropriately. For conceptual information, see <a href="crr-replication-config-for-kms-objects.html">CRR Additional Configuration:
+                                 Replicating Objects Created with Server-Side Encryption (SSE) Using AWS KMS-Managed
+                                 Encryption Keys</a>.
+                              
                            </p>
                            
-                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
-   &quot;Action&quot;:[
-      &quot;kms:Decrypt&quot;
-   ],
-   &quot;Effect&quot;:&quot;Allow&quot;,
-   &quot;Condition&quot;:{
-      &quot;StringLike&quot;:{
-         &quot;kms:ViaService&quot;:&quot;s3.<em class="replaceable"><code>source-bucket-region</code></em>.amazonaws.com&quot;,
-         &quot;kms:EncryptionContext:aws:s3:arn&quot;:[
-            &quot;arn:aws:s3:::<em class="replaceable"><code>source-bucket-name</code></em>/Tax&quot;
-         ]
-      }
-   },
-   &quot;Resource&quot;:[
-      &quot;<em class="replaceable"><code>List of AWS KMS key IDs used to encrypt source objects.</code></em>&quot;
-   ]
-},
-{
-   &quot;Action&quot;:[
-      &quot;kms:Encrypt&quot;
-   ],
-   &quot;Effect&quot;:&quot;Allow&quot;,
-   &quot;Condition&quot;:{
-      &quot;StringLike&quot;:{
-         &quot;kms:ViaService&quot;:&quot;s3.<em class="replaceable"><code>dest-bucket-region</code></em>.amazonaws.com&quot;,
-         &quot;kms:EncryptionContext:aws:s3:arn&quot;:[
-            &quot;arn:aws:s3:::<em class="replaceable"><code>dest-bucket-name</code></em>/Tax&quot;
-         ]
-      }
-   },
-   &quot;Resource&quot;:[
-      &quot;<em class="replaceable"><code>List of AWS KMS key IDs that you want S3 to use to encrypt object replicas.</code></em>&quot;
-   ]
-}</code></pre>
-                           
-                           
-                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
-    &quot;Version&quot;: &quot;2012-10-17&quot;,
-    &quot;Statement&quot;: [
-        {
-            &quot;Effect&quot;: &quot;Allow&quot;,
-            &quot;Action&quot;: [
-                &quot;s3:GetObjectVersionForReplication&quot;,
-                &quot;s3:GetObjectVersionAcl&quot;
-            ],
-            &quot;Resource&quot;: [
-                &quot;arn:aws:s3:::<em class="replaceable"><code>source-bucket</code></em>/Tax&quot;
-            ]
-        },
-        {
-            &quot;Effect&quot;: &quot;Allow&quot;,
-            &quot;Action&quot;: [
-                &quot;s3:ListBucket&quot;,
-                &quot;s3:GetReplicationConfiguration&quot;
-            ],
-            &quot;Resource&quot;: [
-                &quot;arn:aws:s3:::<em class="replaceable"><code>source-bucket</code></em>&quot;
-            ]
-        },
-        {
-            &quot;Effect&quot;: &quot;Allow&quot;,
-            &quot;Action&quot;: [
-                &quot;s3:ReplicateObject&quot;,
-                &quot;s3:ReplicateDelete&quot;
-            ],
-            &quot;Resource&quot;: &quot;arn:aws:s3:::<em class="replaceable"><code>dest-bucket</code></em>/*&quot;
-        },
-        {
-            &quot;Action&quot;: [
-                &quot;kms:Decrypt&quot;
-            ],
-            &quot;Effect&quot;: &quot;Allow&quot;,
-            &quot;Condition&quot;: {
-                &quot;StringLike&quot;: {
-                    &quot;kms:ViaService&quot;: &quot;s3.<em class="replaceable"><code>source-bucket-region</code></em>.amazonaws.com&quot;,
-                    &quot;kms:EncryptionContext:aws:s3:arn&quot;: [
-                        &quot;arn:aws:s3:::<em class="replaceable"><code>source-bucket</code></em>/Tax*&quot;
-                    ]
-                }
-            },
-            &quot;Resource&quot;: [
-                &quot;<em class="replaceable"><code>List of AWS KMS key IDs used to encrypt source objects.</code></em>&quot;
-            ]
-        },
-        {
-            &quot;Action&quot;: [
-                &quot;kms:Encrypt&quot;
-            ],
-            &quot;Effect&quot;: &quot;Allow&quot;,
-            &quot;Condition&quot;: {
-                &quot;StringLike&quot;: {
-                    &quot;kms:ViaService&quot;: &quot;s3.<em class="replaceable"><code>dest-bucket-region</code></em>.amazonaws.com&quot;,
-                    &quot;kms:EncryptionContext:aws:s3:arn&quot;: [
-                        &quot;arn:aws:s3:::<em class="replaceable"><code>dest-bucket</code></em>/Tax*&quot;
-                    ]
-                }
-            },
-            &quot;Resource&quot;: [
-                &quot;<em class="replaceable"><code>List of AWS KMS key IDs that you want S3 to use to encrypt object replicas.</code></em>&quot;
-            ]
-        }
-    ]
-}</code></pre>
-                           </li>
-                        <li>
-                           
-                           <p>Test the setup. In the console, upload an object to the source bucket (in the
-                              <code class="code">/Tax</code> folder) using the AWS KMS-managed key. Verify that Amazon S3 replicated
-                              the object in the destination bucket.
-                           </p>
-                           
-                        </li>
-                     </ol>
+                        </div>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -301,8 +506,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="crr-walkthrough-3.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="crr-using-console.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="crr-walkthrough-3.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="crr-status.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -310,6 +517,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

@@ -10,11 +10,13 @@
       <link rel="prev" href="AddingObjectstoVersioningEnabledBuckets.html" title="Adding Objects to
 				Versioning-Enabled Buckets">
       <link rel="next" href="RetrievingObjectVersions.html" title="Retrieving Object Versions">
-      <meta name="description" content="How to list Amazon S3 objects in a versioning-enabled bucket.">
+      <meta name="description" content="Retrieve an object listing from a versioning-enabled bucket in Amazon S3.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/list-obj-version-enabled-bucket.html">
@@ -24,7 +26,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -36,12 +38,15 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="DataDurability.html">Protecting Data in Amazon S3</a> &#xBB; <a href="Versioning.html">Using Versioning</a> &#xBB; <a href="manage-objects-versioned-bucket.html">Managing Objects in a Versioning-Enabled
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="DataDurability.html">Protecting Data in Amazon S3</a> &#xBB; <a href="Versioning.html">Using Versioning</a> &#xBB; <a href="manage-objects-versioned-bucket.html">Managing Objects in a Versioning-Enabled
                                     			Bucket</a> &#xBB; <span class="breadcrumb">Listing Objects in a
                                     				Versioning-Enabled Bucket</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="list-obj-version-enabled-bucket">Listing Objects in a
                         				Versioning-Enabled Bucket
@@ -56,16 +61,16 @@
                                  					API</a></li>
                         </ul>
                      </div>
-                     <p>This section provides an example of listing object versions from a
-                        				versioning-enabled bucket. Amazon S3 stores object version information in the
-                        					<em>versions</em> subresource (see <a href="UsingBucket.html#bucket-config-options-intro">Bucket Configuration Options</a>) associated with the bucket. 
+                     <p>This section provides an example of listing object versions from a versioning-enabled
+                        				bucket. Amazon S3 stores object version information in the <em>versions</em>
+                        				subresource (see <a href="UsingBucket.html#bucket-config-options-intro">Bucket Configuration Options</a>) that is associated with the
+                        				bucket. 
                      </p>
                      <h2 id="list-obj-version-enabled-bucket-console">Using the Console</h2>
                      				
                      				
-                     <p>For information about listing object versions in the console,
-                        					see <a href="./AmazonS3/latest/user-guide/view-object-versions.html" target="_blank">
-                           						How Do I See the Versions of an S3 Object?</a> in the Amazon Simple Storage Service Console User Guide. 
+                     <p>For information about listing object versions using the Amazon S3 console, see <a href="./AmazonS3/latest/user-guide/view-object-versions.html"> How Do I See the Versions of
+                           						an S3 Object?</a> in the <em>Amazon Simple Storage Service Console User Guide</em>. 
                      </p>
                      			
                      <h2 id="list-obj-version-enabled-bucket-sdk-examples">Using the AWS
@@ -73,90 +78,103 @@
                      </h2>
                      				
                      				
-                     <p>The code examples in this section retrieve an object listing from a
-                        					version-enabled bucket. Each request returns up to 1000 versions. If you have
-                        					more, you will need to send a series of requests to retrieve a list of all
-                        					versions. To illustrate how pagination works, the code examples limit the
-                        					response to two object versions. If there are more than two object versions in
-                        					the bucket, the response returns the <code class="code">IsTruncated</code> element with the
-                        					value &quot;true&quot; and also includes the <code class="code">NextKeyMarker</code> and
-                        						<code class="code">NextVersionIdMarker</code> elements whose values you can use to
-                        					retrieve the next set of object keys. The code example includes these values
-                        in
-                        					the subsequent request to retrieve the next set of objects.
+                     				
+                     <p>The examples in this section show how to retrieve an object listing from a
+                        					versioning-enabled bucket. Each request returns up to 1,000 versions, unless
+                        you
+                        					specify a lower number. If the bucket contains more versions than this limit,
+                        					you send a series of requests to retrieve the list of all versions. This process
+                        					of returning results in &quot;pages&quot; is called <em>pagination</em>. To
+                        					show how pagination works, the examples limit each response to two object
+                        					versions. After retrieving the first page of results, each example checks to
+                        					determine whether the version list was truncated. If it was, the example
+                        					continues retrieving pages until all versions have been retrieved. 
                      </p>
+                     				
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>The following examples also work with a bucket that isn&apos;t versioning-enabled, or for
+                           objects
+                           						that don&apos;t have individual versions. In those cases, Amazon S3 returns the object
+                           						listing with a version ID of <code class="code">null</code>.
+                        </p>
+                     </div>
                      				
                      <p> For information about using other AWS SDKs, see <a href="https://aws.amazon.com/code/" target="_blank">Sample Code and Libraries</a>. 
                      </p>
                      
                      				
-                     <h3 id="list-obj-version-enabled-bucket-java">Using the AWS SDK for
-                        						Java
-                     </h3>
+                     <h3 id="list-obj-version-enabled-bucket-java">Using the AWS SDK for Java</h3>
                      					
                      					
-                     <p>For information about how to create and test a working sample, see <a href="UsingTheMPJavaAPI.html#TestingJavaSamples">Testing the Amazon S3 Java Code Examples</a>. 
+                     <p>For instructions on creating and testing a working sample, see <a href="UsingTheMPJavaAPI.html#TestingJavaSamples">Testing the Amazon S3 Java Code Examples</a>. 
                      </p>
                      					
                      <div class="example">
-                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">import java.io.IOException;
-
-import com.amazonaws.AmazonClientException;
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="java ">
 import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ListVersionsRequest;
 import com.amazonaws.services.s3.model.S3VersionSummary;
 import com.amazonaws.services.s3.model.VersionListing;
 
-public class ListKeysVersionEnabledBucket {
-	private static String bucketName = &quot;*** bucket name ***&quot;;
-	
-	public static void main(String[] args) throws IOException {
-        AmazonS3 s3client = new AmazonS3Client(new ProfileCredentialsProvider());
+public class ListKeysVersioningEnabledBucket {
+
+    public static void main(String[] args) {
+        String clientRegion = &quot;*** Client region ***&quot;;
+        String bucketName = &quot;*** Bucket name ***&quot;;
+        
         try {
-            System.out.println(&quot;Listing objects&quot;);
+            AmazonS3 s3Client = AmazonS3ClientBuilder.standard()
+                                    .withCredentials(new ProfileCredentialsProvider())
+                                    .withRegion(clientRegion)
+                                    .build();
             
+            // Retrieve the list of versions. If the bucket contains more versions
+            // than the specified maximum number of results, Amazon S3 returns
+            // one page of results per request.
             ListVersionsRequest request = new ListVersionsRequest()
                 .withBucketName(bucketName)
                 .withMaxResults(2);
-                // you can specify .withPrefix to obtain version list for a specific object or objects with 
-                // the specified key prefix.
-   
-            VersionListing versionListing;            
-            do {
-                versionListing = s3client.listVersions(request);
+            VersionListing versionListing = s3Client.listVersions(request); 
+            int numVersions = 0, numPages = 0;
+            while(true) {
+                numPages++;
                 for (S3VersionSummary objectSummary : 
-                	versionListing.getVersionSummaries()) {
-                    System.out.println(&quot; - &quot; + objectSummary.getKey() + &quot;  &quot; +
-                            &quot;(size = &quot; + objectSummary.getSize() + &quot;)&quot; +
-                    		&quot;(versionID= &quot; + objectSummary.getVersionId() + &quot;)&quot;);
-
+                    versionListing.getVersionSummaries()) {
+                    System.out.printf(&quot;Retrieved object %s, version %s\n&quot;, 
+                                            objectSummary.getKey(), 
+                                            objectSummary.getVersionId());
+                    numVersions++;
                 }
-                request.setKeyMarker(versionListing.getNextKeyMarker());
-                request.setVersionIdMarker(versionListing.getNextVersionIdMarker());
-            } while (versionListing.isTruncated());
-         } catch (AmazonServiceException ase) {
-            System.out.println(&quot;Caught an AmazonServiceException, &quot; +
-            		&quot;which means your request made it &quot; +
-                    &quot;to Amazon S3, but was rejected with an error response &quot; +
-                    &quot;for some reason.&quot;);
-            System.out.println(&quot;Error Message:    &quot; + ase.getMessage());
-            System.out.println(&quot;HTTP Status Code: &quot; + ase.getStatusCode());
-            System.out.println(&quot;AWS Error Code:   &quot; + ase.getErrorCode());
-            System.out.println(&quot;Error Type:       &quot; + ase.getErrorType());
-            System.out.println(&quot;Request ID:       &quot; + ase.getRequestId());
-        } catch (AmazonClientException ace) {
-            System.out.println(&quot;Caught an AmazonClientException, &quot; +
-            		&quot;which means the client encountered &quot; +
-                    &quot;an internal error while trying to communicate&quot; +
-                    &quot; with S3, &quot; +
-                    &quot;such as not being able to access the network.&quot;);
-            System.out.println(&quot;Error Message: &quot; + ace.getMessage());
+                // Check whether there are more pages of versions to retrieve. If
+                // there are, retrieve them. Otherwise, exit the loop.
+                if(versionListing.isTruncated()) {
+                    versionListing = s3Client.listNextBatchOfVersions(versionListing);
+                }
+                else {
+                    break;
+                }
+            }
+            System.out.println(numVersions + &quot; object versions retrieved in &quot; + numPages + &quot; pages&quot;);
+         } 
+        catch(AmazonServiceException e) {
+            // The call was transmitted successfully, but Amazon S3 couldn&apos;t process 
+            // it, so it returned an error response.
+            e.printStackTrace();
+        }
+        catch(SdkClientException e) {
+            // Amazon S3 couldn&apos;t be contacted for a response, or the client
+            // couldn&apos;t parse the response from Amazon S3.
+            e.printStackTrace();
         }
     }
-}</code></pre></div>
+}
+
+</code></pre></div>
                      </div>
                      				
                      				
@@ -169,7 +187,10 @@ public class ListKeysVersionEnabledBucket {
                      </p>
                      					
                      <div class="example">
-                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="cs ">using Amazon.S3;
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="cs ">// Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: MIT-0 (For details, see https://github.com/awsdocs/amazon-s3-developer-guide/blob/master/LICENSE-SAMPLECODE.)
+
+&#xFEFF;using Amazon.S3;
 using Amazon.S3.Model;
 using System;
 using System.Threading.Tasks;
@@ -245,15 +266,14 @@ namespace Amazon.DocSamples.S3
                      </h2>
                      				
                      				
-                     <p>To list all of the versions of all of the objects in a bucket, you use the
-                        						<code class="code">versions</code> subresource in a <code class="code">GET
-                           						Bucket</code> request. Amazon S3 can retrieve only a maximum of 1000 objects,
-                        					and each object version counts fully as an object. Therefore, if a bucket
-                        					contains two keys (e.g., <code>photo.gif</code> and
-                        						<code>picture.jpg</code>), and the first key has 990 versions and
-                        					the second key has 400 versions; a single request would retrieve all 990
-                        					versions of <code>photo.gif</code> and only the most recent 10 versions
-                        					of <code>picture.jpg</code>.
+                     <p>To list all the versions of all the objects in a bucket, you use the <code class="code">versions</code>
+                        					subresource in a <code class="code">GET Bucket</code> request. Amazon S3 can retrieve only a
+                        					maximum of 1,000 objects, and each object version counts fully as an object.
+                        					Therefore, if a bucket contains two keys (for example,
+                        						<code>photo.gif</code> and <code>picture.jpg</code>), and
+                        					the first key has 990 versions and the second key has 400 versions, a single
+                        					request would retrieve all 990 versions of <code>photo.gif</code> and
+                        					only the most recent 10 versions of <code>picture.jpg</code>.
                      </p>
                      				
                      <p>Amazon S3 returns object versions in the order in which they were stored, with the
@@ -268,8 +288,8 @@ namespace Amazon.DocSamples.S3
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               						
-                              <p>In a <code class="code">GET Bucket</code> request, include the
-                                 								<code class="code">versions</code> sub-resource.
+                              <p>In a <code class="code">GET Bucket</code> request, include the <code class="code">versions</code>
+                                 							subresource.
                               </p>
                               						<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">GET /?<b>versions</b> HTTP/1.1
 Host: <em class="replaceable"><code>bucketName</code></em>.s3.amazonaws.com
@@ -301,9 +321,9 @@ Authorization: AWS <em class="replaceable"><code>AKIAIOSFODNN7EXAMPLE:0RQf4/cRon
                            </li>
                            <li class="listitem">
                               							
-                              <p>The number of object versions in the response exceeds the value
-                                 								for <code class="code">max-key</code> (1000 by default), so that you
-                                 								have to submit a second request to retrieve the remaining object
+                              <p>The number of object versions in the response exceeds the value for
+                                 									<code class="code">max-key</code> (1000 by default), so that you have to
+                                 								submit a second request to retrieve the remaining object
                                  								versions.
                               </p>
                               						
@@ -312,7 +332,7 @@ Authorization: AWS <em class="replaceable"><code>AKIAIOSFODNN7EXAMPLE:0RQf4/cRon
                      </div>
                      					
                      <p> To retrieve a subset of object versions, you use the request parameters
-                        						for GET Bucket. For more information, see <a href="./AmazonS3/latest/API/RESTBucketGET.html" target="_blank">GET Bucket</a>. 
+                        						for GET Bucket. For more information, see <a href="./AmazonS3/latest/API/RESTBucketGET.html">GET Bucket</a>. 
                      </p>
                      					
                      						
@@ -325,14 +345,14 @@ Authorization: AWS <em class="replaceable"><code>AKIAIOSFODNN7EXAMPLE:0RQf4/cRon
                         								<code class="code">versions</code> subresource and the
                         								<code class="code">prefix</code> request parameter using the following
                         							process. For more information about <code class="code">prefix</code>, see
-                        								<a href="./AmazonS3/latest/API/RESTBucketGET.html" target="_blank">GET
+                        								<a href="./AmazonS3/latest/API/RESTBucketGET.html">GET
                            							Bucket</a>.
                      </p>
                      						
                      <div class="table">
                         <p class="title"><b>Retrieving All Versions of a Key</b></p>
                         <div class="table-contents">
-                           <table id="w70aac29c17c39b9c11b9b9b5">
+                           <table id="w203aac29c17c39b9c11b9b9b5">
                               									
                               <tbody><tr>
                                  										
@@ -379,7 +399,7 @@ Authorization: AWS AKIAIOSFODNN7EXAMPLE:0RQf4/cRonhpaBX5sCYVf1bNRuU=</code></pre
                      </div>
                      						
                      <p>You can use the other request parameters to retrieve a subset of all
-                        							versions of the object. For more information, see <a href="./AmazonS3/latest/API/RESTBucketGET.html" target="_blank">GET Bucket</a>.
+                        							versions of the object. For more information, see <a href="./AmazonS3/latest/API/RESTBucketGET.html">GET Bucket</a>.
                      </p>
                      					
                      					
@@ -405,14 +425,14 @@ Authorization: AWS AKIAIOSFODNN7EXAMPLE:0RQf4/cRonhpaBX5sCYVf1bNRuU=</code></pre
                         							bucket. For more information about <code class="code">key-marker</code>,
                         								<code class="code">version-id-marker</code>,
                         								<code class="code">NextKeyMarker</code>, and
-                        								<code class="code">NextVersionIdMarker</code>, see <a href="./AmazonS3/latest/API/RESTBucketGET.html" target="_blank">GET Bucket</a>.
+                        								<code class="code">NextVersionIdMarker</code>, see <a href="./AmazonS3/latest/API/RESTBucketGET.html">GET Bucket</a>.
                      </p>
                      						
                      <div class="table">
                         <p class="title"><b>Retrieving Additional Responses that Satisfy the Original GET
                               								Request</b></p>
                         <div class="table-contents">
-                           <table id="w70aac29c17c39b9c11b9c11b7">
+                           <table id="w203aac29c17c39b9c11b9c11b7">
                               									
                               <tbody><tr>
                                  										
@@ -464,15 +484,19 @@ Authorization: AWS AKIAIOSFODNN7EXAMPLE:0RQf4/cRonhpaBX5sCYVf1bNRuU=</code></pre
                      					
                      				
                      			
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -482,7 +506,9 @@ Authorization: AWS AKIAIOSFODNN7EXAMPLE:0RQf4/cRonhpaBX5sCYVf1bNRuU=</code></pre
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="AddingObjectstoVersioningEnabledBuckets.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="RetrievingObjectVersions.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -503,6 +529,10 @@ Authorization: AWS AKIAIOSFODNN7EXAMPLE:0RQf4/cRonhpaBX5sCYVf1bNRuU=</code></pre
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

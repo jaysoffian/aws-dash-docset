@@ -12,6 +12,8 @@
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-io-characteristics.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <a href="EBSPerformance.html">Amazon EBS Volume Performance on Linux Instances</a> &#xBB; <span class="breadcrumb">I/O Characteristics and Monitoring</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <a href="EBSPerformance.html">Amazon EBS Volume Performance on Linux Instances</a> &#xBB; <span class="breadcrumb">I/O Characteristics and Monitoring</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="ebs-io-characteristics">I/O Characteristics and Monitoring</h1>
                      <p>On a given volume configuration, certain I/O characteristics drive the performance
@@ -64,15 +69,14 @@
                         much more efficiently than HDD volumes. 
                      </p>
                      
-                     <p>When small I/O operations are physically contiguous, Amazon EBS attempts to merge
-                        them
-                        into a single I/O up to the maximum size. For example, for SSD volumes, a single 1,024
-                        KiB I/O
-                        operation counts as 4 operations (1,024&#xF7;256=4), while 8 contiguous I/O operations
-                        at 32 KiB
-                        each count as 1operation (8&#xD7;32=256). However, 8 random I/O operations at 32 KiB each
-                        count as
-                        8 operations. Each I/O operation under 32 KiB counts as 1 operation.
+                     <p>When small I/O operations (larger than or equal to 32KiB) are physically contiguous,
+                        Amazon EBS attempts to merge them into a single I/O operation up to the maximum size.
+                        For
+                        example, for SSD volumes, a single 1,024 KiB I/O operation counts as 4 operations
+                        (1,024&#xF7;256=4), while 8 contiguous I/O operations at 32 KiB each count as 1 operation
+                        (8&#xD7;32=256). However, 8 random I/O operations at 32 KiB each count as 8 operations.
+                        Each I/O
+                        operation under 32 KiB counts as 1 operation.
                      </p>
                      <p>Similarly, for HDD-backed volumes, both a single 1,024 KiB I/O operation and 8 sequential
                         128 KiB operations would count as one operation. However, 8 random 128 KiB I/O operations
@@ -127,16 +131,14 @@
                         number of IOPS than you provisioned because you are hitting the throughput limit of
                         the
                         volume. For example, a <code class="code">gp2</code> volume under 1000 GiB with burst credits available has an IOPS
-                        limit of 3,000 and a volume throughput limit of 160 MiB/s. If you are using a 256
-                        KiB I/O
-                        size, your volume reaches its throughput limit at 640 IOPS (640 x 256 KiB = 160 MiB).
+                        limit of 3,000 and a volume throughput limit of 250 MiB/s. If you are using a
+                        256 KiB I/O size, your volume reaches its throughput limit at 1000 IOPS (1000 x 256
+                        KiB =
+                        250 MiB). For smaller I/O sizes (such as 16 KiB), this same volume can sustain
+                        3,000 IOPS because the throughput is well below 250 MiB/s. (These examples
+                        assume that your volume&apos;s I/O is not hitting the throughput limits of the instance.)
                         For
-                        smaller I/O sizes (such as 16 KiB), this same volume can sustain 3,000 IOPS because
-                        the
-                        throughput is well below 160 MiB/s. (These examples assume that your volume&apos;s I/O
-                        is not
-                        hitting the throughput limits of the instance.) For more information about the throughput
-                        limits for each EBS volume type, see <a href="EBSVolumeTypes.html">Amazon EBS Volume Types</a>. 
+                        more information about the throughput limits for each EBS volume type, see <a href="EBSVolumeTypes.html">Amazon EBS Volume Types</a>. 
                      </p>
                      
                      <p>For smaller I/O operations, you may see a higher-than-provisioned IOPS value as measured
@@ -210,9 +212,9 @@
                      <p><code class="code">BurstBalance</code> displays the burst bucket balance for <code class="code">gp2</code>, <code class="code">st1</code>, and <code class="code">sc1</code>
                         volumes as a percentage of the remaining balance. When your burst bucket is depleted,
                         volume
-                        I/O credits (for <code class="code">gp2</code> volumes) or volume throughput credits (for <code class="code">st1</code> and <code class="code">sc1</code> volumes) is
-                        throttled to the baseline. Check the <code class="code">BurstBalance</code> value to determine whether your
-                        volume is being throttled for this reason. 
+                        I/O (for <code class="code">gp2</code> volumes) or volume throughput (for <code class="code">st1</code> and <code class="code">sc1</code> volumes) is throttled to the
+                        baseline. Check the <code class="code">BurstBalance</code> value to determine whether your volume is being
+                        throttled for this reason. 
                      </p>
                      <p>HDD-backed <code class="code">st1</code> and <code class="code">sc1</code> volumes are designed to perform best with workloads that
                         take advantage of the 1,024 KiB maximum I/O size. To determine your volume&apos;s average
@@ -240,15 +242,19 @@
                      <p>For more information about Amazon EBS I/O characteristics, see the <a href="https://www.youtube.com/watch?v=2wKgha8CZ_w" target="_blank">Amazon EBS: Designing for
                            Performance</a> re:Invent presentation on this topic.
                      </p>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -258,7 +264,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="ebs-ec2-config.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="ebs-initialize.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -266,6 +274,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

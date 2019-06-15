@@ -1,0 +1,208 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Sample Function Code - AWS Lambda</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="with-cloudtrail.html" title="Using AWS Lambda with AWS CloudTrail">
+      <link rel="prev" href="with-cloudtrail-example.html" title="Tutorial: Using AWS Lambda with AWS CloudTrail">
+      <link rel="next" href="with-scheduled-events.html" title="Using AWS Lambda with Amazon CloudWatch Events">
+      <meta name="description" content="Sample code is available for the following languages.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="AWS Lambda">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/with-cloudtrail-create-package.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-services.html">Using AWS Lambda with Other Services</a> &#xBB; <a href="with-cloudtrail.html">Using AWS Lambda with AWS CloudTrail</a> &#xBB; <span class="breadcrumb">Sample Function Code</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="with-cloudtrail-create-package">Sample Function Code</h1>
+                     <p>Sample code is available for the following languages.</p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#with-cloudtrail-example-deployment-pkg-nodejs">Node.js</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="with-cloudtrail-example-deployment-pkg-nodejs">Node.js</h2>
+                     
+                     <p>The following example processes CloudTrail logs, and sends a notification when an
+                        Amazon SNS topic was created.
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example index.js</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nodejs ">var aws  = require(&apos;aws-sdk&apos;);
+var zlib = require(&apos;zlib&apos;);
+var async = require(&apos;async&apos;);
+
+var EVENT_SOURCE_TO_TRACK = /sns.amazonaws.com/;  
+var EVENT_NAME_TO_TRACK   = /CreateTopic/; 
+var DEFAULT_SNS_REGION  = &apos;us-west-2&apos;;
+var SNS_TOPIC_ARN       = &apos;<em class="replaceable"><code>The ARN of your SNS topic</code></em>&apos;;
+
+var s3 = new aws.S3();
+var sns = new aws.SNS({
+    apiVersion: &apos;2010-03-31&apos;,
+    region: DEFAULT_SNS_REGION
+});
+
+exports.handler = function(event, context, callback) {
+    var srcBucket = event.Records[0].s3.bucket.name;
+    var srcKey = event.Records[0].s3.object.key;
+   
+    async.waterfall([
+        function fetchLogFromS3(next){
+            console.log(&apos;Fetching compressed log from S3...&apos;);
+            s3.getObject({
+               Bucket: srcBucket,
+               Key: srcKey
+            },
+            next);
+        },
+        function uncompressLog(response, next){
+            console.log(&quot;Uncompressing log...&quot;);
+            zlib.gunzip(response.Body, next);
+        },
+        function publishNotifications(jsonBuffer, next) {
+            console.log(&apos;Filtering log...&apos;);
+            var json = jsonBuffer.toString();
+            console.log(&apos;CloudTrail JSON from S3:&apos;, json);
+            var records;
+            try {
+                records = JSON.parse(json);
+            } catch (err) {
+                next(&apos;Unable to parse CloudTrail JSON: &apos; + err);
+                return;
+            }
+            var matchingRecords = records
+                .Records
+                .filter(function(record) {
+                    return record.eventSource.match(EVENT_SOURCE_TO_TRACK)
+                        &amp;&amp; record.eventName.match(EVENT_NAME_TO_TRACK);
+                });
+                
+            console.log(&apos;Publishing &apos; + matchingRecords.length + &apos; notification(s) in parallel...&apos;);
+            async.each(
+                matchingRecords,
+                function(record, publishComplete) {
+                    console.log(&apos;Publishing notification: &apos;, record);
+                    sns.publish({
+                        Message:
+                            &apos;Alert... SNS topic created: \n TopicARN=&apos; + record.responseElements.topicArn + &apos;\n\n&apos; + 
+                            JSON.stringify(record),
+                        TopicArn: SNS_TOPIC_ARN
+                    }, publishComplete);
+                },
+                next
+            );
+        }
+    ], function (err) {
+        if (err) {
+            console.error(&apos;Failed to publish notifications: &apos;, err);
+        } else {
+            console.log(&apos;Successfully published all notifications.&apos;);
+        }
+        callback(null,&quot;message&quot;);
+    });
+};</code></pre></div>
+                     </div>
+                      
+                     <p>Zip up the sample code to create a deployment package. For instructions, see <a href="nodejs-create-deployment-pkg.html">AWS Lambda Deployment Package in Node.js</a>.
+                     </p>
+                     
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="with-cloudtrail-example.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="with-scheduled-events.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Node.js"><a class="pagetoc" href="#with-cloudtrail-example-deployment-pkg-nodejs">Node.js</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='AWS Lambda';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

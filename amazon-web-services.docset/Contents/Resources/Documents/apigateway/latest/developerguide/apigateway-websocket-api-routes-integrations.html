@@ -1,0 +1,444 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Invoking Your Backend
+         Integration: $default Route and Custom Routes - Amazon API Gateway
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="apigateway-websocket-api-overview.html" title="About WebSocket APIs in
+                API Gateway">
+      <link rel="prev" href="apigateway-websocket-api-route-keys-connect-disconnect.html" title="Managing
+                    Connected Users and Client Apps: $connect and
+                        $disconnect Routes">
+      <link rel="next" href="apigateway-websocket-api-data-from-backend.html" title="Sending Data from
+                    Backend Services to Connected Clients">
+      <meta name="description" content="In API Gateway WebSocket APIs, messages can be sent from the client to your backend service and vice versa. Unlike HTTP&apos;s request/response model, in WebSocket the backend can send messages to the client without the client taking any action. API Gateway supports message payloads up to 128 KB with a maximum frame size of 32 KB. If a message exceeds 32 KB, you must split it into multiple frames, each 32 KB or smaller. If a larger message (or frame) is received, the connection is closed with code 1009.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon API Gateway">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-api-routes-integrations.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-websocket-api.html">Creating, Deploying, and Invoking a WebSocket API
+                                    in Amazon API Gateway</a> &#xBB; <a href="apigateway-websocket-api-overview.html">About WebSocket APIs in
+                                    API Gateway</a> &#xBB; <span class="breadcrumb">Invoking Your Backend
+                                    Integration: $default Route and Custom Routes</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="apigateway-websocket-api-routes-integrations">Invoking Your Backend
+                        Integration: <code class="code">$default</code> Route and Custom Routes
+                     </h1>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#apigateway-websocket-api-overview-routes">Using Routes to
+                                 Process Messages</a></li>
+                           <li><a href="#apigateway-websocket-api-routes-about-default">The
+                                 $default Route</a></li>
+                           <li><a href="#apigateway-websocket-api-routes-about-custom">Custom
+                                 Routes</a></li>
+                           <li><a href="#apigateway-websocket-api-overview-integrations">Using API Gateway
+                                 WebSocket API Integrations to Connect to Your Business Logic</a></li>
+                           <li><a href="#apigateway-websocket-api-overview-integrations-differences">Important Differences Between WebSocket APIs and REST APIs</a></li>
+                           <li><a href="#apigateway-websocket-api-overview-binary-payloads">Handling
+                                 Binary Payloads</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="apigateway-websocket-api-overview-routes">Using Routes to
+                        Process Messages
+                     </h2>
+                     
+                     
+                     <p>In API Gateway WebSocket APIs, messages can be sent from the client to your backend
+                        service and vice versa. Unlike HTTP&apos;s request/response model, in WebSocket the
+                        backend can send messages to the client without the client taking any
+                        action.
+                     </p>
+                     
+                     <p>Messages can be JSON or non-JSON. However, only JSON messages can be routed to
+                        specific integrations based on message content. Non-JSON messages are passed
+                        through to the backend by the <code class="code">$default</code> route.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>API Gateway supports message payloads up to 128 KB with a maximum frame size of
+                           32 KB. If a message exceeds 32 KB, you must split it into multiple frames,
+                           each 32 KB or smaller. If a larger message (or frame) is received, the
+                           connection is closed with code 1009.
+                        </p>
+                        <p>Currently binary payloads are not supported. If a binary frame is
+                           received, the connection is closed with code 1003. However, it is possible
+                           to convert binary payloads to text. See <a href="apigateway-websocket-api-routes-integrations.html#apigateway-websocket-api-overview-binary-payloads">Handling
+                              Binary Payloads</a>.
+                        </p>
+                     </div>
+                     
+                     <p>With WebSocket APIs in API Gateway, JSON messages can be routed to execute a
+                        specific backend service based on message content. When a client sends a message
+                        over its WebSocket connection, this results in a <em>route
+                           request</em> to the WebSocket API. The request will be matched to the
+                        route with the corresponding route key in API Gateway. You can set up a route request
+                        for a WebSocket API in the API Gateway console, by using the AWS CLI, or by using
+                        an
+                        AWS SDK.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>In the AWS CLI and AWS SDKs, you can create routes
+                           before or after you create integrations. Currently the console does not
+                           support reuse of integrations, so you must create the route first and then
+                           create the integration for that route.
+                        </p>
+                     </div>
+                     
+                     <p>You can configure API Gateway to perform validation on a route request before
+                        proceeding with the integration request. If the validation fails, API Gateway fails
+                        the request without calling your backend, sends a <code class="code">&quot;Bad request
+                           body&quot;</code> gateway response similar to the following to the client, and
+                        publishes the validation results in CloudWatch Logs: 
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{&quot;message&quot; : &quot;Bad request body&quot;, &quot;connectionId&quot;: &quot;<em class="replaceable"><code>{connectionId}</code></em>&quot;, &quot;messageId&quot;: &quot;<em class="replaceable"><code>{messageId}</code></em>&quot;}</code></pre>
+                     <p>This reduces unnecessary calls to your backend and lets you focus on the other
+                        requirements of your API.
+                     </p>
+                     
+                     
+                     <p>You can also define a route response for your API&apos;s routes to enable two-way
+                        communication. A route response describes what data will be sent to your client
+                        upon completion of a particular route&apos;s integration. It is not necessary to
+                        define a response for a route if, for example, you want a client to send
+                        messages to your backend without receiving a response (one-way communication).
+                        However, if you don&apos;t provide a route response, API Gateway won&apos;t send any information
+                        about the result of your integration to your clients.
+                     </p>
+                     
+                     
+                     <h2 id="apigateway-websocket-api-routes-about-default">The
+                        <code class="code">$default</code> Route
+                     </h2>
+                     
+                     <p>Every API Gateway WebSocket API can have a <code class="code">$default</code> route. This is a
+                        special routing value that can be used in the following ways:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>You can use it together with defined route keys, to specify a
+                                 &quot;fallback&quot; route (for example, a generic mock integration that returns a
+                                 particular error message) for incoming messages that don&apos;t match any of
+                                 the defined route keys.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>You can use it without any defined route keys, to specify a proxy
+                                 model that delegates routing to a backend component.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>You can use it to specify a route for non-JSON payloads.</p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <h2 id="apigateway-websocket-api-routes-about-custom">Custom
+                        Routes
+                     </h2>
+                     
+                     <p>If you want to invoke a specific integration based on message content, you can
+                        do so by creating a custom route.
+                     </p>
+                     
+                     <p>A custom route uses a route key and integration that you specify. When an
+                        incoming message contains a JSON property, and that property evaluates to a
+                        value that matches the route key value, API Gateway invokes the integration. (For
+                        more
+                        information, see <a href="apigateway-websocket-api-overview.html">About WebSocket APIs in
+                           API Gateway</a>.)
+                     </p>
+                     
+                     <p>For example, suppose you wanted to create a chat room application. You might
+                        start by creating a WebSocket API whose route selection expression is
+                        <code class="code">$request.body.action</code>. You could then define two routes:
+                        <code class="code">joinroom</code> and <code class="code">sendmessage</code>. A client app might
+                        invoke the <code class="code">joinroom</code> route by sending a message such as the
+                        following:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{&quot;action&quot;:&quot;joinroom&quot;,&quot;roomname&quot;:&quot;developers&quot;}</code></pre>
+                     <p>And it might invoke the <code class="code">sendmessage</code> route by sending a message
+                        such as the following:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{&quot;action&quot;:&quot;sendmessage&quot;,&quot;message&quot;:&quot;Hello everyone&quot;}</code></pre>
+                     
+                     <h2 id="apigateway-websocket-api-overview-integrations">Using API Gateway
+                        WebSocket API Integrations to Connect to Your Business Logic
+                     </h2>
+                     
+                     <p>After setting up a route for an API Gateway WebSocket API, you must specify the
+                        integration you&apos;d like to use. As with a route, which can have a route request
+                        and a route response, an integration can have an <em>integration
+                           request</em> and an <em>integration response</em>. An
+                        <em>integration request</em> contains the information expected
+                        by your backend in order to process the request that came from your client. An
+                        <em>integration response</em> contains the data that your
+                        backend returns to API Gateway, and that may be used to construct a message to send
+                        to
+                        the client (if a route response is defined).
+                     </p>
+                     
+                     <p>For more information about setting up integrations, see <a href="apigateway-websocket-api-integrations.html">Set up WebSocket API Integrations in
+                           API Gateway</a>.
+                     </p>
+                     
+                     
+                     <h2 id="apigateway-websocket-api-overview-integrations-differences">Important Differences Between WebSocket APIs and REST APIs</h2>
+                     
+                     <p>Integrations for WebSocket APIs are similar to integrations for REST APIs,
+                        except for the following differences:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Currently, in the API Gateway console you must create a route first and then
+                                 create an integration as that route&apos;s target. However, in the API and
+                                 CLI, you can create routes and integrations independently, in any
+                                 order.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>You can use a single integration for multiple routes. For example, if
+                                 you have a set of actions that closely relate to each other, you may
+                                 want all of those routes to go to a single Lambda function. Rather than
+                                 defining the details of the integration multiple times, you can specify
+                                 it once and assign it to each of the related routes.
+                              </p>
+                              
+                              <div class="aws-note">
+                                 <p class="aws-note">Note</p>
+                                 <p>Currently the console does not support reuse of integrations, so
+                                    you must create the route first and then create the integration for
+                                    that route.
+                                 </p>
+                                 <p>In the AWS CLI and AWS SDKs, you can reuse an
+                                    integration by setting the route&apos;s target to a value of
+                                    <code class="code">&quot;integrations/<em class="replaceable"><code>{integration-id}</code></em>&quot;</code>,
+                                    where <code class="code"><em class="replaceable"><code>{integration-id}</code></em>&quot;</code> is
+                                    the unique ID of the integration to be associated with the
+                                    route.
+                                 </p>
+                              </div>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>API Gateway provides multiple <a href="apigateway-websocket-api-selection-expressions.html">selection
+                                    expressions</a> you can use in your routes and integrations. You
+                                 don&apos;t need to rely on the content type to select an input template or
+                                 output mapping. As with route selection expressions, you can define a
+                                 selection expression to be evaluated by API Gateway to choose the right item.
+                                 All of them will fall back to the <code class="code">$default</code> template if a
+                                 matching template is not found.
+                              </p>
+                              
+                              <div class="itemizedlist">
+                                 
+                                 
+                                 
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       
+                                       <p>In integration requests, the template selection expression
+                                          supports
+                                          <code class="code">$request.body.<em class="replaceable"><code>&lt;json_path_expression&gt;</code></em></code>
+                                          and static values.
+                                       </p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p>In integration responses, the template selection expression
+                                          supports
+                                          <code class="code">$request.body.<em class="replaceable"><code>&lt;json_path_expression&gt;</code></em></code>,
+                                          <code class="code">$integration.response.statuscode</code>, and
+                                          <code class="code">$integration.response.header.<em class="replaceable"><code>&lt;headerName&gt;</code></em></code>.
+                                       </p>
+                                       
+                                    </li>
+                                 </ul>
+                              </div>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>In the HTTP protocol, in which requests and responses are sent synchronously;
+                        communication is essentially one-way. In the WebSocket protocol, communication
+                        is two-way. Responses are asynchronous and are not necessarily received by the
+                        client in the same order as the client&apos;s messages were sent. In addition, the
+                        backend can send messages to the client.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>For a route that is configured to use <code class="code">AWS_PROXY</code> or
+                           <code class="code">LAMBDA_PROXY</code> integration, communication is one-way, and
+                           API Gateway will not pass the backend response through to the route response
+                           automatically. For example, in the case of <code class="code">LAMBDA_PROXY</code>
+                           integration, the body that the Lambda function returns will not be returned
+                           to the client. If you want the client to receive integration responses, you
+                           must define a route response to make two-way communication possible.
+                        </p>
+                     </div>
+                     
+                     
+                     <h2 id="apigateway-websocket-api-overview-binary-payloads">Handling
+                        Binary Payloads
+                     </h2>
+                     
+                     <p>API Gateway WebSocket APIs don&apos;t currently support binary frames in incoming message
+                        payloads. If a client app sends a binary frame, API Gateway rejects it and disconnects
+                        the client with code 1003.
+                     </p>
+                     
+                     <p>There is a workaround for this behavior. If the client sends a text-encoded
+                        binary data (e.g., Base64) as a text frame, you can set the integration&apos;s
+                        <code class="code">contentHandlingStrategy</code> property to
+                        <code class="code">CONVERT_TO_BINARY</code> to convert the payload from Base64-encoded
+                        string to binary. 
+                     </p>
+                     
+                     <p>To return a route response for a binary payload in non-proxy integrations, you
+                        can set the integration response&apos;s <code class="code">contentHandlingStrategy</code> property
+                        to <code class="code">CONVERT_TO_TEXT</code> to convert the payload from binary to
+                        Base64-encoded string.
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="apigateway-websocket-api-route-keys-connect-disconnect.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="apigateway-websocket-api-data-from-backend.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Using Routes to
+                        Process Messages"><a class="pagetoc" href="#apigateway-websocket-api-overview-routes">Using Routes to
+                              Process Messages</a></li>
+                        <li class="pagetoc" name="The
+                            $default Route"><a class="pagetoc" href="#apigateway-websocket-api-routes-about-default">The
+                              $default Route</a></li>
+                        <li class="pagetoc" name="Custom
+                        Routes"><a class="pagetoc" href="#apigateway-websocket-api-routes-about-custom">Custom
+                              Routes</a></li>
+                        <li class="pagetoc" name="Using API Gateway
+                        WebSocket API Integrations to Connect to Your Business Logic"><a class="pagetoc" href="#apigateway-websocket-api-overview-integrations">Using API Gateway
+                              WebSocket API Integrations to Connect to Your Business Logic</a></li>
+                        <li class="pagetoc" name="Important Differences Between WebSocket APIs and REST APIs"><a class="pagetoc" href="#apigateway-websocket-api-overview-integrations-differences">Important Differences Between WebSocket APIs and REST APIs</a></li>
+                        <li class="pagetoc" name="Handling
+                        Binary Payloads"><a class="pagetoc" href="#apigateway-websocket-api-overview-binary-payloads">Handling
+                              Binary Payloads</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon API Gateway';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

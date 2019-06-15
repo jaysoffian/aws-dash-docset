@@ -1,17 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Programming Model(Node.js) - AWS Lambda</title>
+      <title>Building Lambda Functions with Node.js - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="programming-model-v2.html" title="Programming Model">
-      <link rel="prev" href="programming-model-v2.html" title="Programming Model">
-      <link rel="next" href="nodejs-prog-model-handler.html" title="Lambda Function Handler
-                (Node.js)">
-      <meta name="description" content="AWS Lambda currently supports the following Node.js runtimes:">
+      <link rel="up" href="welcome.html" title="What Is AWS Lambda?">
+      <link rel="prev" href="monitoring-functions-troubleshooting.html" title="AWS Lambda Troubleshooting Scenarios">
+      <link rel="next" href="nodejs-prog-model-handler.html" title="AWS Lambda Function Handler in Node.js">
+      <meta name="description" content="You can run JavaScript code with Node.js in AWS Lambda. Lambda provides runtimes for Node.js that execute your code to process events. Your code runs in an environment that includes the AWS SDK for JavaScript, with credentials from an AWS Identity and Access Management (IAM) role that you manage.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/programming-model.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,83 +35,303 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-introduction-function.html">Lambda Functions</a> &#xBB; <a href="lambda-app.html">Building Lambda Functions</a> &#xBB; <a href="programming-model-v2.html">Programming Model</a> &#xBB; <span class="breadcrumb">Programming Model(Node.js)</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Building Lambda Functions with Node.js</span></div>
                            </td>
                         </tr>
                      </tbody></table>
-                     <div></div>
-                     <h1 class="topictitle" id="programming-model">Programming Model(Node.js)</h1>
-                     <p>AWS Lambda currently supports the following Node.js runtimes:</p>
-                     <div class="itemizedlist">
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              
-                              <p>Node.js runtime v8.10 (runtime = nodejs8.10)
-                                 
-                              </p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p>Node.js runtime v6.10 (runtime = nodejs6.10)
-                                 
-                              </p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p>Node.js runtime v4.3 (runtime = nodejs4.3)*
-                                 
-                              </p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p>Node.js runtime
-                                 v0.10.42 (runtime = nodejs)*
-                                 
-                              </p>
-                              
-                              <div class="aws-note">
-                                 <p class="aws-note">Important</p>
-                                 <p>*Node v0.10.42 and Node v4.3 are currently marked as deprecated. For more information,
-                                    see <a href="runtime-support-policy.html">Runtime Support Policy</a>. You must migrate existing functions to the newer Node.js runtime versions available
-                                    on 
-                                    AWS Lambda (nodejs.8.10 or nodejs6.10) as soon as possible.  
-                                 </p>
-                              </div>
-                              
-                           </li>
-                        </ul>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
                      </div>
-                     <p>When you create a Lambda function, you specify the runtime that you want to use. For
-                        more information, see <code class="code">runtime</code> parameter of 
-                        <a href="API_CreateFunction.html">CreateFunction</a>. 
+                     <div></div>
+                     <h1 class="topictitle" id="programming-model">Building Lambda Functions with Node.js</h1>
+                     <p>You can run JavaScript code with Node.js in AWS Lambda. Lambda provides <a href="lambda-runtimes.html">runtimes</a> for Node.js that execute your code to process events. Your code runs
+                        in an environment that includes the AWS SDK for JavaScript, with credentials from
+                        an AWS Identity and Access Management (IAM) role that you manage.
                      </p>
-                     <p>The following sections explain how 
-                        <a href="./lambda/latest/dg/programming-model-v2.html" target="_blank">common programming patterns and core concepts</a> apply
-                        when authoring Lambda function code in Node.js. The programming model described in
-                        the
-                        following sections applies to all supported runtime versions, except where indicated.
-                        
+                     <p>Lambda supports the following Node.js runtimes.</p>
+                     <div class="table">
+                        <p class="title"><b>Node.js Runtimes</b></p>
+                        <div class="table-contents">
+                           <table id="w306aac49c11">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Name</th>
+                                 
+                                 <th>Identifier</th>
+                                 
+                                 <th>Node.js Version</th>
+                                 
+                                 <th>AWS SDK for JavaScript</th>
+                                 
+                                 <th>Operating System</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>Node.js 10</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">nodejs10.x</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>10.15</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>2.437.0</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Amazon Linux 2</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>Node.js 8.10</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">nodejs8.10</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>8.10</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>2.290.0</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Amazon Linux</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     <p>Lambda functions use an <a href="lambda-intro-execution-role.html">execution role</a> to get permission to
+                        write logs to Amazon CloudWatch Logs and access other services and resources. If you
+                        don&apos;t already have an execution role for
+                        function development, create one.
+                     </p>
+                     <p class="title"><b>To create an execution role</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Open the <a href="https://console.aws.amazon.com/iam/home#/roles" target="_blank">roles page</a> in the IAM console.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create role</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Create a role with the following properties.</p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p><b>Trusted entity</b> &#x2013; <b>Lambda</b>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Permissions</b> &#x2013; <b>AWSLambdaBasicExecutionRole</b>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Role name</b> &#x2013; <strong class="userinput"><code>lambda-role</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                           <p>The <b>AWSLambdaBasicExecutionRole</b> policy has the permissions that the function needs to
+                              write logs to CloudWatch Logs.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     <p>You can add permissions to the role later, or swap it out for a different role that&apos;s
+                        specific to a single
+                        function.
+                     </p>
+                     <p class="title"><b>To create a Node.js function</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Open the <a href="https://console.aws.amazon.com/lambda" target="_blank">Lambda console</a>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create function</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Configure the following settings:</p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p><b>Name</b> &#x2013; <strong class="userinput"><code>my-function</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Runtime</b> &#x2013; <b>Node.js 10.x</b>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Role</b> &#x2013; <b>Choose an existing role</b>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Existing role</b> &#x2013; <strong class="userinput"><code>lambda-role</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create function</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>To configure a test event, choose <b>Test</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Event name</b>, enter <strong class="userinput"><code>test</code></strong>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>To execute the function, choose <b>Test</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     <p>The console creates a Lambda function with a single source file named <code class="code">index.js</code>. You can edit
+                        this file and add more files in the built-in <a href="code-editor.html">code editor</a>. Choose
+                        <b>Save</b> to save your changes, and choose <b>Test</b> to run your code.
+                     </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>The Lambda console uses AWS Cloud9 to provide an integrated development environment
+                           in the browser. You can also
+                           use AWS Cloud9 to develop Lambda functions in your own environment. See <a href="./cloud9/latest/user-guide/lambda-functions.html">Working with AWS Lambda Functions</a> in the AWS Cloud9 user guide for more information.
+                        </p>
+                     </div>
+                     <p><code class="code">index.js</code> exports a function named <code class="code">handler</code> that takes an event object and a
+                        context object. This is the <a href="nodejs-prog-model-handler.html">handler function</a> that Lambda calls when the
+                        function is invoked. The Node.js function runtime gets invocation events from Lambda
+                        and passes them to the
+                        handler.
+                     </p>
+                     <p>Each time you save your function code, the Lambda console creates a deployment package,
+                        which is a ZIP archive
+                        that contains your function code. As your function development progresses, you will
+                        want to store your function code
+                        in source control, add libraries, and automate deployments. Start by <a href="nodejs-create-deployment-pkg.html">creating a
+                           deployment package</a> and updating your code at the command line.
+                     </p>
+                     <p>The function runtime passes a context object to the handler, in addition to the invocation
+                        event. The <a href="nodejs-prog-model-context.html">context object</a> contains additional information about the invocation, the
+                        function, and the execution environment. Further information is available from environment
+                        variables.
+                     </p>
+                     <p>Your Lambda function comes with a CloudWatch Logs log group. The function runtime
+                        sends details about each invocation to
+                        CloudWatch Logs, and relays any <a href="nodejs-prog-model-logging.html">logs that your function outputs</a> during invocation. If
+                        your function <a href="nodejs-prog-mode-exceptions.html">returns an error</a>, Lambda formats the error and returns it to the
+                        invoker.
                      </p>
                      <div class="highlights">
                         <p><strong>Topics</strong></p>
                         <ul>
-                           <li><a href="nodejs-prog-model-handler.html">Lambda Function Handler
-                                 (Node.js)</a></li>
-                           <li><a href="nodejs-prog-model-context.html">The Context Object
-                                 (Node.js)</a></li>
-                           <li><a href="nodejs-prog-model-logging.html">Logging (Node.js)</a></li>
-                           <li><a href="nodejs-prog-mode-exceptions.html">Function Errors (Node.js)</a></li>
+                           <li><a href="nodejs-prog-model-handler.html">AWS Lambda Function Handler in Node.js</a></li>
+                           <li><a href="nodejs-create-deployment-pkg.html">AWS Lambda Deployment Package in Node.js</a></li>
+                           <li><a href="nodejs-prog-model-context.html">AWS Lambda Context Object in Node.js</a></li>
+                           <li><a href="nodejs-prog-model-logging.html">AWS Lambda Function Logging in Node.js</a></li>
+                           <li><a href="nodejs-prog-mode-exceptions.html">AWS Lambda Function Errors in Node.js</a></li>
+                           <li><a href="nodejs-tracing.html">Instrumenting Node.js Code in AWS Lambda</a></li>
                         </ul>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
                   </div>
                   <noscript>
@@ -117,9 +339,10 @@
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -128,8 +351,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="programming-model-v2.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="nodejs-prog-model-handler.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="monitoring-functions-troubleshooting.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="nodejs-prog-model-handler.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -137,6 +362,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

@@ -1,0 +1,1023 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Using Amazon S3 Block Public Access - Amazon Simple Storage Service</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="s3-access-control.html" title="Managing Access Permissions to Your Amazon S3 Resources">
+      <link rel="prev" href="acl-using-rest-api.html" title="Managing ACLs Using the REST API">
+      <link rel="next" href="DataDurability.html" title="Protecting Data in Amazon S3">
+      <meta name="description" content="A guide to using block public access with Amazon S3.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Simple Storage Service">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/access-control-block-public-access.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="s3-access-control.html">Managing Access Permissions to Your Amazon S3 Resources</a> &#xBB; <span class="breadcrumb">Using Amazon S3 Block Public Access</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="access-control-block-public-access">Using Amazon S3 Block Public Access</h1>
+                     <p>Amazon S3 provides <em>block public access</em> settings for buckets and accounts to
+                        		help you manage public access to Amazon S3 resources. By default, new buckets and
+                        objects don&apos;t
+                        		allow public access, but users can modify bucket policies or object permissions
+                        to allow
+                        		public access. Amazon S3 block public access settings override these policies and
+                        permissions so
+                        		that you can limit public access to these resources. With Amazon S3 block public
+                        access, account
+                        		administrators and bucket owners can easily set up centralized controls to limit
+                        public
+                        		access to their Amazon S3 resources that are enforced regardless of how the resources
+                        are
+                        		created.
+                     </p>
+                     <p>When Amazon S3 receives a request to access a bucket or an object, it determines whether
+                        the
+                        		bucket or the bucket owner&apos;s account has a block public access setting applied.
+                        If there is
+                        		an existing block public access setting that prohibits the requested access, then
+                        Amazon S3
+                        		rejects the request. Amazon S3 block public access provides four settings. These
+                        settings are
+                        		independent and can be used in any combination. And each setting can be applied
+                        to a bucket
+                        		or to an entire AWS account. If a bucket has block public access settings that are
+                        		different from its owner&apos;s account, Amazon S3 applies the most restrictive combination
+                        of the
+                        		bucket-level and account-level settings. When Amazon S3 evaluates whether an operation
+                        is
+                        		prohibited by a block public access setting, it rejects any request that violates
+                        either a
+                        		bucket-level or an account-level setting.
+                     </p>
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w203aac27c27b7">
+                              			
+                              <tbody><tr>
+                                 				
+                                 <td bgcolor="#FFFFB3">
+                                    					
+                                    					   
+                                    <div class="aws-note">
+                                       <p class="aws-note">Warning</p>
+                                       <p>Public access is granted to buckets and objects through access control lists (ACLs),
+                                          			bucket policies, or both. To help ensure that all your S3 buckets and objects
+                                          			have their public access blocked, turn on <em>all four</em> settings
+                                          			for block public access. These settings apply account-wide for all current and
+                                          			future buckets. 
+                                       </p>
+                                       <p>We recommend that you turn on block public access settings. Before applying these
+                                          			settings, verify that your applications will work correctly without public
+                                          			access. If you require some level of public access to your buckets or objects,
+                                          			you can customize the individual settings to suit your storage use cases. 
+                                       </p>
+                                    </div>
+                                    
+                                 </td>
+                                 			
+                              </tr>
+                              		
+                           </tbody></table>
+                        </div>
+                     </div>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <div class="itemizedlist">
+                           			
+                           			
+                           		
+                           <ul class="itemizedlist" type="disc">
+                              <li class="listitem">
+                                 				
+                                 <p>You can enable block public access settings only for buckets and AWS accounts. Amazon
+                                    S3
+                                    					doesn&apos;t support block public access settings on a per-object basis.
+                                 </p>
+                                 			
+                              </li>
+                              <li class="listitem">
+                                 				
+                                 <p>When you apply block public access settings to an account, the settings apply to all
+                                    AWS
+                                    					Regions globally. The settings might not take effect in all Regions immediately
+                                    					or simultaneously, but they eventually propagate to all Regions.
+                                 </p>
+                                 			
+                              </li>
+                           </ul>
+                        </div>
+                     </div>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#console-block-public-access-options">Enable Block Public Access on the Amazon S3 Console</a></li>
+                           <li><a href="#access-control-block-public-access-options">Block Public Access
+                                 				Settings</a></li>
+                           <li><a href="#access-control-block-public-access-policy-status">The Meaning of
+                                 				&quot;Public&quot;</a></li>
+                           <li><a href="#access-control-block-public-access-permissions">Permissions</a></li>
+                           <li><a href="#access-control-block-public-access-examples">Examples</a></li>
+                        </ul>
+                     </div>
+                     		
+                     <h2 id="console-block-public-access-options">Enable Block Public Access on the Amazon S3 Console</h2>
+                     		
+                     <p>Amazon S3 Block public access provides four settings. You can apply these settings
+                        in any
+                        			combination to individual buckets or to entire AWS accounts. The image below shows
+                        how to enable block public access on the Amazon S3 console for your account.
+                        			For more information, see <a href="./AmazonS3/latest/user-guide/block-public-access.html">Setting Permissions: Block Public Access</a> in the <em>Amazon Simple Storage Service Console User Guide</em>.
+                        		
+                     </p> 
+                     		
+                     <p>
+                        			
+                     </p>
+                     <div class="mediaobject">
+                        				
+                        				
+                        					<img src="../../..//img/block-public-access-account-settings.png" alt="
+					Console screenshot showing the block public access account settings.
+				" style="max-width:100%">
+                        				
+                        			
+                     </div>
+                     	
+                     		
+                     <h2 id="access-control-block-public-access-options">Block Public Access
+                        				Settings
+                     </h2>
+                     		
+                     <p>Amazon S3 block public access provides four settings. You can apply these settings
+                        in any
+                        			combination to individual buckets or to entire AWS accounts. If you apply a setting
+                        to
+                        			an account, it applies to all buckets that are owned by that account.
+                     </p> 
+                     			
+                     			
+                     <p>The following table contains the available settings.</p>
+                     		
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w203aac27c27c15b7">
+                              					
+                              <tbody><tr>
+                                 						
+                                 <th>Name</th>
+                                 						
+                                 <th>Description</th>
+                                 					
+                              </tr>
+                              				
+                              					
+                              <tr>
+                                 						
+                                 <td><code class="code">BlockPublicAcls</code></td>
+                                 						
+                                 <td>
+                                    							
+                                    <p>Setting this option to <code class="code">TRUE</code> causes the following
+                                       								behavior:
+                                    </p>
+                                    							
+                                    <div class="itemizedlist">
+                                       								
+                                       								
+                                       								
+                                       							
+                                       <ul class="itemizedlist" type="disc">
+                                          <li class="listitem">
+                                             									
+                                             <p>PUT Bucket acl and PUT Object acl calls fail if the
+                                                										specified access control list (ACL) is public.
+                                             </p>
+                                             								
+                                          </li>
+                                          <li class="listitem">
+                                             									
+                                             <p>PUT Object calls fail if the request includes a public ACL.</p>
+                                             								
+                                          </li>
+                                          <li class="listitem">
+                                             									
+                                             <p>If this setting is applied to an account, then PUT Bucket calls fail if the request
+                                                										includes a public ACL.
+                                             </p>
+                                             								
+                                          </li>
+                                       </ul>
+                                    </div>
+                                    							
+                                    <p>When this setting is set to <code class="code">TRUE</code>, the specified operations fail (whether
+                                       								made through the REST API, AWS CLI, or AWS SDKs). However, existing
+                                       								policies and ACLs for buckets and objects are not modified. This
+                                       								setting enables you to protect against public access while allowing
+                                       								you to audit, refine, or otherwise alter the existing policies and
+                                       								ACLs for your buckets and objects.
+                                    </p>
+                                    						
+                                 </td>
+                                 					
+                              </tr>
+                              					
+                              <tr>
+                                 						
+                                 <td><code class="code">IgnorePublicAcls</code></td>
+                                 						
+                                 <td>
+                                    							
+                                    <p>Setting this option to <code class="code">TRUE</code> causes Amazon S3 to ignore all
+                                       								public ACLs on a bucket and any objects that it contains. This
+                                       								setting enables you to safely block public access granted by ACLs
+                                       								while still allowing PUT Object calls that include a public ACL (as
+                                       								opposed to <code class="code">BlockPublicAcls</code>, which rejects PUT Object
+                                       								calls that include a public ACL). Enabling this setting doesn&apos;t
+                                       								affect the persistence of any existing ACLs and doesn&apos;t prevent new
+                                       								public ACLs from being set.
+                                    </p>
+                                    						
+                                 </td>
+                                 					
+                              </tr>
+                              					
+                              <tr>
+                                 						
+                                 <td><code class="code">BlockPublicPolicy</code></td>
+                                 						
+                                 <td>
+                                    							
+                                    <p>Setting this option to <code class="code">TRUE</code> causes Amazon S3 to reject
+                                       								calls to PUT Bucket policy if the specified bucket policy allows
+                                       								public access. This setting enables you to allow users to manage
+                                       								bucket policies without allowing them to publicly share the bucket
+                                       								or the objects it contains. Enabling this setting doesn&apos;t affect
+                                       								existing bucket policies.
+                                    </p>
+                                    							
+                                    <div class="aws-note">
+                                       <p class="aws-note">Important</p>
+                                       <p>To use this setting effectively, you should apply it at the
+                                          										<em>account</em> level. A bucket policy can
+                                          									allow users to alter a bucket&apos;s block public access settings.
+                                          									Therefore, users who have permission to change a bucket policy
+                                          									could insert a policy that allows them to disable the block
+                                          									public access settings for the bucket. If this setting is
+                                          									enabled for the entire account, rather than for a specific
+                                          									bucket, Amazon S3 blocks public policies even if a user alters the
+                                          									bucket policy to disable this setting.
+                                       </p>
+                                    </div>
+                                    						
+                                 </td>
+                                 					
+                              </tr>
+                              					
+                              <tr>
+                                 						
+                                 <td><code class="code">RestrictPublicBuckets</code></td>
+                                 						
+                                 <td>
+                                    							
+                                    <p>Setting this option to <code class="code">TRUE</code> restricts access to a
+                                       								bucket with a public policy to only AWS services and authorized
+                                       								users within the bucket owner&apos;s account. This setting blocks all
+                                       								cross-account access to the bucket (except by AWS services), while
+                                       								still allowing users within the account to manage the bucket.
+                                    </p>
+                                    							
+                                    <p>Enabling this setting doesn&apos;t affect existing bucket policies, except that Amazon
+                                       S3 blocks
+                                       								public and cross-account access derived from any public bucket
+                                       								policy, including non-public delegation to specific accounts.
+                                    </p>
+                                    						
+                                 </td>
+                                 					
+                              </tr>
+                              				
+                           </tbody></table>
+                        </div>
+                     </div>
+                     		
+                     <div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <div class="itemizedlist">
+                           				
+                           				
+                           			
+                           <ul class="itemizedlist" type="disc">
+                              <li class="listitem">
+                                 					
+                                 <p>Calls to GET Bucket acl and GET Object acl always return the effective
+                                    						permissions in place for the specified bucket or object. For example,
+                                    						suppose that a bucket has an ACL that grants public access, but the bucket
+                                    						also has the <code class="code">IgnorePublicAcls</code> setting enabled. In this case,
+                                    						GET Bucket acl returns an ACL that reflects the access permissions that Amazon
+                                    S3
+                                    						is enforcing, rather than the actual ACL that is associated with the
+                                    						bucket.
+                                 </p>
+                                 				
+                              </li>
+                              <li class="listitem">
+                                 					
+                                 <p>Block public access settings don&apos;t alter existing policies or ACLs. Therefore, removing
+                                    a
+                                    						block public access setting causes a bucket or object with a public policy
+                                    						or ACL to again be publicly accessible. 
+                                 </p>
+                                 				
+                              </li>
+                           </ul>
+                        </div>
+                     </div>
+                     	
+                     		
+                     <h2 id="access-control-block-public-access-policy-status">The Meaning of
+                        				&quot;Public&quot;
+                     </h2>
+                     		
+                     <div class="itemizedlist">
+                        			
+                        			
+                        		
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem" style="list-style-type: none">
+                              				
+                              <p><b>ACLs</b></p>
+                              				
+                              <div class="itemizedlist">
+                                 					
+                                 				
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem" style="list-style-type: none">
+                                       						
+                                       <p>Amazon S3 considers a bucket or object ACL public if it grants any permissions to
+                                          members of
+                                          							the predefined <code class="code">AllUsers</code> or <code class="code">AuthenticatedUsers</code> groups. For
+                                          							more information about predefined groups, see <a href="acl-overview.html#specifying-grantee-predefined-groups">Amazon S3 Predefined Groups</a>.
+                                       </p>
+                                       					
+                                    </li>
+                                 </ul>
+                              </div>
+                              			
+                           </li>
+                           <li class="listitem" style="list-style-type: none">
+                              				
+                              <p><b>Policies</b></p>
+                              				
+                              <div class="itemizedlist">
+                                 					
+                                 					
+                                 					
+                                 				
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem" style="list-style-type: none">
+                                       						
+                                       <p>When evaluating a bucket policy, Amazon S3 begins by assuming that the policy is public.
+                                          It
+                                          							then evaluates the policy to determine whether it qualifies as
+                                          							non-public. To be considered non-public, a bucket policy must grant
+                                          							access only to fixed values (values that don&apos;t contain a wildcard) of
+                                          							one or more of the following:
+                                       </p>
+                                       								
+                                       <div class="itemizedlist">
+                                          									
+                                          									
+                                          									
+                                          									
+                                          									
+                                          									
+                                          									
+                                          									
+                                          									
+                                          								
+                                          <ul class="itemizedlist" type="disc">
+                                             <li class="listitem">
+                                                										
+                                                <p>A set of Classless Inter-Domain
+                                                   											Routings (CIDRs), using <code class="code">aws:SourceIp</code>. For more
+                                                   											information about CIDR, see <a href="http://www.rfc-editor.org/rfc/rfc4632.txt" target="_blank">RFC
+                                                      												4632</a> on the RFC Editor website.
+                                                </p>
+                                                									
+                                             </li>
+                                             <li class="listitem">
+                                                										
+                                                <p>An AWS principal, user, role, or service
+                                                   											principal
+                                                </p>
+                                                									
+                                             </li>
+                                             <li class="listitem">
+                                                										
+                                                <p><code class="code">aws:SourceArn</code></p>
+                                                									
+                                             </li>
+                                             <li class="listitem">
+                                                										
+                                                <p><code class="code">aws:SourceVpc</code></p>
+                                                									
+                                             </li>
+                                             <li class="listitem">
+                                                										
+                                                <p><code class="code">aws:SourceVpce</code></p>
+                                                									
+                                             </li>
+                                             <li class="listitem">
+                                                										
+                                                <p><code class="code">aws:SourceOwner</code></p>
+                                                									
+                                             </li>
+                                             <li class="listitem">
+                                                										
+                                                <p><code class="code">aws:SourceAccount</code></p>
+                                                									
+                                             </li>
+                                             <li class="listitem">
+                                                										
+                                                <p><code class="code">s3:x-amz-server-side-encryption-aws-kms-key-id</code></p>
+                                                									
+                                             </li>
+                                             <li class="listitem">
+                                                										
+                                                <p><code class="code">aws:userid</code>, outside the pattern
+                                                   												&quot;<code class="code">AROLEID:*</code>&quot;
+                                                </p>
+                                                									
+                                             </li>
+                                          </ul>
+                                       </div>						
+                                       					
+                                    </li>
+                                    <li class="listitem" style="list-style-type: none">
+                                       						
+                                       <p>Under these rules, the following example policies are considered
+                                          							public:
+                                       </p>
+                                       						<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{ 
+	&#x201C;Principal&#x201D;: { &#x201C;Federated&#x201D;: &#x201C;graph.facebook.com&#x201D; }, 
+	&#x201C;Resource&#x201D;: &#x201C;*&#x201D;, 
+	&#x201C;Action&#x201D;: &#x201C;s3:PutObject&#x201D;, 
+	&#x201C;Effect&#x201D;: &#x201C;Allow&#x201D;
+}</code></pre>
+                                       						<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+	&#x201C;Principal&#x201D;: &#x201C;*&#x201D;, 
+	&#x201C;Resource&#x201D;: &#x201C;*&#x201D;, 
+	&#x201C;Action&#x201D;: &#x201C;s3:PutObject&#x201D;, 
+	&#x201C;Effect&#x201D;: &#x201C;Allow&#x201D; 
+}</code></pre>
+                                       						<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+	&#x201C;Principal&#x201D;: &#x201C;*&#x201D;, 
+	&#x201C;Resource&#x201D;: &#x201C;*&#x201D;, 
+	&#x201C;Action&#x201D;: &#x201C;s3:PutObject&#x201D;, 
+	&#x201C;Effect&#x201D;: &#x201C;Allow&#x201D;, 
+	&#x201C;Condition&#x201D;: { &#x201C;StringLike&#x201D;: {&#x201C;aws:SourceVpc&#x201D;: &#x201C;vpc-*&#x201D;}}
+}</code></pre>
+                                       						<p>You can make these policies non-public by including any of the condition keys listed
+                                          							previously, using a fixed value. For example, you can make the last
+                                          							policy preceding non-public by setting <code class="code">aws:SourceVpc</code> to a
+                                          							fixed value, like this:
+                                       </p>
+                                       						<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+	&#x201C;Principal&#x201D;: &#x201C;*&#x201D;, 
+	&#x201C;Resource&#x201D;: &#x201C;*&#x201D;, 
+	&#x201C;Action&#x201D;: &#x201C;s3:PutObject&#x201D;, 
+	&#x201C;Effect&#x201D;: &#x201C;Allow&#x201D;, 
+	&#x201C;Condition&#x201D;: {&#x201C;StringEquals&#x201D;: {&#x201C;aws:SourceVpc&#x201D;: &#x201C;vpc-91237329&#x201D;}}
+}</code></pre>
+                                       					</li>
+                                    <li class="listitem" style="list-style-type: none">
+                                       						
+                                       <p>For more information about bucket policies, see <a href="using-iam-policies.html">Using Bucket Policies and User Policies</a>.
+                                       </p>
+                                       					
+                                    </li>
+                                 </ul>
+                              </div>
+                              			
+                           </li>
+                        </ul>
+                     </div>
+                     		
+                     			
+                     <h3 id="access-control-block-public-access-policy-example">Example</h3>
+                     			
+                     <p>This example shows how Amazon S3 evaluates a policy that contains both public and
+                        non-public access grants.
+                     </p>
+                     			
+                     <p>Suppose that a bucket has a policy that grants access to a set of fixed principals.
+                        Under
+                        				the previously described rules, this policy isn&apos;t public. Thus, if you enable
+                        the
+                        					<code class="code">RestrictPublicBuckets</code> setting, the policy remains in effect as
+                        				written, because <code class="code">RestrictPublicBuckets</code> only applies to buckets that
+                        				have public policies. However, if you add a public statement to the policy,
+                        					<code class="code">RestrictPublicBuckets</code> takes effect on the bucket. It allows only
+                        				AWS service principals and authorized users of the bucket owner&apos;s account to
+                        				access the bucket.
+                     </p>
+                     			
+                     <p>As an example, suppose that a bucket owned by &quot;Account-1&quot; has a policy that
+                        				contains the following:
+                     </p>
+                     			
+                     <div class="orderedlist">
+                        				
+                        				
+                        				
+                        			
+                        <ol>
+                           <li>
+                              					
+                              <p>A statement that grants access to AWS CloudTrail (which is an AWS service
+                                 						principal)
+                              </p>
+                              				
+                           </li>
+                           <li>
+                              					
+                              <p>A statement that grants access to account &quot;Account-2&quot;</p>
+                              				
+                           </li>
+                           <li>
+                              					
+                              <p>A statement that grants access to the public, for example by specifying
+                                 							<code class="code">&quot;Principal&quot;: &quot;*&quot;</code> with no limiting
+                                 						<code class="code">Condition</code></p>
+                              				
+                           </li>
+                        </ol>
+                     </div>
+                     			
+                     <p>This policy qualifies as public because of the third statement. With this policy in
+                        place
+                        				and <code class="code">RestrictPublicBuckets</code> enabled, Amazon S3 allows access only by CloudTrail.
+                        				Even though statement 2 isn&apos;t public, Amazon S3 disables access by &quot;Account-2.&quot;
+                        This is
+                        				because statement 3 renders the entire policy public, so
+                        					<code class="code">RestrictPublicBuckets</code> applies. As a result, Amazon S3 disables
+                        				cross-account access, even though the policy delegates access to a specific account,
+                        				&quot;Account-2.&quot; But if you remove statement 3 from the policy, then the policy doesn&apos;t
+                        				qualify as public, and <code class="code">RestrictPublicBuckets</code> no longer applies. Thus,
+                        				&quot;Account-2&quot; regains access to the bucket, even if you leave
+                        					<code class="code">RestrictPublicBuckets</code> enabled.
+                     </p>
+                     		
+                     	
+                     		
+                     <h2 id="access-control-block-public-access-permissions">Permissions</h2>
+                     		
+                     <p>To use Amazon S3 block public access features, you must have the following permissions.</p>
+                     		
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w203aac27c27c19b5">
+                              					
+                              <tbody><tr>
+                                 						
+                                 <th>Operation</th>
+                                 						
+                                 <th>Required Permissions</th>
+                                 					
+                              </tr>
+                              				
+                              					
+                              <tr>
+                                 						
+                                 <td>GET bucket policy status</td>
+                                 						
+                                 <td><code class="code">s3:GetBucketPolicyStatus</code></td>
+                                 					
+                              </tr>
+                              					
+                              <tr>
+                                 						
+                                 <td>GET bucket Block Public Access settings</td>
+                                 						
+                                 <td><code class="code">s3:GetBucketPublicAccessBlock</code></td>
+                                 					
+                              </tr>
+                              					
+                              <tr>
+                                 						
+                                 <td>PUT bucket Block Public Access settings</td>
+                                 						
+                                 <td><code class="code">s3:PutBucketPublicAccessBlock</code></td>
+                                 					
+                              </tr>
+                              					
+                              <tr>
+                                 						
+                                 <td>DELETE bucket Block Public Access settings</td>
+                                 						
+                                 <td><code class="code">s3:PutBucketPublicAccessBlock</code></td>
+                                 					
+                              </tr>
+                              					
+                              <tr>
+                                 						
+                                 <td>GET account Block Public Access settings</td>
+                                 						
+                                 <td><code class="code">s3:GetAccountPublicAccessBlock</code></td>
+                                 					
+                              </tr>
+                              					
+                              <tr>
+                                 						
+                                 <td>PUT account Block Public Access settings</td>
+                                 						
+                                 <td><code class="code">s3:PutAccountPublicAccessBlock</code></td>
+                                 					
+                              </tr>
+                              					
+                              <tr>
+                                 						
+                                 <td>DELETE account Block Public Access settings</td>
+                                 						
+                                 <td><code class="code">s3:PutAccountPublicAccessBlock</code></td>
+                                 					
+                              </tr>
+                              				
+                           </tbody></table>
+                        </div>
+                     </div>
+                     		
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>The DELETE operations require the same permissions as the PUT operations. There are
+                           no
+                           				separate permissions for the DELETE operations.
+                        </p>
+                     </div>
+                     	
+                     		
+                     <h2 id="access-control-block-public-access-examples">Examples</h2>
+                     		
+                     		
+                     			
+                     <h3 id="access-control-block-public-access-examples-cli">Using Block Public
+                        					Access with the AWS CLI
+                     </h3>
+                     			
+                     <p>You can use Amazon S3 block public access through the AWS CLI. The command you use
+                        				depends on whether you want to perform a block public access call on a bucket
+                        or on
+                        				an account. For more information about setting up and using the AWS CLI, see <a href="./cli/latest/userguide/cli-chap-welcome.html">What is the AWS Command Line Interface?</a></p>
+                     			
+                     <div class="itemizedlist">
+                        				
+                        				
+                        			
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem" style="list-style-type: none">
+                              					
+                              <p><b>Bucket</b></p>
+                              					
+                              <div class="itemizedlist">
+                                 						
+                                 					
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem" style="list-style-type: none">
+                                       							
+                                       <p>To perform block public access operations on a bucket, use the
+                                          								AWS CLI service <code class="code">s3api</code>. The bucket-level operations that
+                                          								use this service are as follows:
+                                       </p>
+                                       							
+                                       <div class="itemizedlist">
+                                          								
+                                          								
+                                          								
+                                          								
+                                          							
+                                          <ul class="itemizedlist" type="disc">
+                                             <li class="listitem">
+                                                									
+                                                <p>PUT PublicAccessBlock (for a bucket)</p>
+                                                								
+                                             </li>
+                                             <li class="listitem">
+                                                									
+                                                <p>GET PublicAccessBlock (for a bucket)</p>
+                                                								
+                                             </li>
+                                             <li class="listitem">
+                                                									
+                                                <p>DELETE PublicAccessBlock (for a bucket)</p>
+                                                								
+                                             </li>
+                                             <li class="listitem">
+                                                									
+                                                <p>GET BucketPolicyStatus</p>
+                                                								
+                                             </li>
+                                          </ul>
+                                       </div>
+                                       						
+                                    </li>
+                                 </ul>
+                              </div>
+                              				
+                           </li>
+                           <li class="listitem" style="list-style-type: none">
+                              					
+                              <p><b>Account</b></p>
+                              					
+                              <div class="itemizedlist">
+                                 						
+                                 					
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem" style="list-style-type: none">
+                                       							
+                                       <p>To perform block public access operations on an account, use the
+                                          								AWS CLI service <code class="code">s3control</code>. The account-level operations
+                                          								that use this service are as follows:
+                                       </p>
+                                       							
+                                       <div class="itemizedlist">
+                                          								
+                                          								
+                                          								
+                                          							
+                                          <ul class="itemizedlist" type="disc">
+                                             <li class="listitem">
+                                                									
+                                                <p>PUT PublicAccessBlock (for an account)</p>
+                                                								
+                                             </li>
+                                             <li class="listitem">
+                                                									
+                                                <p>GET PublicAccessBlock (for an account)</p>
+                                                								
+                                             </li>
+                                             <li class="listitem">
+                                                									
+                                                <p>DELETE PublicAccessBlock (for an account)</p>
+                                                								
+                                             </li>
+                                          </ul>
+                                       </div>
+                                       						
+                                    </li>
+                                 </ul>
+                              </div>
+                              				
+                           </li>
+                        </ul>
+                     </div>
+                     			
+                     		
+                     		
+                     			
+                     <h3 id="access-control-block-public-access-examples-java">Using Block Public Access with the AWS SDK for Java</h3>
+                     			
+                     <p>The following examples show how to use Amazon S3 block public access with the AWS
+                        SDK for Java. For
+                        				instructions on how to create and test a working sample, see <a href="UsingTheMPJavaAPI.html">Using the AWS SDK for Java</a>.
+                     </p>
+                     			
+                     				
+                     <h4 id="access-control-block-public-access-examples-java-1">Example 1</h4>
+                     				
+                     <p>This example shows how to set a public access block configuration on an S3 bucket
+                        using
+                        					the AWS SDK for Java.
+                     </p>
+                     				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="java ">
+AmazonS3 client = AmazonS3ClientBuilder.standard()
+	  .withCredentials(<em class="replaceable"><code>&lt;credentials&gt;</code></em>)
+	  .build();
+
+client.setPublicAccessBlock(new SetPublicAccessBlockRequest()
+		.withBucketName(<em class="replaceable"><code>&lt;bucket-name&gt;</code></em>)
+		.withPublicAccessBlockConfiguration(new PublicAccessBlockConfiguration()
+				.withBlockPublicAcls(<em class="replaceable"><code>&lt;value&gt;</code></em>)
+				.withIgnorePublicAcls(<em class="replaceable"><code>&lt;value&gt;</code></em>)
+				.withBlockPublicPolicy(<em class="replaceable"><code>&lt;value&gt;</code></em>)
+				.withRestrictPublicBuckets(<em class="replaceable"><code>&lt;value&gt;</code></em>)));
+				</code></pre>
+                     				<div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>This example pertains only to bucket-level operations, which use the
+                           							<code class="code">AmazonS3</code> client class. For account-level operations, see
+                           						the following example.
+                        </p>
+                     </div>
+                     			
+                     			
+                     				
+                     <h4 id="access-control-block-public-access-examples-java-2">Example 2</h4>
+                     				
+                     <p>This example shows how to put a public access block configuration on an Amazon S3
+                        account using
+                        					the AWS SDK for Java.
+                     </p>
+                     				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="java ">
+AWSS3ControlClientBuilder controlClientBuilder = AWSS3ControlClientBuilder.standard();
+controlClientBuilder.setRegion(<em class="replaceable"><code>&lt;region&gt;</code></em>);
+controlClientBuilder.setCredentials(<em class="replaceable"><code>&lt;credentials&gt;</code></em>);
+					
+AWSS3Control client = controlClientBuilder.build();
+client.putPublicAccessBlock(new PutPublicAccessBlockRequest()
+		.withAccountId(<em class="replaceable"><code>&lt;account-id&gt;</code></em>)
+		.withPublicAccessBlockConfiguration(new PublicAccessBlockConfiguration()
+				.withIgnorePublicAcls(<em class="replaceable"><code>&lt;value&gt;</code></em>)
+				.withBlockPublicAcls(<em class="replaceable"><code>&lt;value&gt;</code></em>)
+				.withBlockPublicPolicy(<em class="replaceable"><code>&lt;value&gt;</code></em>)
+				.withRestrictPublicBuckets(<em class="replaceable"><code>&lt;value&gt;</code></em>)));
+				</code></pre>
+                     				<div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>This example pertains only to account-level operations, which use the
+                           							<code class="code">AWSS3Control</code> client class. For bucket-level operations, see
+                           						the preceding example.
+                        </p>
+                     </div>
+                     			
+                     		
+                     		
+                     			
+                     <h3 id="access-control-block-public-access-examples-other-sdk">Using Block Public Access with Other AWS SDKs</h3>
+                     			
+                     <p>For information about using the other AWS SDKs, see <a href="UsingAWSSDK.html">Using the AWS SDKs, CLI, and Explorers</a>.
+                     </p>
+                     		
+                     		
+                     			
+                     <h3 id="access-control-block-public-access-examples-api">Using Block Public Access with the REST APIs</h3>
+                     			
+                     <p>For information about using Amazon S3 block public access through the REST APIs, see
+                        the
+                        				following topics in the <em>Amazon Simple Storage Service API Reference</em>.
+                     </p>
+                     			
+                     <div class="itemizedlist">
+                        				
+                        			
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p>Account-level operations</p>
+                              					
+                              <div class="itemizedlist">
+                                 						
+                                 						
+                                 						
+                                 					
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       <p><a href="./AmazonS3/latest/API/RESTAccountPUTPublicAccessBlock.html">PUT PublicAccessBlock</a></p>
+                                    </li>
+                                    <li class="listitem">
+                                       <p><a href="./AmazonS3/latest/API/RESTAccountGETPublicAccessBlock.html">GET PublicAccessBlock</a></p>
+                                    </li>
+                                    <li class="listitem">
+                                       <p><a href="./AmazonS3/latest/API/RESTAccountDELETEPublicAccessBlock.html">DELETE PublicAccessBlock</a></p>
+                                    </li>
+                                 </ul>
+                              </div>
+                              				
+                           </li>
+                        </ul>
+                     </div>
+                     			
+                     <div class="itemizedlist">
+                        				
+                        			
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p>Bucket-level operations</p>
+                              					
+                              <div class="itemizedlist">
+                                 						
+                                 						
+                                 						
+                                 						
+                                 					
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       <p><a href="./AmazonS3/latest/API/RESTBucketPUTPublicAccessBlock.html">PUT PublicAccessBlock</a></p>
+                                    </li>
+                                    <li class="listitem">
+                                       <p><a href="./AmazonS3/latest/API/RESTBucketGETPublicAccessBlock.html">GET PublicAccessBlock</a></p>
+                                    </li>
+                                    <li class="listitem">
+                                       <p><a href="./AmazonS3/latest/API/RESTBucketDELETEPublicAccessBlock.html">DELETE PublicAccessBlock</a></p>
+                                    </li>
+                                    <li class="listitem">
+                                       <p><a href="./AmazonS3/latest/API/RESTBucketGETPolicyStatus.html">GET BucketPolicyStatus</a></p>
+                                    </li>
+                                 </ul>
+                              </div>
+                              				
+                           </li>
+                        </ul>
+                     </div>
+                     		
+                     	
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="acl-using-rest-api.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="DataDurability.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Enable Block Public Access on the Amazon S3 Console"><a class="pagetoc" href="#console-block-public-access-options">Enable Block Public Access on the Amazon S3 Console</a></li>
+                        <li class="pagetoc" name="Block Public Access
+				Settings"><a class="pagetoc" href="#access-control-block-public-access-options">Block Public Access
+                              				Settings</a></li>
+                        <li class="pagetoc" name="The Meaning of
+				&quot;Public&quot;"><a class="pagetoc" href="#access-control-block-public-access-policy-status">The Meaning of
+                              				&quot;Public&quot;</a></li>
+                        <li class="pagetoc" name="Permissions"><a class="pagetoc" href="#access-control-block-public-access-permissions">Permissions</a></li>
+                        <li class="pagetoc" name="Examples"><a class="pagetoc" href="#access-control-block-public-access-examples">Examples</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Simple Storage Service';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

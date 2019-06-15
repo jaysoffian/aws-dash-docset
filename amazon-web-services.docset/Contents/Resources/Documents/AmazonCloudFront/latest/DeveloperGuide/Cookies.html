@@ -1,17 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Configuring CloudFront to Cache Objects Based on Cookies - Amazon CloudFront</title>
+      <title>Caching Content Based on Cookies - Amazon CloudFront</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="WorkingWithObjects.html" title="Working with Objects">
-      <link rel="prev" href="QueryStringParameters.html" title="Configuring CloudFront to Cache Based on Query String Parameters">
-      <link rel="next" href="header-caching.html" title="Configuring CloudFront to Cache Objects Based on Request Headers">
+      <link rel="up" href="ConfiguringCaching.html" title="Optimizing Content Caching and Availability">
+      <link rel="prev" href="QueryStringParameters.html" title="Caching Content Based on Query String Parameters">
+      <link rel="next" href="header-caching.html" title="Caching Content Based on Request Headers">
       <meta name="description" content="Describes how CloudFront forwards, caches, and logs cookies to your origin.">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Cookies.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,27 +35,23 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="WorkingWithObjects.html">Working with Objects</a> &#xBB; <span class="breadcrumb">Configuring CloudFront to Cache Objects Based on Cookies</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="ConfiguringCaching.html">Optimizing Content Caching and Availability</a> &#xBB; <span class="breadcrumb">Caching Content Based on Cookies</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="Cookies">Configuring CloudFront to Cache Objects Based on Cookies</h1>
-                     <p>For web distributions, you can choose whether you want CloudFront to forward cookies
-                        to your
-                        			origin and to cache separate versions of your objects based on cookie values in
-                        viewer
-                        			requests. 
-                     </p>
-                     <p>For Real Time Messaging Protocol (RTMP) distributions, you cannot configure CloudFront
-                        to
-                        			process cookies. When CloudFront requests an object from the origin server, it
-                        removes any cookies
-                        			before forwarding the request to your origin. If your origin returns any cookies
-                        along with
-                        			the object, CloudFront removes them before returning the object to the viewer.
-                        For RTMP
-                        			distributions, CloudFront does not cache cookies in edge caches.
+                     <h1 class="topictitle" id="Cookies">Caching Content Based on Cookies</h1>
+                     <p>For web distributions, CloudFront by default doesn&apos;t consider cookies when caching
+                        your objects
+                        			in edge locations. If your origin returns two objects and they differ only by the
+                        values in
+                        			the <code class="code">Set-Cookie</code> header, CloudFront caches only one version of the object. (For RTMP distributions,
+                        
+                        			you cannot configure CloudFront to process
+                        			cookies and CloudFront does not cache cookies in edge caches.)
                      </p>
                      <div class="aws-note">
                         <p class="aws-note">Important</p>
@@ -63,31 +61,23 @@
                            affect
                            				cacheability and, therefore, performance. For more information about cache behaviors,
                            see
-                           					<a href="distribution-web-values-specify.html#DownloadDistValuesCacheBehavior">Cache Behavior Settings</a>.
+                           				<a href="distribution-web-values-specify.html#DownloadDistValuesCacheBehavior">Cache Behavior Settings</a>.
                         </p>
                      </div>
-                     <p>For HTTP and HTTPS web distributions, you can choose whether you want CloudFront to
-                        forward
-                        			cookies to your origin. For RTMP distributions, you cannot configure CloudFront
-                        to process
-                        			cookies.
-                     </p>
-                     <p>For web distributions, CloudFront by default doesn&apos;t consider cookies when caching
-                        your objects
-                        			in edge locations. If your origin returns two objects and they differ only by the
-                        values in
-                        			the <code class="code">Set-Cookie</code> header, CloudFront caches only one version of the object. 
-                     </p>
                      <p>You can configure CloudFront to forward to your origin some or all of the cookies
+                        in viewer
+                        			requests, and to cache separate versions of your objects based on cookie values
                         in viewer
                         			requests. CloudFront uses the cookies in viewer requests to uniquely identify an
                         object in the
-                        			cache. For example, suppose that requests for <code class="code">locations.html</code> contain a
-                        				<code class="code">country</code> cookie that has a value of either <code class="code">uk</code> or <code class="code">fr</code>.
+                        			cache. 
+                     </p>
+                     <p>For example, suppose that requests for <code class="code">locations.html</code> contain a
+                        			<code class="code">country</code> cookie that has a value of either <code class="code">uk</code> or <code class="code">fr</code>.
                         			When you configure CloudFront to cache your objects based on the value of the <code class="code">country</code>
                         			cookie, CloudFront forwards requests for <code class="code">locations.html</code> to the origin and includes the
-                        				<code class="code">country</code> cookie and cookie values. Your origin returns
-                        				<code class="code">locations.html</code>, and CloudFront caches the object once for requests in which the value
+                        			<code class="code">country</code> cookie and cookie values. Your origin returns
+                        			<code class="code">locations.html</code>, and CloudFront caches the object once for requests in which the value
                         			of the <code class="code">country</code> cookie is <code class="code">uk</code> and once for requests in which the value
                         			is <code class="code">fr</code>.
                      </p>
@@ -148,14 +138,13 @@
                                  					returns those cookies to the viewer, too.
                               </p>
                               				
-                              <p>For information about specifying wildcards in cookie names, see <a href="distribution-web-values-specify.html#DownloadDistValuesWhitelistCookies">Whitelist Cookies (Amazon EC2 and Other 
-                                    					Custom Origins Only)</a>.
+                              <p>For information about specifying wildcards in cookie names, see 
+                                 					<a href="distribution-web-values-specify.html#DownloadDistValuesWhitelistCookies">Whitelist Cookies</a>.
                               </p>
                               				
                               <p>For the current limit on the number of cookie names that you can whitelist for each
-                                 					cache behavior, see <a href="./general/latest/gr/aws_service_limits.html#limits_cloudfront" target="_blank">Amazon CloudFront
-                                    						Limits</a> in the <em>Amazon Web Services General Reference</em>. To request a higher
-                                 					limit, go to <a href="https://console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase&amp;limitType=service-code-cloudfront-distributions" target="_blank">https://console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase&amp;limitType=service-code-cloudfront-distributions</a>.
+                                 					cache behavior, or to request a higher limit, see
+                                 					<a href="cloudfront-limits.html#limits-whitelisted-query-strings">Limits on Whitelisted Query Strings (Web Distributions Only)</a>.
                               </p>
                               			
                            </li>
@@ -179,6 +168,7 @@
                         			
                         			
                         			
+                        			
                         		
                         <dl>
                            				
@@ -192,7 +182,7 @@
                                  to your origin
                                  						or if you configure CloudFront to forward only a specified list of cookies.
                                  For more
-                                 						information about CloudFront logging, see <a href="AccessLogs.html">Access Logs</a>.
+                                 						information about CloudFront logging, see <a href="AccessLogs.html">Configuring and Using Access Logs</a>.
                               </p>
                               				
                            </dd>
@@ -228,6 +218,18 @@
                               					
                               <p><code class="code">If-Modified-Since</code> and <code class="code">If-None-Match</code> conditional requests
                                  						are not supported.
+                              </p>
+                              				
+                           </dd>
+                           			
+                           				
+                           <dt><b><span class="term">Standard Name-Value Pair Format Required</span></b></dt>
+                           				
+                           <dd>
+                              					
+                              <p>CloudFront forwards a cookie header only if the value conforms to the
+                                 						<a href="https://tools.ietf.org/html/rfc6265#section-4.1.1" target="_blank">standard name-value pair 
+                                    						format</a>, for example: <code class="code">&quot;Cookie: key=value; sample=cookie&quot;</code>.
                               </p>
                               				
                            </dd>
@@ -271,19 +273,23 @@
                      </div>
                      <p>For information about using the CloudFront console to update a distribution so CloudFront
                         forwards
-                        			cookies to the origin, see <a href="HowToUpdateDistribution.html">Viewing and Updating CloudFront Distributions</a>. For information about using the CloudFront API to
-                        			update a distribution, see <a href="./cloudfront/latest/APIReference/PutConfig.html" target="_blank">PUT Distribution
+                        			cookies to the origin, see <a href="HowToUpdateDistribution.html">Updating a Distribution</a>. For information about using the CloudFront API to
+                        			update a distribution, see <a href="./cloudfront/latest/APIReference/PutConfig.html">PUT Distribution
                            				Config</a> in the <em>Amazon CloudFront API Reference</em>.
                      </p>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -293,7 +299,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="QueryStringParameters.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="header-caching.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -301,6 +309,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

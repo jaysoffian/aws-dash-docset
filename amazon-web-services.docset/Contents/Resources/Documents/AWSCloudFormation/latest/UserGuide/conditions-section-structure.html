@@ -12,6 +12,8 @@
       <meta name="product" content="AWS CloudFormation">
       <meta name="guide" content="User Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/conditions-section-structure.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudformation">AWS CloudFormation</a> &#xBB; <a href="index.html">User Guide</a> &#xBB; <a href="template-guide.html">Working with AWS CloudFormation Templates</a> &#xBB; <a href="template-anatomy.html">Template Anatomy</a> &#xBB; <span class="breadcrumb">Conditions</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudformation/index.html">AWS CloudFormation</a> &#xBB; <a href="index.html">User Guide</a> &#xBB; <a href="template-guide.html">Working with AWS CloudFormation Templates</a> &#xBB; <a href="template-anatomy.html">Template Anatomy</a> &#xBB; <span class="breadcrumb">Conditions</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <div id="language-filter" class="page-header" style="display:none">
                         <form> Filter View: 
@@ -46,12 +51,18 @@
                               <option value="YAML" selected>YAML</option></select></form>
                      </div>
                      <h1 class="topictitle" id="conditions-section-structure">Conditions</h1>
-                     <p>The optional <code class="code">Conditions</code> section includes statements that define when a
-                        resource is created or when a property is defined. For example, you can compare whether
-                        a
-                        value is equal to another value. Based on the result of that condition, you can
-                        conditionally create resources. If you have multiple conditions, separate them with
-                        commas.
+                     <p>The optional <code class="code">Conditions</code> section contains statements that define the
+                        circumstances under which entities are created or configured. For example, you can
+                        create a
+                        condition and then associate it with a resource or output so that AWS CloudFormation
+                        only creates the
+                        resource or output if the condition is true. Similarly, you can associate the condition
+                        with
+                        a property so that AWS CloudFormation only sets the property to a specific value if
+                        the condition is
+                        true. If the condition is false, AWS CloudFormation sets the property to a different
+                        value that you
+                        specify.
                      </p>
                      <p>You might use conditions when you want to reuse a template that can create resources
                         in
@@ -66,19 +77,25 @@
                         can define which resources are created and how they&apos;re configured for each environment
                         type.
                      </p>
-                     <p>Conditions are evaluated based on input parameter values that you specify when you
-                        create or update a stack. Within each condition, you can reference another condition,
-                        a
-                        parameter value, or a mapping. After you define all your conditions, you can associate
-                        them
-                        with resources and resource properties in the <code class="code">Resources</code> and
-                        <code class="code">Outputs</code> sections of a template.
+                     <p>Conditions are evaluated based on predefined pseudo parameters or input parameter
+                        values
+                        that you specify when you create or update a stack. Within each condition, you can
+                        reference
+                        another condition, a parameter value, or a mapping. After you define all your conditions,
+                        you can associate them with resources and resource properties in the <code class="code">Resources</code>
+                        and <code class="code">Outputs</code> sections of a template.
                      </p>
                      <p>At stack creation or stack update, AWS CloudFormation evaluates all the conditions
                         in your
-                        template before creating any resources. Any resources that are associated with a true
-                        condition are created. Any resources that are associated with a false condition are
-                        ignored.
+                        template before creating any resources. Resources that are associated with a true
+                        condition
+                        are created. Resources that are associated with a false condition are ignored. AWS
+                        CloudFormation also
+                        re-evaluates these conditions at each stack update before updating any resources.
+                        Resources
+                        that are still associated with a true condition are updated. Resources that are now
+                        associated
+                        with a false condition are deleted.
                      </p>
                      <div class="aws-note">
                         <p class="aws-note">Important</p>
@@ -86,11 +103,11 @@
                            conditions only when you include changes that add, modify, or delete resources.
                         </p>
                      </div>
-                     <h2 id="w2ab2c17c15c21c13">How to Use Conditions Overview</h2>
+                     <h2 id="conditions-section-structure-overview">How to Use Conditions Overview</h2>
                      
                      
-                     <p>To conditionally create resources, you must include statements in at least three
-                        different sections of a template:
+                     <p>Depending on the entity you want to conditionally create or configure, you must
+                        include statements in the following template sections:
                      </p>
                      
                      <div class="variablelist">
@@ -104,9 +121,11 @@
                            
                            <dd>
                               
-                              <p>Define the input values that you want to evaluate in your conditions.
-                                 Conditions will result in true or false based on values from these input
-                                 parameters.
+                              <p>Define the inputs that you want your conditions to evaluate. The
+                                 conditions evaluate to true or false based on the values of these input
+                                 parameters. If you want your conditions to evaluate pseudo parameters, you
+                                 don&apos;t need to define the pseudo parameters in this section; pseudo
+                                 parameters are predefined by AWS CloudFormation.
                               </p>
                               
                            </dd>
@@ -141,7 +160,7 @@
                         </dl>
                      </div>
                      
-                     <h2 id="w2ab2c17c15c21c15">Syntax</h2>
+                     <h2 id="conditions-section-structure-syntax">Syntax</h2>
                      
                      
                      <p>The <code class="code">Conditions</code> section consists of the key name <code class="code">Conditions</code>. Each condition declaration includes a logical ID and intrinsic functions that are
@@ -153,19 +172,20 @@
                         <h3 id="conditions-section-structure-syntax.json">JSON</h3>
                         
                         <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">&quot;Conditions&quot; : {
+
   &quot;<em class="replaceable"><code>Logical ID</code></em>&quot; : {<em class="replaceable"><code>Intrinsic function</code></em>}
 }</code></pre>
                         </div>
                      
                      <div id="YAML" name="YAML" class="section langfilter">
-                        <h3 id="conditions-section-structure-syntax.yaml">YAML</h3>
                         
+                        <h3 id="conditions-section-structure-syntax.yaml">YAML</h3>
                         <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="yaml ">Conditions:
   <em class="replaceable"><code>Logical ID</code></em>:
     <em class="replaceable"><code>Intrinsic function</code></em>
 </code></pre>
-                        <h4 id="w2ab2c17c15c21c15b6b4">Condition Intrinsic Functions</h4>
                         
+                        <h4 id="conditions-section-structure-functions">Condition Intrinsic Functions</h4>
                         
                         <p>You can use the following intrinsic functions to define conditions:</p>
                         
@@ -205,48 +225,55 @@
                            </ul>
                         </div>
                         
-                        <p>For the syntax and information about each function, see
-                           <a href="intrinsic-function-reference-conditions.html">Condition Functions</a>. 
-                           
+                        <p>For the syntax and information about each function, see <a href="intrinsic-function-reference-conditions.html">Condition Functions</a>. 
                         </p>
                         
                         <div class="aws-note">
                            <p class="aws-note">Note</p>
-                           <p><code class="code">Fn::If</code> is only supported in the metadata attribute, update policy attribute, and property
-                              values in the Resources section and Outputs sections of a template.
+                           <p><code class="code">Fn::If</code> is only supported in the metadata attribute, update policy
+                              attribute, and property values in the <code class="code">Resources</code> section and
+                              <code class="code">Outputs</code> sections of a template.
                            </p>
-                        </div>    
+                        </div>
                         
                         
                      </div>
                      
-                     <h2 id="w2ab2c17c15c21c17">Examples</h2>
                      
+                     <h2 id="conditions-section-structure-examples">Examples</h2>
                      
-                     <p>The following sample template includes an <code class="code">EnvType</code> input parameter, where you can specify <code class="code">prod</code> to create a stack for production or <code class="code">test</code> to create a stack for testing. For a production environment, AWS CloudFormation creates
-                        an Amazon EC2 instance and attaches a volume to the instance. For a test environment,
-                        AWS CloudFormation creates only the Amazon EC2 instance.
+                     <p>The following sample template includes an <code class="code">EnvType</code> input parameter, where
+                        you can specify <code class="code">prod</code> to create a stack for production or <code class="code">test</code> to
+                        create a stack for testing. For a production environment, AWS CloudFormation creates
+                        an Amazon EC2 instance
+                        and attaches a volume to the instance. For a test environment, AWS CloudFormation
+                        creates only the Amazon EC2
+                        instance.
                      </p>
                      
-                     <p>The <code class="code">CreateProdResources</code> condition evaluates to <code class="code">true</code> if the <code class="code">EnvType</code> parameter is equal to <code class="code">prod</code>. In the sample template, the <code class="code">NewVolume</code> and <code class="code">MountPoint</code> resources are associated with the <code class="code">CreateProdResources</code> condition. Therefore, the resources are created only if the <code class="code">EnvType</code> parameter is equal to <code class="code">prod</code>.
+                     <p>The <code class="code">CreateProdResources</code> condition evaluates to <code class="code">true</code> if the
+                        <code class="code">EnvType</code> parameter is equal to <code class="code">prod</code>. In the sample template, the
+                        <code class="code">NewVolume</code> and <code class="code">MountPoint</code> resources are associated with the
+                        <code class="code">CreateProdResources</code> condition. Therefore, the resources are created only if
+                        the <code class="code">EnvType</code> parameter is equal to <code class="code">prod</code>.
                      </p>
                      
                      <div id="JSON" name="JSON" class="section langfilter">
-                        <h3 id="conditions-section-structure-example.json">JSON</h3>
                         
+                        <h3 id="conditions-section-structure-example.json">JSON</h3>
                         <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
   &quot;AWSTemplateFormatVersion&quot; : &quot;2010-09-09&quot;,
 
   &quot;Mappings&quot; : {
     &quot;RegionMap&quot; : {
-      &quot;us-east-1&quot;      : { &quot;AMI&quot; : &quot;ami-7f418316&quot;, &quot;TestAz&quot; : &quot;us-east-1a&quot; },
-      &quot;us-west-1&quot;      : { &quot;AMI&quot; : &quot;ami-951945d0&quot;, &quot;TestAz&quot; : &quot;us-west-1a&quot; },
-      &quot;us-west-2&quot;      : { &quot;AMI&quot; : &quot;ami-16fd7026&quot;, &quot;TestAz&quot; : &quot;us-west-2a&quot; },
-      &quot;eu-west-1&quot;      : { &quot;AMI&quot; : &quot;ami-24506250&quot;, &quot;TestAz&quot; : &quot;eu-west-1a&quot; },
-      &quot;sa-east-1&quot;      : { &quot;AMI&quot; : &quot;ami-3e3be423&quot;, &quot;TestAz&quot; : &quot;sa-east-1a&quot; },
-      &quot;ap-southeast-1&quot; : { &quot;AMI&quot; : &quot;ami-74dda626&quot;, &quot;TestAz&quot; : &quot;ap-southeast-1a&quot; },
-      &quot;ap-southeast-2&quot; : { &quot;AMI&quot; : &quot;ami-b3990e89&quot;, &quot;TestAz&quot; : &quot;ap-southeast-2a&quot; },
-      &quot;ap-northeast-1&quot; : { &quot;AMI&quot; : &quot;ami-dcfa4edd&quot;, &quot;TestAz&quot; : &quot;ap-northeast-1a&quot; }
+      &quot;us-east-1&quot;      : { &quot;AMI&quot; : &quot;ami-0ff8a91507f77f867&quot;, &quot;TestAz&quot; : &quot;us-east-1a&quot; },
+      &quot;us-west-1&quot;      : { &quot;AMI&quot; : &quot;ami-0bdb828fd58c52235&quot;, &quot;TestAz&quot; : &quot;us-west-1a&quot; },
+      &quot;us-west-2&quot;      : { &quot;AMI&quot; : &quot;ami-a0cfeed8&quot;, &quot;TestAz&quot; : &quot;us-west-2a&quot; },
+      &quot;eu-west-1&quot;      : { &quot;AMI&quot; : &quot;ami-047bb4163c506cd98&quot;, &quot;TestAz&quot; : &quot;eu-west-1a&quot; },
+      &quot;sa-east-1&quot;      : { &quot;AMI&quot; : &quot;ami-07b14488da8ea02a0&quot;, &quot;TestAz&quot; : &quot;sa-east-1a&quot; },
+      &quot;ap-southeast-1&quot; : { &quot;AMI&quot; : &quot;ami-08569b978cc4dfa10&quot;, &quot;TestAz&quot; : &quot;ap-southeast-1a&quot; },
+      &quot;ap-southeast-2&quot; : { &quot;AMI&quot; : &quot;ami-09b42976632b27e9b&quot;, &quot;TestAz&quot; : &quot;ap-southeast-2a&quot; },
+      &quot;ap-northeast-1&quot; : { &quot;AMI&quot; : &quot;ami-06cd52961ce9f0d85&quot;, &quot;TestAz&quot; : &quot;ap-northeast-1a&quot; }
     }
   },
     
@@ -302,34 +329,34 @@
                         </div>
                      
                      <div id="YAML" name="YAML" class="section langfilter">
-                        <h3 id="conditions-section-structure-example.yaml">YAML</h3>
                         
+                        <h3 id="conditions-section-structure-example.yaml">YAML</h3>
                         <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="yaml ">AWSTemplateFormatVersion: &quot;2010-09-09&quot;
 Mappings: 
   RegionMap: 
     us-east-1: 
-      AMI: &quot;ami-7f418316&quot;
+      AMI: &quot;ami-0ff8a91507f77f867&quot;
       TestAz: &quot;us-east-1a&quot;
     us-west-1: 
-      AMI: &quot;ami-951945d0&quot;
+      AMI: &quot;ami-0bdb828fd58c52235&quot;
       TestAz: &quot;us-west-1a&quot;
     us-west-2: 
-      AMI: &quot;ami-16fd7026&quot;
+      AMI: &quot;ami-a0cfeed8&quot;
       TestAz: &quot;us-west-2a&quot;
     eu-west-1: 
-      AMI: &quot;ami-24506250&quot;
+      AMI: &quot;ami-047bb4163c506cd98&quot;
       TestAz: &quot;eu-west-1a&quot;
     sa-east-1: 
-      AMI: &quot;ami-3e3be423&quot;
+      AMI: &quot;ami-07b14488da8ea02a0&quot;
       TestAz: &quot;sa-east-1a&quot;
     ap-southeast-1: 
-      AMI: &quot;ami-74dda626&quot;
+      AMI: &quot;ami-08569b978cc4dfa10&quot;
       TestAz: &quot;ap-southeast-1a&quot;
     ap-southeast-2: 
-      AMI: &quot;ami-b3990e89&quot;
+      AMI: &quot;ami-09b42976632b27e9b&quot;
       TestAz: &quot;ap-southeast-2a&quot;
     ap-northeast-1: 
-      AMI: &quot;ami-dcfa4edd&quot;
+      AMI: &quot;ami-06cd52961ce9f0d85&quot;
       TestAz: &quot;ap-northeast-1a&quot;
 Parameters: 
   EnvType: 
@@ -371,15 +398,19 @@ Outputs:
 </code></pre>
                         </div>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -389,7 +420,9 @@ Outputs:
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="mappings-section-structure.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="transform-section-structure.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -398,14 +431,18 @@ Outputs:
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="How to Use Conditions Overview"><a class="pagetoc" href="#w2ab2c17c15c21c13">How to Use Conditions Overview</a></li>
-                        <li class="pagetoc" name="Syntax"><a class="pagetoc" href="#w2ab2c17c15c21c15">Syntax</a></li>
-                        <li class="pagetoc" name="Examples"><a class="pagetoc" href="#w2ab2c17c15c21c17">Examples</a></li>
+                        <li class="pagetoc" name="How to Use Conditions Overview"><a class="pagetoc" href="#conditions-section-structure-overview">How to Use Conditions Overview</a></li>
+                        <li class="pagetoc" name="Syntax"><a class="pagetoc" href="#conditions-section-structure-syntax">Syntax</a></li>
+                        <li class="pagetoc" name="Examples"><a class="pagetoc" href="#conditions-section-structure-examples">Examples</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

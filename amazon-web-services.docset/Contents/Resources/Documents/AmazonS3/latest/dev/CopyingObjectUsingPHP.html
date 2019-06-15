@@ -11,6 +11,8 @@
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/CopyingObjectUsingPHP.html">
@@ -20,7 +22,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,10 +34,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="UsingObjects.html">Working with Amazon S3 Objects</a> &#xBB; <a href="ObjectOperations.html">Operations on Objects</a> &#xBB; <a href="CopyingObjectsExamples.html">Copying Objects</a> &#xBB; <a href="CopyingObjectsUsingAPIs.html">Copying Objects in a Single Operation</a> &#xBB; <span class="breadcrumb">Copy an Object Using the AWS SDK for PHP</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="UsingObjects.html">Working with Amazon S3 Objects</a> &#xBB; <a href="ObjectOperations.html">Operations on Objects</a> &#xBB; <a href="CopyingObjectsExamples.html">Copying Objects</a> &#xBB; <a href="CopyingObjectsUsingAPIs.html">Copying Objects in a Single Operation</a> &#xBB; <span class="breadcrumb">Copy an Object Using the AWS SDK for PHP</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="CopyingObjectUsingPHP">Copy an Object Using the AWS SDK for PHP</h1>
                      <p> This topic guides you through using classes from version 3 of the AWS SDK for PHP
@@ -56,7 +61,7 @@
                      <div class="table">
                         <p class="title"><b>Copying Objects</b></p>
                         <div class="table-contents">
-                           <table id="w70aac18c27c21c23c11c11">
+                           <table id="w203aac19c27c21c23c11c11">
                               
                               <tbody><tr>
                                  
@@ -83,7 +88,7 @@
                                  <td>
                                     
                                     <p>To make multiple copies of an object, you execute a batch of calls to the
-                                       Amazon S3 client <a href="./aws-sdk-php/v3/api/class-Aws.AwsClientInterface.html#_getCommand" target="_blank">getCommand()</a> method, which is inherited from the <a href="./aws-sdk-php/v3/api/class-Aws.CommandInterface.html" target="_blank">Aws\CommandInterface</a> class. You provide the
+                                       Amazon S3 client <a href="./aws-sdk-php/v3/api/class-Aws.AwsClientInterface.html#_getCommand">getCommand()</a> method, which is inherited from the <a href="./aws-sdk-php/v3/api/class-Aws.CommandInterface.html">Aws\CommandInterface</a> class. You provide the
                                        <code class="code">CopyObject</code> command as the first argument and an array
                                        containing the source bucket, source key name, target bucket, and target key
                                        name as the second argument. 
@@ -103,9 +108,7 @@
                               method to copy a single object within Amazon S3 and using a batch of calls to
                               <code class="code">CopyObject</code> using the <code class="code">getcommand()</code> method to make multiple
                               copies of an object.
-                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">&lt;?php
-
-require &apos;vendor/autoload.php&apos;;
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="PHP "> require &apos;vendor/autoload.php&apos;;
 
 use Aws\S3\S3Client;
 
@@ -135,14 +138,17 @@ for ($i = 1; $i &lt;= 3; $i++) {
     ]);
 }
 try {
-    $succeeded = $s3-&gt;execute($batch);
-    $failed = array();
-} catch (CommandTransferException $e) {
-    $succeeded = $e-&gt;getSuccessfulCommands();
-    echo &quot;Failed Commands:&quot; . PHP_EOL;
-    foreach ($e-&gt;getFailedCommands() as $failedCommand) {
-        echo $e-&gt;getExceptionForFailedCommand($FailedCommand)-&gt;getMessage() . PHP_EOL;
+    $results = CommandPool::batch($s3, $batch);
+    foreach($results as $result) {
+        if ($result instanceof ResultInterface) {
+            // Result handling here
+        }
+        if ($result instanceof AwsException) {
+            // AwsException handling here
+        }
     }
+} catch (\Exception $e) {
+    // General error handling here
 }
 </code></pre></div>
                      </div>
@@ -158,7 +164,7 @@ try {
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p><a href="./aws-sdk-php/v3/api/class-Aws.S3.S3Client.html" target="_blank">
+                              <p><a href="./aws-sdk-php/v3/api/class-Aws.S3.S3Client.html">
                                     AWS SDK for PHP for Amazon S3 Aws\S3\S3Client Class</a>
                                  
                               </p>
@@ -174,15 +180,19 @@ try {
                      </div>
                      
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -192,7 +202,9 @@ try {
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="CopyingObjectUsingNetSDK.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="CopyingObjectUsingRuby.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -207,6 +219,10 @@ try {
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

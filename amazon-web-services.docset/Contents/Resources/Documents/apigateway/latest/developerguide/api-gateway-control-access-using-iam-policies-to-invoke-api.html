@@ -9,11 +9,13 @@
       <link rel="prev" href="apigateway-control-cross-account-lambda-auth-and-integration.html" title="Control
                 Cross-Account Access to Your API">
       <link rel="next" href="api-gateway-iam-policy-examples.html" title="">
-      <meta name="description" content="In this section you will learn how to write up IAM policy statements to control who can or cannot call a deployed API in API Gateway. Here, you will also find the policy statement reference, including the formats of Action and Resource fields related to the API execution service.">
+      <meta name="description" content="In this section you will learn how to write up IAM policy statements to control who can call a deployed API in API Gateway. Here, you will also find the policy statement reference, including the formats of Action and Resource fields related to the API execution service. You should also study the IAM section in">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html">
@@ -23,7 +25,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -35,25 +37,52 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-control-access-to-api.html"> Controlling Access to an API in
-                                    			API Gateway</a> &#xBB; <a href="permissions.html">Control Access to an API with IAM Permissions</a> &#xBB; <span class="breadcrumb"> Control
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="apigateway-control-access-to-api.html">Controlling and Managing Access to a REST
+                                    			API in API Gateway</a> &#xBB; <a href="permissions.html">Control Access to an API with IAM Permissions</a> &#xBB; <span class="breadcrumb"> Control
                                     Access for Invoking an API</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="api-gateway-control-access-using-iam-policies-to-invoke-api"> Control
                         Access for Invoking an API
                      </h1>
                      <p> In this section you will learn how to write up IAM policy statements to control who
-                        can or cannot call a deployed API in API Gateway. Here, you will also find the policy
+                        can call a deployed API in API Gateway. Here, you will also find the policy
                         statement reference, including the formats of <code class="literal">Action</code> and
                         <code class="literal">Resource</code> fields related to the API execution
-                        service. 
+                        service. You should also study the IAM section in <a href="apigateway-authorization-flow.html">How Amazon API Gateway Resource Policies Affect
+                           Authorization Workflow</a>.
                      </p>
+                     <p>For private APIs, you should use a combination of an API Gateway resource policy and
+                        a VPC endpoint policy. For more information, see the following topics:
+                     </p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><a href="apigateway-resource-policies.html">Control Access to an API with Amazon API Gateway
+                                    Resource Policies</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="apigateway-vpc-endpoint-policies.html">Use VPC Endpoint Policies for Private
+                                    APIs in API Gateway</a></p>
+                              
+                           </li>
+                        </ul>
+                     </div>
                      
                      <h2 id="api-gateway-who-can-invoke-an-api-method-using-iam-policies">
-                        Control Who Can Call an API Gateway API Method with IAM Policies 
+                        Control Who Can Call an API Gateway API Method with IAM Policies
                      </h2>
                      
                      
@@ -75,29 +104,30 @@
     }
   ]
 } </code></pre>
-                     <p> Here, <em class="replaceable"><code>Permission</code></em> is to be replaced by <code class="literal">Allow</code> or <code class="literal">Deny</code>
+                     <p> Here, <code class="code"><em class="replaceable"><code>Permission</code></em></code> is to be replaced by
+                        <code class="literal">Allow</code> or <code class="literal">Deny</code>
                         depending on whether you want to grant or revoke the included permissions.
-                        <em class="replaceable"><code>Execution-operation</code></em> is to be replaced by the
-                        operations supported by the API execution service.
-                        <em class="replaceable"><code>METHOD_HTTP_VERB</code></em> stands for a HTTP verb supported by
-                        the specified resources. <code class="literal"><em class="replaceable"><code>Resource-path</code></em></code> is the placeholder for the
-                        URL path of a deployed API <a href="./apigateway/api-reference/resource/resource/" target="_blank">Resource</a> instance supporting the said <code class="literal"><em class="replaceable"><code>METHOD_HTTP-VERB</code></em></code>. For more information,
-                        see <a href="api-gateway-control-access-using-iam-policies-to-invoke-api.html#api-gateway-calling-api-permissions">Statement Reference of IAM
+                        <code class="code"><em class="replaceable"><code>Execution-operation</code></em></code> is to be
+                        replaced by the operations supported by the API execution service.
+                        <code class="code"><em class="replaceable"><code>METHOD_HTTP_VERB</code></em></code> stands for a HTTP
+                        verb supported by the specified resources. <code class="literal"><em class="replaceable"><code>Resource-path</code></em></code> is the placeholder for the
+                        URL path of a deployed API <code class="code"><a href="./apigateway/api-reference/resource/resource/">Resource</a></code> instance supporting the said <code class="literal"><em class="replaceable"><code>METHOD_HTTP-VERB</code></em></code>. For more
+                        information, see <a href="api-gateway-control-access-using-iam-policies-to-invoke-api.html#api-gateway-calling-api-permissions">Statement Reference of IAM
                            Policies for Executing API in API Gateway</a>. 
                      </p>
                      
                      <div class="aws-note">
                         <p class="aws-note">Note</p>
-                        <p> For IAM policies to be effective, you must have enabled IAM
-                           authentication on API methods by setting <code class="literal">AWS_IAM</code>
-                           for the methods&apos; <a href="./apigateway/api-reference/resource/method/#authorizationType" target="_blank">authorizationType</a> property. Failing to do so will make these API
-                           methods effectively public accessible. 
+                        <p>For IAM policies to be effective, you must have enabled IAM authentication
+                           on API methods by setting <code class="literal">AWS_IAM</code> for the
+                           methods&apos; <code class="code"><a href="./apigateway/api-reference/resource/method/#authorizationType">authorizationType</a></code> property. Failing to do so will make
+                           these API methods publicly accessible.
                         </p>
                      </div>
                      
-                     <p> For example, to grant a user the permission to view a list of pets exposed by a
-                        specified API, but to deny the user the permission to add a pet to the list, you
-                        could include the following statement in the IAM policy: 
+                     <p> For example, to grant a user permission to view a list of pets exposed by a
+                        specified API, but to deny the user permission to add a pet to the list, you could
+                        include the following statement in the IAM policy: 
                      </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
   &quot;Version&quot;: &quot;2012-10-17&quot;,
@@ -122,6 +152,24 @@
     }
   ]
 } </code></pre>
+                     <p>To grant a user permission to view a specific pet exposed by an API that is
+                        configured as <code class="code">GET /pets/<em class="replaceable"><code>{petId}</code></em></code>, you could
+                        include the following statement in the IAM policy:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+  &quot;Version&quot;: &quot;2012-10-17&quot;,
+  &quot;Statement&quot;: [
+    {
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Action&quot;: [
+        &quot;execute-api:Invoke&quot;           
+      ],
+      &quot;Resource&quot;: [
+        &quot;arn:aws:execute-api:us-east-1:<em class="replaceable"><code>account-id</code></em>:<em class="replaceable"><code>api-id</code></em>/*/GET/<em class="replaceable"><code>pets</code></em>/<em class="replaceable"><code>a1b2</code></em>&quot;
+      ]
+    }
+  ]
+}</code></pre>
                      <p> For a developer team testing APIs, you can include the following statement in the
                         IAM policy to allow the team to call any method on any resource of any API by any
                         developer in the <code class="literal">test</code> stage. 
@@ -250,8 +298,7 @@
                            <li class="listitem">
                               
                               <p><em class="replaceable"><code>HTTP-VERB</code></em> is the HTTP verb for the method.
-                                 It can be one of the following: GET, POST, PUT, DELETE, PATCH, HEAD,
-                                 OPTIONS. 
+                                 It can be one of the following: GET, POST, PUT, DELETE, PATCH.
                               </p>
                               
                            </li>
@@ -334,15 +381,19 @@
                      </div>
                      
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -352,7 +403,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="apigateway-control-cross-account-lambda-auth-and-integration.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="api-gateway-iam-policy-examples.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -362,8 +415,8 @@
                      <p>On this page:</p>
                      <ul class="pagetoc">
                         <li class="pagetoc" name="
-                    Control Who Can Call an API Gateway API Method with IAM Policies "><a class="pagetoc" href="#api-gateway-who-can-invoke-an-api-method-using-iam-policies">
-                              Control Who Can Call an API Gateway API Method with IAM Policies </a></li>
+                    Control Who Can Call an API Gateway API Method with IAM Policies"><a class="pagetoc" href="#api-gateway-who-can-invoke-an-api-method-using-iam-policies">
+                              Control Who Can Call an API Gateway API Method with IAM Policies</a></li>
                         <li class="pagetoc" name="Statement Reference of IAM
                     Policies for Executing API in API Gateway"><a class="pagetoc" href="#api-gateway-calling-api-permissions">Statement Reference of IAM
                               Policies for Executing API in API Gateway</a></li>
@@ -372,6 +425,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

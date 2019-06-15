@@ -3,14 +3,17 @@
       <title>Tutorial: Using AWS Lambda with Scheduled Events - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="with-scheduled-events.html" title="Using AWS Lambda with Scheduled Events">
-      <link rel="prev" href="with-scheduled-events.html" title="Using AWS Lambda with Scheduled Events">
-      <link rel="next" href="tutorial-scheduled-events-create-function.html" title="Step 1: Create a Lambda Function">
+      <link rel="up" href="with-scheduled-events.html" title="Using AWS Lambda with Amazon CloudWatch Events">
+      <link rel="prev" href="with-scheduled-events.html" title="Using AWS Lambda with Amazon CloudWatch Events">
+      <link rel="next" href="with-scheduledevents-example-use-app-spec.html" title="AWS SAM Template for a CloudWatch Events Application">
       <meta name="description" content="In this tutorial, you do the following:">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/with-scheduledevents-example.html">
@@ -20,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="use-cases.html">Examples of How to Use AWS Lambda</a> &#xBB; <a href="with-scheduled-events.html">Using AWS Lambda with Scheduled Events</a> &#xBB; <span class="breadcrumb">Tutorial: Using AWS Lambda with Scheduled Events</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-services.html">Using AWS Lambda with Other Services</a> &#xBB; <a href="with-scheduled-events.html">Using AWS Lambda with Amazon CloudWatch Events</a> &#xBB; <span class="breadcrumb">Tutorial: Using AWS Lambda with Scheduled Events</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="with-scheduledevents-example">Tutorial: Using AWS Lambda with Scheduled Events</h1>
                      <p>In this tutorial, you do the following:</p>
@@ -46,20 +52,19 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p>Create a Lambda function using the <b>lambda-canary</b> blueprint. You configure
-                                 the Lambda function to run every minute. Note that if the function returns an error,
-                                 AWS Lambda logs error metrics to
-                                 CloudWatch. 
+                              <p>Create a Lambda function using the <b>lambda-canary</b> blueprint. You configure the Lambda
+                                 function to run every minute. Note that if the function returns an error, AWS Lambda
+                                 logs error metrics to CloudWatch.
+                                 
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>Configure a CloudWatch alarm on the <code class="code">Errors</code> metric of your
-                                 Lambda function to post a message to your Amazon SNS topic when AWS Lambda emits error
-                                 metrics to CloudWatch. You subscribe to the Amazon SNS topics to get email
-                                 notification. In this tutorial, you do the following to set this
-                                 up:
+                              <p>Configure a CloudWatch alarm on the <code class="code">Errors</code> metric of your Lambda function to post a message to your
+                                 Amazon SNS topic when AWS Lambda emits error metrics to CloudWatch. You subscribe
+                                 to the Amazon SNS topics to get email
+                                 notification. In this tutorial, you do the following to set this up:
                               </p>
                               
                               <div class="itemizedlist">
@@ -75,15 +80,16 @@
                                     </li>
                                     <li class="listitem">
                                        
-                                       <p>Subscribe to the topic so you can get email notifications when a new
-                                          message is posted to the topic.
+                                       <p>Subscribe to the topic so you can get email notifications when a new message is posted
+                                          to the
+                                          topic.
                                        </p>
                                        
                                     </li>
                                     <li class="listitem">
                                        
-                                       <p>In Amazon CloudWatch, set an alarm on the <code class="code">Errors</code> metric of your Lambda
-                                          function to publish a message to your SNS topic when errors occur.
+                                       <p>In Amazon CloudWatch, set an alarm on the <code class="code">Errors</code> metric of your Lambda function to publish a message
+                                          to your SNS topic when errors occur.
                                        </p>
                                        
                                     </li>
@@ -93,20 +99,430 @@
                            </li>
                         </ul>
                      </div>
-                     <h2 id="wt-scheduledevents-next-step">Next Step</h2>
+                     
+                     <h2 id="with-scheduled-events-prepare">Prerequisites</h2>
+                      
+                     <p>This tutorial assumes that you have some knowledge of basic Lambda operations and
+                        the Lambda console. If you
+                        haven&apos;t already, follow the instructions in <a href="getting-started.html">Getting Started with AWS Lambda</a> to create your first Lambda function.
+                     </p>
                      
                      
-                     <p><a href="tutorial-scheduled-events-create-function.html">Step 1: Create a Lambda Function</a></p>
                      
+                     <h2 id="tutorial-scheduled-events-create-function">Create a Lambda Function</h2>
+                     
+                     <ol>
+                        <li>
+                           <p>Sign in to the AWS Management Console and open the AWS Lambda console at
+                              <a href="https://console.aws.amazon.com/lambda/" target="_blank">https://console.aws.amazon.com/lambda/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create function</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Blueprints</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Enter <strong class="userinput"><code>canary</code></strong> in the search bar. Choose the <b>lambda-canary</b>
+                              blueprint and then choose <b>Configure</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Configure the following settings.</p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p><b>Name</b> &#x2013; <strong class="userinput"><code>lambda-canary</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Role</b> &#x2013; <b>Create a new role from one or more
+                                          templates</b>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Role name</b> &#x2013; <strong class="userinput"><code>lambda-apigateway-role</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Policy templates</b> &#x2013; <b>Simple microservice
+                                          permissions</b>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Rule</b> &#x2013; <b>Create a new rule</b>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Rule name</b> &#x2013; <strong class="userinput"><code>CheckWebsiteScheduledEvent</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Rule description</b> &#x2013; <strong class="userinput"><code>CheckWebsiteScheduledEvent
+                                             trigger</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Schedule expression</b> &#x2013; <strong class="userinput"><code>rate(1 minute)</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Enabled</b> &#x2013; True (checked).
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Environment variables</b></p>
+                                    
+                                    <div class="itemizedlist">
+                                       
+                                       
+                                       
+                                       <ul class="itemizedlist" type="disc">
+                                          <li class="listitem">
+                                             
+                                             <p><b>site</b> &#x2013;
+                                                <strong class="userinput"><code>https://docs.aws.amazon.com/lambda/latest/dg/welcome.html</code></strong></p>
+                                             
+                                          </li>
+                                          <li class="listitem">
+                                             
+                                             <p><b>expected</b> &#x2013; <strong class="userinput"><code>What Is AWS Lambda?</code></strong></p>
+                                             
+                                          </li>
+                                       </ul>
+                                    </div>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create function</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>CloudWatch Events emits an event every minute, based on the schedule expression. The
+                        event triggers the Lambda function,
+                        which verifies that the expected string appears in the specified page. For more information
+                        on expressions
+                        schedules, see <a href="tutorial-scheduled-events-schedule-expressions.html">Schedule Expressions Using Rate or Cron</a>.
+                     </p>
+                     
+                     
+                     <h2 id="tutorial-scheduled-events-test-function">Test the Lambda Function</h2>
+                     
+                     <p>Test the function with a sample event provided by the Lambda console.</p>
+                     
+                     <ol>
+                        <li>
+                           <p>Open the Lambda console <a href="https://console.aws.amazon.com/lambda/home#/functions" target="_blank">Functions page</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>lambda-canary</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Next to the <b>Test</b> button at the top of the page, choose <b>Configure test
+                                 events</b> from the drop-down menu.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Create a new event using the <b>CloudWatch Events</b> event template.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Test</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>The output from the function execution is shown at the top of the page.</p>
+                     
+                     
+                     <h2 id="tutorial-scheduled-events-subscribe-sns">Create an Amazon SNS Topic and Subscribe to It</h2>
+                     
+                     <p>Create an Amazon Simple Notification Service topic to receive notifications when the
+                        canary function returns an error.
+                     </p>
+                     
+                     <p class="title"><b>To create a topic</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Open the <a href="https://console.aws.amazon.com/sns" target="_blank">Amazon SNS console</a>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create topic</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Create a topic with the following settings.</p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p><b>Name</b> &#x2013; <strong class="userinput"><code>lambda-canary-notifications</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Display name</b> &#x2013; <strong class="userinput"><code>Canary</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create subscription</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Create a subscription with the following settings.</p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p><b>Protocol</b> &#x2013; <strong class="userinput"><code>Email</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Endpoint</b> &#x2013; Your email address.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>Amazon SNS sends an email from <code class="code">Canary &lt;no-reply@sns.amazonaws.com&gt;</code>, reflecting the friendly name
+                        of the topic. Use the link in the email to confirm your address.
+                     </p>
+                     
+                     
+                     <h2 id="tutorial-scheduled-events-create-alarm">Configure an Alarm</h2>
+                     
+                     <p>Configure an alarm in Amazon CloudWatch that monitors the Lambda function and sends
+                        a notification when it fails.
+                     </p>
+                     
+                     <p class="title"><b>To create an alarm</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Open the <a href="https://console.aws.amazon.com/cloudwatch" target="_blank">CloudWatch console</a>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Alarms</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create alarm</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Alarms</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Create an alarm with the following settings.</p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p><b>Metrics</b> &#x2013; <b>lambda-canary Errors</b>.
+                                    </p>
+                                    
+                                    <p>Search for <strong class="userinput"><code>lambda canary errors</code></strong> to find the metric.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>Statistic &#x2013; <strong class="userinput"><code>Sum</code></strong>.
+                                    </p>
+                                    
+                                    <p>Choose the statistic from the drop down above the preview graph.</p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Name</b> &#x2013; <strong class="userinput"><code>lambda-canary-alarm</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Description</b> &#x2013; <strong class="userinput"><code>Lambda canary alarm</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>Threshold &#x2013; <b>Whenever Errors is &gt;=</b><strong class="userinput"><code>1</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Send notification to</b> &#x2013;
+                                       <strong class="userinput"><code>lambda-canary-notifications</code></strong></p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     
+                     <h2 id="tutorial-scheduled-events-test-function-again">Test the Alarm</h2>
+                     
+                     <p>Update the function configuration to cause the function to return an error, triggering
+                        the alarm.
+                     </p>
+                     
+                     <p class="title"><b>To trigger an alarm</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Lambda console <a href="https://console.aws.amazon.com/lambda/home#/functions" target="_blank">Functions page</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>lambda-canary</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Under <b>Environment variables</b>, set <b>expected</b> to
+                              <strong class="userinput"><code>404</code></strong>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Save</b></p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>Wait a minute, and then check your email for a message from Amazon SNS</p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -115,8 +531,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="with-scheduled-events.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="tutorial-scheduled-events-create-function.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="with-scheduled-events.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="with-scheduledevents-example-use-app-spec.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -125,12 +543,21 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Next Step"><a class="pagetoc" href="#wt-scheduledevents-next-step">Next Step</a></li>
+                        <li class="pagetoc" name="Prerequisites"><a class="pagetoc" href="#with-scheduled-events-prepare">Prerequisites</a></li>
+                        <li class="pagetoc" name="Create a Lambda Function"><a class="pagetoc" href="#tutorial-scheduled-events-create-function">Create a Lambda Function</a></li>
+                        <li class="pagetoc" name="Test the Lambda Function"><a class="pagetoc" href="#tutorial-scheduled-events-test-function">Test the Lambda Function</a></li>
+                        <li class="pagetoc" name="Create an Amazon SNS Topic and Subscribe to It"><a class="pagetoc" href="#tutorial-scheduled-events-subscribe-sns">Create an Amazon SNS Topic and Subscribe to It</a></li>
+                        <li class="pagetoc" name="Configure an Alarm"><a class="pagetoc" href="#tutorial-scheduled-events-create-alarm">Configure an Alarm</a></li>
+                        <li class="pagetoc" name="Test the Alarm"><a class="pagetoc" href="#tutorial-scheduled-events-test-function-again">Test the Alarm</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

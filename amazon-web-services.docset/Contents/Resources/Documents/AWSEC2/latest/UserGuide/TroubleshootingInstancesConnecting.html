@@ -1,13 +1,10 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Troubleshooting Connecting to Your
-         Instance - Amazon Elastic Compute Cloud
-      </title>
+      <title>Troubleshooting Connecting to Your Instance - Amazon Elastic Compute Cloud</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="ec2-instance-troubleshoot.html" title="Troubleshooting Instances">
-      <link rel="prev" href="Using_InstanceStraightToTerminated.html" title="What to Do If an Instance Immediately
-    Terminates">
+      <link rel="prev" href="troubleshooting-launch.html" title="Troubleshooting Instance Launch Issues">
       <link rel="next" href="TroubleshootingInstancesStopping.html" title="Troubleshooting Stopping Your Instance">
       <meta name="description" content="Troubleshoot connecting to your instance.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
@@ -15,6 +12,8 @@
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/TroubleshootingInstancesConnecting.html">
@@ -24,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -36,15 +35,15 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="ec2-instance-troubleshoot.html">Troubleshooting Instances</a> &#xBB; <span class="breadcrumb">Troubleshooting Connecting to Your
-                                    Instance</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="ec2-instance-troubleshoot.html">Troubleshooting Instances</a> &#xBB; <span class="breadcrumb">Troubleshooting Connecting to Your Instance</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="TroubleshootingInstancesConnecting">Troubleshooting Connecting to Your
-                        Instance
-                     </h1>
+                     <h1 class="topictitle" id="TroubleshootingInstancesConnecting">Troubleshooting Connecting to Your Instance</h1>
                      <p>The following are possible problems you may have and error messages you may see while
                         trying
                         to connect to your instance.
@@ -52,30 +51,28 @@
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Contents</strong></p>
                         <ul>
-                           <li><a href="#TroubleshootingInstancesConnectionTimeout">Error connecting to your instance:
-                                 Connection timed out</a></li>
+                           <li><a href="#TroubleshootingInstancesConnectionTimeout">Error connecting to your instance: Connection timed out</a></li>
                            <li><a href="#TroubleshootingInstancesServerError">Error: User key not recognized by
                                  server</a></li>
                            <li><a href="#TroubleshootingInstancesConnectingMindTerm">Error: Host key not
                                  found, Permission denied (publickey), or Authentication
                                  failed, permission denied</a></li>
                            <li><a href="#troubleshoot-unprotected-key">Error: Unprotected Private Key File</a></li>
+                           <li><a href="#troubleshoot-private-key-file-format">Error: Private key must begin with
+                                 &quot;-----BEGIN RSA PRIVATE KEY-----&quot; and end with &quot;-----END RSA PRIVATE KEY-----&quot;</a></li>
                            <li><a href="#TroubleshootingInstancesConnectingPuTTY">Error: Server refused our key
                                  or No supported authentication methods available</a></li>
                            <li><a href="#troubleshoot-instance-connect-safari">Error Using MindTerm on Safari
                                  Browser</a></li>
-                           <li><a href="#troubleshoot-instance-connect-mac-rdp">Error Using macOS RDP Client</a></li>
                            <li><a href="#troubleshoot-instance-ping">Cannot Ping Instance</a></li>
+                           <li><a href="#troubleshoot-ssh">Error: Server unexpectedly closed network connection</a></li>
                         </ul>
                      </div>
-                     <p>For additional help with Windows instances, see <a href="./AWSEC2/latest/WindowsGuide/troubleshooting-windows-instances.html" target="_blank">Troubleshooting Windows
+                     <p>For additional help with Windows instances, see <a href="./AWSEC2/latest/WindowsGuide/troubleshooting-windows-instances.html">Troubleshooting Windows
                            Instances</a> in the <em>Amazon EC2 User Guide for Windows Instances</em>.
                      </p>
-                     <p>You can also search for answers and post questions on the <a href="https://forums.aws.amazon.com/forum.jspa?forumID=30" target="_blank">Amazon EC2 forum</a>.
-                     </p>
-                     <h2 id="TroubleshootingInstancesConnectionTimeout">Error connecting to your instance:
-                        Connection timed out
-                     </h2>
+                     
+                     <h2 id="TroubleshootingInstancesConnectionTimeout">Error connecting to your instance: Connection timed out</h2>
                      
                      
                      <p>If you try to connect to your instance and get an error message <code class="code">Network error:
@@ -113,25 +110,28 @@
                                  </li>
                                  <li>
                                     
-                                    <p>In the <b>Description</b> tab, next to <b>Security
-                                          groups</b>, choose <b>view rules</b> to display the list of rules that
-                                       are in effect.
+                                    <p>In the <b>Description</b> tab at the bottom of the console page, next to
+                                       <b>Security groups</b>, select <b>view inbound rules</b> to
+                                       display the list of rules that are in effect for the selected instance.
                                     </p>
                                     
                                  </li>
                                  <li>
                                     
-                                    <p>For Linux instances: Verify that there is a rule that allows traffic from your computer
+                                    <p>For Linux instances: When you select <b>view inbound rules</b>, a window will appear that displays the port(s) to which traffic is allowed. Verify
+                                       that there is a rule that allows traffic from your computer
                                        to port 22 (SSH).
                                     </p>
                                     
-                                    <p>For Windows instances: Verify that there is a rule that allows traffic from your
+                                    <p>For Windows instances: When you select <b>view inbound rules</b>, a window will appear that displays the port(s) to which traffic is allowed. Verify
+                                       that there is a rule that allows traffic from your
                                        computer to port 3389 (RDP).
                                     </p>
                                     
-                                    <p>If your security group has a rule that allows inbound traffic from a single IP address,
-                                       this address may not be static if your computer is on a corporate network or if you
-                                       are
+                                    <p>Each time you restart your instance, a new IP address (and host name) will be assigned.
+                                       If your security group has a rule that allows inbound traffic from a single IP address,
+                                       this
+                                       address may not be static if your computer is on a corporate network or if you are
                                        connecting through an internet service provider (ISP). Instead, specify the range
                                        of IP
                                        addresses used by client computers. If your security group does not have a rule that
@@ -142,13 +142,16 @@
                                           Access to Your Instances</a>.
                                     </p>
                                     
+                                    <p>For more information about Security Group rules, see <a href="./vpc/latest/userguide/VPC_SecurityGroups.html#SecurityGroupRules">Security Group Rules</a> in the <em>Amazon VPC User Guide</em>.
+                                    </p>
+                                    
                                  </li>
                               </ol>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>[EC2-VPC] Check the route table for the subnet. You need a route that sends all traffic
+                              <p>Check the route table for the subnet. You need a route that sends all traffic
                                  destined outside the VPC to the internet gateway for the VPC.
                               </p>
                               
@@ -198,19 +201,36 @@
                                     
                                     <p>On the <b>Route Table</b> tab, verify that there is a route with
                                        <code class="code">0.0.0.0/0</code> as the destination and the internet gateway for your VPC as the
-                                       target. Otherwise, choose the ID of the route table (rtb-<em>xxxxxxxx</em>) to
-                                       navigate to the <b>Routes</b> tab for the route table, choose
-                                       <b>Edit</b>, <b>Add another route</b>, enter
-                                       <code class="code">0.0.0.0/0</code> in <b>Destination</b>, select your internet gateway
-                                       from <b>Target</b>, and then choose <b>Save</b>.
+                                       target. If you&apos;re connecting to your instance using its IPv6 address, verify that
+                                       there 
+                                       is a route for all IPv6 traffic (<code class="code">::/0</code>) that points to the internet gateway.
+                                       Otherwise, do the following:
                                     </p>
                                     
-                                    <p>If you&apos;re connecting to your instance using its IPv6 address, verify that there is
-                                       a
-                                       route for all IPv6 traffic (<code class="code">::/0</code>) that points to the internet gateway. If not,
-                                       add a route with <code class="code">::/0</code> as the destination, and the internet gateway as the
-                                       target.
-                                    </p>
+                                    <ol>
+                                       <li>
+                                          
+                                          <p>Choose the ID of the route table (rtb-<em>xxxxxxxx</em>) to
+                                             navigate to the route table.
+                                          </p>
+                                          
+                                       </li>
+                                       <li>
+                                          
+                                          <p>On the <b>Routes</b> tab, choose <b>Edit routes</b>.
+                                             Choose <b>Add route</b>, use <code class="code">0.0.0.0/0</code> as the destination and
+                                             the internet gateway as the target. For IPv6, choose <b>Add route</b>, use
+                                             <code class="code">::/0</code> as the destination and the internet gateway as the target.
+                                          </p>
+                                          
+                                       </li>
+                                       <li>
+                                          
+                                          <p>Choose <b>Save routes</b>.
+                                          </p>
+                                          
+                                       </li>
+                                    </ol>
                                     
                                  </li>
                               </ol>
@@ -218,8 +238,7 @@
                            </li>
                            <li class="listitem">
                               
-                              <p>[EC2-VPC] Check the network access control list (ACL) for the subnet. The network
-                                 ACLs
+                              <p>Check the network access control list (ACL) for the subnet. The network ACLs
                                  must allow inbound and outbound traffic from your local IP address on the proper port.
                                  The
                                  default network ACL allows all inbound and outbound traffic.
@@ -240,7 +259,7 @@
                                  </li>
                                  <li>
                                     
-                                    <p>On the <b>Summary</b> tab, find <b>Network ACL</b>, and
+                                    <p>On the <b>Description</b> tab, find <b>Network ACL</b>, and
                                        								choose its ID (acl-<em>xxxxxxxx</em>).
                                     </p>
                                     
@@ -311,7 +330,7 @@
                                     <li class="listitem">
                                        
                                        <p>If your load is steadily growing, you can move to a larger instance type. For more
-                                          information, see <a href="ec2-instance-resize.html">Resizing Your Instance</a>.
+                                          information, see <a href="ec2-instance-resize.html">Changing the Instance Type</a>.
                                           
                                        </p>
                                        
@@ -356,7 +375,7 @@
                               
                               <p>If you launched your instance from an older AMI, it may not be configured for DHCPv6
                                  (IPv6 addresses are not automatically recognized on the network interface). For more
-                                 information, see <a href="./AmazonVPC/latest/UserGuide/vpc-migrate-ipv6.html#vpc-migrate-ipv6-dhcpv6" target="_blank">Configure IPv6 on Your Instances</a> in the
+                                 information, see <a href="./vpc/latest/userguide/vpc-migrate-ipv6.html#vpc-migrate-ipv6-dhcpv6">Configure IPv6 on Your Instances</a> in the
                                  <em>Amazon VPC User Guide</em>.
                               </p>
                               
@@ -485,11 +504,11 @@ Permission denied (publickey).</code></pre>
                                  							
                                  <ul class="itemizedlist" type="disc">
                                     <li class="listitem">
-                                       <p>For an Amazon Linux AMI, the user name is <code class="code">ec2-user</code>.
+                                       <p>For Amazon Linux 2 or the Amazon Linux AMI, the user name is <code class="code">ec2-user</code>.
                                        </p>
                                     </li>
                                     <li class="listitem">
-                                       <p>For a Centos AMI, the user name is <code class="code">centos</code>.
+                                       <p>For a CentOS AMI, the user name is <code class="code">centos</code>.
                                        </p>
                                     </li>
                                     <li class="listitem">
@@ -509,7 +528,7 @@ Permission denied (publickey).</code></pre>
                                        </p>
                                     </li>
                                     <li class="listitem">
-                                       <p>For an Ubuntu AMI, the user name is <code class="code">ubuntu</code> or <code class="code">root</code>.
+                                       <p>For an Ubuntu AMI, the user name is <code class="code">ubuntu</code>.
                                        </p>
                                     </li>
                                     <li class="listitem">
@@ -559,11 +578,11 @@ Permission denied (publickey).</code></pre>
                         							
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
-                              <p>For an Amazon Linux AMI, the user name is <code class="code">ec2-user</code>.
+                              <p>For Amazon Linux 2 or the Amazon Linux AMI, the user name is <code class="code">ec2-user</code>.
                               </p>
                            </li>
                            <li class="listitem">
-                              <p>For a Centos AMI, the user name is <code class="code">centos</code>.
+                              <p>For a CentOS AMI, the user name is <code class="code">centos</code>.
                               </p>
                            </li>
                            <li class="listitem">
@@ -583,7 +602,7 @@ Permission denied (publickey).</code></pre>
                               </p>
                            </li>
                            <li class="listitem">
-                              <p>For an Ubuntu AMI, the user name is <code class="code">ubuntu</code> or <code class="code">root</code>.
+                              <p>For an Ubuntu AMI, the user name is <code class="code">ubuntu</code>.
                               </p>
                            </li>
                            <li class="listitem">
@@ -593,9 +612,8 @@ Permission denied (publickey).</code></pre>
                         </ul>
                      </div> 
                      
-                     <p>For example, to use an SSH client to connect to an instance launched from an Amazon
-                        Linux
-                        AMI, use the following command:
+                     <p>For example, to use an SSH client to connect to an Amazon Linux instance, use the
+                        following command:
                      </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">ssh -i <em class="replaceable"><code>/path/my-key-pair</code></em>.pem <em class="replaceable"><code>ec2-user</code></em>@<em class="replaceable"><code>public-dns-hostname</code></em></code></pre>
                      <p>Confirm that you are using the private key file that corresponds to the key pair
@@ -660,7 +678,7 @@ Permission denied (publickey).</code></pre>
                         <li>
                            
                            <p>Connect to the temporary instance, create a mount point, and mount the
-                              volume that you attached. For more information, see <a href="ebs-using-volumes.html">Making an Amazon EBS Volume Available for Use on <span>Linux</span></a>.
+                              volume that you attached. For more information, see <a href="ebs-using-volumes.html">Making an Amazon EBS Volume Available for Use on Linux</a>.
                            </p>
                            
                         </li>
@@ -718,6 +736,27 @@ Permission denied (publickey).</code></pre>
                         following command, substituting the path for your private key file.
                      </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>chmod 0400 <em class="replaceable"><code>.ssh/my_private_key.pem</code></em></code></strong></code></pre>
+                     
+                     <h2 id="troubleshoot-private-key-file-format">Error: Private key must begin with
+                        &quot;-----BEGIN RSA PRIVATE KEY-----&quot; and end with &quot;-----END RSA PRIVATE KEY-----&quot;
+                     </h2>
+                     
+                     <p>If you use a third-party tool, such as <b>ssh-keygen</b>, to create an RSA key
+                        pair, it generates the private key in the OpenSSH key format. When you connect to
+                        your instance,
+                        if you use the private key in the OpenSSH format to decrypt the password, you&apos;ll get
+                        the error
+                        <code class="code">Private key must begin with &quot;-----BEGIN RSA PRIVATE KEY-----&quot; and end with &quot;-----END
+                           RSA
+                           PRIVATE KEY-----&quot;</code>.
+                     </p>
+                     
+                     <p>To resolve the error, the private key must be in the PEM format. Use the following
+                        command
+                        to create the private key in the PEM format:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">ssh-keygen -m PEM</code></pre>
+                     
                      <h2 id="TroubleshootingInstancesConnectingPuTTY">Error: Server refused our key
                         <em>or</em> No supported authentication methods available
                      </h2>
@@ -743,11 +782,11 @@ Permission denied (publickey).</code></pre>
                         							
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
-                              <p>For an Amazon Linux AMI, the user name is <code class="code">ec2-user</code>.
+                              <p>For Amazon Linux 2 or the Amazon Linux AMI, the user name is <code class="code">ec2-user</code>.
                               </p>
                            </li>
                            <li class="listitem">
-                              <p>For a Centos AMI, the user name is <code class="code">centos</code>.
+                              <p>For a CentOS AMI, the user name is <code class="code">centos</code>.
                               </p>
                            </li>
                            <li class="listitem">
@@ -767,7 +806,7 @@ Permission denied (publickey).</code></pre>
                               </p>
                            </li>
                            <li class="listitem">
-                              <p>For an Ubuntu AMI, the user name is <code class="code">ubuntu</code> or <code class="code">root</code>.
+                              <p>For an Ubuntu AMI, the user name is <code class="code">ubuntu</code>.
                               </p>
                            </li>
                            <li class="listitem">
@@ -836,18 +875,6 @@ Permission denied (publickey).</code></pre>
                         </li>
                      </ol>
                      
-                     <h2 id="troubleshoot-instance-connect-mac-rdp">Error Using macOS RDP Client</h2>
-                     
-                     
-                     <p>If you are connecting to a Windows Server 2012 R2 instance using the Remote Desktop
-                        Connection client from the Microsoft website, you may get the following error:
-                     </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">Remote Desktop Connection cannot verify the identity of the computer that you want to connect to.</code></pre>
-                     <p>Download the Microsoft Remote Desktop app from the Apple iTunes store, and use the
-                        app to
-                        connect to your instance.
-                     </p>
-                     
                      <h2 id="troubleshoot-instance-ping">Cannot Ping Instance</h2>
                      
                      
@@ -862,15 +889,34 @@ Permission denied (publickey).</code></pre>
                         ping.
                      </p>
                      
+                     <h2 id="troubleshoot-ssh">Error: Server unexpectedly closed network connection</h2>
+                     
+                     <p>If you are connecting to your instance with Putty and you receive the error &quot;Server
+                        unexpectedly closed network connection,&quot; verify that you 
+                        have enabled keepalives on the Connection page of the Putty Configuration to avoid
+                        being disconnected. Some servers disconnect
+                        clients when they do not receive any data within a specified period of time. Set the
+                        Seconds between keepalives to 59 seconds. 
+                     </p>
+                     
+                     <p>If you still experience issues after enabling keepalives, try to disable Nagle&apos;s algorithm
+                        on the Connection page of the Putty Configuration.
+                        
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -879,8 +925,10 @@ Permission denied (publickey).</code></pre>
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="Using_InstanceStraightToTerminated.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="TroubleshootingInstancesStopping.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="troubleshooting-launch.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="TroubleshootingInstancesStopping.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -889,9 +937,7 @@ Permission denied (publickey).</code></pre>
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Error connecting to your instance:
-    Connection timed out"><a class="pagetoc" href="#TroubleshootingInstancesConnectionTimeout">Error connecting to your instance:
-                              Connection timed out</a></li>
+                        <li class="pagetoc" name="Error connecting to your instance: Connection timed out"><a class="pagetoc" href="#TroubleshootingInstancesConnectionTimeout">Error connecting to your instance: Connection timed out</a></li>
                         <li class="pagetoc" name="Error: User key not recognized by
     server"><a class="pagetoc" href="#TroubleshootingInstancesServerError">Error: User key not recognized by
                               server</a></li>
@@ -901,19 +947,26 @@ Permission denied (publickey).</code></pre>
                               found, Permission denied (publickey), or Authentication
                               failed, permission denied</a></li>
                         <li class="pagetoc" name="Error: Unprotected Private Key File"><a class="pagetoc" href="#troubleshoot-unprotected-key">Error: Unprotected Private Key File</a></li>
+                        <li class="pagetoc" name="Error: Private key must begin with
+     &quot;-----BEGIN RSA PRIVATE KEY-----&quot; and end with &quot;-----END RSA PRIVATE KEY-----&quot;"><a class="pagetoc" href="#troubleshoot-private-key-file-format">Error: Private key must begin with
+                              &quot;-----BEGIN RSA PRIVATE KEY-----&quot; and end with &quot;-----END RSA PRIVATE KEY-----&quot;</a></li>
                         <li class="pagetoc" name="Error: Server refused our key
      or No supported authentication methods available"><a class="pagetoc" href="#TroubleshootingInstancesConnectingPuTTY">Error: Server refused our key
                               or No supported authentication methods available</a></li>
                         <li class="pagetoc" name="Error Using MindTerm on Safari
      Browser"><a class="pagetoc" href="#troubleshoot-instance-connect-safari">Error Using MindTerm on Safari
                               Browser</a></li>
-                        <li class="pagetoc" name="Error Using macOS RDP Client"><a class="pagetoc" href="#troubleshoot-instance-connect-mac-rdp">Error Using macOS RDP Client</a></li>
                         <li class="pagetoc" name="Cannot Ping Instance"><a class="pagetoc" href="#troubleshoot-instance-ping">Cannot Ping Instance</a></li>
+                        <li class="pagetoc" name="Error: Server unexpectedly closed network connection"><a class="pagetoc" href="#troubleshoot-ssh">Error: Server unexpectedly closed network connection</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

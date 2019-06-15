@@ -3,7 +3,7 @@
       <title> Amazon S3 Inventory - Amazon Simple Storage Service</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="Welcome.html" title="What Is Amazon S3?">
+      <link rel="up" href="Welcome.html" title="What is Amazon S3?">
       <link rel="prev" href="analytics-storage-class.html" title="Amazon S3 Analytics &#x2013; Storage Class Analysis">
       <link rel="next" href="s3-access-control.html" title="Managing Access Permissions to Your Amazon S3 Resources">
       <meta name="description" content="Describes Amazon S3 inventory and how to use it.">
@@ -11,6 +11,8 @@
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/storage-inventory.html">
@@ -20,7 +22,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,10 +34,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb"> Amazon S3 Inventory</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb"> Amazon S3 Inventory</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="storage-inventory"> Amazon S3 Inventory</h1>
                      <p>Amazon S3 inventory is one of the tools Amazon S3 provides to help manage your storage.
@@ -47,13 +52,12 @@
                         Amazon S3 synchronous
                         <code class="code">List</code> API operation. 
                      </p>
-                     <p>Amazon S3 inventory provides comma-separated values (CSV) or <a href="https://orc.apache.org/" target="_blank">Apache optimized row columnar (ORC)</a> output files that
-                        list your objects and their corresponding metadata on a daily or weekly basis for
-                        an S3 bucket
-                        or a shared prefix (that is, objects that have names that begin with a common string).
-                        For
-                        information about Amazon S3 inventory pricing, see <a href="https://aws.amazon.com/s3/pricing/" target="_blank">Amazon S3
-                           Pricing</a>.
+                     <p>Amazon S3 inventory provides comma-separated values (CSV), <a href="https://orc.apache.org/" target="_blank">Apache optimized row columnar (ORC)</a> or <a href="https://parquet.apache.org/" target="_blank">Apache Parquet (Parquet)</a> output files that list your objects and their corresponding
+                        metadata on a daily or weekly basis for an S3 bucket or a shared prefix (that is,
+                        objects that
+                        have names that begin with a common string). For information about Amazon S3 inventory
+                        pricing, see
+                        <a href="https://aws.amazon.com/s3/pricing/" target="_blank">Amazon S3 Pricing</a>.
                      </p>
                      <p>You can configure multiple inventory lists for a bucket. You can configure what object
                         metadata to include in the inventory, whether to list all object versions or only
@@ -63,8 +67,7 @@
                         on a daily or weekly basis. You can also specify that the inventory list file be
                         encrypted.
                      </p>
-                     <p>You can query Amazon S3 inventory using standard SQL by using Amazon Athena, Amazon
-                        Redshift Spectrum, and other
+                     <p>You can query Amazon S3 inventory using standard SQL by using <a href="./athena/latest/ug//what-is.html">Amazon Athena</a>, Amazon Redshift Spectrum, and other
                         tools such as <a href="https://prestodb.io/" target="_blank">Presto</a>, <a href="https://hive.apache.org/" target="_blank">Apache Hive</a>, and <a href="https://databricks.com/spark/about/" target="_blank">Apache Spark</a>. It&apos;s easy to use Athena to run
                         queries on your inventory files. You can use Athena for Amazon S3 inventory queries
                         in all Regions
@@ -192,7 +195,8 @@
                         in an S3
                         bucket on a defined schedule. You can configure multiple inventory lists for a bucket.
                         The
-                        inventory lists are published to CSV or ORC files in a destination bucket. 
+                        inventory lists are published to CSV, ORC, or Parquet files in a destination bucket.
+                        
                      </p>
                      
                      <p>The easiest way to set up an inventory is by using the AWS Management Console, but
@@ -247,14 +251,14 @@
                                     <li class="listitem">
                                        
                                        <p>For information about how to use the console to configure an inventory list, see
-                                          <a href="./AmazonS3/latest/user-guide/configure-inventory.html" target="_blank">How Do I Configure Amazon S3
+                                          <a href="./AmazonS3/latest/user-guide/configure-inventory.html">How Do I Configure Amazon S3
                                              Inventory?</a> in the <em>Amazon Simple Storage Service Console User Guide</em>.
                                        </p>
                                        
                                     </li>
                                     <li class="listitem">
                                        
-                                       <p>To use the Amazon S3 API to configure an inventory list, use the <a href="./AmazonS3/latest/API/RESTBucketPUTInventoryConfig.html" target="_blank">PUT Bucket inventory
+                                       <p>To use the Amazon S3 API to configure an inventory list, use the <a href="./AmazonS3/latest/API/RESTBucketPUTInventoryConfig.html">PUT Bucket inventory
                                              configuration</a> REST API, or the equivalent from the AWS CLI or AWS SDKs.
                                           
                                        </p>
@@ -351,9 +355,9 @@
                            </li>
                      </ol>
                      
-                     <p>You can also use the AWS KMS PUT key policy API <a href="./kms/latest/APIReference/API_PutKeyPolicy.html" target="_blank">PutKeyPolicy</a> to copy the key policy to
+                     <p>You can also use the AWS KMS PUT key policy API <a href="./kms/latest/APIReference/API_PutKeyPolicy.html">PutKeyPolicy</a> to copy the key policy to
                         the CMK that is being used to encrypt the inventory file. For more information about
-                        creating and editing AWS KMS CMKs, see <a href="./kms/latest/developerguide/getting-started.html" target="_blank">Getting Started</a> in the <em>AWS Key Management Service Developer Guide</em>. 
+                        creating and editing AWS KMS CMKs, see <a href="./kms/latest/developerguide/getting-started.html">Getting Started</a> in the <em>AWS Key Management Service Developer Guide</em>. 
                      </p>
                      
                      
@@ -364,7 +368,9 @@
                      <p>An inventory list file contains a list of the objects in the source bucket and metadata
                         for each object. The inventory lists are stored in the destination bucket as a CSV
                         file
-                        compressed with GZIP or as an Apache optimized row columnar (ORC) file. 
+                        compressed with GZIP, as an Apache optimized row columnar (ORC) file compressed with
+                        ZLIB, or
+                        as an Apache Parquet (Parquet) file compressed with Snappy. 
                      </p>
                      
                      <p>The inventory list contains a list of the objects in an S3 bucket and the following
@@ -372,6 +378,9 @@
                      </p>
                      
                      <div class="itemizedlist">
+                        
+                        
+                        
                         
                         
                         
@@ -447,7 +456,7 @@
                            <li class="listitem">
                               
                               <p><b>Storage class</b> &#x2013; Storage class used for storing
-                                 the object. For more information, see <a href="storage-class-intro.html">Storage Classes</a>.
+                                 the object. For more information, see <a href="storage-class-intro.html">Amazon S3 Storage Classes</a>.
                               </p>
                               
                            </li>
@@ -462,8 +471,8 @@
                            <li class="listitem">
                               
                               <p><b>Delete marker</b> &#x2013; Set to <code class="code">True</code>, if
-                                 the object is a delete marker. For more information, see <a href="ObjectVersioning.html">Object Versioning</a>. (This field is not included if the list is only for
-                                 the current version of objects.)
+                                 the object is a delete marker. For more information, see <a href="ObjectVersioning.html">Object Versioning</a>. (This field is automatically added to your report if you&apos;ve configured the report
+                                 to include all versions of your objects).
                               </p>
                               
                            </li>
@@ -471,7 +480,7 @@
                               
                               <p><b>Replication status</b> &#x2013; Set to
                                  <code class="code">PENDING</code>, <code class="code">COMPLETED</code>, <code class="code">FAILED</code>, or
-                                 <code class="code">REPLICA.</code> For more information, see <a href="crr-status.html">Finding the Cross-Region Replication Status </a>.
+                                 <code class="code">REPLICA.</code> For more information, see <a href="crr-status.html">Cross-Region Replication Status Information</a>.
                               </p>
                               
                            </li>
@@ -483,6 +492,29 @@
                                  keys
                                  (SSE-C). A status of <code class="code">NOT-SSE</code> means that the object is not encrypted with
                                  server-side encryption. For more information, see <a href="UsingEncryption.html">Protecting Data Using Encryption</a>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>Object lock Retain until date</b> &#x2013; The date until
+                                 which the locked object cannot be deleted. For more information, see <a href="object-lock.html">Locking Objects Using Amazon S3 Object Lock</a>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>Object lock Mode</b> &#x2013; Set to
+                                 <code class="code">Governance</code> or <code class="code">Compliance</code> for objects that are locked. For more
+                                 information, see <a href="object-lock.html">Locking Objects Using Amazon S3 Object Lock</a>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>Object lock Legal hold status </b> &#x2013; Set to
+                                 <code class="code">On</code> if a legal hold has been applied to an object; otherwise it is set to
+                                 <code class="code">Off</code>. For more information, see <a href="object-lock.html">Locking Objects Using Amazon S3 Object Lock</a>.
                               </p>
                               
                            </li>
@@ -514,7 +546,7 @@
                      </p>
                      
                      
-                     <h3 id="storage-inventory-contents-consitency">Inventory Consistency</h3>
+                     <h3 id="storage-inventory-contents-consistency">Inventory Consistency</h3>
                      
                      <p>All of your objects might not appear in each inventory list. The inventory list provides
                         eventual consistency for PUTs of both new objects and overwrites, and DELETEs. Inventory
@@ -527,7 +559,7 @@
                         that you perform a <code class="code">HEAD Object</code> REST API request to retrieve metadata for the
                         object, or check the object&apos;s properties in the Amazon S3 console. You can also check
                         object
-                        metadata with the AWS CLI or the AWS SDKS. For more information, see <a href="./AmazonS3/latest/API/RESTObjectHEAD.html" target="_blank">HEAD Object</a> in the
+                        metadata with the AWS CLI or the AWS SDKS. For more information, see <a href="./AmazonS3/latest/API/RESTObjectHEAD.html">HEAD Object</a> in the
                         <em>Amazon Simple Storage Service API Reference</em>.
                      </p>
                      
@@ -575,15 +607,18 @@
                               <p><em class="replaceable"><code>config-ID</code></em> is added to prevent collisions with multiple
                                  inventory reports from the same source bucket that are sent to the same destination
                                  bucket.
+                                 The
+                                 <em class="replaceable"><code>config-ID</code></em> comes from the inventory report configuration, and
+                                 is the name for the report that is defined on setup.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><em class="replaceable"><code>YYYY-MM-DDTHH-MMZ</code></em> is the time stamp that consists of the
+                              <p><em class="replaceable"><code>YYYY-MM-DDTHH-MMZ</code></em> is the timestamp that consists of the
                                  start time and the date when the inventory report generation begins scanning the bucket;
-                                 for example, <code class="code">2016-11-06T21-32Z</code>. Storage added after the time stamp will not
-                                 be in the report.
+                                 for example, <code class="code">2016-11-06T21-32Z</code>. Storage added after the timestamp is not in
+                                 the report.
                               </p>
                               
                            </li>
@@ -613,9 +648,9 @@
                         destination bucket.
                      </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">
-      <em class="replaceable"><code>destination-prefix</code></em>/<em class="replaceable"><code>source-bucket</code></em>/data/<em class="replaceable"><code>example-file-name.csv.gz</code></em>
+      <em class="replaceable"><code>destination-prefix</code></em>/<em class="replaceable"><code>source-bucket</code></em>/<em class="replaceable"><code>config-ID</code></em>/<em class="replaceable"><code>example-file-name.csv.gz</code></em>
       ...
-      <em class="replaceable"><code>destination-prefix</code></em>/<em class="replaceable"><code>source-bucket</code></em>/data/<em class="replaceable"><code>example-file-name-1.csv.gz</code></em>
+      <em class="replaceable"><code>destination-prefix</code></em>/<em class="replaceable"><code>source-bucket</code></em>/<em class="replaceable"><code>config-ID</code></em>/<em class="replaceable"><code>example-file-name-1.csv.gz</code></em>
       </code></pre>
                      <div class="itemizedlist">
                         
@@ -643,8 +678,8 @@
                            <li class="listitem">
                               
                               <p><em class="replaceable"><code>example-file-name</code></em><code class="code">.csv.gz</code> is one of the CSV
-                                 inventory files. ORC inventory names end with the file name extension
-                                 <code class="code">.orc</code>.
+                                 inventory files. ORC inventory names end with the file name extension <code class="code">.orc</code>,
+                                 and Parquet inventory names end with the file name extension <code class="code">.parquet</code>.
                               </p>
                               
                            </li>
@@ -690,10 +725,8 @@
                            </li>
                            <li class="listitem">
                               
-                              <p>Creation time stamp
-                                 in the epoch date
-                                 format that consists of the start time and the date when the inventory
-                                 report generation begins scanning the bucket
+                              <p>Creation timestamp in the epoch date format that consists of the start time and the
+                                 date when the inventory report generation begins scanning the bucket
                               </p>
                               
                            </li>
@@ -720,17 +753,16 @@
                      </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
     &quot;sourceBucket&quot;: &quot;example-source-bucket&quot;,
-    &quot;destinationBucket&quot;: &quot;example-inventory-destination-bucket&quot;,
+    &quot;destinationBucket&quot;: &quot;arn:aws:s3:::example-inventory-destination-bucket&quot;,
     &quot;version&quot;: &quot;2016-11-30&quot;,
     &quot;creationTimestamp&quot; : &quot;1514944800000&quot;,
     &quot;fileFormat&quot;: &quot;CSV&quot;,
-    &quot;fileSchema&quot;: &quot;Bucket, Key, VersionId, IsLatest, IsDeleteMarker, Size, LastModifiedDate, ETag, StorageClass, MultipartUploaded, ReplicationStatus&quot;,
+    &quot;fileSchema&quot;: &quot;Bucket, Key, VersionId, IsLatest, IsDeleteMarker, Size, LastModifiedDate, ETag, StorageClass, IsMultipartUploaded, ReplicationStatus, EncryptionStatus, ObjectLockRetainUntilDate, ObjectLockMode, ObjectLockLegalHoldStatus&quot;,
     &quot;files&quot;: [
         {
             &quot;key&quot;: &quot;Inventory/example-source-bucket/2016-11-06T21-32Z/files/939c6d46-85a9-4ba8-87bd-9db705a579ce.csv.gz&quot;,
             &quot;size&quot;: 2147483647,
-            &quot;MD5checksum&quot;: &quot;f11166069f1990abeb9c97ace9cdfabc&quot;,
-            &quot;inventoriedRecord&quot;: 58050695
+            &quot;MD5checksum&quot;: &quot;f11166069f1990abeb9c97ace9cdfabc&quot;
         }
     ]
 }</code></pre>
@@ -743,7 +775,7 @@
     &quot;version&quot;: &quot;2016-11-30&quot;,
     &quot;creationTimestamp&quot; : &quot;1514944800000&quot;,
     &quot;fileFormat&quot;: &quot;ORC&quot;,
-    &quot;fileSchema&quot;: &quot;struct&lt;bucket:string,key:string,version_id:string,is_latest:boolean,is_delete_marker:boolean,size:bigint,last_modified_date:timestamp,e_tag:string,storage_class:string,is_multipart_uploaded:boolean,replication_status:string,encryption_status:string&gt;&quot;,
+    &quot;fileSchema&quot;: &quot;struct&lt;bucket:string,key:string,version_id:string,is_latest:boolean,is_delete_marker:boolean,size:bigint,last_modified_date:timestamp,e_tag:string,storage_class:string,is_multipart_uploaded:boolean,replication_status:string,encryption_status:string,object_lock_retain_until_date:timestamp,object_lock_mode:string,object_lock_legal_hold_status:string&gt;&quot;,
     &quot;files&quot;: [
         {
             &quot;key&quot;: &quot;inventory/example-source-bucket/data/d794c570-95bb-4271-9128-26023c8b4900.orc&quot;,
@@ -752,15 +784,40 @@
         }
     ]
 }</code></pre>
+                     <p>The following is an example of a manifest in a <code class="code">manifest.json</code> file for a
+                        Parquet-formatted inventory.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+    &quot;sourceBucket&quot;: &quot;example-source-bucket&quot;,
+    &quot;destinationBucket&quot;: &quot;arn:aws:s3:::example-destination-bucket&quot;,
+    &quot;version&quot;: &quot;2016-11-30&quot;,
+    &quot;creationTimestamp&quot; : &quot;1514944800000&quot;,
+    &quot;fileFormat&quot;: &quot;Parquet&quot;,
+    &quot;fileSchema&quot;: &quot;message s3.inventory { required binary bucket (UTF8); required binary key (UTF8); optional binary version_id (UTF8); optional boolean is_latest; optional boolean is_delete_marker;  optional int64 size;  optional int64 last_modified_date (TIMESTAMP_MILLIS);  optional binary e_tag (UTF8);  optional binary storage_class (UTF8);  optional boolean is_multipart_uploaded;  optional binary replication_status (UTF8);  optional binary encryption_status (UTF8);}&quot;
+  &quot;files&quot;: [
+        {
+           &quot;key&quot;: &quot;inventory/example-source-bucket/data/d754c470-85bb-4255-9218-47023c8b4910.parquet&quot;,
+            &quot;size&quot;: 56291,
+            &quot;MD5checksum&quot;: &quot;5825f2e18e1695c2d030b9f6eexample&quot; 
+        }
+    ]
+}</code></pre>
                      <p>The <code class="code">symlink.txt</code> file is an Apache Hive-compatible manifest file that allows
                         Hive to automatically discover inventory files and their associated data files. The
-                        Hive-compatible manifest works with any Hive-compatible service, including Athena,
-                        AWS Glue, and
-                        Amazon Redshift Spectrum. It also works with Hive-compatible applications, including
-                        <a href="https://prestodb.io/" target="_blank">Presto</a>, <a href="https://hive.apache.org/" target="_blank">Apache
-                           Hive</a>, <a href="https://databricks.com/spark/about/" target="_blank">Apache Spark</a>, and
-                        many others.
+                        Hive-compatible manifest works with the Hive-compatible services Athena and Amazon
+                        Redshift Spectrum. It
+                        also works with Hive-compatible applications, including <a href="https://prestodb.io/" target="_blank">Presto</a>, <a href="https://hive.apache.org/" target="_blank">Apache Hive</a>, <a href="https://databricks.com/spark/about/" target="_blank">Apache Spark</a>, and many others.
                      </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>The <code class="code">symlink.txt</code> Apache Hive-compatible manifest file does not currently
+                           work with AWS Glue.
+                        </p>
+                        <p>Reading <code>symlink.txt</code> with <a href="https://hive.apache.org/" target="_blank">Apache Hive</a> and <a href="https://databricks.com/spark/about/" target="_blank">Apache
+                              Spark</a> is not supported for ORC and Parquet-formatted inventory files. 
+                        </p>
+                     </div>
                      
                      
                      
@@ -803,7 +860,7 @@
      &lt;Event&gt;s3:ObjectCreated:*&lt;/Event&gt;
   &lt;/QueueConfiguration&gt;
   &lt;/NotificationConfiguration&gt;</code></pre>
-                     <p>For more information, see <a href="./lambda/latest/dg/with-s3.html" target="_blank">Using AWS Lambda with
+                     <p>For more information, see <a href="./lambda/latest/dg/with-s3.html">Using AWS Lambda with
                            Amazon S3</a> in the <em>AWS Lambda Developer Guide</em>.
                      </p>
                      
@@ -816,36 +873,35 @@
                            Table</a>. 
                      </p>
                      
-                     <p>Athena can query Amazon S3 inventory files in ORC or CSV format. When you use Athena
-                        to query
-                        inventory, we recommend that you use ORC-formatted inventory files instead of CSV.
-                        ORC
-                        provides faster query performance and lower query costs. ORC is a self-describing
-                        type-aware
-                        columnar file format designed for <a href="http://hadoop.apache.org/" target="_blank">Apache
-                           Hadoop</a>. The columnar format lets the reader read, decompress, and process only the
-                        columns that are required for the current query. The ORC format for Amazon S3 inventory
-                        is
-                        available in all AWS Regions.
+                     <p>Athena can query Amazon S3 inventory files in ORC, Parquet, or CSV format. When you
+                        use Athena
+                        to query inventory, we recommend that you use ORC-formatted or Parquet-formatted inventory
+                        files. ORC and Parquet formats provide faster query performance and lower query costs.
+                        ORC and
+                        Parquet are self-describing type-aware columnar file formats designed for <a href="http://hadoop.apache.org/" target="_blank">Apache Hadoop</a>. The columnar format lets the reader
+                        read, decompress, and process only the columns that are required for the current query.
+                        The
+                        ORC and Parquet formats for Amazon S3 inventory are available in all AWS Regions.
                      </p>
                      
                      <p class="title"><b>To get started using Athena to query Amazon S3 inventory</b></p>
                      <ol>
                         <li>
                            
-                           <p>Create an Athena table. For information about creating a table, see 
-                              <a href="./athena/latest/ug/getting-started.html" target="_blank">Getting Started</a> in the 
+                           <p>Create an Athena table. For information about creating a table, see <a href="./athena/latest/ug//creating-tables.html">Creating Tables in Amazon Athena</a> in the
                               <em>Amazon Athena User Guide</em>.
                            </p>
                            
-                           <p>The following sample query includes all optional fields in the inventory report. Drop
-                              any optional field that you did not choose for your inventory so that the query
-                              corresponds to the fields chosen for your inventory. Also, you must use your bucket
-                              name
-                              and the location. The location points to your inventory destination path; for example,
-                              <code class="code">s3://destination-prefix/source-bucket/config-ID/hive</code>.
+                           <p>The following sample query includes all optional fields in an ORC-formatted inventory
+                              report. Drop any optional field that you did not choose for your inventory so that
+                              the
+                              query corresponds to the fields chosen for your inventory. Also, you must use your
+                              bucket
+                              name and the location. The location points to your inventory destination path; for
+                              example, <code class="code">s3://destination-prefix/source-bucket/config-ID/hive/</code>.
                            </p>
-                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sgl ">CREATE EXTERNAL TABLE <em class="replaceable"><code>your-table-name</code></em>(
+                           
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">CREATE EXTERNAL TABLE <em class="replaceable"><code>your_table_name</code></em>(
   `bucket` string,
   key string,
   version_id string,
@@ -857,20 +913,28 @@
   storage_class string,
   is_multipart_uploaded boolean,
   replication_status string,
-  encryption_status string
+  encryption_status string,
+  object_lock_retain_until_date timestamp,
+  object_lock_mode string,
+  object_lock_legal_hold_status string
   )
   PARTITIONED BY (dt string)
   ROW FORMAT SERDE &apos;org.apache.hadoop.hive.ql.io.orc.OrcSerde&apos;
   STORED AS INPUTFORMAT &apos;org.apache.hadoop.hive.ql.io.SymlinkTextInputFormat&apos;
   OUTPUTFORMAT  &apos;org.apache.hadoop.hive.ql.io.IgnoreKeyTextOutputFormat&apos;
-  LOCATION &apos;s3://<em class="replaceable"><code>destination-prefix/source-bucket/config-ID</code></em>/hive&apos;;</code></pre>
+  LOCATION &apos;s3://<em class="replaceable"><code>destination-prefix/source-bucket/config-ID</code></em>/hive/&apos;;</code></pre>
+                           <p> When using Athena to query a Parquet-formatted inventory report, use the following
+                              Parquet SerDe in place of the ORC SerDe in the <code class="code">ROW FORMAT SERDE</code>
+                              statement.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">ROW FORMAT SERDE &apos;org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe&apos;</code></pre>
                            </li>
                         <li>
                            
                            <p>To add new inventory lists to your table, use the following <code class="code">MSCK REPAIR
                                  TABLE</code> command.
                            </p>
-                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sgl ">MSCK REPAIR TABLE <em class="replaceable"><code>your-table-name</code></em>;</code></pre>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">MSCK REPAIR TABLE <em class="replaceable"><code>your-table-name</code></em>;</code></pre>
                            </li>
                         <li>
                            
@@ -878,11 +942,11 @@
                               as
                               shown in the following example. 
                            </p>
-                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sgl ">SELECT encryption_status, count(*) FROM <em class="replaceable"><code>your-table-name</code></em> GROUP BY encryption_status;</code></pre>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">SELECT encryption_status, count(*) FROM <em class="replaceable"><code>your-table-name</code></em> GROUP BY encryption_status;</code></pre>
                            </li>
                      </ol>
                      
-                     <p>For more information about using Athena, see <a href="./athena/latest/ug/" target="_blank">Amazon Athena User Guide</a>.
+                     <p>For more information about using Athena, see <a href="./athena/latest/ug/">Amazon Athena User Guide</a>.
                      </p>
                      
                      
@@ -900,8 +964,8 @@
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./AmazonS3/latest/API/RESTBucketDELETEInventoryConfiguration.html" target="_blank"> DELETE Bucket
-                                    inventory configuration</a>
+                                 <a href="./AmazonS3/latest/API/RESTBucketDELETEInventoryConfiguration.html"> DELETE Bucket
+                                    Inventory </a>
                                  
                               </p>
                               
@@ -909,8 +973,7 @@
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./AmazonS3/latest/API/RESTBucketGETInventoryConfig.html" target="_blank"> GET Bucket inventory
-                                    configuration</a>
+                                 <a href="./AmazonS3/latest/API/RESTBucketGETInventoryConfig.html"> GET Bucket Inventory</a>
                                  
                               </p>
                               
@@ -918,8 +981,7 @@
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./AmazonS3/latest/API/RESTBucketListInventoryConfigs.html" target="_blank"> List Bucket Inventory
-                                    Configuration</a>
+                                 <a href="./AmazonS3/latest/API/RESTBucketListInventoryConfigs.html"> List Bucket Inventory</a>
                                  
                               </p>
                               
@@ -927,8 +989,7 @@
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./AmazonS3/latest/API/RESTBucketPUTInventoryConfig.html" target="_blank"> PUT Bucket inventory
-                                    configuration</a>
+                                 <a href="./AmazonS3/latest/API/RESTBucketPUTInventoryConfig.html"> PUT Bucket Inventory</a>
                                  
                               </p>
                               
@@ -936,15 +997,19 @@
                         </ul>
                      </div>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -954,7 +1019,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="analytics-storage-class.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="s3-access-control.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -969,7 +1036,7 @@
                         <li class="pagetoc" name="How Do I Know When an Inventory Is
         Complete?"><a class="pagetoc" href="#storage-inventory-notification">Notify When Inventory Is
                               Complete</a></li>
-                        <li class="pagetoc" name="Querying Inventory with Amazon Athena"><a class="pagetoc" href="#storage-inventory-athena-query">&gt;Querying Inventory with
+                        <li class="pagetoc" name="Querying Inventory with Amazon Athena"><a class="pagetoc" href="#storage-inventory-athena-query">Querying Inventory with
                               Athena</a></li>
                         <li class="pagetoc" name="Amazon S3 Inventory REST APIs"><a class="pagetoc" href="#storage-inventory-related-resources">Amazon S3 Inventory REST APIs</a></li>
                      </ul>
@@ -977,6 +1044,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

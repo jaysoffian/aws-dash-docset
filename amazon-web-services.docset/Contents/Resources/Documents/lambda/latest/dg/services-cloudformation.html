@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Using AWS Lambda with AWS CloudFormation - AWS Lambda</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="lambda-services.html" title="Using AWS Lambda with Other Services">
+      <link rel="prev" href="services-cloudwatchlogs.html" title="Using AWS Lambda with Amazon CloudWatch Logs">
+      <link rel="next" href="lambda-edge.html" title="Using AWS Lambda with CloudFront Lambda@Edge">
+      <meta name="description" content="Trigger a Lambda function with AWS CloudFormation.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="AWS Lambda">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/services-cloudformation.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-services.html">Using AWS Lambda with Other Services</a> &#xBB; <span class="breadcrumb">Using AWS Lambda with AWS CloudFormation</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="services-cloudformation">Using AWS Lambda with AWS CloudFormation</h1>
+                     <p>In an AWS CloudFormation template, you can specify a Lambda function as the target
+                        of a custom resource. Use custom
+                        resources to process parameters, retrieve configuration values, or call other AWS
+                        services during stack lifecycle
+                        events.
+                     </p>
+                     <p>The following example invokes a function that&apos;s defined elsewhere in the template.</p>
+                     <div class="example">
+                        <p class="title"><b>Example  &#x2013; Custom Resource Definition</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">Resources:
+  primerinvoke:
+    Type: <a href="./AWSCloudFormation/latest/UserGuide/aws-resource-cfn-customresource.html">AWS::CloudFormation::CustomResource</a>
+    Version: &quot;1.0&quot;
+    Properties:
+      <strong class="userinput"><code>ServiceToken: !GetAtt primer.Arn
+      FunctionName: !Ref randomerror</code></strong></code></pre></div>
+                     </div>
+                     <p>The service token is the Amazon Resource Name (ARN) of the function that AWS CloudFormation
+                        invokes when you create, update,
+                        or delete the stack. You can also include additional properties like <code class="code">FunctionName</code>, which AWS CloudFormation passes
+                        to your function as is.
+                     </p>
+                     <p>AWS CloudFormation invokes your Lambda function asynchronously with an event that
+                        includes a callback URL.
+                     </p>
+                     <div class="example">
+                        <p class="title"><b>Example  &#x2013; AWS CloudFormation Message Event</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;RequestType&quot;: &quot;Create&quot;,
+    &quot;ServiceToken&quot;: &quot;arn:aws:lambda:us-east-2:123456789012:function:lambda-error-processor-primer-14ROR2T3JKU66&quot;,
+    &quot;ResponseURL&quot;: &quot;<b>https://cloudformation-custom-resource-response-useast2.s3-us-east-2.amazonaws.com/arn%3Aaws%3Acloudformation%3Aus-east-2%3A123456789012%3Astack/lambda-error-processor/1134083a-2608-1e91-9897-022501a2c456%7Cprimerinvoke%7C5d478078-13e9-baf0-464a-7ef285ecc786?AWSAccessKeyId=AKIAIOSFODNN7EXAMPLE&amp;Expires=1555451971&amp;Signature=28UijZePE5I4dvukKQqM%2F9Rf1o4%3D</b>&quot;,
+    &quot;StackId&quot;: &quot;arn:aws:cloudformation:us-east-2:123456789012:stack/lambda-error-processor/1134083a-2608-1e91-9897-022501a2c456&quot;,
+    &quot;RequestId&quot;: &quot;5d478078-13e9-baf0-464a-7ef285ecc786&quot;,
+    &quot;LogicalResourceId&quot;: &quot;primerinvoke&quot;,
+    &quot;ResourceType&quot;: &quot;AWS::CloudFormation::CustomResource&quot;,
+    &quot;ResourceProperties&quot;: {
+        &quot;ServiceToken&quot;: &quot;arn:aws:lambda:us-east-2:123456789012:function:lambda-error-processor-primer-14ROR2T3JKU66&quot;,
+        &quot;FunctionName&quot;: &quot;lambda-error-processor-randomerror-ZWUC391MQAJK&quot;
+    }
+}</code></pre></div>
+                     </div>
+                     <p>The function is responsible for returning a response to the callback URL that indicates
+                        success or failure. For
+                        the full response syntax, see <a href="./AWSCloudFormation/latest/UserGuide/crpg-ref-responses.html">Custom Resource Response
+                           Objects</a>.
+                     </p>
+                     <div class="example">
+                        <p class="title"><b>Example  &#x2013; AWS CloudFormation Custom Resource Response</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
+    &quot;Status&quot;: &quot;SUCCESS&quot;,
+    &quot;PhysicalResourceId&quot;: &quot;2019/04/18/[$LATEST]b3d1bfc65f19ec610654e4d9b9de47a0&quot;,
+    &quot;StackId&quot;: &quot;arn:aws:cloudformation:us-east-2:123456789012:stack/lambda-error-processor/1134083a-2608-1e91-9897-022501a2c456&quot;,
+    &quot;RequestId&quot;: &quot;5d478078-13e9-baf0-464a-7ef285ecc786&quot;,
+    &quot;LogicalResourceId&quot;: &quot;primerinvoke&quot;
+}</code></pre></div>
+                     </div>
+                     <p>AWS CloudFormation provides a library called <code class="code">cfn-response</code> that handles sending the response. If you define your
+                        function within a template, you can require the library by name. AWS CloudFormation
+                        then adds the library to the deployment
+                        package that it creates for the function.
+                     </p>
+                     <p>The following example function invokes a second function. If the call succeeds, the
+                        function sends a success
+                        response to AWS CloudFormation, and the stack update continues.
+                     </p>
+                     <div class="example">
+                        <p class="title"><b>Example  &#x2013; Custom Resource Function</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">Resources:
+  primer:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs8.10
+      InlineCode: |
+        var aws = require(&apos;aws-sdk&apos;);
+        <strong class="userinput"><code>var response = require(&apos;cfn-response&apos;);</code></strong>
+        exports.handler = function(event, context) {
+            // For Delete requests, immediately send a SUCCESS response.
+            if (event.RequestType == &quot;Delete&quot;) {
+                response.send(event, context, &quot;SUCCESS&quot;);
+                return;
+            }
+            var responseStatus = &quot;FAILED&quot;;
+            var responseData = {};
+            var functionName = event.ResourceProperties.FunctionName
+            var lambda = new aws.Lambda();
+            lambda.invoke({ FunctionName: functionName }, function(err, invokeResult) {
+                if (err) {
+                    responseData = {Error: &quot;Invoke call failed&quot;};
+                    console.log(responseData.Error + &quot;:\n&quot;, err);
+                }
+                else responseStatus = &quot;SUCCESS&quot;;
+                response.send(event, context, responseStatus, responseData);
+            });
+        };
+      Description: Invoke a function to create a log stream.
+      MemorySize: 128
+      Timeout: 8
+      Role: !GetAtt role.Arn
+      Tracing: Active</code></pre></div>
+                     </div>
+                     <p>If the function that the custom resource invokes isn&apos;t defined in a template, you
+                        can get the source code for
+                        <code class="code">cfn-response</code> from <a href="./AWSCloudFormation/latest/UserGuide/cfn-lambda-function-code-cfnresponsemodule.html">cfn-response Module</a> in the AWS CloudFormation User Guide.
+                     </p>
+                     <p>For a sample application that uses a custom resource to ensure that a function&apos;s log
+                        group is created before
+                        another resource that depends on it, see <a href="sample-errorprocessor.html">Error Processor Sample Application for AWS Lambda</a>.
+                     </p>
+                     <p>For more information about custom resources, see <a href="./AWSCloudFormation/latest/UserGuide/template-custom-resources.html">Custom
+                           Resources</a> in the <em>AWS CloudFormation User Guide</em>.
+                     </p>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="services-cloudwatchlogs.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="lambda-edge.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper"></div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='AWS Lambda';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

@@ -1,16 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Deleting Log Files - Amazon Simple Storage Service</title>
+      <title>Deleting Amazon S3 Log Files - Amazon Simple Storage Service</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="ServerLogs.html" title="Server Access Logging">
-      <link rel="prev" href="LogFormat.html" title="Server Access Log Format">
-      <link rel="next" href="UsingAWSSDK.html" title="Using the AWS SDKs, CLI, and Explorers">
-      <meta name="description" content="Delete the server log objects when you no longer need them or set up lifecycle configuration rules to automatically delete them.">
+      <link rel="up" href="ServerLogs.html" title="Amazon S3 Server Access Logging">
+      <link rel="prev" href="LogFormat.html" title="Amazon S3 Server Access Log Format">
+      <link rel="next" href="using-s3-access-logs-to-idenitfy-sigv2-requests.html" title=" Using Amazon S3 Access Logs to
+        Identify Signature Version 2 Requests ">
+      <meta name="description" content="Delete the server access Amazon S3 log objects when you no longer need them, or set up lifecycle configuration rules to automatically delete them.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/deleting-log-files-lifecycle.html">
@@ -20,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,37 +35,53 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="ServerLogs.html">Server Access Logging</a> &#xBB; <span class="breadcrumb">Deleting Log Files</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="ServerLogs.html">Amazon S3 Server Access Logging</a> &#xBB; <span class="breadcrumb">Deleting Amazon S3 Log Files</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="deleting-log-files-lifecycle">Deleting Log Files</h1>
-                     <p>A logging-enabled bucket (see <a href="ServerLogs.html">Server Access Logging</a>) can
-                        have many server log objects created over time. Your application might need these
-                        access logs
-                        for a specific period after creation, and after that, you might want to delete them.
-                        You can
-                        use Amazon S3 lifecycle configuration to set rules so that Amazon S3 automatically
-                        queues these objects
-                        for deletion at the end of their life. 
+                     <h1 class="topictitle" id="deleting-log-files-lifecycle">Deleting Amazon S3 Log Files</h1>
+                     <p>An S3 bucket with server access logging enabled can accumulate many server log objects
+                        over time. Your application might need these access logs for a specific period after
+                        creation,
+                        and after that, you might want to delete them. You can use Amazon S3 lifecycle configuration
+                        to set
+                        rules so that Amazon S3 automatically queues these objects for deletion at the end
+                        of their life. 
                      </p>
-                     <p>If you specified a prefix in your logging configuration, you can set a lifecycle
-                        configuration rule to delete log objects with that prefix. For example, if your log
-                        objects
-                        have prefix <code class="code">logs/</code>, after a specified time, you can set a lifecycle configuration
-                        rule to delete objects with prefix <code class="code">/logs</code>. For more information about lifecycle
-                        configuration, see <a href="object-lifecycle-mgmt.html">Object Lifecycle Management</a>.
+                     <p>You can define a lifecycle configuration for a subset of objects in your S3 bucket
+                        by
+                        using a shared prefix (that is, objects that have names that begin with a common string).
+                        If
+                        you specified a prefix in your server access logging configuration, you can set a
+                        lifecycle
+                        configuration rule to delete log objects that have that prefix. For example, if your
+                        log
+                        objects have the prefix <code class="code">logs/</code>, you can set a lifecycle configuration rule to
+                        delete all objects in the bucket that have the prefix <code class="code">/logs</code> after a specified
+                        period of time. For more information about lifecycle configuration, see <a href="object-lifecycle-mgmt.html">Object Lifecycle Management</a>.
                      </p>
+                     
+                     <h2 id="deleting-log-files-lifecycle-more-info">Related Resources</h2>
+                     
+                     <p><a href="ServerLogs.html">Amazon S3 Server Access Logging</a></p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -71,15 +90,28 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="LogFormat.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="UsingAWSSDK.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="LogFormat.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="using-s3-access-logs-to-idenitfy-sigv2-requests.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
             <div id="right-expanded">
-               <div id="right-content-wrapper"></div>
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Related Resources"><a class="pagetoc" href="#deleting-log-files-lifecycle-more-info">Related Resources</a></li>
+                     </ul>
+                  </div>
+               </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

@@ -5,13 +5,15 @@
       <link rel="home" href="#top">
       <link rel="up" href="RequestAndResponseBehavior.html" title="Request and Response Behavior">
       <link rel="prev" href="http-3xx-status-codes.html" title="How CloudFront Processes HTTP 3xx Status Codes from Your Origin">
-      <link rel="next" href="PrivateContent.html" title="Serving Private Content through CloudFront">
-      <meta name="description" content="Describes how CloudFront processes and caches HTTP status codes for when errors occur.">
+      <link rel="next" href="GeneratingCustomErrorResponses.html" title="Generating Custom Error Responses">
+      <meta name="description" content="Describes how CloudFront processes and caches HTTP status codes when errors occur.">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/HTTPStatusCodes.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="RequestAndResponseBehavior.html">Request and Response Behavior</a> &#xBB; <span class="breadcrumb">How CloudFront Processes and Caches HTTP 4xx and 5xx Status Codes from Your Origin</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="RequestAndResponseBehavior.html">Request and Response Behavior</a> &#xBB; <span class="breadcrumb">How CloudFront Processes and Caches HTTP 4xx and 5xx Status Codes from Your Origin</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="HTTPStatusCodes">How CloudFront Processes and Caches HTTP 4xx and 5xx Status Codes from Your Origin</h1>
                      <div class="highlights" id="inline-topiclist">
@@ -49,9 +54,10 @@
                      </div>
                      <p>When CloudFront requests an object from your Amazon S3 bucket or custom origin server,
                         your origin sometimes returns an HTTP 4xx or 5xx status code, 
-                        			which indicates an error has occurred. CloudFront behavior depends on:
+                        			which indicates that an error has occurred. CloudFront behavior depends on:
                      </p>
                      <div class="itemizedlist">
+                        			
                         			
                         			
                         			
@@ -64,6 +70,7 @@
                            <li class="listitem">
                               <p>Whether you have configured how long you want CloudFront to cache error responses
                                  from your origin (error caching minimum TTL).
+                                 			
                               </p>
                            </li>
                            <li class="listitem">
@@ -72,6 +79,11 @@
                            <li class="listitem">
                               <p>For 5xx status codes, whether the requested object is currently in the CloudFront
                                  edge cache.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p>For some 4xx status codes, whether the origin returns a <code class="code">Cache-Control max-age</code> or <code class="code">Cache-Control s-maxage</code> 
+                                 				header.
                               </p>
                            </li>
                         </ul>
@@ -113,20 +125,46 @@
                         					
                         					
                         					
+                        					
                         				
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
-                              <p>A viewer requests an object</p>
+                              <p>A viewer requests an object.</p>
                            </li>
                            <li class="listitem">
-                              <p>The object isn&apos;t in the edge cache</p>
+                              <p>The object isn&apos;t in the edge cache.</p>
                            </li>
                            <li class="listitem">
-                              <p>Your origin returns an HTTP 4xx or 5xx status code instead of returning a 304 status
-                                 code (Not Modified) or an 
-                                 						updated version of the object
-                              </p>
-                              					
+                              <p>Your origin returns an HTTP 4xx or 5xx status code and one of the following is true:</p>
+                              						
+                              <div class="itemizedlist">
+                                 							
+                                 							
+                                 						
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       <p>Your origin returns an HTTP 5xx status code instead of returning a 304 status code
+                                          
+                                          							(Not Modified) or an updated version of the object.
+                                       </p>
+                                    </li>
+                                    <li class="listitem">
+                                       <p>Your origin returns an HTTP 4xx status code that is not restricted by a cache control
+                                          header and is
+                                          								included in the following list of status codes:
+                                          								<a href="HTTPStatusCodes.html#HTTPStatusCodes-cached-errors-general">HTTP 4xx and 5xx Status Codes that CloudFront Always Caches</a>.
+                                       </p>
+                                    </li>
+                                    <li class="listitem">
+                                       <p>Your origin returns an HTTP 4xx status code without a <code class="code">Cache-Control max-age</code> header or a 
+                                          								<code class="code">Cache-Control s-maxage</code> header, and the status code is included in the following list of status codes: 
+                                          								Control <a href="HTTPStatusCodes.html#HTTPStatusCodes-cached-errors-with-cache-control">HTTP 4xx Status Codes that CloudFront 
+                                             					Caches Based on Cache Control Headers</a>.
+                                       </p>
+                                    </li>
+                                 </ul>
+                              </div>
+                              						
                            </li>
                         </ul>
                      </div>
@@ -135,6 +173,12 @@
                      <p>CloudFront does the following:</p>
                      				
                      <div class="orderedlist">
+                        					
+                        					
+                        					
+                        					
+                        					
+                        					
                         					
                         					
                         					
@@ -175,15 +219,31 @@
                               						
                               <p>CloudFront returns the custom error page to the viewer that made the request, and
                                  also caches the custom error page for the 
-                                 							amount of time specified by the error caching minimum TTL (five minutes by
-                                 default).
+                                 							maximum of the following: 
                               </p>
+                              						
+                              <div class="itemizedlist">
+                                 							
+                                 							
+                                 						
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       <p>The amount of time specified by the error caching minimum TTL (five minutes by default)</p>
+                                    </li>
+                                    <li class="listitem">
+                                       <p>The amount of time specified by a <code class="code">Cache-Control max-age</code> header or a <code class="code">Cache-Control s-maxage</code> 
+                                          								header that is returned by the origin when the first request generated the
+                                          error
+                                       </p>
+                                    </li>
+                                 </ul>
+                              </div>
                               					
                            </li>
                            <li>
                               						
-                              <p>After the error caching minimum TTL has elapsed, CloudFront tries again to get the
-                                 requested object by forwarding another request 
+                              <p>After the caching time (determined in Step 5) has elapsed, CloudFront tries again
+                                 to get the requested object by forwarding another request 
                                  							to your origin. CloudFront continues to retry at intervals specified by the
                                  error caching minimum TTL. 
                               </p>
@@ -252,7 +312,7 @@
                                  might evict it from the edge cache while your origin 
                                  							server is still returning 5xx responses. For information about how long objects
                                  stay in CloudFront edge caches, see 
-                                 							<a href="Expiration.html">Specifying How Long Objects Stay in a CloudFront Edge Cache (Expiration)</a>.
+                                 							<a href="Expiration.html">Managing How Long Content Stays in an Edge Cache (Expiration)</a>.
                               </p>
                               					
                            </li>
@@ -292,10 +352,34 @@
                               <p>The object isn&apos;t in the edge cache</p>
                            </li>
                            <li class="listitem">
-                              <p>Your origin returns an HTTP 4xx or 5xx status code instead of returning a 304 status
-                                 code (Not Modified) or an 
-                                 						updated version of the object
-                              </p>
+                              <p>Your origin returns an HTTP 4xx or 5xx status code and one of the following is true:</p>
+                              						
+                              <div class="itemizedlist">
+                                 							
+                                 							
+                                 						
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       <p>Your origin returns an HTTP 5xx status code instead of returning a 304 status code
+                                          
+                                          							(Not Modified) or an updated version of the object.
+                                       </p>
+                                    </li>
+                                    <li class="listitem">
+                                       <p>Your origin returns an HTTP 4xx status code that is not restricted by a cache control
+                                          header and is
+                                          								included in the following list of status codes:
+                                          								<a href="HTTPStatusCodes.html#HTTPStatusCodes-cached-errors-general">HTTP 4xx and 5xx Status Codes that CloudFront Always Caches</a></p>
+                                    </li>
+                                    <li class="listitem">
+                                       <p>Your origin returns an HTTP 4xx status code without a <code class="code">Cache-Control max-age</code> header or a 
+                                          								<code class="code">Cache-Control s-maxage</code> header and the status code is included in the following list of status codes: 
+                                          								Control <a href="HTTPStatusCodes.html#HTTPStatusCodes-cached-errors-with-cache-control">HTTP 4xx Status Codes that CloudFront 
+                                             					Caches Based on Cache Control Headers</a>.
+                                       </p>
+                                    </li>
+                                 </ul>
+                              </div>
                               					
                            </li>
                         </ul>
@@ -309,26 +393,51 @@
                         					
                         					
                         					
+                        					
+                        					
+                        					
                         				
                         <ol>
                            <li>
-                              <p>CloudFront returns the 4xx or 5xx status code to the viewer.</p>
+                              						
+                              <p>CloudFront returns the 4xx or 5xx status code to the viewer, and also caches status
+                                 code in the edge cache that 
+                                 							received the request for the maximum of the following: 
+                              </p>
+                              						
+                              <div class="itemizedlist">
+                                 							
+                                 							
+                                 						
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       <p>The amount of time specified by the error caching minimum TTL (five minutes by default)</p>
+                                    </li>
+                                    <li class="listitem">
+                                       <p>The amount of time specified by a <code class="code">Cache-Control max-age</code> header or a <code class="code">Cache-Control s-maxage</code> 
+                                          								header that is returned by the origin when the first request generated the
+                                          error
+                                       </p>
+                                    </li>
+                                 </ul>
+                              </div>
+                              					
                            </li>
                            <li>
-                              <p>CloudFront also caches the status code in the edge cache that received the request.</p>
-                           </li>
-                           <li>
-                              <p>For the duration of the error caching minimum TTL (five minutes by default), CloudFront
-                                 responds to subsequent 
+                              <p>For the duration of the caching time (determined in Step 1), CloudFront responds to
+                                 subsequent 
                                  						viewer requests for the same object with the cached 4xx or 5xx status code.
                                  
                               </p>
                            </li>
                            <li>
-                              <p>After the error caching minimum TTL has elapsed, CloudFront tries again to get the
-                                 requested object by forwarding 
-                                 						another request to your origin.
+                              						
+                              <p>After the caching time (determined in Step 1) has elapsed, CloudFront tries again
+                                 to get the requested object by forwarding 
+                                 							another request to your origin. CloudFront continues to retry at intervals
+                                 specified by the error caching minimum TTL. 
                               </p>
+                              					
                            </li>
                         </ol>
                      </div>
@@ -392,7 +501,7 @@
                                  CloudFront might evict it from the edge cache 
                                  						while your origin server is still returning 5xx responses. For information about
                                  how long objects stay in CloudFront edge caches, 
-                                 						see <a href="Expiration.html">Specifying How Long Objects Stay in a CloudFront Edge Cache (Expiration)</a>.
+                                 						see <a href="Expiration.html">Managing How Long Content Stays in an Edge Cache (Expiration)</a>.
                               </p>
                               					
                            </li>
@@ -404,10 +513,18 @@
                      			
                      <h2 id="HTTPStatusCodes-cached-errors">HTTP 4xx and 5xx Status Codes that CloudFront Caches</h2>
                      			
-                     
                      			
-                     <p>CloudFront caches the following HTTP 4xx and 5xx status codes returned by Amazon S3
-                        or your custom origin server. If you have configured a 
+                     <p>CloudFront caches HTTP 4xx and 5xx status codes returned by your origin, depending
+                        on the specific status code that is
+                        			returned and whether your origin returns specific headers in the response.
+                     </p>
+                     			
+                     			
+                     				
+                     <h3 id="HTTPStatusCodes-cached-errors-general">HTTP 4xx and 5xx Status Codes that CloudFront Always Caches</h3>
+                     			
+                     <p>CloudFront always caches the following HTTP 4xx and 5xx status codes returned by your
+                        origin. If you have configured a 
                         				custom error page for an HTTP status code, CloudFront caches the custom error
                         page. 
                      </p>
@@ -416,33 +533,9 @@
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w313aac25c19c21b5">
+                           <table id="w521aac23c27c21b5b5">
                               						
                               <tbody><tr>
-                                 							
-                                 <td>
-                                    <p>400</p>
-                                 </td>
-                                 							
-                                 <td>
-                                    <p>Bad Request</p>
-                                 </td>
-                                 						
-                              </tr>
-                              						
-                              <tr>
-                                 							
-                                 <td>
-                                    <p>403</p>
-                                 </td>
-                                 							
-                                 <td>
-                                    <p>Forbidden</p>
-                                 </td>
-                                 						
-                              </tr>
-                              						
-                              <tr>
                                  							
                                  <td>
                                     <p>404</p>
@@ -541,16 +634,96 @@
                            </tbody></table>
                         </div>
                      </div>
+                     			
+                     
+                     			
+                     				
+                     <h3 id="HTTPStatusCodes-cached-errors-with-cache-control">HTTP 4xx Status Codes that CloudFront 
+                        					Caches Based on Cache Control Headers
+                     </h3>
+                     				
+                     			
+                     <p>CloudFront only caches the following HTTP 4xx status codes returned by your origin
+                        if your origin
+                        				returns a <code class="code">Cache-Control max-age</code> or <code class="code">Cache-Control s-maxage</code> 
+                        				header. If you have configured a custom error page for one of these HTTP status
+                        codes&#x2014;and your origin
+                        				returns one of the cache control headers&#x2014;CloudFront caches the custom error page.
+                        
+                     </p>
+                     			
+                     			
+                     <div class="table">
+                        <p class="title"><b></b></p>
+                        <div class="table-contents">
+                           <table id="w521aac23c27c21b7b5">
+                              						
+                              <tbody><tr>
+                                 							
+                                 <td>
+                                    <p>400</p>
+                                 </td>
+                                 							
+                                 <td>
+                                    <p>Bad Request</p>
+                                 </td>
+                                 						
+                              </tr>
+                              						
+                              <tr>
+                                 							
+                                 <td>
+                                    <p>403</p>
+                                 </td>
+                                 							
+                                 <td>
+                                    <p>Forbidden</p>
+                                 </td>
+                                 						
+                              </tr>
+                              						
+                              <tr>
+                                 							
+                                 <td>
+                                    <p>412</p>
+                                 </td>
+                                 							
+                                 <td>
+                                    <p>Precondition Failed</p>
+                                 </td>
+                                 						
+                              </tr>
+                              						
+                              <tr>
+                                 							
+                                 <td>
+                                    <p>415</p>
+                                 </td>
+                                 							
+                                 <td>
+                                    <p>Unsupported Media Type</p>
+                                 </td>
+                                 						
+                              </tr>
+                              					
+                           </tbody></table>
+                        </div>
+                     </div>
                      		
+                     	
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -559,8 +732,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="http-3xx-status-codes.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="PrivateContent.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="http-3xx-status-codes.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="GeneratingCustomErrorResponses.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -577,6 +752,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

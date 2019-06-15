@@ -4,14 +4,16 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="set-up-stages.html" title="Set up a Stage in API Gateway">
-      <link rel="prev" href="api-gateway-request-throttling.html" title="Throttle API Requests for Better
+      <link rel="prev" href="stages.html" title="Set up a Stage Using the API Gateway Console">
+      <link rel="next" href="api-gateway-request-throttling.html" title="Throttle API Requests for Better
             Throughput">
-      <link rel="next" href="set-up-logging.html" title="Set up API Logging in API Gateway">
       <meta name="description" content="Learn how to enable Amazon API Gateway caching to enhance your API&apos;s performance.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-caching.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,43 +35,58 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="how-to-deploy-api.html">Deploying an API in Amazon API Gateway</a> &#xBB; <a href="set-up-stages.html">Set up a Stage in API Gateway</a> &#xBB; <span class="breadcrumb">Enable API Caching to Enhance Responsiveness</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="how-to-deploy-api.html">Deploying a REST API in Amazon API Gateway</a> &#xBB; <a href="set-up-stages.html">Set up a Stage in API Gateway</a> &#xBB; <span class="breadcrumb">Enable API Caching to Enhance Responsiveness</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="api-gateway-caching">Enable API Caching to Enhance Responsiveness</h1>
-                     <p>You can enable API caching in Amazon API Gateway to cache your endpoint&#x2019;s response.
-                        With caching, you can reduce the number of calls made to your endpoint and also improve
-                        the latency of the requests to your API. When you enable caching for a stage, API
-                        Gateway
-                        caches responses from your endpoint for a specified time-to-live (TTL) period, in
-                        seconds. API Gateway then responds to the request by looking up the endpoint response
-                        from the
-                        cache instead of making a request to your endpoint. The default TTL value for API
-                        caching is 300 seconds. The maximum TTL value is 3600 seconds. TTL=0 means caching
-                        is disabled.
+                     <p>You can enable API caching in Amazon API Gateway to cache your endpoint&apos;s responses.
+                        With
+                        caching, you can reduce the number of calls made to your endpoint and also improve
+                        the
+                        latency of requests to your API. When you enable caching for a stage, API Gateway
+                        caches responses
+                        from your endpoint for a specified time-to-live (TTL) period, in seconds. API Gateway
+                        then
+                        responds to the request by looking up the endpoint response from the cache instead
+                        of making
+                        a request to your endpoint. The default TTL value for API caching is 300 seconds.
+                        The
+                        maximum TTL value is 3600 seconds. TTL=0 means caching is disabled.
+                     </p>
+                     <p>The maximum size of a response that can be cached is 1048576 bytes. Cache data encryption
+                        may increase the size of the response when it is being cached.
+                     </p>
+                     <p>This is a HIPAA Eligible Service. For more information about AWS, U.S. Health Insurance
+                        Portability and Accountability Act of 1996 (HIPAA), and using AWS services to process,
+                        store, and transmit protected health information (PHI), see <a href="https://aws.amazon.com/compliance/hipaa-compliance/" target="_blank">HIPAA Overview</a>.
                      </p>
                      <div class="aws-note">
                         <p class="aws-note">Important</p>
-                        <p>Only <code class="code">GET</code> methods can be cached.
+                        <p>When you enable caching for a stage, only <code class="code">GET</code> methods have caching
+                           enabled by default. This helps to ensure the safety and availability of your API.
+                           You
+                           can enable caching for other methods by <a href="api-gateway-caching.html#override-api-gateway-stage-cache-for-method-cache">overriding method
+                              settings</a>.
                         </p>
                      </div>
                      <div class="aws-note">
-                        <p class="aws-note">Note</p>
+                        <p class="aws-note">Important</p>
                         <p>Caching is charged by the hour and is not eligible for the AWS free tier. </p>
                      </div>
-                     <h2 id="enable-api-gateway-caching">Enable
-                        Amazon API Gateway Caching
-                     </h2>
+                     
+                     <h2 id="enable-api-gateway-caching">Enable Amazon API Gateway Caching</h2>
                      
                      
+                     <p>In API Gateway, you can enable caching for a specified stage.</p>
                      
-                     <p> In API Gateway, you can enable caching for all methods for a specified stage. When
-                        you
-                        enable caching, you must choose a cache capacity. In general, a larger capacity gives
-                        a
-                        better performance, but also costs more. 
+                     <p> When you enable caching, you must choose a cache capacity. In general, a larger
+                        capacity gives a better performance, but also costs more. 
                      </p>
                      
                      <p> API Gateway enables caching by creating a dedicated cache instance. This process
@@ -77,12 +94,13 @@
                         up to 4 minutes. 
                      </p>
                      
-                     <p>API Gateway changes caching capacity by removing the existing cache instance and recreating
-                        a new one with a modified capacity. All existing cached data is deleted. 
+                     <p>API Gateway changes caching capacity by removing the existing cache instance and creating
+                        a
+                        new one with a modified capacity. All existing cached data is deleted. 
                      </p>
                      
                      <p> In the API Gateway console, you configure caching in the <b>Settings</b> tab
-                        of a named <b>Stage Editor</b>.  
+                        of a named <b>Stage Editor</b>. 
                      </p>
                      
                      <p class="title"><b>To configure API caching for a given stage:</b></p>
@@ -93,43 +111,61 @@
                            
                         </li>
                         <li>
-                           <p>Navigate to the <b>Stage Editor</b> for the stage for which you want to enable caching.
-                           </p>
+                           
+                           <p>Choose the API.</p>
+                           
                         </li>
                         <li>
-                           <p>Choose <b>Settings</b>.
+                           
+                           <p>Choose <b>Stages</b>.
                            </p>
+                           
                         </li>
                         <li>
-                           <p>Select <b>Enable API cache</b>.
+                           
+                           <p>In the <b>Stages</b> list for the API, choose the stage.
                            </p>
+                           
                         </li>
                         <li>
+                           
+                           <p>Choose the <b>Settings</b> tab.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Enable API cache</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
                            <p>Wait for the cache creation to complete. </p>
+                           
                         </li>
                      </ol>
                      
                      <div class="aws-note">
                         <p class="aws-note">Note</p>
-                        <p>
-                           Creating or deleting a cache takes about 4 minutes for API Gateway to complete. 
-                           When cache is created, the <b>Cache status</b> value changes from <code class="code">CREATE_IN_PROGRESS</code> to 
-                           <code class="code">AVAILABLE</code>. When cache deletion is completed, the <b>Cache status</b> value changes from 
-                           <code class="code">DELETE_IN_PROGRESS</code> to an empty string.  
-                           
+                        <p> Creating or deleting a cache takes about 4 minutes for API Gateway to complete.
+                           When a cache is created, the <b>Cache status</b> value changes from
+                           <code class="code">CREATE_IN_PROGRESS</code> to <code class="code">AVAILABLE</code>. When cache deletion
+                           is completed, the <b>Cache status</b> value changes from
+                           <code class="code">DELETE_IN_PROGRESS</code> to an empty string. 
                         </p>
                      </div>
                      
-                     <p>
-                        When you enable caching within a stage&apos;s <b>Cache Settings</b>, you enable caching for all methods in that stage.
-                        
+                     <p>When you enable caching within a stage&apos;s <b>Cache Settings</b>, only
+                        <code class="code">GET</code> methods are cached. To ensure the safety and availability of your
+                        API, we recommend that you not change this setting. However, you can enable caching
+                        for
+                        other methods by <a href="api-gateway-caching.html#override-api-gateway-stage-cache-for-method-cache">overriding method settings</a>.
                      </p>
                      
                      
-                     <p>
-                        If you would like to verify if caching is functioning as expected, you have two general
-                        options:
-                        
+                     <p> If you would like to verify if caching is functioning as expected, you have two
+                        general options: 
                      </p>
                      
                      <div class="itemizedlist">
@@ -148,10 +184,7 @@
                            </li>
                            <li class="listitem">
                               
-                              <p>
-                                 Put a timestamp in the response.
-                                 
-                              </p>
+                              <p> Put a timestamp in the response. </p>
                               
                            </li>
                         </ul>
@@ -159,57 +192,79 @@
                      
                      <div class="aws-note">
                         <p class="aws-note">Note</p>
-                        <p>
-                           You should not use the X-Cache header from the CloudFront response to determine if
-                           your API is being served from your API Gateway cache instance.
-                           
+                        <p> You should not use the <code class="code">X-Cache</code> header from the CloudFront response to
+                           determine if your API is being served from your API Gateway cache instance. 
                         </p>
                      </div>
+                     
                      
                      
                      <h2 id="override-api-gateway-stage-cache-for-method-cache">Override API Gateway Stage-Level Caching for Method Caching</h2>
                      
                      
+                     <p>You can override stage-level cache settings by enabling or disabling caching for a
+                        specific method; by increasing or decreasing its TTL period; or by turning encryption
+                        on
+                        or off for cached responses.
+                     </p>
                      
-                     <p>  If you want more granularity in your caching settings, you can override the
-                        stage-level caching for individual methods . This includes disabling caching for a
-                        specific method, increasing or decreasing its TTL period, and turning on or off
-                        encryption of the cached response. If you anticipate that a method will receive
-                        sensitive data in its responses, in <b>Cache Settings</b>, choose
-                        <b>Encrypt cache data</b>. 
-                        
+                     <p>If you anticipate that a method that you are caching will receive sensitive data in
+                        its responses, in <b>Cache Settings</b>, choose <b>Encrypt cache
+                           data</b>.
                      </p>
                      
                      <p class="title"><b>To configure API caching for individual methods using the console:</b></p>
                      <ol>
                         <li>
+                           <p>Sign in to the API Gateway console at <a href="https://console.aws.amazon.com/apigateway" target="_blank">https://console.aws.amazon.com/apigateway</a>.
+                           </p>
+                        </li>
+                        <li>
                            
-                           <p>Choose <b>Stages</b> of an API from the main navigation pane.
+                           <p>Go to the API Gateway console.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose the API.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Stages</b>.
                            </p>
                            
                         </li>
                         <li>
                            
-                           <p>Choose a method of the API in the chosen stage, from the secondary navigation pane.</p>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>Choose <b>Override for this method</b> in <b>Settings</b>.
+                           <p>In the <b>Stages</b> list for the API, expand the stage and
+                              choose a method in the API.
                            </p>
                            
                         </li>
                         <li>
                            
-                           <p>Choose appropriate settings under the <b>Cache Settings</b> section (that is shown only if the stage-level caching is enabled). 
+                           <p>Choose <b>Override for this method</b> in
+                              <b>Settings</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the <b>Cache Settings</b> area, you can set or clear
+                              <b>Enable Method Cache</b> or customize any other desired
+                              options. (This section is shown only if <a href="api-gateway-caching.html#enable-api-gateway-caching">stage-level caching</a> is
+                              enabled.)
                            </p>
                            
                         </li>
                      </ol>
                      
                      
-                     <h2 id="enable-api-gateway-cache-keys">Use Method or Integration Parameters as Cache Keys to Index Cached Responses</h2>
                      
+                     <h2 id="enable-api-gateway-cache-keys">Use Method or Integration Parameters as Cache Keys to Index Cached
+                        Responses
+                     </h2>
                      
                      
                      <p> When a cached method or integration has parameters, which can take the form of custom
@@ -220,10 +275,12 @@
                         used. 
                      </p>
                      
-                     <p>
-                        For example, suppose you have a request of the following format:
-                        
-                     </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>Cache keys are required when setting up caching on a resource.</p>
+                     </div>
+                     
+                     <p> For example, suppose you have a request in the following format: </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">
 GET /users?type=... HTTP/1.1
 host: example.com
@@ -234,7 +291,6 @@ host: example.com
                         cache key, the responses from <code class="code">GET /users?type=admin</code> will be cached
                         separately from those from <code class="code">GET /users?type=regular</code>. 
                      </p>
-                     
                      
                      
                      <p> When a method or integration request takes more than one parameter, you can choose
@@ -255,17 +311,19 @@ host: example.com
 GET /users?type=admin&amp;department=B HTTP/1.1
 host: example.com
 ...
-        </code></pre>        
+        </code></pre>
                      
                      <p> To include a method or integration request parameter as part of a cache key in the
                         API Gateway console, select <b>Caching</b> after you add the parameter. 
                      </p>
                      
-                     <div class="mediaobject">                    
+                     
+                     <div class="mediaobject">
                         
                         <img src="../../..//img/api-caching-including-parameter-as-cache-key.png" alt="
-                        Include Method or Integration Parameters as Cache Keys to Index Cached Response
-                    " style="max-width:100%">
+                Include Method or Integration Parameters as Cache Keys to Index Cached
+                    Response
+            " style="max-width:100%">
                         
                         
                         
@@ -282,33 +340,34 @@ host: example.com
                      <p> To flush the API stage cache, you can choose the <b>Flush entire
                            cache</b> button under the <b>Cache Settings</b> section in the
                         <b>Settings</b> tab in a stage editor of the API Gateway console. The
-                        cache-flushing operation is almost instantaneous. As a result, the cache status is
+                        cache-flushing operation takes a couple of minutes, after which the cache status is
                         <code class="code">AVAILABLE</code> immediately after flushing. 
                      </p>
                      
-                     <p>Notice that flushing the cache will cause the responses to ensuing requests to be
-                        serviced from the backend until the cache is built up again. During this period, the
-                        number of requests sent to the integration endpoint may increase. That may affect
-                        the
-                        overall latency of your API. 
-                     </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>After the cache is flushed, responses are serviced from the integration endpoint
+                           until the cache is built up again. During this period, the number of requests sent
+                           to the integration endpoint may increase. This may temporarily increase the overall
+                           latency of your API. 
+                        </p>
+                     </div>
+                     
                      
                      <h2 id="invalidate-method-caching">Invalidate an API Gateway Cache Entry</h2>
                      
                      
-                     <p>A client of your API can invalidate an existing cache entry and reloads it from the
+                     <p>A client of your API can invalidate an existing cache entry and reload it from the
                         integration endpoint for individual requests. The client must send a request that
                         contains the <code class="code">Cache-Control: max-age=0</code> header. The client receives the
                         response directly from the integration endpoint instead of the cache, provided that
                         the
-                        user is authorized to do so. This replaces the existing cache entry
-                        with the new response, which is fetched from the integration endpoint. 
+                        client is authorized to do so. This replaces the existing cache entry with the new
+                        response, which is fetched from the integration endpoint. 
                      </p>
                      
-                     <p> To grant permission for
-                        a
-                        caller, attach a policy of the following format to an IAM execution
-                        role for the user. 
+                     <p> To grant permission for a client, attach a policy of the following format to an IAM
+                        execution role for the user. 
                      </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">
 {
@@ -326,20 +385,20 @@ host: example.com
   ]
 }            
         </code></pre>
-                     <p> This policy allows the API Gateway execution service to invalidate cache for requests
-                        on
-                        the specified resource (or resources). To specify a group of targeted resources, use
-                        a
-                        wild card (*) character for <code class="code">account-id</code>, <code class="code">api-id</code>, and other
+                     <p> This policy allows the API Gateway execution service to invalidate the cache for
+                        requests
+                        on the specified resource (or resources). To specify a group of targeted resources,
+                        use
+                        a wildcard (*) character for <code class="code">account-id</code>, <code class="code">api-id</code>, and other
                         entries in the ARN value of <code class="code">Resource</code>. For more information on how to set
                         permissions for the API Gateway execution service, see <a href="permissions.html">Control Access to an API with IAM Permissions</a>
                         
                      </p>
                      
-                     <p> If you do not impose an <code class="code">InvalidateCache</code> policy, any client can
-                        invalidate the API cache. If all or most of the clients invalidate the API cache,
-                        there
-                        could be significant latency impact on your API. 
+                     <p> If you do not impose an <code class="code">InvalidateCache</code> policy (or choose the <b>Require authorization</b> checkbox in the console), any client can
+                        invalidate the API cache. If most or all of the clients invalidate the API cache,
+                        this
+                        could significantly increase the latency of your API. 
                      </p>
                      
                      <p> When the policy is in place, caching is enabled, and authorization is required, you
@@ -347,11 +406,12 @@ host: example.com
                         <b>Handle unauthorized requests</b> in the API Gateway console. 
                      </p>
                      
+                     
                      <div class="mediaobject">
                         
                         <img src="../../..//img/apig-cache-invalidation.png" alt="
-                        Configure cache invalidation
-                    " style="max-width:100%">
+                Configure cache invalidation
+            " style="max-width:100%">
                         
                         
                         
@@ -407,15 +467,19 @@ host: example.com
                         </ul>
                      </div>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -424,8 +488,10 @@ host: example.com
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="api-gateway-request-throttling.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="set-up-logging.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="stages.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="api-gateway-request-throttling.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -434,10 +500,12 @@ host: example.com
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Enable
-            Amazon API Gateway Caching"><a class="pagetoc" href="#enable-api-gateway-caching">Enable API Caching</a></li>
-                        <li class="pagetoc" name="Override API Gateway Stage-Level Caching for Method Caching"><a class="pagetoc" href="#override-api-gateway-stage-cache-for-method-cache">Override Stage Caching for Method Caching</a></li>
-                        <li class="pagetoc" name="Use Method or Integration Parameters as Cache Keys to Index Cached Responses"><a class="pagetoc" href="#enable-api-gateway-cache-keys">Use Method/Integration Parameters as Cache Keys</a></li>
+                        <li class="pagetoc" name="Enable Amazon API Gateway Caching"><a class="pagetoc" href="#enable-api-gateway-caching">Enable API Caching</a></li>
+                        <li class="pagetoc" name="Override API Gateway Stage-Level Caching for Method Caching"><a class="pagetoc" href="#override-api-gateway-stage-cache-for-method-cache">Override Stage
+                              Caching for Method Caching</a></li>
+                        <li class="pagetoc" name="Use Method or Integration Parameters as Cache Keys to Index Cached
+                Responses"><a class="pagetoc" href="#enable-api-gateway-cache-keys">Use Method/Integration Parameters
+                              as Cache Keys</a></li>
                         <li class="pagetoc" name="Flush the API Stage Cache in API Gateway"><a class="pagetoc" href="#flush-api-caching">Flush the API Stage Cache in API Gateway</a></li>
                         <li class="pagetoc" name="Invalidate an API Gateway Cache Entry"><a class="pagetoc" href="#invalidate-method-caching">Invalidate an API Gateway Cache Entry</a></li>
                      </ul>
@@ -445,6 +513,10 @@ host: example.com
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

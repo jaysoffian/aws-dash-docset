@@ -5,13 +5,15 @@
       <link rel="home" href="#top">
       <link rel="up" href="AmazonEBS.html" title="Amazon Elastic Block Store (Amazon EBS)">
       <link rel="prev" href="EBSOptimized.html" title="Amazon EBS&#x2013;Optimized Instances">
-      <link rel="next" href="nvme-ebs-volumes.html" title="Amazon EBS and NVMe">
-      <meta name="description" content="Amazon EBS encryption offers a simple encryption solution for your EBS volumes without the need to build, maintain, and secure your own key management infrastructure.">
+      <link rel="next" href="nvme-ebs-volumes.html" title="Amazon EBS and NVMe on Linux Instances">
+      <meta name="description" content="Amazon EBS encryption offers an encryption solution for your EBS volumes that doesn&apos;t require you to build, maintain, and secure your own key management infrastructure.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSEncryption.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,19 +35,25 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <span class="breadcrumb">Amazon EBS Encryption</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <span class="breadcrumb">Amazon EBS Encryption</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="EBSEncryption">Amazon EBS Encryption</h1>
-                     <p>Amazon EBS encryption offers a simple encryption solution for your EBS volumes without
-                        the need to
-                        build, maintain, and secure your own key management infrastructure. When you create
-                        an
-                        encrypted EBS volume and attach it to a supported instance type, the following types
-                        of data
-                        are encrypted:
+                     <p>Amazon EBS encryption offers a straight-forward encryption solution for your EBS volumes
+                        that
+                        doesn&apos;t require you to build, maintain, and secure your own key management infrastructure.
+                        It uses AWS Key Management Service (AWS KMS) customer master keys (CMKs) when creating
+                        encrypted volumes and 
+                        snapshots. For more information, see <a href="./kms/latest/developerguide/concepts.html#master_keys">Customer Master Keys (CMK)</a> in the <em>AWS Key Management Service Developer Guide</em>.
+                     </p>
+                     <p>When you create an encrypted EBS volume and attach it to a supported instance type,
+                        the
+                        following types of data are encrypted:
                      </p>
                      <div class="itemizedlist">
                         
@@ -80,6 +88,7 @@
                         of both data-at-rest and data-in-transit between an instance and its attached EBS
                         storage. 
                      </p>
+                     <p>You can encrypt both the boot and data volumes of an EC2 instance.</p>
                      <p>Encryption is supported by all EBS volume types (General Purpose SSD [<code class="code">gp2</code>], Provisioned IOPS SSD [<code class="code">io1</code>],
                         Throughput Optimized HDD [<code class="code">st1</code>], Cold HDD [<code class="code">sc1</code>], and Magnetic [<code class="code">standard</code>]). You can expect the same
                         IOPS performance on encrypted volumes as on unencrypted volumes, with a minimal effect
@@ -90,188 +99,34 @@
                         action
                         from you or your applications.
                      </p>
+                     <p>Amazon EBS encryption is available only on certain instance types. You can attach
+                        both encrypted
+                        and unencrypted volumes to a supported instance type. For more information, see <a href="EBSEncryption.html#EBSEncryption_supported_instances">Supported Instance Types</a>.
+                     </p>
                      <p>Public snapshots of encrypted volumes are not supported, but you can share an encrypted
                         snapshot with specific accounts. For more information about sharing encrypted snapshots,
                         see
-                        <a href="./AWSEC2/latest/UserGuide/ebs-modifying-snapshot-permissions.html" target="_blank">Sharing an
+                        <a href="./AWSEC2/latest/UserGuide/ebs-modifying-snapshot-permissions.html">Sharing an
                            Amazon EBS Snapshot</a>.
-                     </p>
-                     <p>Amazon EBS encryption is only available on certain instance types. You can attach
-                        both encrypted
-                        and unencrypted volumes to a supported instance type. For more information, see <a href="EBSEncryption.html#EBSEncryption_supported_instances">Supported Instance Types</a>.
                      </p>
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Contents</strong></p>
                         <ul>
+                           <li><a href="#encryption-by-default">Encryption by Default</a></li>
                            <li><a href="#EBSEncryption_key_mgmt">Encryption Key Management</a></li>
+                           <li><a href="#encryption-by-default-api">Setting Encryption and Key Defaults Using the API
+                                 and CLI</a></li>
                            <li><a href="#EBSEncryption_supported_instances">Supported Instance Types</a></li>
-                           <li><a href="#EBSEncryption_considerations">Changing the Encryption State of Your
-                                 Data</a></li>
+                           <li><a href="#encryption-parameters">Using Encryption Parameters with EBS
+                                 Volumes</a></li>
                            <li><a href="#ebs-cw-crypto">Amazon EBS Encryption and CloudWatch Events</a></li>
                         </ul>
                      </div>
                      
-                     <h2 id="EBSEncryption_key_mgmt">Encryption Key Management</h2>
+                     <h2 id="encryption-by-default">Encryption by Default</h2>
                      
-                     <p>Amazon EBS encryption uses AWS Key Management Service (AWS KMS) customer master keys
-                        (CMKs) when creating
-                        encrypted volumes and any snapshots created from them. A unique AWS-managed CMK is
-                        created for you automatically in each region where you store AWS assets. This key
-                        is
-                        used for Amazon EBS encryption unless you specify a customer-managed CMK that you
-                        created
-                        separately using AWS KMS. 
-                     </p>
-                     
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p>Creating your own CMK gives you more flexibility, including the ability to create,
-                           rotate, and disable keys to define access controls. For more information, see the
-                           <a href="./kms/latest/developerguide/" target="_blank">AWS Key Management Service Developer Guide</a>.
-                        </p>
-                     </div>
-                     
-                     <p>You cannot change the CMK that is associated with an existing snapshot or encrypted
-                        volume. However, you can associate a different CMK during a snapshot copy operation
-                        so
-                        that the resulting copied snapshot uses the new CMK.
-                     </p>
-                     
-                     <p>EBS encrypts your volume with a data key using the industry-standard AES-256
-                        algorithm. Your data key is stored on-disk with your encrypted data, but not before
-                        EBS
-                        encrypts it with your CMK&#x2014;it never appears there in plaintext. The same data key is
-                        shared by snapshots of the volume and any subsequent volumes created from those
-                        snapshots.
-                     </p>
-                     
-                     <p>For
-                        more information about key management and key access permissions, see <a href="./kms/latest/developerguide/services-ebs.html" target="_blank">How Amazon Elastic Block Store (Amazon EBS)
-                           Uses AWS KMS</a> and <a href="./kms/latest/developerguide/control-access.html" target="_blank">Authentication and Access Control for AWS KMS</a> in the <em>AWS Key Management Service Developer Guide</em>.
-                     </p>
-                     
-                     
-                     <h2 id="EBSEncryption_supported_instances">Supported Instance Types</h2>
-                     
-                     <p>Amazon EBS encryption is available on the current-generation instance types listed
-                        in the table
-                        below. These instance types leverage the Intel AES New Instructions (AES-NI) instruction
-                        set to provide faster and simpler data protection. You can attach both encrypted and
-                        unencrypted volumes to these instance types simultaneously.
-                     </p>
-                     
-                     <div class="table">
-                        <div class="table-contents">
-                           <table id="w185aac23c29c23c19b5">
-                              
-                              <tbody><tr>
-                                 
-                                 <th>Instance family</th>
-                                 
-                                 <th>Instance types that support Amazon EBS encryption</th>
-                                 
-                              </tr>
-                              
-                              
-                              <tr>
-                                 
-                                 <td>
-                                    
-                                    <p>General purpose</p>
-                                    
-                                 </td>
-                                 
-                                 <td>
-                                    
-                                    <p><code class="code">t2.nano</code> | <code class="code">t2.micro</code> | <code class="code">t2.small</code> | <code class="code">t2.medium</code> | <code class="code">t2.large</code> | <code class="code">t2.xlarge</code> | <code class="code">t2.2xlarge</code> | <code class="code">m4.large</code> | <code class="code">m4.xlarge</code> | <code class="code">m4.2xlarge</code> | <code class="code">m4.4xlarge</code> | <code class="code">m4.10xlarge</code> | <code class="code">m4.16xlarge</code> | <code class="code">m5.large</code> | <code class="code">m5.xlarge</code> | <code class="code">m5.2xlarge</code> | <code class="code">m5.4xlarge</code> | <code class="code">m5.12xlarge</code> | <code class="code">m5.24xlarge</code> 
-                                    </p>
-                                    
-                                 </td>
-                                 
-                              </tr>
-                              
-                              <tr>
-                                 
-                                 <td>
-                                    
-                                    <p>Compute optimized</p>
-                                    
-                                 </td>
-                                 
-                                 <td>
-                                    
-                                    <p><code class="code">c4.large</code> | <code class="code">c4.xlarge</code> | <code class="code">c4.2xlarge</code> | <code class="code">c4.4xlarge</code> | <code class="code">c4.8xlarge</code> | <code class="code">c5.large</code> | <code class="code">c5.xlarge</code> | <code class="code">c5.2xlarge</code> | <code class="code">c5.4xlarge</code> | <code class="code">c5.9xlarge</code> | <code class="code">c5.18xlarge</code></p>
-                                    
-                                 </td>
-                                 
-                              </tr>
-                              
-                              <tr>
-                                 
-                                 <td>
-                                    
-                                    <p>Memory optimized</p>
-                                    
-                                 </td>
-                                 
-                                 <td>
-                                    
-                                    <p><code class="code">r4.large</code> | <code class="code">r4.xlarge</code> | <code class="code">r4.2xlarge</code> | <code class="code">r4.4xlarge</code> | <code class="code">r4.8xlarge</code> | <code class="code">r4.16xlarge</code> | <code class="code">x1.16xlarge</code> | <code class="code">x1.32xlarge</code> | <code class="code">x1e.xlarge</code> | <code class="code">x1e.2xlarge</code> | <code class="code">x1e.4xlarge</code> | <code class="code">x1e.8xlarge</code> | <code class="code">x1e.16xlarge</code> | <code class="code">x1e.32xlarge</code> |
-                                       <code class="code">cr1.8xlarge</code></p>
-                                    
-                                 </td>
-                                 
-                              </tr>
-                              
-                              <tr>
-                                 
-                                 <td>
-                                    
-                                    <p>Storage optimized</p>
-                                    
-                                 </td>
-                                 
-                                 <td>
-                                    
-                                    <p><code class="code">d2.xlarge</code> | <code class="code">d2.2xlarge</code> | <code class="code">d2.4xlarge</code> | <code class="code">d2.8xlarge</code> | <code class="code">h1.2xlarge</code> |  <code class="code">h1.4xlarge</code> | <code class="code">h1.8xlarge</code> | <code class="code">h1.16xlarge</code> | <code class="code">i3.large</code> | <code class="code">i3.xlarge</code> | <code class="code">i3.2xlarge</code> | <code class="code">i3.4xlarge</code> | <code class="code">i3.8xlarge</code> | <code class="code">i3.16xlarge</code></p>
-                                    
-                                 </td>
-                                 
-                              </tr>
-                              
-                              <tr>
-                                 
-                                 <td>
-                                    
-                                    <p>Accelerated computing</p>
-                                    
-                                 </td>
-                                 
-                                 <td>
-                                    
-                                    <p><code class="code">f1.2xlarge</code> | <code class="code">f1.16xlarge</code> | <code class="code">g3.4xlarge</code> | <code class="code">g3.8xlarge</code> | <code class="code">g3.16xlarge</code> | <code class="code">p2.xlarge</code> | <code class="code">p2.8xlarge</code> | <code class="code">p2.16xlarge</code>  | <code class="code">p3.2xlarge</code> | <code class="code">p3.8xlarge</code> | <code class="code">p3.16xlarge</code></p>
-                                    
-                                 </td>
-                                 
-                              </tr>
-                              
-                           </tbody></table>
-                        </div>
-                     </div>
-                     
-                     <p>For more information about these instance types, see <a href="https://aws.amazon.com/ec2/instance-types/" target="_blank">Amazon EC2 Instance Types</a>.
-                     </p>
-                     
-                     
-                     <h2 id="EBSEncryption_considerations">Changing the Encryption State of Your
-                        Data
-                     </h2>
-                     
-                     <p>There is no direct way to encrypt an existing unencrypted volume, or to remove
-                        encryption from an encrypted volume. However, you can migrate data between encrypted
-                        and
-                        unencrypted volumes. You can also apply a new encryption status while copying a
-                        snapshot:
+                     <p>You can configure your AWS account to enforce the encryption of your EBS volumes and
+                        snapshots. Activating encryption by default has two effects:
                      </p>
                      
                      <div class="itemizedlist">
@@ -281,24 +136,1021 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p>While copying an unencrypted snapshot of an unencrypted volume, you can
-                                 encrypt the copy. Volumes restored from this encrypted copy are also
-                                 encrypted.
-                              </p>
+                              <p>AWS encrypts new EBS volumes on launch.</p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>While copying an encrypted snapshot of an encrypted volume, you can associate
-                                 the copy with a different CMK. Volumes restored from the encrypted copy are only
-                                 accessible using the newly applied CMK.
-                              </p>
+                              <p>AWS encrypts new copies of unencrypted snapshots.</p>
                               
                            </li>
                         </ul>
                      </div>
                      
-                     <p>You cannot remove encryption from an encrypted snapshot.</p>
+                     <p>Encryption by default is a Region-specific setting. If you enable it for a Region,
+                        you
+                        cannot disable it for individual volumes or snapshots in that Region.
+                     </p>
+                     
+                     <p>Newly created EBS resources are encrypted by your account&apos;s default customer master
+                        key (CMK) unless you specify a customer managed CMK in the EC2 settings or at launch.
+                        
+                        For more information, see <a href="EBSEncryption.html#EBSEncryption_key_mgmt">Encryption Key Management</a>.
+                     </p>
+                     
+                     <p>Encryption by default has no effect on existing EBS volumes or snapshots, but when
+                        you
+                        copy unencrypted snapshots, or restore unencrypted volumes, the resulting snapshots
+                        or
+                        volumes are encrypted. For examples of transitioning from unencrypted to encrypted
+                        EBS
+                        resources, see <a href="EBSEncryption.html#encrypt-unencrypted">Encrypting Unencrypted Resources</a>.
+                     </p>
+                     
+                     <p>When you enable encryption by default, you can launch an Amazon EC2 instance <em>only</em> if the instance type supports EBS encryption. For more
+                        information, see <a href="EBSEncryption.html#EBSEncryption_supported_instances">Supported Instance Types</a>.
+                     </p>
+                     
+                     <p class="title"><b>To enable encryption by default for a Region</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>From the navigation bar, select the Region.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Account Attributes</b>, <b>Settings</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Under <b>EBS Storage</b>, select <b>Always encrypt new 
+                                 EBS volumes</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Update</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <h2 id="EBSEncryption_key_mgmt">Encryption Key Management</h2>
+                     
+                     <p>Amazon EBS creates a unique AWS managed CMK, with the alias <code>alias/aws/ebs</code>,
+                        automatically in each Region where you store AWS resources. By default, Amazon EBS
+                        uses this key 
+                        for encryption. Alternatively, you can specify a customer managed CMK that you created
+                        as the default key for encryption.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>Creating your own CMK gives you more flexibility, including the ability to create,
+                           rotate, and disable keys to define access controls.
+                        </p>
+                     </div>
+                     
+                     <p>You cannot change the CMK that is associated with an existing snapshot or encrypted
+                        volume. However, you can associate a different CMK during a snapshot copy operation
+                        so
+                        that the resulting copied snapshot is encrypted by the new CMK.
+                     </p>
+                     
+                     <p>EBS encrypts your volume with a data key using the industry-standard AES-256
+                        algorithm. Your data key is stored on-disk with your encrypted data, but not before
+                        EBS
+                        encrypts it with your CMK; it never appears on disk in plaintext. The same data key
+                        is
+                        shared by snapshots of the volume and any subsequent volumes created from those
+                        snapshots. For more information, see <a href="./kms/latest/developerguide/concepts.html#data-keys">Data Keys</a> in the <em>AWS Key Management Service Developer Guide</em>.
+                     </p>
+                     
+                     
+                     
+                     <p class="title"><b>Prerequisite</b></p>
+                     
+                     <p>When you configure a CMK as the default for EBS encryption, you must 
+                        also give your users access to a KMS key policy that allows the CMK to be 
+                        used to launch instances, create volumes, copy snapshots, and copy images.
+                        These permissions include the following:
+                        <code class="code">GenerateDataKeyWithoutPlainText</code>, <code class="code">Reencrypt*</code>,
+                        <code class="code">CreateGrant</code>, <code class="code">DescribeKey</code>, and
+                        <code class="code">Decrypt</code>. For more information, see <a href="./kms/latest/developerguide/control-access.html">Authentication and Access Control
+                           for AWS KMS</a> and <a href="./kms/latest/developerguide/services-ebs.html">How
+                           Amazon Elastic Block Store (Amazon EBS) Uses AWS KMS</a>.
+                     </p>
+                     
+                     
+                     <p class="title"><b>To configure the default CMK for EBS encryption for a Region</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>From the navigation bar, select the Region.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Account Attributes</b>, <b>Settings</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Change the default key</b> and then
+                              choose an available key.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Update</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>For more information about key management and key access permissions, see <a href="./kms/latest/developerguide/services-ebs.html">How Amazon Elastic Block Store (Amazon EBS)
+                           Uses AWS KMS</a> and <a href="./kms/latest/developerguide/control-access.html">Authentication and Access Control for AWS KMS</a> in the <em>AWS Key Management Service Developer Guide</em>.
+                     </p>
+                     
+                     
+                     <h2 id="encryption-by-default-api">Setting Encryption and Key Defaults Using the API
+                        and CLI
+                     </h2>
+                     
+                     <p>You can manage encryption by default and the default customer master key (CMK) 
+                        using the following API actions and CLI commands.
+                     </p>
+                     
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w306aac29c29c23c25b5">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>API action </th>
+                                 
+                                 <th>CLI command</th>
+                                 
+                                 <th>Description</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><a href="./AWSEC2/latest/APIReference/API_DisableEbsEncryptionByDefault.html">DisableEbsEncryptionByDefault</a></p>
+                                    
+                                 </td>
+                                 
+                                 <td><a href="./cli/latest/reference/ec2/disable-ebs-encryption-by-default.html">disable-ebs-encryption-by-default</a></td>
+                                 
+                                 <td>
+                                    
+                                    <p>Disables encryption by default.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><a href="./AWSEC2/latest/APIReference/API_EnableEbsEncryptionByDefault.html">EnableEbsEncryptionByDefault</a></p>
+                                    
+                                 </td>
+                                 
+                                 <td><a href="./cli/latest/reference/ec2/enable-ebs-encryption-by-default.html">enable-ebs-encryption-by-default</a></td>
+                                 
+                                 <td>
+                                    
+                                    <p>Enables encryption by default.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><a href="./AWSEC2/latest/APIReference/API_GetEbsDefaultKmsKeyId.html">GetEbsDefaultKmsKeyId</a></p>
+                                    
+                                 </td>
+                                 
+                                 <td><a href="./cli/latest/reference/ec2/get-ebs-default-kms-key-id.html">get-ebs-default-kms-key-id</a></td>
+                                 
+                                 <td>
+                                    
+                                    <p>Describes the default CMK.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><a href="./AWSEC2/latest/APIReference/API_GetEbsEncryptionByDefault.html">GetEbsEncryptionByDefault</a></p>
+                                    
+                                 </td>
+                                 
+                                 <td><a href="./cli/latest/reference/ec2/get-ebs-encryption-by-default.html">get-ebs-encryption-by-default</a></td>
+                                 
+                                 <td>
+                                    
+                                    <p>Indicates whether encryption by default is enabled.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><a href="./AWSEC2/latest/APIReference/API_ModifyEbsDefaultKmsKeyId.html">ModifyEbsDefaultKmsKeyId</a></p>
+                                    
+                                 </td>
+                                 
+                                 <td><a href="./cli/latest/reference/ec2/modify-ebs-default-kms-key-id.html">modify-ebs-default-kms-key-id</a></td>
+                                 
+                                 <td>
+                                    
+                                    <p>Changes the default CMK used to encrypt EBS volumes.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><a href="./AWSEC2/latest/APIReference/API_ResetEbsDefaultKmsKeyId.html">ResetEbsDefaultKmsKeyId</a></p>
+                                    
+                                 </td>
+                                 
+                                 <td><a href="./cli/latest/reference/ec2/reset-ebs-default-kms-key-id.html">reset-ebs-default-kms-key-id</a></td>
+                                 
+                                 <td>
+                                    
+                                    <p>Resets the AWS managed default CMK as the default CMK used 
+                                       to encrypt EBS volumes.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <h2 id="EBSEncryption_supported_instances">Supported Instance Types</h2>
+                     
+                     <p>Amazon EBS encryption is available on the instance types listed below. You can attach
+                        both
+                        encrypted and unencrypted volumes to these instance types simultaneously.
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>General purpose: <span>A1, </span>M3, M4, M5, M5a, M5ad, M5d, T2, T3, and
+                                 T3a
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Compute optimized: C3, C4, C5, C5d, and C5n</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Memory optimized: <code class="code">cr1.8xlarge</code>, R3, R4, R5, R5a, R5ad, R5d, X1, X1e, and z1d
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Storage optimized: D2, <code class="code">h1.2xlarge</code>, <code class="code">h1.4xlarge</code>, I2,
+                                 and I3
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Accelerated computing: F1, G2, G3, P2, and P3</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Bare metal: <code class="code">i3.metal</code>, <code class="code">m5.metal</code>, <code class="code">m5d.metal</code>, <code class="code">r5.metal</code>, <code class="code">r5d.metal</code>, <code class="code">u-6tb1.metal</code>, <code class="code">u-9tb1.metal</code>, <code class="code">u-12tb1.metal</code>, and <code class="code">z1d.metal</code></p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <h2 id="encryption-parameters">Using Encryption Parameters with EBS
+                        Volumes
+                     </h2>
+                     
+                     <p>You apply encryption to EBS volumes by setting the <code class="code">Encrypted</code>
+                        parameter to <code class="code">true</code>. (The <code class="code">Encrypted</code> parameter is optional if <a href="./AWSEC2/latest/UserGuide/EBSEncryption.html#encryption-by-default">encryption by
+                           default</a> is enabled).
+                     </p>
+                     
+                     <p>Optionally, you can use <code class="code">KmsKeyId</code> to specify a custom key to use to
+                        encrypt the volume. (The <code class="code">Encrypted</code> parameter must also be set to
+                        <code class="code">true</code>, even if encryption by default is enabled.) If <code class="code">KmsKeyId</code>
+                        is not specified, the key that is used for encryption depends on the encryption 
+                        state of the source snapshot and its ownership. The following table describes the
+                        encryption 
+                        outcome for each possible combination of settings.
+                     </p>
+                     
+                     
+                     <div class="table">
+                        <p class="title"><b>Encryption Outcomes</b></p>
+                        <div class="table-contents">
+                           <table id="w306aac29c29c23c29b7">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Is <code class="code">Encrypted</code> parameter set?
+                                 </th>
+                                 
+                                 <th>Is encryption by default set?</th>
+                                 
+                                 <th>Source of volume</th>
+                                 
+                                 <th>Default (no CMK specified)</th>
+                                 
+                                 <th>Custom (CMK specified)</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>New (empty) volume</td>
+                                 
+                                 <td>Unencrypted</td>
+                                 
+                                 <td rowspan="5">N/A</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Unencrypted snapshot that you own</td>
+                                 
+                                 <td>Unencrypted</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Encrypted snapshot that you own</td>
+                                 
+                                 <td>Encrypted by same key</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Unencrypted snapshot that is shared with you</td>
+                                 
+                                 <td>Unencrypted</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Encrypted snapshot that is shared with you</td>
+                                 
+                                 <td>Encrypted by default CMK*</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>New volume</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                                 <td rowspan="6">Encrypted by a specified CMK**</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Unencrypted snapshot that you own</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Encrypted snapshot that you own</td>
+                                 
+                                 <td>Encrypted by same key</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Unencrypted snapshot that is shared with you</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Encrypted snapshot that is shared with you</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>New (empty) volume</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Unencrypted snapshot that you own</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                                 <td rowspan="4">N/A</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Encrypted snapshot that you own</td>
+                                 
+                                 <td>Encrypted by same key</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Unencrypted snapshot that is shared with you</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Encrypted snapshot that is shared with you</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>New volume</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                                 <td rowspan="5">Encrypted by a specified CMK</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Unencrypted snapshot that you own</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Encrypted snapshot that you own</td>
+                                 
+                                 <td>Encrypted by same key</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Unencrypted snapshot that is shared with you</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Encrypted snapshot that is shared with you</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     <p>* This is the default CMK used for EBS encryption for the AWS account and Region.
+                        
+                        By default this is a unique AWS managed CMK for EBS, or you can specify a customer
+                        
+                        managed CMK. For more information, see <a href="EBSEncryption.html#EBSEncryption_key_mgmt">Encryption Key Management</a>.
+                     </p>
+                     
+                     <p>** This is a customer managed CMK specified for the volume at launch time. This 
+                        CMK is used instead of the default CMK for the AWS account and Region.
+                     </p>
+                     
+                     
+                     <h3 id="new-encrypted-volumes">Creating New Empty Volumes with
+                        Encryption
+                     </h3>
+                     
+                     <p>When you create a new, empty EBS volume, you can encrypt it to your default CMK by
+                        setting the <code class="code">Encrypted</code> flag. To encrypt the volume to a customer managed CMK, 
+                        you must provide a value for <code class="code">KmsKeyId</code> as well. The volume is encrypted from
+                        the time it is first available, so your data is always secured. For detailed
+                        procedures, see <a href="ebs-creating-volume.html">Creating an Amazon EBS Volume</a>.
+                     </p>
+                     
+                     <p>By default, the same CMK that you selected when creating the volume encrypts the
+                        snapshots that you make from it and the volumes that you restore from those
+                        snapshots. You cannot remove encryption from an encrypted volume or snapshot, which
+                        means that a volume restored from an encrypted snapshot, or a copy of an encrypted
+                        snapshot, is <em>always</em> encrypted. 
+                     </p>
+                     
+                     
+                     
+                     <h3 id="encrypt-unencrypted">Encrypting Unencrypted Resources</h3>
+                     
+                     <p>Although there is no direct way to encrypt an existing unencrypted volume or
+                        snapshot, you can encrypt existing unencrypted data by using either the
+                        <code class="code">CreateVolume</code> or <code class="code">CopySnapshot</code> action. If you have
+                        enabled encryption by default, AWS enforces encryption of the resulting new volume
+                        or snapshot using your default CMK. Even if you have not enabled encryption by
+                        default, you can supply encryption parameters with <code class="code">CreateVolume</code> or
+                        <code class="code">CopySnapshot</code> to encrypt resources individually. In either case, you
+                        can override encryption defaults to apply a customer managed CMK. All of the actions
+                        shown can
+                        be performed with the EC2 console, AWS CLI, or AWS API. For more information,
+                        see <a href="ebs-creating-volume.html">Creating an Amazon EBS Volume</a> and
+                        <a href="ebs-copy-snapshot.html">Copying an Amazon EBS Snapshot</a>. 
+                     </p>
+                     
+                     <p>The following examples illustrate how these actions and the encryption parameters
+                        can be used to manage the encryption of your volumes and snapshots. For a full list
+                        of encryption cases, see the <a href="EBSEncryption.html#encryption-parameters">encryption
+                           outcomes table</a>.
+                     </p>
+                     
+                     
+                     <h4 id="volume-account-off"><b>Restore an
+                           Unencrypted Volume (Encryption by Default <em>Not
+                              Enabled</em>)</b></h4>
+                     
+                     <p>Without encryption by default enabled, a volume restored from an unencrypted
+                        snapshot is unencrypted by default. However, you can encrypt the resulting
+                        volume by setting the <code class="code">Encrypted</code> parameter and, optionally, the
+                        <code class="code">KmsKeyId</code> parameter. The following diagram illustrates the
+                        process.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/volume-encrypt-account-off.png">
+                        
+                        
+                     </div>
+                     
+                     <p>If you leave out the <code class="code">KmsKeyId</code> parameter, the resulting volume is
+                        encrypted  your default CMK. You must supply a key ID to encrypt the volume to
+                        a different CMK.
+                     </p>
+                     
+                     <p>For more information, see <a href="./AWSEC2/latest/UserGuide/ebs-restoring-volume.html">Restoring an Amazon EBS Volume from a Snapshot</a>.
+                     </p>
+                     
+                     
+                     
+                     <h4 id="volume-account-on">Restore an Unencrypted Volume (Encryption by
+                        Default <em>Enabled</em>) 
+                     </h4>
+                     
+                     <p>When you have enabled encryption by default, encryption is mandatory for
+                        volumes restored from unencrypted snapshots, and no encryption parameters are
+                        required for your default CMK to be used. The following diagram shows this
+                        simple default case:
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/volume-encrypt-account-on.png">
+                        
+                        
+                     </div>
+                     
+                     <p>If you want to encrypt the restored volume to a customer managed CMK, you must supply
+                        both the <code class="code">Encrypted</code> and <code class="code">KmsKeyId</code> parameters as shown in
+                        <a href="EBSEncryption.html#volume-account-off">Restore an
+                           Unencrypted Volume (Encryption by Default Not
+                           Enabled)Copy an Unencrypted Snapshot (Encryption by
+                           Default Not Enabled) </a>.
+                     </p>
+                     
+                     
+                     
+                     <h4 id="snapshot-account-off">Copy an Unencrypted Snapshot (Encryption by
+                        Default <em>Not Enabled</em>) 
+                     </h4>
+                     
+                     <p>Without encryption by default enabled, a copy of an unencrypted snapshot is
+                        unencrypted by default. However, you can encrypt the resulting snapshot by
+                        setting the <code class="code">Encrypted</code> parameter and, optionally, the
+                        <code class="code">KmsKeyId</code> parameter. The following diagram illustrates the
+                        process.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/snapshot-encrypt-account-off.png" alt="
+                        Create an encrypted snapshot from an unencrypted snapshot.
+                    ">
+                        
+                        
+                        
+                     </div>
+                     
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>If you copy a snapshot and encrypt it to a new CMK, a complete
+                           (non-incremental) copy is always created, resulting in additional delay and
+                           storage costs.
+                        </p>
+                     </div>
+                     
+                     <p>If you leave out the <code class="code">KmsKeyId</code> parameter, the resulting snapshot
+                        is encrypted by your default CMK. You must supply a key ID to encrypt the volume
+                        to a different CMK.
+                     </p>
+                     
+                     <p class="title"><b>To encrypt a volume&apos;s data by means of snapshot copying</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Copy the snapshot while applying encryption parameters. If you leave
+                              out the <code class="code">KmsKeyId</code> parameter, the resulting snapshot is
+                              encrypted by your default CMK. You can optionally include a key ID to
+                              encrypt the snapshot to a different CMK.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Restore the encrypted snapshot to a new volume, which is also
+                              encrypted. 
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>For more information, see <a href="./AWSEC2/latest/UserGuide/ebs-copy-snapshot.html">Copying an Amazon EBS Snapshot</a>.
+                     </p>
+                     
+                     
+                     
+                     <h4 id="snapshot-account-on">Copy an Unencrypted Snapshot (Encryption
+                        by Default <em>Enabled</em>)
+                     </h4>
+                     
+                     
+                     <p>When you have enabled encryption by default, encryption is
+                        mandatory for copies of unencrypted snapshots, and no encryption parameters are
+                        required if your default CMK is used. The following diagram shows this simple
+                        default case:
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/snapshot-encrypt-account-on.png" alt="
+                        Create an encrypted snapshot from an unencrypted snapshot.
+                    ">
+                        
+                        
+                        
+                     </div>
+                     
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>If you copy a snapshot and encrypt it to a new CMK, a complete
+                           (non-incremental) copy is always created, resulting in additional delay and
+                           storage costs.
+                        </p>
+                     </div>
+                     
+                     
+                     <p>To encrypt the snapshot copy to a customer managed CMK, you must supply both the
+                        <code class="code">Encrypted</code> and <code class="code">KmsKeyId</code> parameters as shown in <a href="EBSEncryption.html#snapshot-account-off"></a>.
+                     </p>
+                     
+                     
+                     
+                     <h3 id="reencrypt-resources">Re-Encrypting Resources to a New CMK</h3>
+                     
+                     
+                     <p>The following examples describe how to re-encrypt encrypted EBS resources 
+                        to a different CMK.
+                     </p>
+                     
+                     
+                     <h4 id="reencrypt-volume">Re-Encrypt an Encrypted Volume</h4>
+                     
+                     <p>When the <code class="code">CreateVolume</code> action operates on an encrypted snapshot,
+                        you have the option of re-encrypting it with a different CMK. The following
+                        diagram illustrates the process. You own two CMKs, CMK A and CMK B. The source
+                        snapshot is encrypted by CMK A. During volume creation, with the key ID of CMK B
+                        supplied as a parameter, the source data is automatically decrypted, then
+                        re-encrypted by CMK B.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/volume-reencrypt.png" alt="
+                        Copy an encrypted snapshot and encrypt the copy to a new
+                            key.
+                    ">
+                        
+                        
+                        
+                     </div>
+                     
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>If you copy a snapshot and encrypt it to a new CMK, a complete
+                           (non-incremental) copy is always created, resulting in additional delay and
+                           storage costs.
+                        </p>
+                     </div>
+                     
+                     <p>For more information, see <a href="./AWSEC2/latest/UserGuide/ebs-restoring-volume.html">Restoring an Amazon EBS Volume from a Snapshot</a>.
+                     </p>
+                     
+                     
+                     
+                     <h4 id="reencrypt-snap">Re-Encrypt an Encrypted Snapshot</h4>
+                     
+                     <p>The ability to encrypt a snapshot during copying allows you to apply a new CMK
+                        to an already-encrypted snapshot that you own. Volumes restored from the
+                        resulting copy are only accessible using the new CMK. The following diagram
+                        illustrates the process. You own two CMKs, CMK A and CMK B. The source snapshot
+                        is encrypted by CMK A. During copy, with the key ID of CMK B supplied as a
+                        parameter, the source data is automatically re-encrypted by CMK B.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/snap-reencrypt.png" alt="
+                        Copy an encrypted snapshot and encrypt the copy to a new
+                            key.
+                    ">
+                        
+                        
+                        
+                     </div>
+                     
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>If you copy a snapshot and encrypt it to a new CMK, a complete
+                           (non-incremental) copy is always created, resulting in additional delay and
+                           storage costs.
+                        </p>
+                     </div>
+                     
+                     <p>In a related scenario, you can choose to apply new encryption parameters to a
+                        copy of a snapshot that has been shared with you. By default, the copy is
+                        encrypted with a CMK shared by the snapshot&apos;s owner. However, we recommend that
+                        you create a copy of the shared snapshot using a different CMK that you control.
+                        This protects your access to the volume if the original CMK is compromised, or
+                        if the owner revokes the CMK for any reason.
+                     </p>
+                     
+                     <p>The following procedure demonstrates how to create a copy of a shared snapshot
+                        to a customer managed CMK that you own. It assumes that you have previously
+                        created a customer managed CMK, and that you have a snapshot that has been
+                        encrypted by your default CMK. For more information, see <a href="./kms/latest/developerguide/">AWS Key Management Service Developer Guide</a>.
+                     </p>
+                     
+                     <p class="title"><b>To copy a snapshot that you own to a new customer managed CMK using the
+                           console </b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>On the <b>Snapshots</b> page, select your snapshot, then
+                              choose <b>Actions</b>, <b>Copy</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the <b>Copy Snapshot</b> window, supply the complete
+                              ARN for your customer managed CMK (in the form arn:aws:kms:<em class="replaceable"><code>us-east-1</code></em>:<em class="replaceable"><code>012345678910</code></em>:key/<em class="replaceable"><code>abcd1234-a123-456a-a12b-a123b4cd56ef</code></em>) in the
+                              <b>Master Key</b> field, or choose it from the menu.
+                              Choose <b>Copy</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>The resulting copy of the snapshot&#x2014;and all volumes restored from it&#x2014;are
+                        encrypted by your customer managed CMK.
+                     </p>
+                     
+                     <p>The following procedure demonstrates how to make a copy of a shared encrypted
+                        snapshot to a new CMK that you own. For this to work, you also need access
+                        permissions to both the shared encrypted snapshot and to the CMK to which it was
+                        originally encrypted. 
+                     </p>
+                     
+                     <p class="title"><b>To copy a shared snapshot to a CMK that you own using the console </b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>On the <b>Snapshots</b> page, select the shared
+                              encrypted snapshot, then choose <b>Actions</b>,
+                              <b>Copy</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the <b>Copy Snapshot</b> window, supply the complete
+                              ARN for a CMK that you own (in the form arn:aws:kms:<em class="replaceable"><code>us-east-1</code></em>:<em class="replaceable"><code>012345678910</code></em>:key/<em class="replaceable"><code>abcd1234-a123-456a-a12b-a123b4cd56ef</code></em>) in the
+                              <b>Master Key</b> field, or choose it from the menu.
+                              Choose <b>Copy</b>. 
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>The resulting copy of the snapshot&#x2014;and all volumes restored from it&#x2014;are
+                        encrypted by the CMK that you supplied. Changes to the original shared snapshot,
+                        its encryption status, or the shared CMK have no effect on your copy.
+                     </p>
+                     
+                     <p>For more information, see <a href="./AWSEC2/latest/UserGuide/ebs-copy-snapshot.html">Copying an Amazon EBS Snapshot</a>.
+                     </p>
+                     
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>You can also apply new encryption states when launching an instance from an
+                           EBS-backed AMI. This is because EBS-backed AMIs include snapshots of EBS volumes
+                           that can be manipulated as described. For more information about encryption
+                           options while launching an instance from an EBS-backed AMI, see 
+                           	<a href="./AWSEC2/latest/UserGuide/AMIEncryption.html">Using Encryption with EBS-Backed AMIs</a>
+                           	.
+                        </p>
+                     </div>
+                     
                      
                      
                      <h3 id="migrate-data-encrypted-unencrypted">Migrate Data between Encrypted
@@ -322,14 +1174,14 @@
                         </li>
                         <li>
                            
-                           <p>Attach the destination volume to the instance that hosts the data to
-                              migrate. For more information, see <a href="ebs-attaching-volume.html">Attaching an Amazon EBS Volume to an Instance</a>.
+                           <p>Attach the destination volume to the instance that hosts the data that you
+                              want to migrate. For more information, see <a href="ebs-attaching-volume.html">Attaching an Amazon EBS Volume to an Instance</a>.
                            </p>
                            
                         </li>
                         <li>
                            
-                           <p>Make the destination volume available by following the procedures in <a href="ebs-using-volumes.html">Making an Amazon EBS Volume Available for Use on <span>Linux</span></a>. For
+                           <p>Make the destination volume available by following the procedures in <a href="ebs-using-volumes.html">Making an Amazon EBS Volume Available for Use on Linux</a>. For
                               Linux instances, you can create a mount point at
                               <code>/mnt/destination</code> and mount the destination volume
                               there.
@@ -364,149 +1216,9 @@
                                  volume in order to avoid potential problems with hidden folders.
                               </p>
                            </div>
-                        </li>
-                     </ol>
-                     
-                     
-                     
-                     
-                     <h3 id="apply-encryption-copy-snapshot">Apply Encryption While Copying a
-                        Snapshot
-                     </h3>
-                     
-                     <p>Because you can apply encryption to a snapshot while copying it, another path to
-                        encrypting your data is the following procedure.
-                     </p>
-                     
-                     <p class="title"><b>To encrypt a volume&apos;s data by means of snapshot copying</b></p>
-                     <ol>
-                        <li>
-                           
-                           <p>Create a snapshot of your unencrypted EBS volume. This snapshot is also
-                              unencrypted.
-                           </p>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>Copy the snapshot while applying encryption parameters. The resulting
-                              target snapshot is encrypted.
-                           </p>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>Restore the encrypted snapshot to a new volume, which is also encrypted.
-                              
-                           </p>
                            
                         </li>
                      </ol>
-                     
-                     <p>For more information, see <a href="./AWSEC2/latest/UserGuide/ebs-copy-snapshot.html" target="_blank">Copying an Amazon EBS Snapshot</a>.
-                     </p>
-                     
-                     
-                     
-                     <h3 id="re-encrypt_snapshot">Encrypt a Snapshot Under a New CMK</h3>
-                     
-                     <p>The ability to encrypt a snapshot during copying also allows you to apply a new
-                        CMK to an already-encrypted snapshot that you own. Volumes restored from the
-                        resulting copy are only accessible under the new CMK. 
-                     </p>
-                     
-                     <p>In a related scenario, you may choose to apply new encryption parameters to a copy
-                        of a snapshot that has been shared with you. Before you can restore a volume from
-                        a
-                        shared encrypted snapshot, you must create your own copy of it. By default, the copy
-                        is encrypted with a CMK shared by the snapshot&apos;s owner. However, we recommend that
-                        you create a copy of the shared snapshot under a different CMK that you control.
-                        This protects your access to the volume if the original CMK is compromised, or if
-                        the owner revokes the CMK for any reason. 
-                     </p>
-                     
-                     <p>The following procedure demonstrates how to create a copy of a shared snapshot
-                        under a customer-managed CMK that you own.
-                     </p>
-                     
-                     <p class="title"><b>To copy a snapshot that you own under a new custom CMK using the console </b></p>
-                     <ol>
-                        <li>
-                           
-                           <p>Create a customer-managed CMK. For more information, see <a href="./kms/latest/developerguide/" target="_blank">AWS Key Management Service Developer Guide</a>.
-                           </p>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>Create an EBS volume encrypted under (for this example) your AWS-managed
-                              CMK. 
-                           </p>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>Create a snapshot of your encrypted EBS volume. This snapshot is also
-                              encrypted under your AWS-managed CMK.
-                           </p>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>On the <b>Snapshots</b> page, choose
-                              <b>Actions</b>, <b>Copy</b>.
-                           </p>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>In the <b>Copy Snapshot</b> window, supply the complete ARN
-                              for your customer-managed CMK (in the form arn:aws:kms:<em class="replaceable"><code>us-east-1</code></em>:<em class="replaceable"><code>012345678910</code></em>:key/<em class="replaceable"><code>abcd1234-a123-456a-a12b-a123b4cd56ef</code></em>) in the
-                              <b>Master Key</b> field, or choose it from the menu.
-                              Choose <b>Copy</b>. 
-                           </p>
-                           
-                        </li>
-                     </ol>
-                     
-                     <p>The resulting copy of the snapshot&#x2014;and all volumes restored from it&#x2014;are encrypted
-                        under your customer-managed CMK. 
-                     </p>
-                     
-                     <p>The following procedure demonstrates how to make a copy of a shared encrypted
-                        snapshot under a new CMK that you own. For this to work, you also need access
-                        permissions to both the shared encrypted snapshot and to the CMK under which it was
-                        originally encrypted. 
-                     </p>
-                     
-                     <p class="title"><b>To copy a shared snapshot under a CMK that you own using the console </b></p>
-                     <ol>
-                        <li>
-                           
-                           <p>Select the shared encrypted snapshot on the <b>Snapshots</b>
-                              page and choose <b>Actions</b>,
-                              <b>Copy</b>.
-                           </p>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>In the <b>Copy Snapshot</b> window, supply the complete ARN
-                              for a CMK that you own (in the form arn:aws:kms:<em class="replaceable"><code>us-east-1</code></em>:<em class="replaceable"><code>012345678910</code></em>:key/<em class="replaceable"><code>abcd1234-a123-456a-a12b-a123b4cd56ef</code></em>) in the
-                              <b>Master Key</b> field, or choose it from the menu.
-                              Choose <b>Copy</b>. 
-                           </p>
-                           
-                        </li>
-                     </ol>
-                     
-                     <p>The resulting copy of the snapshot&#x2014;and all volumes restored from it&#x2014;are encrypted
-                        under the CMK that you supplied. Changes to the original shared snapshot, its
-                        encryption status, or the shared CMK have no effect on your copy.
-                     </p>
-                     
-                     <p>For more information, see <a href="./AWSEC2/latest/UserGuide/ebs-copy-snapshot.html" target="_blank">Copying an Amazon EBS Snapshot</a>.
-                     </p>
                      
                      
                      
@@ -514,20 +1226,22 @@
                      
                      <p>Amazon EBS supports Amazon CloudWatch Events for certain encryption-related scenarios.
                         For more
-                        information, see <a href="./AWSEC2/latest/UserGuide/ebs-cloud-watch-events.html#attach-fail-key" target="_blank">Amazon CloudWatch Events for Amazon EBS</a>.
-                        
-                        
+                        information, see <a href="./AWSEC2/latest/UserGuide/ebs-cloud-watch-events.html#attach-fail-key">Amazon CloudWatch Events for Amazon EBS</a>.
                      </p>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -537,7 +1251,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="EBSOptimized.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="nvme-ebs-volumes.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -546,17 +1262,25 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
+                        <li class="pagetoc" name="Encryption by Default"><a class="pagetoc" href="#encryption-by-default">Encryption by Default</a></li>
                         <li class="pagetoc" name="Encryption Key Management"><a class="pagetoc" href="#EBSEncryption_key_mgmt">Encryption Key Management</a></li>
+                        <li class="pagetoc" name="Setting Encryption and Key Defaults Using the API
+                and CLI"><a class="pagetoc" href="#encryption-by-default-api">Setting Encryption and Key Defaults Using the API
+                              and CLI</a></li>
                         <li class="pagetoc" name="Supported Instance Types"><a class="pagetoc" href="#EBSEncryption_supported_instances">Supported Instance Types</a></li>
-                        <li class="pagetoc" name="Changing the Encryption State of Your
-                Data"><a class="pagetoc" href="#EBSEncryption_considerations">Changing the Encryption State of Your
-                              Data</a></li>
+                        <li class="pagetoc" name="Using Encryption Parameters with EBS
+                Volumes"><a class="pagetoc" href="#encryption-parameters">Using Encryption Parameters with EBS
+                              Volumes</a></li>
                         <li class="pagetoc" name="Amazon EBS Encryption and CloudWatch Events"><a class="pagetoc" href="#ebs-cw-crypto">Amazon EBS Encryption and CloudWatch Events</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

@@ -5,13 +5,16 @@
       <link rel="home" href="#top">
       <link rel="up" href="troubleshooting-response-errors.html" title="Troubleshooting Error Responses from Your Origin">
       <link rel="prev" href="http-502-bad-gateway.html" title="HTTP 502 Status Code (Bad Gateway)">
-      <link rel="next" href="http-504-gateway-timeout.html" title="HTTP 504 Status Code (Gateway Timeout)">
+      <link rel="next" href="http-503-lambda-execution-error.html" title="HTTP 500 Status Code 
+			(Lambda Execution Error)">
       <meta name="description" content="An HTTP 503 status code (Service Unavailable) typically indicates a performance issue on the origin server. In rare cases, it indicates that CloudFront temporarily can&apos;t satisfy a request because of limited resources at an edge location.">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/http-503-service-unavailable.html">
@@ -21,7 +24,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +36,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="Troubleshooting.html">Troubleshooting</a> &#xBB; <a href="troubleshooting-response-errors.html">Troubleshooting Error Responses from Your Origin</a> &#xBB; <span class="breadcrumb">HTTP 503 Status Code (Service Unavailable)</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="Troubleshooting.html">Troubleshooting</a> &#xBB; <a href="troubleshooting-response-errors.html">Troubleshooting Error Responses from Your Origin</a> &#xBB; <span class="breadcrumb">HTTP 503 Status Code (Service Unavailable)</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="http-503-service-unavailable">HTTP 503 Status Code (Service Unavailable)</h1>
                      <p>An HTTP 503 status code (Service Unavailable) typically indicates a performance issue
@@ -45,17 +51,32 @@
                         satisfy a request
                         				because of limited resources at an edge location.
                      </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>If you&apos;re a customer trying to access a website or application, and you&apos;ve gotten
+                           this error, there&apos;s probably just
+                           				unusually high traffic to the site. Please wait a little while, and then try accessing
+                           the site (or running the
+                           				application) again. If you still get an error, please contact the website or application
+                           distributor directly for support. 
+                        </p>
+                        <p><b>Why is this error coming from CloudFront?</b> CloudFront helps websites
+                           					speed up delivery of content, like images or web pages, to customers by storing
+                           copies in servers located around 
+                           					the world. But when there&apos;s a lot of internet traffic to a website and the site
+                           can&apos;t keep up, an error is returned when 
+                           					anyone tries to access the site. When CloudFront can&apos;t access content that you&apos;ve
+                           requested from a website, it passes on the error from the 
+                           					site or application that you&apos;re trying to use. 
+                        </p>
+                     </div>
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Topics</strong></p>
                         <ul>
                            <li><a href="#http-503-service-unavailable-not-enough-origin-capacity">Origin Server Does Not Have Enough Capacity to
                                  					Support the Request Rate</a></li>
-                           <li><a href="#http-503-service-unavailable-origin-domain-dns-issues">CloudFront Was Not Able to Resolve Your Origin Domain
-                                 					Due to DNS Issues</a></li>
                            <li><a href="#http-503-service-unavailable-limited-resources-at-edge-location">
                                  				CloudFront Caused the Error Due to Limited Resources at the Edge Location</a></li>
-                           <li><a href="#http-503-service-unavailable-lambda-function-invalid">
-                                 				Lambda Function Associated with Your Distribution Caused a Runtime Error</a></li>
                         </ul>
                      </div>
                      <h2 id="http-503-service-unavailable-not-enough-origin-capacity">Origin Server Does Not Have Enough Capacity to
@@ -79,7 +100,7 @@
                               						
                               <p>If you use Amazon S3 as your origin server, optimize the performance of Amazon S3
                                  by
-                                 							following the best practices for key naming. For more information, see <a href="./AmazonS3/latest/dev/request-rate-perf-considerations.html" target="_blank">Request Rate and Performance
+                                 							following the best practices for key naming. For more information, see <a href="./AmazonS3/latest/dev/request-rate-perf-considerations.html">Request Rate and Performance
                                     								Considerations</a> in the <em>Amazon Simple Storage Service Developer Guide</em>.
                               </p>
                               					
@@ -98,7 +119,7 @@
                                  use Amazon EC2
                                  							as the backend, make sure that the instance type has the appropriate resources
                                  to
-                                 							fulfill the incoming requests. For more information, see <a href="./AWSEC2/latest/DeveloperGuide/instance-types.html" target="_blank">Instance Types</a> in the
+                                 							fulfill the incoming requests. For more information, see <a href="./AWSEC2/latest/DeveloperGuide/instance-types.html">Instance Types</a> in the
                                  								<em>Amazon EC2 User Guide for Linux Instances</em>.
                               </p>
                               					
@@ -106,42 +127,7 @@
                         </ul>
                      </div>
                      			
-                     <h2 id="http-503-service-unavailable-origin-domain-dns-issues">CloudFront Was Not Able to Resolve Your Origin Domain
-                        					Due to DNS Issues
-                     </h2>
-                     				
-                     				
-                     <p>When CloudFront receives a request for an object that is expired or is not stored
-                        in its
-                        					cache, it makes a request to the origin to get the updated object. To make a
-                        successful
-                        					request to the origin, CloudFront performs a DNS resolution on the origin domain
-                        name. However,
-                        					when the DNS service that hosts your domain is experiencing issues, CloudFront
-                        cannot resolve
-                        					the domain name to get the IP address, resulting in a 503 error. To fix this
-                        issue,
-                        					contact your DNS provider, or, if you are using Amazon Route&#xA0;53, see <a href="https://aws.amazon.com/premiumsupport/knowledge-center/route-53-dns-website-unreachable/" target="_blank">Amazon Route&#xA0;53 DNS</a>.
-                     </p>
-                     				
-                     <p>To further troubleshoot this issue, ensure that the <a href="./Route53/latest/DeveloperGuide/route-53-concepts.html#route-53-concepts-authoritative-name-server" target="_blank">authoritative name servers</a> of your origin&apos;s root domain or zone apex (such as
-                        						<code class="code">example.com</code>) are functioning correctly. Your authoritative name servers
-                        					then receive the request and return the IP address that is associated with the
-                        domain, and
-                        					are the same as the DNS servers that you used to set up your CloudFront distribution.
-                        Use the
-                        					following commands to find the name servers for your apex origin:
-                     </p> 
-                     					<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">dig <em class="replaceable"><code>OriginAPEXDomainName</code></em> NS +short 
-nslookup &#x2013;query=NS <em class="replaceable"><code>OriginAPEXDomainName</code></em></code></pre>
-                     					<p>When you have the names of your name servers, use the following commands to query
-                        						the domain name of your origin against them to make sure that each responds
-                        with an
-                        						answer:
-                     </p>
-                     					<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">dig OriginDomainName @NameServerFromAbove
-nslookup OriginDomainName NameServerFromAbove</code></pre>
-                     			<h2 id="http-503-service-unavailable-limited-resources-at-edge-location">
+                     <h2 id="http-503-service-unavailable-limited-resources-at-edge-location">
                         				CloudFront Caused the Error Due to Limited Resources at the Edge Location
                      </h2>
                      				
@@ -158,31 +144,19 @@ nslookup OriginDomainName NameServerFromAbove</code></pre>
                         					<a href="https://console.aws.amazon.com/support/home" target="_blank">AWS Support</a>.
                      </p>
                      			
-                     <h2 id="http-503-service-unavailable-lambda-function-invalid">
-                        				Lambda Function Associated with Your Distribution Caused a Runtime Error
-                     </h2>
-                     				
-                     				
-                     <p>CloudFront returns this error when a Lambda@Edge function that is configured on a
-                        cache behavior for your distribution
-                        				returns an error during runtime and exits before the CloudFront request is fulfilled.
-                     </p>
-                     				
-                     <p>To troubleshoot this issue, examine the execution logs for your Lambda function. Make
-                        sure you look at the log files in the region
-                        					where the function executed. For more information, see 
-                        					<a href="lambda-cloudwatch-metrics-logging.html">CloudWatch Metrics and CloudWatch Logs for Lambda Functions</a>.
-                     </p>
-                     			
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -191,8 +165,10 @@ nslookup OriginDomainName NameServerFromAbove</code></pre>
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="http-502-bad-gateway.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="http-504-gateway-timeout.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="http-502-bad-gateway.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="http-503-lambda-execution-error.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -204,20 +180,18 @@ nslookup OriginDomainName NameServerFromAbove</code></pre>
                         <li class="pagetoc" name="Origin Server Does Not Have Enough Capacity to
 					Support the Request Rate"><a class="pagetoc" href="#http-503-service-unavailable-not-enough-origin-capacity">Origin Server Does Not Have Enough Capacity to
                               					Support the Request Rate</a></li>
-                        <li class="pagetoc" name="CloudFront Was Not Able to Resolve Your Origin Domain
-					Due to DNS Issues"><a class="pagetoc" href="#http-503-service-unavailable-origin-domain-dns-issues">CloudFront Was Not Able to Resolve Your Origin Domain
-                              					Due to DNS Issues</a></li>
                         <li class="pagetoc" name="
 				CloudFront Caused the Error Due to Limited Resources at the Edge Location"><a class="pagetoc" href="#http-503-service-unavailable-limited-resources-at-edge-location">
                               				CloudFront Caused the Error Due to Limited Resources at the Edge Location</a></li>
-                        <li class="pagetoc" name="
-				Lambda Function Associated with Your Distribution Caused a Runtime Error"><a class="pagetoc" href="#http-503-service-unavailable-lambda-function-invalid">
-                              				Lambda Function Associated with Your Distribution Caused a Runtime Error</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

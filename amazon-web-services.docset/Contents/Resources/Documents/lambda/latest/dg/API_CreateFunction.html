@@ -6,12 +6,14 @@
       <link rel="up" href="API_Operations.html" title="Actions">
       <link rel="prev" href="API_CreateEventSourceMapping.html" title="CreateEventSourceMapping">
       <link rel="next" href="API_DeleteAlias.html" title="DeleteAlias">
-      <meta name="description" content="Creates a new Lambda function. The function metadata is created from the request parameters, and the code for the function is provided by a .zip file in the request body. If the function name already exists, the operation will fail. Note that the function name is case-sensitive.">
-      <meta name="keywords" content="API,requests,CreateFunction">
+      <meta name="description" content="Creates a Lambda function. To create a function, you need a deployment package and an execution role . The deployment package contains your function code. The execution role grants the function permission to use AWS services, such as Amazon CloudWatch Logs for log streaming and AWS X-Ray for request tracing.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing,API,requests,CreateFunction">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/API_CreateFunction.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,26 +35,44 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="API_Reference.html">API Reference</a> &#xBB; <a href="API_Operations.html">Actions</a> &#xBB; <span class="breadcrumb">CreateFunction</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="API_Reference.html">API Reference</a> &#xBB; <a href="API_Operations.html">Actions</a> &#xBB; <span class="breadcrumb">CreateFunction</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="API_CreateFunction">CreateFunction</h1>
-                     <p>Creates a new Lambda function. The function metadata is created from the request parameters,
-                        and the code for the function is provided by a .zip file in the request body. If the
-                        function name already exists, the operation will fail. Note that the function name
-                        is case-sensitive.
+                     <p>Creates a Lambda function. To create a function, you need a <a href="./lambda/latest/dg/deployment-package-v2.html">deployment package</a> and an <a href="./lambda/latest/dg/intro-permission-model.html#lambda-intro-execution-role">execution role</a>. The
+                        deployment package contains your function code. The execution role grants the function
+                        permission to use AWS
+                        services, such as Amazon CloudWatch Logs for log streaming and AWS X-Ray for request
+                        tracing.
                      </p>
-                     <p>  If you are using versioning, you can also publish a version of the Lambda function
-                        
-                        you are creating using the <code class="code">Publish</code> parameter. 
-                        For more information about versioning, see 
-                        <a href="./lambda/latest/dg/versioning-aliases.html" target="_blank">AWS Lambda Function 
-                           Versioning and Aliases</a>. 
-                        
+                     <p>A function has an unpublished version, and can have published versions and aliases.
+                        The unpublished version
+                        changes when you update your function&apos;s code and configuration. A published version
+                        is a snapshot of your function
+                        code and configuration that can&apos;t be changed. An alias is a named resource that maps
+                        to a version, and can be
+                        changed to map to a different version. Use the <code class="code">Publish</code> parameter to create version <code class="code">1</code> of
+                        your function from its initial configuration.
                      </p>
-                     <p>This operation requires permission for the <code class="code">lambda:CreateFunction</code> action.
+                     <p>The other parameters let you configure version-specific and function-level settings.
+                        You can modify
+                        version-specific settings later with <a href="API_UpdateFunctionConfiguration.html">UpdateFunctionConfiguration</a>. Function-level settings apply
+                        to both the unpublished and published versions of the function, and include tags (<a href="API_TagResource.html">TagResource</a>)
+                        and per-function concurrency limits (<a href="API_PutFunctionConcurrency.html">PutFunctionConcurrency</a>).
+                     </p>
+                     <p>If another account or an AWS service invokes your function, use <a href="API_AddPermission.html">AddPermission</a> to grant
+                        permission by creating a resource-based IAM policy. You can grant permissions at the
+                        function level, on a version,
+                        or on an alias.
+                     </p>
+                     <p>To invoke your function directly, use <a href="API_Invoke.html">Invoke</a>. To invoke your function in response to events
+                        in other AWS services, create an event source mapping (<a href="API_CreateEventSourceMapping.html">CreateEventSourceMapping</a>), or configure a
+                        function trigger in the other service. For more information, see <a href="./lambda/latest/dg/invoking-lambda-functions.html">Invoking Functions</a>.
                      </p>
                      
                      <h2 id="API_CreateFunction_RequestSyntax">Request Syntax</h2>
@@ -78,6 +98,7 @@ Content-type: application/json
    &quot;<a href="API_CreateFunction.html#SSS-CreateFunction-request-FunctionName">FunctionName</a>&quot;: &quot;<em class="replaceable"><code>string</code></em>&quot;,
    &quot;<a href="API_CreateFunction.html#SSS-CreateFunction-request-Handler">Handler</a>&quot;: &quot;<em class="replaceable"><code>string</code></em>&quot;,
    &quot;<a href="API_CreateFunction.html#SSS-CreateFunction-request-KMSKeyArn">KMSKeyArn</a>&quot;: &quot;<em class="replaceable"><code>string</code></em>&quot;,
+   &quot;<a href="API_CreateFunction.html#SSS-CreateFunction-request-Layers">Layers</a>&quot;: [ &quot;<em class="replaceable"><code>string</code></em>&quot; ],
    &quot;<a href="API_CreateFunction.html#SSS-CreateFunction-request-MemorySize">MemorySize</a>&quot;: <em class="replaceable"><code>number</code></em>,
    &quot;<a href="API_CreateFunction.html#SSS-CreateFunction-request-Publish">Publish</a>&quot;: <em class="replaceable"><code>boolean</code></em>,
    &quot;<a href="API_CreateFunction.html#SSS-CreateFunction-request-Role">Role</a>&quot;: &quot;<em class="replaceable"><code>string</code></em>&quot;,
@@ -121,6 +142,7 @@ Content-type: application/json
                         
                         
                         
+                        
                         <dl>
                            
                            <dt><a id="SSS-CreateFunction-request-Code"></a><span class="term">
@@ -131,7 +153,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The code for the Lambda function.</p>
+                              <p>The code for the function.</p>
                               
                               <p>Type: <a href="API_FunctionCode.html">FunctionCode</a> object
                               </p>
@@ -149,10 +171,9 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The parent object that contains the target ARN (Amazon Resource Name) of an Amazon
-                                 SQS queue or Amazon SNS topic. For more information, see <a href="dlq.html">Dead Letter Queues</a>. 
-                                 
-                                 
+                              <p>A dead letter queue configuration that specifies the queue or topic where Lambda sends
+                                 asynchronous events
+                                 when they fail processing. For more information, see <a href="./lambda/latest/dg/dlq.html">Dead Letter Queues</a>.
                               </p>
                               
                               <p>Type: <a href="API_DeadLetterConfig.html">DeadLetterConfig</a> object
@@ -171,9 +192,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>A short, user-defined function description. Lambda does not use this value. Assign
-                                 a meaningful description as you see fit.
-                              </p>
+                              <p>A description of the function.</p>
                               
                               <p>Type: String</p>
                               
@@ -192,7 +211,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The parent object that contains your environment&apos;s configuration settings.</p>
+                              <p>Environment variables that are accessible from function code during execution.</p>
                               
                               <p>Type: <a href="API_Environment.html">Environment</a> object
                               </p>
@@ -210,23 +229,50 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The name you want to assign to the function you are uploading. 
+                              <p>The name of the Lambda function.</p>
+                              
+                              <div class="itemizedlist">
+                                 
+                                 <p class="title"><b>Name formats</b></p>
                                  
                                  
                                  
-                                 The function names appear in the 
-                                 console and are returned in the <a href="API_ListFunctions.html">ListFunctions</a> API. Function names are used to specify 
-                                 functions to other AWS Lambda API operations, such as <a href="API_Invoke.html">Invoke</a>. Note that the length constraint applies only 
-                                 to the ARN. If you specify only the function name, it is limited to 64 characters
-                                 in length.
                                  
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       
+                                       <p>
+                                          <b>Function name</b> - <code class="code">my-function</code>.
+                                       </p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p>
+                                          <b>Function ARN</b> - <code class="code">arn:aws:lambda:us-west-2:123456789012:function:my-function</code>.
+                                       </p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p>
+                                          <b>Partial ARN</b> - <code class="code">123456789012:function:my-function</code>.
+                                       </p>
+                                       
+                                    </li>
+                                 </ul>
+                              </div>
+                              
+                              <p>The length constraint applies only to the full ARN. If you specify only the function
+                                 name, it is limited to 64
+                                 characters in length.
                               </p>
                               
                               <p>Type: String</p>
                               
                               <p>Length Constraints: Minimum length of 1. Maximum length of 140.</p>
                               
-                              <p>Pattern: <code class="code">(arn:aws:lambda:)?([a-z]{2}-[a-z]+-\d{1}:)?(\d{12}:)?(function:)?([a-zA-Z0-9-_]+)(:(\$LATEST|[a-zA-Z0-9-_]+))?</code>
+                              <p>Pattern: <code class="code">(arn:(aws[a-zA-Z-]*)?:lambda:)?([a-z]{2}(-gov)?-[a-z]+-\d{1}:)?(\d{12}:)?(function:)?([a-zA-Z0-9-_]+)(:(\$LATEST|[a-zA-Z0-9-_]+))?</code>
                                  
                               </p>
                               
@@ -243,12 +289,11 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The function within your code that Lambda calls to begin execution.
-                                 For Node.js, it is the <em>module-name</em>.<em>export</em> value in your function. 
-                                 For Java, it can be <code class="code">package.class-name::handler</code> or 
-                                 <code class="code">package.class-name</code>. For more information, see 
-                                 <a href="./lambda/latest/dg/java-programming-model-handler-types.html" target="_blank">Lambda Function Handler (Java)</a>.
-                                 
+                              <p>The name of the method within your code that Lambda calls to execute your function.
+                                 The format includes the
+                                 file name. It can also include namespaces and other qualifiers, depending on the runtime.
+                                 For more information,
+                                 see <a href="./lambda/latest/dg/programming-model-v2.html">Programming Model</a>.
                               </p>
                               
                               <p>Type: String</p>
@@ -272,13 +317,40 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The Amazon Resource Name (ARN) of the KMS key used to encrypt your function&apos;s environment
-                                 variables. If not provided, AWS Lambda will use a default service key.
+                              <p>The ARN of the AWS Key Management Service (AWS KMS) key that&apos;s used to encrypt your
+                                 function&apos;s environment
+                                 variables. If it&apos;s not provided, AWS Lambda uses a default service key.
                               </p>
                               
                               <p>Type: String</p>
                               
-                              <p>Pattern: <code class="code">(arn:aws:[a-z0-9-.]+:.*)|()</code>
+                              <p>Pattern: <code class="code">(arn:(aws[a-zA-Z-]*)?:[a-z0-9-.]+:.*)|()</code>
+                                 
+                              </p>
+                              
+                              <p>Required: No</p>
+                              
+                           </dd>
+                           
+                           
+                           <dt><a id="SSS-CreateFunction-request-Layers"></a><span class="term">
+                                 <b>
+                                    <a href="API_CreateFunction.html#API_CreateFunction_RequestSyntax">Layers</a>
+                                    </b>
+                                 </span></dt>
+                           
+                           <dd>
+                              
+                              <p>A list of <a href="./lambda/latest/dg/configuration-layers.html">function layers</a>
+                                 to add to the function&apos;s execution environment. Specify each layer by its ARN, including
+                                 the version.
+                              </p>
+                              
+                              <p>Type: Array of strings</p>
+                              
+                              <p>Length Constraints: Minimum length of 1. Maximum length of 140.</p>
+                              
+                              <p>Pattern: <code class="code">arn:[a-zA-Z0-9-]+:lambda:[a-zA-Z0-9-]+:\d{12}:layer:[a-zA-Z0-9-_]+:[0-9]+</code>
                                  
                               </p>
                               
@@ -295,11 +367,9 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The amount of memory, in MB, your Lambda function is given. Lambda uses this memory
-                                 size to infer the amount of CPU and memory allocated to your function. Your function
-                                 use-case determines your CPU and memory requirements. For example, a database operation
-                                 might need less memory compared to an image processing function. The default value
-                                 is 128 MB. The value must be a multiple of 64 MB.
+                              <p>The amount of memory that your function has access to. Increasing the function&apos;s memory
+                                 also increases its CPU
+                                 allocation. The default value is 128 MB. The value must be a multiple of 64 MB.
                               </p>
                               
                               <p>Type: Integer</p>
@@ -319,9 +389,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>This boolean parameter can be used to request AWS Lambda to create the Lambda function
-                                 and publish a version as an atomic operation.
-                              </p>
+                              <p>Set to true to publish the first version of the function during creation.</p>
                               
                               <p>Type: Boolean</p>
                               
@@ -338,17 +406,11 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The Amazon Resource Name (ARN) of the IAM role that Lambda assumes 
-                                 when it executes your function to access any other Amazon Web Services (AWS) resources.
-                                 
-                                 For more information, see 
-                                 <a href="./lambda/latest/dg/lambda-introduction.html" target="_blank">AWS Lambda: How it Works</a>.
-                                 
-                              </p>
+                              <p>The Amazon Resource Name (ARN) of the function&apos;s execution role.</p>
                               
                               <p>Type: String</p>
                               
-                              <p>Pattern: <code class="code">arn:aws:iam::\d{12}:role/?[a-zA-Z_0-9+=,.@\-_/]+</code>
+                              <p>Pattern: <code class="code">arn:(aws[a-zA-Z-]*)?:iam::\d{12}:role/?[a-zA-Z_0-9+=,.@\-_/]+</code>
                                  
                               </p>
                               
@@ -365,32 +427,13 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The runtime environment for the Lambda function you are uploading.</p>
-                              
-                              <p>To use the Python runtime
-                                 v3.6, set the value to &quot;python3.6&quot;. To use the Python runtime v2.7, set the value
-                                 to &quot;python2.7&quot;. To use the Node.js runtime v8.10, set the value to &quot;nodejs8.10&quot;. To
-                                 use Node.js runtime version v6.10, set the value to &quot;nodejs6.10&quot;. To use Node.js runtime
-                                 version v4.3, set the value to &quot;nodejs4.3&quot;. To use the .NET Core runtime v1.0, set
-                                 the value to 
-                                 &quot;dotnetcore1.0&quot;. To use the .NET Core runtime v2.0, set the value to &quot;dotnetcore2.0&quot;.
+                              <p>The identifier of the function&apos;s <a href="./lambda/latest/dg/lambda-runtimes.html">runtime</a>.
                               </p>
-                              
-                              <div class="aws-note">
-                                 <p class="aws-note">Note</p>
-                                 <p>Node v0.10.42 is currently marked as deprecated. You must migrate existing functions
-                                    to the newer Node.js runtime versions available on AWS Lambda (nodejs8.10, nodejs6.10
-                                    or nodejs4.3) as soon as possible. Failure to do so will result in an invalid parameter
-                                    error being returned.
-                                    Note that you will have to follow this procedure for each region that contains functions
-                                    written in the Node v0.10.42 runtime.
-                                 </p>
-                              </div>
                               
                               <p>Type: String</p>
                               
-                              <p>Valid Values:<code class="code"> nodejs | nodejs4.3 | nodejs6.10 | nodejs8.10 | java8 | python2.7 | python3.6 | dotnetcore1.0
-                                    | dotnetcore2.0 | go1.x</code>
+                              <p>Valid Values:<code class="code"> nodejs8.10 | nodejs10.x | java8 | python2.7 | python3.6 | python3.7 | dotnetcore1.0
+                                    | dotnetcore2.1 | go1.x | ruby2.5 | provided</code>
                                  
                               </p>
                               
@@ -407,8 +450,8 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The list of tags (key-value pairs) assigned to the new function. For more information,
-                                 see <a href="./lambda/latest/dg/tagging.html" target="_blank">Tagging Lambda Functions</a> in the <b>AWS Lambda Developer Guide</b>.
+                              <p>A list of <a href="./lambda/latest/dg/tagging.html">tags</a> to apply to the
+                                 function.
                               </p>
                               
                               <p>Type: String to string map</p>
@@ -426,9 +469,9 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The function execution time at which Lambda should terminate the function. Because
-                                 the execution time has cost implications, we recommend you set this value based on
-                                 your expected execution time. The default is 3 seconds.
+                              <p>The amount of time that Lambda allows a function to run before stopping it. The default
+                                 is 3 seconds. The
+                                 maximum allowed value is 900 seconds.
                               </p>
                               
                               <p>Type: Integer</p>
@@ -448,7 +491,9 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The parent object that contains your function&apos;s tracing settings.</p>
+                              <p>Set <code class="code">Mode</code> to <code class="code">Active</code> to sample and trace a subset of incoming requests with AWS
+                                 X-Ray.
+                              </p>
                               
                               <p>Type: <a href="API_TracingConfig.html">TracingConfig</a> object
                               </p>
@@ -466,9 +511,11 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>If your Lambda function accesses resources in a VPC, you provide this parameter identifying
-                                 the list of security group IDs and subnet IDs. These must belong to the same VPC.
-                                 You must provide at least one security group and one subnet ID.
+                              <p>For network connectivity to AWS resources in a VPC, specify a list of security groups
+                                 and subnets in the VPC.
+                                 When you connect a function to a VPC, it can only access resources and the internet
+                                 through that VPC. For more
+                                 information, see <a href="./lambda/latest/dg/vpc.html">VPC Settings</a>.
                               </p>
                               
                               <p>Type: <a href="API_VpcConfig.html">VpcConfig</a> object
@@ -507,6 +554,12 @@ Content-type: application/json
    &quot;<a href="API_CreateFunction.html#SSS-CreateFunction-response-Handler">Handler</a>&quot;: &quot;<b><em>string</em></b>&quot;,
    &quot;<a href="API_CreateFunction.html#SSS-CreateFunction-response-KMSKeyArn">KMSKeyArn</a>&quot;: &quot;<b><em>string</em></b>&quot;,
    &quot;<a href="API_CreateFunction.html#SSS-CreateFunction-response-LastModified">LastModified</a>&quot;: &quot;<b><em>string</em></b>&quot;,
+   &quot;<a href="API_CreateFunction.html#SSS-CreateFunction-response-Layers">Layers</a>&quot;: [ 
+      { 
+         &quot;<a href="API_Layer.html#SSS-Type-Layer-Arn">Arn</a>&quot;: &quot;<b><em>string</em></b>&quot;,
+         &quot;<a href="API_Layer.html#SSS-Type-Layer-CodeSize">CodeSize</a>&quot;: <b><em>number</em></b>
+      }
+   ],
    &quot;<a href="API_CreateFunction.html#SSS-CreateFunction-response-MasterArn">MasterArn</a>&quot;: &quot;<b><em>string</em></b>&quot;,
    &quot;<a href="API_CreateFunction.html#SSS-CreateFunction-response-MemorySize">MemorySize</a>&quot;: <b><em>number</em></b>,
    &quot;<a href="API_CreateFunction.html#SSS-CreateFunction-response-RevisionId">RevisionId</a>&quot;: &quot;<b><em>string</em></b>&quot;,
@@ -551,6 +604,7 @@ Content-type: application/json
                         
                         
                         
+                        
                         <dl>
                            
                            <dt><a id="SSS-CreateFunction-response-CodeSha256"></a><span class="term">
@@ -561,7 +615,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>It is the SHA256 hash of your function deployment package.</p>
+                              <p>The SHA256 hash of the function&apos;s deployment package.</p>
                               
                               <p>Type: String</p>
                               
@@ -576,7 +630,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The size, in bytes, of the function .zip file you uploaded.</p>
+                              <p>The size of the function&apos;s deployment package, in bytes.</p>
                               
                               <p>Type: Long</p>
                               
@@ -591,9 +645,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The parent object that contains the target ARN (Amazon Resource Name) of an Amazon
-                                 SQS queue or Amazon SNS topic. For more information, see <a href="dlq.html">Dead Letter Queues</a>. 
-                              </p>
+                              <p>The function&apos;s dead letter queue.</p>
                               
                               <p>Type: <a href="API_DeadLetterConfig.html">DeadLetterConfig</a> object
                               </p>
@@ -609,7 +661,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The user-provided description.</p>
+                              <p>The function&apos;s description.</p>
                               
                               <p>Type: String</p>
                               
@@ -626,7 +678,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The parent object that contains your environment&apos;s configuration settings.</p>
+                              <p>The function&apos;s environment variables.</p>
                               
                               <p>Type: <a href="API_EnvironmentResponse.html">EnvironmentResponse</a> object
                               </p>
@@ -642,11 +694,11 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The Amazon Resource Name (ARN) assigned to the function.</p>
+                              <p>The function&apos;s Amazon Resource Name (ARN).</p>
                               
                               <p>Type: String</p>
                               
-                              <p>Pattern: <code class="code">arn:aws:lambda:[a-z]{2}-[a-z]+-\d{1}:\d{12}:function:[a-zA-Z0-9-_\.]+(:(\$LATEST|[a-zA-Z0-9-_]+))?</code>
+                              <p>Pattern: <code class="code">arn:(aws[a-zA-Z-]*)?:lambda:[a-z]{2}(-gov)?-[a-z]+-\d{1}:\d{12}:function:[a-zA-Z0-9-_\.]+(:(\$LATEST|[a-zA-Z0-9-_]+))?</code>
                                  
                               </p>
                               
@@ -661,16 +713,13 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The name of the function. Note that the length constraint applies only 
-                                 to the ARN. If you specify only the function name, it is limited to 64 characters
-                                 in length.
-                              </p>
+                              <p>The name of the function.</p>
                               
                               <p>Type: String</p>
                               
                               <p>Length Constraints: Minimum length of 1. Maximum length of 170.</p>
                               
-                              <p>Pattern: <code class="code">(arn:aws:lambda:)?([a-z]{2}-[a-z]+-\d{1}:)?(\d{12}:)?(function:)?([a-zA-Z0-9-_\.]+)(:(\$LATEST|[a-zA-Z0-9-_]+))?</code>
+                              <p>Pattern: <code class="code">(arn:(aws[a-zA-Z-]*)?:lambda:)?([a-z]{2}(-gov)?-[a-z]+-\d{1}:)?(\d{12}:)?(function:)?([a-zA-Z0-9-_\.]+)(:(\$LATEST|[a-zA-Z0-9-_]+))?</code>
                                  
                               </p>
                               
@@ -685,7 +734,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The function Lambda calls to begin executing your function.</p>
+                              <p>The function that Lambda calls to begin executing your function.</p>
                               
                               <p>Type: String</p>
                               
@@ -706,13 +755,14 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The Amazon Resource Name (ARN) of the KMS key used to encrypt your function&apos;s environment
-                                 variables. If empty, it means you are using the AWS Lambda default service key.
+                              <p>The KMS key that&apos;s used to encrypt the function&apos;s environment variables. This key
+                                 is only returned if you&apos;ve
+                                 configured a customer-managed CMK.
                               </p>
                               
                               <p>Type: String</p>
                               
-                              <p>Pattern: <code class="code">(arn:aws:[a-z0-9-.]+:.*)|()</code>
+                              <p>Pattern: <code class="code">(arn:(aws[a-zA-Z-]*)?:[a-z0-9-.]+:.*)|()</code>
                                  
                               </p>
                               
@@ -727,13 +777,28 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The time stamp of the last time you updated the function. 
-                                 The time stamp is conveyed as a string complying with ISO-8601 in this way YYYY-MM-DDThh:mm:ssTZD
-                                 (e.g., 1997-07-16T19:20:30+01:00).
-                                 For more information, see <a href="https://www.w3.org/TR/NOTE-datetime" target="_blank">Date and Time Formats</a>.
+                              <p>The date and time that the function was last updated, in <a href="https://www.w3.org/TR/NOTE-datetime" target="_blank">ISO-8601 format</a> (YYYY-MM-DDThh:mm:ss.sTZD).
                               </p>
                               
                               <p>Type: String</p>
+                              
+                           </dd>
+                           
+                           
+                           <dt><a id="SSS-CreateFunction-response-Layers"></a><span class="term">
+                                 <b>
+                                    <a href="API_CreateFunction.html#API_CreateFunction_ResponseSyntax">Layers</a>
+                                    </b>
+                                 </span></dt>
+                           
+                           <dd>
+                              
+                              <p>The function&apos;s <a href="./lambda/latest/dg/configuration-layers.html">
+                                    layers</a>.
+                              </p>
+                              
+                              <p>Type: Array of <a href="API_Layer.html">Layer</a> objects
+                              </p>
                               
                            </dd>
                            
@@ -746,11 +811,11 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>Returns the ARN (Amazon Resource Name) of the master function.</p>
+                              <p>For Lambda@Edge functions, the ARN of the master function.</p>
                               
                               <p>Type: String</p>
                               
-                              <p>Pattern: <code class="code">arn:aws:lambda:[a-z]{2}-[a-z]+-\d{1}:\d{12}:function:[a-zA-Z0-9-_]+(:(\$LATEST|[a-zA-Z0-9-_]+))?</code>
+                              <p>Pattern: <code class="code">arn:(aws[a-zA-Z-]*)?:lambda:[a-z]{2}(-gov)?-[a-z]+-\d{1}:\d{12}:function:[a-zA-Z0-9-_]+(:(\$LATEST|[a-zA-Z0-9-_]+))?</code>
                                  
                               </p>
                               
@@ -765,9 +830,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The memory size, in MB, you configured for the function. Must be a multiple of 64
-                                 MB.
-                              </p>
+                              <p>The memory that&apos;s allocated to the function.</p>
                               
                               <p>Type: Integer</p>
                               
@@ -784,7 +847,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>Represents the latest updated revision of the function or alias.</p>
+                              <p>The latest updated revision of the function or alias.</p>
                               
                               <p>Type: String</p>
                               
@@ -799,13 +862,11 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The Amazon Resource Name (ARN) of the IAM role that Lambda assumes when it executes
-                                 your function to access any other Amazon Web Services (AWS) resources.
-                              </p>
+                              <p>The function&apos;s execution role.</p>
                               
                               <p>Type: String</p>
                               
-                              <p>Pattern: <code class="code">arn:aws:iam::\d{12}:role/?[a-zA-Z_0-9+=,.@\-_/]+</code>
+                              <p>Pattern: <code class="code">arn:(aws[a-zA-Z-]*)?:iam::\d{12}:role/?[a-zA-Z_0-9+=,.@\-_/]+</code>
                                  
                               </p>
                               
@@ -824,8 +885,8 @@ Content-type: application/json
                               
                               <p>Type: String</p>
                               
-                              <p>Valid Values:<code class="code"> nodejs | nodejs4.3 | nodejs6.10 | nodejs8.10 | java8 | python2.7 | python3.6 | dotnetcore1.0
-                                    | dotnetcore2.0 | go1.x</code>
+                              <p>Valid Values:<code class="code"> nodejs8.10 | nodejs10.x | java8 | python2.7 | python3.6 | python3.7 | dotnetcore1.0
+                                    | dotnetcore2.1 | go1.x | ruby2.5 | provided</code>
                                  
                               </p>
                               
@@ -840,10 +901,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The function execution time at which Lambda should terminate the function. Because
-                                 the execution time has cost implications, we recommend you set this value based on
-                                 your expected execution time. The default is 3 seconds.
-                              </p>
+                              <p>The amount of time that Lambda allows a function to run before stopping it.</p>
                               
                               <p>Type: Integer</p>
                               
@@ -860,7 +918,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The parent object that contains your function&apos;s tracing settings.</p>
+                              <p>The function&apos;s AWS X-Ray tracing configuration.</p>
                               
                               <p>Type: <a href="API_TracingConfigResponse.html">TracingConfigResponse</a> object
                               </p>
@@ -897,7 +955,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>VPC configuration associated with your Lambda function.</p>
+                              <p>The function&apos;s networking configuration.</p>
                               
                               <p>Type: <a href="API_VpcConfigResponse.html">VpcConfigResponse</a> object
                               </p>
@@ -926,8 +984,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>You have exceeded your maximum total code size per account. 
-                                 <a href="./lambda/latest/dg/limits.html" target="_blank">Limits</a>
+                              <p>You have exceeded your maximum total code size per account. <a href="./lambda/latest/dg/limits.html">Learn more</a>
                                  
                               </p>
                               
@@ -942,10 +999,10 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>One of the parameters in the request is invalid. For example, 
-                                 if you provided an IAM role for AWS Lambda to assume 
-                                 in the <code class="code">CreateFunction</code> or the <code class="code">UpdateFunctionConfiguration</code> API, 
-                                 that AWS Lambda is unable to assume you will get this exception.
+                              <p>One of the parameters in the request is invalid. For example, if you provided an IAM
+                                 role for AWS Lambda to
+                                 assume in the <code class="code">CreateFunction</code> or the <code class="code">UpdateFunctionConfiguration</code> API, that AWS Lambda is
+                                 unable to assume you will get this exception.
                               </p>
                               
                               <p>HTTP Status Code: 400</p>
@@ -973,7 +1030,8 @@ Content-type: application/json
                            <dd>
                               
                               <p>The resource (for example, a Lambda function or access policy statement) specified
-                                 in the request does not exist.
+                                 in the request does not
+                                 exist.
                               </p>
                               
                               <p>HTTP Status Code: 404</p>
@@ -1000,9 +1058,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>
-                                 
-                              </p>
+                              <p>Request throughput limit exceeded.</p>
                               
                               <p>HTTP Status Code: 429</p>
                               
@@ -1028,11 +1084,12 @@ Content-type: application/json
                         
                         
                         
+                        
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/aws-cli/lambda-2015-03-31/CreateFunction" target="_blank">AWS Command Line Interface</a>
+                                 <a href="./goto/aws-cli/lambda-2015-03-31/CreateFunction">AWS Command Line Interface</a>
                                  
                               </p>
                               
@@ -1040,7 +1097,7 @@ Content-type: application/json
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/DotNetSDKV3/lambda-2015-03-31/CreateFunction" target="_blank">AWS SDK for .NET</a>
+                                 <a href="./goto/DotNetSDKV3/lambda-2015-03-31/CreateFunction">AWS SDK for .NET</a>
                                  
                               </p>
                               
@@ -1048,7 +1105,7 @@ Content-type: application/json
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/SdkForCpp/lambda-2015-03-31/CreateFunction" target="_blank">AWS SDK for C++</a>
+                                 <a href="./goto/SdkForCpp/lambda-2015-03-31/CreateFunction">AWS SDK for C++</a>
                                  
                               </p>
                               
@@ -1056,7 +1113,7 @@ Content-type: application/json
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/SdkForGoV1/lambda-2015-03-31/CreateFunction" target="_blank">AWS SDK for Go</a>
+                                 <a href="./goto/SdkForGoV1/lambda-2015-03-31/CreateFunction">AWS SDK for Go</a>
                                  
                               </p>
                               
@@ -1064,7 +1121,7 @@ Content-type: application/json
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/SdkForJava/lambda-2015-03-31/CreateFunction" target="_blank">AWS SDK for Java</a>
+                                 <a href="./goto/SdkForGoPilot/lambda-2015-03-31/CreateFunction">AWS SDK for Go - Pilot</a>
                                  
                               </p>
                               
@@ -1072,7 +1129,7 @@ Content-type: application/json
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/AWSJavaScriptSDK/lambda-2015-03-31/CreateFunction" target="_blank">AWS SDK for JavaScript</a>
+                                 <a href="./goto/SdkForJava/lambda-2015-03-31/CreateFunction">AWS SDK for Java</a>
                                  
                               </p>
                               
@@ -1080,7 +1137,7 @@ Content-type: application/json
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/SdkForPHPV3/lambda-2015-03-31/CreateFunction" target="_blank">AWS SDK for PHP V3</a>
+                                 <a href="./goto/AWSJavaScriptSDK/lambda-2015-03-31/CreateFunction">AWS SDK for JavaScript</a>
                                  
                               </p>
                               
@@ -1088,7 +1145,7 @@ Content-type: application/json
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/boto3/lambda-2015-03-31/CreateFunction" target="_blank">AWS SDK for Python</a>
+                                 <a href="./goto/SdkForPHPV3/lambda-2015-03-31/CreateFunction">AWS SDK for PHP V3</a>
                                  
                               </p>
                               
@@ -1096,12 +1153,23 @@ Content-type: application/json
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/SdkForRubyV2/lambda-2015-03-31/CreateFunction" target="_blank">AWS SDK for Ruby V2</a>
+                                 <a href="./goto/boto3/lambda-2015-03-31/CreateFunction">AWS SDK for Python</a>
+                                 
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>
+                                 <a href="./goto/SdkForRubyV2/lambda-2015-03-31/CreateFunction">AWS SDK for Ruby V2</a>
                                  
                               </p>
                               
                            </li>
                         </ul>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
                   </div>
                   <noscript>
@@ -1109,9 +1177,10 @@ Content-type: application/json
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -1121,7 +1190,9 @@ Content-type: application/json
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="API_CreateEventSourceMapping.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="API_DeleteAlias.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -1142,6 +1213,10 @@ Content-type: application/json
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

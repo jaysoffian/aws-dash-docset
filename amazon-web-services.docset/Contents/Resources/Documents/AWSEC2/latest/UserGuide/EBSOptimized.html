@@ -4,7 +4,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="AmazonEBS.html" title="Amazon Elastic Block Store (Amazon EBS)">
-      <link rel="prev" href="ebs-modifying-snapshot-permissions.html" title="Sharing an Amazon EBS Snapshot">
+      <link rel="prev" href="snapshot-lifecycle.html" title="Automating the Amazon EBS Snapshot Lifecycle">
       <link rel="next" href="EBSEncryption.html" title="Amazon EBS Encryption">
       <meta name="description" content="Provide the best performance for your Amazon EBS volumes by using Amazon EBS&#x2013;optimized instances.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
@@ -12,6 +12,8 @@
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSOptimized.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <span class="breadcrumb">Amazon EBS&#x2013;Optimized Instances</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <span class="breadcrumb">Amazon EBS&#x2013;Optimized Instances</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="EBSOptimized">Amazon EBS&#x2013;Optimized Instances</h1>
                      <p>An Amazon EBS&#x2013;optimized instance uses an optimized configuration stack and provides
@@ -62,38 +67,37 @@
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Contents</strong></p>
                         <ul>
-                           <li><a href="#ebs-optimization-support">Instance Types That Support EBS Optimization</a></li>
+                           <li><a href="#ebs-optimization-support">Instance Types that Support EBS Optimization</a></li>
                            <li><a href="#enable-ebs-optimization">Enabling Amazon EBS Optimization at Launch</a></li>
                            <li><a href="#modify-ebs-optimized-attribute">Modifying Amazon EBS Optimization for a Running
                                  Instance</a></li>
                         </ul>
                      </div>
                      
-                     <h2 id="ebs-optimization-support">Instance Types That Support EBS Optimization</h2>
+                     <h2 id="ebs-optimization-support">Instance Types that Support EBS Optimization</h2>
                      
                      
-                     <p>The following table shows which instance types support EBS optimization, the
-                        dedicated bandwidth to Amazon EBS, the maximum number of IOPS the instance can support
-                        if you
-                        are using a 16 KiB I/O size, and the typical maximum aggregate throughput that can
-                        be
-                        achieved on that connection in MiB/s with a streaming read workload and 128 KiB I/O
-                        size.
-                        Choose an EBS&#x2013;optimized instance that provides more dedicated Amazon EBS throughput
-                        than your application needs; otherwise, the connection between Amazon EBS and Amazon
-                        EC2 can
-                        become a performance bottleneck.
+                     <p>The following tables show which instance types support EBS optimization, the dedicated
+                        bandwidth to Amazon EBS, the maximum number of IOPS the instance can support if you
+                        are using
+                        a 16 KB I/O size, and the typical maximum aggregate throughput that can be achieved
+                        on
+                        that connection in MiB/s with a streaming read workload and 128 KB I/O size. Choose
+                        an
+                        EBS&#x2013;optimized instance that provides more dedicated Amazon EBS throughput than your
+                        application needs; otherwise, the connection between Amazon EBS and Amazon EC2 can
+                        become a
+                        performance bottleneck.
                      </p>
                      
-                     <p>The current generation instance types are EBS&#x2013;optimized by default. For those 
-                        instances, there is no need to enable EBS optimization and no effect if you disable
-                        EBS
-                        optimization. For instances that are not EBS&#x2013;optimized by default, you can enable
-                        
-                        EBS optimization when you launch the instances, or enable EBS optimization after the
-                        instances are running. Instances must have EBS optimization enabled to achieve the
-                        level
-                        of performance described in the table below.
+                     <p>For instance types that are EBS&#x2013;optimized by default, there is no need to enable
+                        EBS optimization and no effect if you disable EBS optimization. For instances that
+                        are
+                        not EBS&#x2013;optimized by default, you can enable EBS optimization when you launch the
+                        instances, or enable EBS optimization after the instances are running. Instances must
+                        have EBS optimization enabled to achieve the level of performance described in the
+                        table
+                        below.
                      </p>
                      
                      <p>When you enable EBS optimization for an instance that is not EBS-optimized by default,
@@ -109,9 +113,15 @@
                      </p>
                      
                      
+                     <h3 id="current">Supported Current Generation Instance Types</h3>
+                     
+                     <p>The following table lists current-generation instance types that support EBS
+                        optimization.
+                     </p>
+                     
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac23c29c21b9c12">
+                           <table id="w306aac29c29c21b9c11b6">
                               
                               <tbody><tr>
                                  
@@ -127,6 +137,76 @@
                                  
                               </tr>
                               
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">a1.medium</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">a1.large</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">a1.xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">a1.2xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">a1.4xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
                               
                               <tr>
                                  
@@ -205,11 +285,11 @@
                                  
                                  <td>Yes</td>
                                  
-                                 <td>2,250</td>
+                                 <td>3,500</td>
                                  
-                                 <td>281.25</td>
+                                 <td>437.5</td>
                                  
-                                 <td>16,000</td>
+                                 <td>20,000</td>
                                  
                               </tr>
                               
@@ -220,11 +300,11 @@
                                  
                                  <td>Yes</td>
                                  
-                                 <td>2,250</td>
+                                 <td>3,500</td>
                                  
-                                 <td>281.25</td>
+                                 <td>437.5</td>
                                  
-                                 <td>16,000</td>
+                                 <td>20,000</td>
                                  
                               </tr>
                               
@@ -235,11 +315,11 @@
                                  
                                  <td>Yes</td>
                                  
-                                 <td>2,250</td>
+                                 <td>3,500</td>
                                  
-                                 <td>281.25</td>
+                                 <td>437.5</td>
                                  
-                                 <td>16,000</td>
+                                 <td>20,000</td>
                                  
                               </tr>
                               
@@ -249,11 +329,11 @@
                                  
                                  <td>Yes</td>
                                  
-                                 <td>2,250</td>
+                                 <td>3,500</td>
                                  
-                                 <td>281.25</td>
+                                 <td>437.5</td>
                                  
-                                 <td>16,000</td>
+                                 <td>20,000</td>
                                  
                               </tr>
                               
@@ -263,13 +343,14 @@
                                  
                                  <td>Yes</td>
                                  
-                                 <td>4,500</td>
+                                 <td>7,000</td>
                                  
-                                 <td>562.5</td>
+                                 <td>875</td>
                                  
-                                 <td>32,000</td>
+                                 <td>40,000</td>
                                  
                               </tr>
+                              
                               
                               <tr>
                                  
@@ -277,11 +358,190 @@
                                  
                                  <td>Yes</td>
                                  
-                                 <td>9,000</td>
+                                 <td>14,000</td>
                                  
-                                 <td>1,125</td>
+                                 <td>1,750</td>
                                  
-                                 <td>64,000</td>
+                                 <td>80,000</td>
+                                 
+                              </tr>
+                              
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5d.large</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5d.xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5d.2xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5d.4xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5d.9xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>7,000</td>
+                                 
+                                 <td>875</td>
+                                 
+                                 <td>40,000</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5d.18xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
+                                 
+                              </tr>
+                              
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5n.large</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5n.xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5n.2xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5n.4xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5n.9xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>7,000</td>
+                                 
+                                 <td>875</td>
+                                 
+                                 <td>40,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5n.18xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
                                  
                               </tr>
                               
@@ -354,6 +614,20 @@
                                  <td>12,000</td>
                                  
                               </tr>
+                              	
+                              <tr>
+                                 		
+                                 <td><code class="code">f1.4xlarge</code></td>
+                                 		
+                                 <td>Yes</td>
+                                 		
+                                 <td>3,500</td>
+                                 		
+                                 <td>400</td>
+                                 		
+                                 <td>44,000</td>
+                                 	
+                              </tr>
                               
                               <tr>
                                  
@@ -367,6 +641,20 @@
                                  
                                  <td>75,000</td>
                                  
+                              </tr>
+                              	
+                              <tr>
+                                 		
+                                 <td><code class="code">g3s.xlarge</code></td>
+                                 		
+                                 <td>Yes</td>
+                                 		
+                                 <td>850</td>
+                                 		
+                                 <td>100</td>
+                                 		
+                                 <td>5,000</td>
+                                 	
                               </tr>
                               
                               <tr>
@@ -410,6 +698,13 @@
                                  <td>80,000</td>
                                  
                               </tr>
+                              
+                              
+                              
+                              
+                              
+                              
+                              
                               
                               <tr>
                                  
@@ -553,6 +848,122 @@
                               
                               <tr>
                                  
+                                 <td><code class="code">i3.metal</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>65,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.large</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.2xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.3xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.6xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.12xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>7,000</td>
+                                 
+                                 <td>875</td>
+                                 
+                                 <td>40,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.24xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
                                  <td><code class="code">m4.large</code></td>
                                  
                                  <td>Yes</td>
@@ -637,46 +1048,46 @@
                               
                               <tr>
                                  
-                                 <td><code class="code">m5.large</code>*
+                                 <td><code class="code">m5.large</code> *
                                  </td>
                                  
                                  <td>Yes</td>
                                  
-                                 <td>2,120</td>
+                                 <td>3,500</td>
                                  
-                                 <td>265</td>
+                                 <td>437.5</td>
                                  
-                                 <td>16,000</td>
+                                 <td>18,750</td>
                                  
                               </tr>
                               
                               <tr>
                                  
-                                 <td><code class="code">m5.xlarge</code>*
+                                 <td><code class="code">m5.xlarge</code> *
                                  </td>
                                  
                                  <td>Yes</td>
                                  
-                                 <td>2,120</td>
+                                 <td>3,500</td>
                                  
-                                 <td>265</td>
+                                 <td>437.5</td>
                                  
-                                 <td>16,000</td>
+                                 <td>18,750</td>
                                  
                               </tr>
                               
                               <tr>
                                  
-                                 <td><code class="code">m5.2xlarge</code>*
+                                 <td><code class="code">m5.2xlarge</code> *
                                  </td>
                                  
                                  <td>Yes</td>
                                  
-                                 <td>2,120</td>
+                                 <td>3,500</td>
                                  
-                                 <td>265</td>
+                                 <td>437.5</td>
                                  
-                                 <td>16,000</td>
+                                 <td>18,750</td>
                                  
                               </tr>
                               
@@ -686,6 +1097,65 @@
                                  
                                  <td>Yes</td>
                                  
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>18,750</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5.12xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>7,000</td>
+                                 
+                                 <td>875</td>
+                                 
+                                 <td>40,000</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5.24xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5.metal</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5a.large</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
                                  <td>2,120</td>
                                  
                                  <td>265</td>
@@ -696,7 +1166,52 @@
                               
                               <tr>
                                  
-                                 <td><code class="code">m5.12xlarge</code></td>
+                                 <td><code class="code">m5a.xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,120</td>
+                                 
+                                 <td>265</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5a.2xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,120</td>
+                                 
+                                 <td>265</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5a.4xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,120</td>
+                                 
+                                 <td>265</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5a.12xlarge</code></td>
                                  
                                  <td>Yes</td>
                                  
@@ -704,13 +1219,14 @@
                                  
                                  <td>625</td>
                                  
-                                 <td>32,500</td>
+                                 <td>30,000</td>
                                  
                               </tr>
                               
+                              
                               <tr>
                                  
-                                 <td><code class="code">m5.24xlarge</code></td>
+                                 <td><code class="code">m5a.24xlarge</code></td>
                                  
                                  <td>Yes</td>
                                  
@@ -718,7 +1234,199 @@
                                  
                                  <td>1,250</td>
                                  
-                                 <td>65,000</td>
+                                 <td>60,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5ad.large</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,120</td>
+                                 
+                                 <td>265</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5ad.xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,120</td>
+                                 
+                                 <td>265</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5ad.2xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,120</td>
+                                 
+                                 <td>265</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5ad.4xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,120</td>
+                                 
+                                 <td>265</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5ad.12xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>5,000</td>
+                                 
+                                 <td>675</td>
+                                 
+                                 <td>30,000</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5ad.24xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>10,000</td>
+                                 
+                                 <td>1,250</td>
+                                 
+                                 <td>60,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5d.large</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>18,750</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5d.xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>18,750</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5d.2xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>18,750</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5d.4xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>18,750</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5d.12xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>7,000</td>
+                                 
+                                 <td>875</td>
+                                 
+                                 <td>40,000</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5d.24xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5d.metal</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
                                  
                               </tr>
                               
@@ -795,6 +1503,20 @@
                               <tr>
                                  
                                  <td><code class="code">p3.16xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">p3dn.24xlarge</code></td>
                                  
                                  <td>Yes</td>
                                  
@@ -892,6 +1614,642 @@
                               
                               <tr>
                                  
+                                 <td><code class="code">r5.large</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>18,750</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5.xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>18,750</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5.2xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>18,750</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5.4xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>18,750</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5.12xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>7,000</td>
+                                 
+                                 <td>875</td>
+                                 
+                                 <td>40,000</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5.24xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5.metal</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5a.large</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,120</td>
+                                 
+                                 <td>265</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5a.xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,120</td>
+                                 
+                                 <td>265</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5a.2xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,120</td>
+                                 
+                                 <td>265</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5a.4xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,120</td>
+                                 
+                                 <td>265</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5a.12xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>5,000</td>
+                                 
+                                 <td>625</td>
+                                 
+                                 <td>30,000</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5a.24xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>10,000</td>
+                                 
+                                 <td>1,250</td>
+                                 
+                                 <td>60,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5ad.large</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,210</td>
+                                 
+                                 <td>265</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5ad.xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,210</td>
+                                 
+                                 <td>265</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5ad.2xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,210</td>
+                                 
+                                 <td>265</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5ad.4xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,210</td>
+                                 
+                                 <td>265</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5ad.12xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>5,000</td>
+                                 
+                                 <td>625</td>
+                                 
+                                 <td>30,000</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5ad.24xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>10,000</td>
+                                 
+                                 <td>1,250</td>
+                                 
+                                 <td>60,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5d.large</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>18,750</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5d.xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>18,750</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5d.2xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>18,750</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5d.4xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>437.5</td>
+                                 
+                                 <td>18,750</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5d.12xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>7,000</td>
+                                 
+                                 <td>875</td>
+                                 
+                                 <td>40,000</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5d.24xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5d.metal</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.nano</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>1,536</td>
+                                 
+                                 <td>192</td>
+                                 
+                                 <td>11,800</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.micro</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>1,536</td>
+                                 
+                                 <td>192</td>
+                                 
+                                 <td>11,800</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.small</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>1,536</td>
+                                 
+                                 <td>192</td>
+                                 
+                                 <td>11,800</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.medium</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>1,536</td>
+                                 
+                                 <td>192</td>
+                                 
+                                 <td>11,800</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.large</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,048</td>
+                                 
+                                 <td>256</td>
+                                 
+                                 <td>15,700</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,048</td>
+                                 
+                                 <td>256</td>
+                                 
+                                 <td>15,700</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.2xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,048</td>
+                                 
+                                 <td>256</td>
+                                 
+                                 <td>15,700</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.nano</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>1,536</td>
+                                 
+                                 <td>192</td>
+                                 
+                                 <td>11,800</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.micro</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>1,536</td>
+                                 
+                                 <td>192</td>
+                                 
+                                 <td>11,800</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.small</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>1,536</td>
+                                 
+                                 <td>192</td>
+                                 
+                                 <td>11,800</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.medium</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>1,536</td>
+                                 
+                                 <td>192</td>
+                                 
+                                 <td>11,800</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.large</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,048</td>
+                                 
+                                 <td>256</td>
+                                 
+                                 <td>15,700</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,048</td>
+                                 
+                                 <td>256</td>
+                                 
+                                 <td>15,700</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.2xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,048</td>
+                                 
+                                 <td>256</td>
+                                 
+                                 <td>15,700</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">u-6tb1.metal</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">u-9tb1.metal</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">u-12tb1.metal</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
                                  <td><code class="code">x1.16xlarge</code></td>
                                  
                                  <td>Yes</td>
@@ -930,7 +2288,8 @@
                                  
                                  <td>3,700</td>
                                  
-                              </tr>            
+                              </tr>
+                              
                               <tr>
                                  
                                  <td><code class="code">x1e.2xlarge</code></td>
@@ -943,7 +2302,8 @@
                                  
                                  <td>7,400</td>
                                  
-                              </tr>            
+                              </tr>
+                              
                               <tr>
                                  
                                  <td><code class="code">x1e.4xlarge</code></td>
@@ -956,7 +2316,8 @@
                                  
                                  <td>10,000</td>
                                  
-                              </tr>            
+                              </tr>
+                              
                               <tr>
                                  
                                  <td><code class="code">x1e.8xlarge</code></td>
@@ -969,7 +2330,8 @@
                                  
                                  <td>20,000</td>
                                  
-                              </tr>            
+                              </tr>
+                              
                               <tr>
                                  
                                  <td><code class="code">x1e.16xlarge</code></td>
@@ -998,35 +2360,122 @@
                                  
                               </tr>
                               
+                              <tr>
+                                 
+                                 <td><code class="code">z1d.large</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,333</td>
+                                 
+                                 <td>291</td>
+                                 
+                                 <td>13,333</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">z1d.xlarge</code> *
+                                 </td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,333</td>
+                                 
+                                 <td>291</td>
+                                 
+                                 <td>13,333</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">z1d.2xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>2,333</td>
+                                 
+                                 <td>292</td>
+                                 
+                                 <td>13,333</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">z1d.3xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>3,500</td>
+                                 
+                                 <td>438</td>
+                                 
+                                 <td>20,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">z1d.6xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>7,000</td>
+                                 
+                                 <td>875</td>
+                                 
+                                 <td>40,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">z1d.12xlarge</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">z1d.metal</code></td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>14,000</td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>80,000</td>
+                                 
+                              </tr>
+                              
                            </tbody></table>
                         </div>
                      </div>
                      
                      
-                     
                      <p>* These instance types can support maximum performance for 30 minutes at least once
                         every 24 hours. For example, <code class="code">c5.large</code>
-                        instances can deliver 281 MB/s for 30 minutes at least once every 24 hours.
+                        instances can deliver 437.5 MB/s for 30 minutes at least once every 24 hours.
                         If you have a workload that requires sustained maximum performance for longer 
                         than 30 minutes, select an instance type according to baseline performance as shown
-                        in the table below.
-                     </p>
-                     
-                     <p>The <code class="code">EBSIOBalance%</code> and <code class="code">EBSByteBalance%</code>
-                        metrics can help you determine if you have rightsized your
-                        instances. You can view these metrics in the CloudWatch console and set
-                        an alarm that will be triggered based on your thresholds. These metrics are expressed
-                        as
-                        a percentage. Instances with a consistently low balance percentage are candidates
-                        for upsizing.
-                        Instances where the balance percentage never drops below 100% are candidates for downsizing.
-                        
-                        For more information, see <a href="./AWSEC2/latest/UserGuide/using-cloudwatch.html" target="_blank">Monitoring Your Instances Using CloudWatch</a>.
+                        in the following table:
                      </p>
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac23c29c21b9c18">
+                           <table id="w306aac29c29c21b9c11c10">
                               
                               <tbody><tr>
                                  
@@ -1047,7 +2496,7 @@
                                  
                                  <td>525</td>
                                  
-                                 <td>66</td>
+                                 <td>65.625</td>
                                  
                                  <td>4,000</td>
                                  
@@ -1069,13 +2518,133 @@
                                  
                                  <td><code class="code">c5.2xlarge</code></td>
                                  
-                                 <td>1,125</td>
+                                 <td>1,750</td>
                                  
-                                 <td>141</td>
+                                 <td>218.75</td>
                                  
-                                 <td>8,000</td>
+                                 <td>10,000</td>
                                  
-                              </tr>           
+                              </tr>   
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5d.large</code></td>
+                                 
+                                 <td>525</td>
+                                 
+                                 <td>65.625</td>
+                                 
+                                 <td>4,000</td>
+                                 
+                              </tr>              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5d.xlarge</code></td>
+                                 
+                                 <td>800</td>
+                                 
+                                 <td>100</td>
+                                 
+                                 <td>6,000</td>
+                                 
+                              </tr>   
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5d.2xlarge</code></td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>218.75</td>
+                                 
+                                 <td>10,000</td>
+                                 
+                              </tr>             
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5n.large</code></td>
+                                 
+                                 <td>525</td>
+                                 
+                                 <td>65.625</td>
+                                 
+                                 <td>4,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5n.xlarge</code></td>
+                                 
+                                 <td>800</td>
+                                 
+                                 <td>100</td>
+                                 
+                                 <td>6,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5n.2xlarge</code></td>
+                                 
+                                 <td>1,750</td>
+                                 
+                                 <td>218.75</td>
+                                 
+                                 <td>10,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.large</code></td>
+                                 
+                                 <td>425</td>
+                                 
+                                 <td>53.125</td>
+                                 
+                                 <td>3,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.xlarge</code></td>
+                                 
+                                 <td>850</td>
+                                 
+                                 <td>106.25</td>
+                                 
+                                 <td>6,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.2xlarge</code></td>
+                                 
+                                 <td>1,700</td>
+                                 
+                                 <td>212.5</td>
+                                 
+                                 <td>12,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.3xlarge</code></td>
+                                 
+                                 <td>2,800</td>
+                                 
+                                 <td>350</td>
+                                 
+                                 <td>15,000</td>
+                                 
+                              </tr>
                               
                               <tr>
                                  
@@ -1093,6 +2662,42 @@
                                  
                                  <td><code class="code">m5.xlarge</code></td>
                                  
+                                 <td>850</td>
+                                 
+                                 <td>106.25</td>
+                                 
+                                 <td>6,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5.2xlarge</code></td>
+                                 
+                                 <td>1,700</td>
+                                 
+                                 <td>212.5</td>
+                                 
+                                 <td>12,000</td>
+                                 
+                              </tr>                      
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5a.large</code></td>
+                                 
+                                 <td>480</td>
+                                 
+                                 <td>60</td>
+                                 
+                                 <td>3,600</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5a.xlarge</code></td>
+                                 
                                  <td>800</td>
                                  
                                  <td>100</td>
@@ -1103,7 +2708,7 @@
                               
                               <tr>
                                  
-                                 <td><code class="code">m5.2xlarge</code></td>
+                                 <td><code class="code">m5a.2xlarge</code></td>
                                  
                                  <td>1,166</td>
                                  
@@ -1113,10 +2718,701 @@
                                  
                               </tr>                      
                               
+                              <tr>
+                                 
+                                 <td><code class="code">m5ad.large</code></td>
+                                 
+                                 <td>480</td>
+                                 
+                                 <td>60</td>
+                                 
+                                 <td>3,600</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5ad.xlarge</code></td>
+                                 
+                                 <td>800</td>
+                                 
+                                 <td>100</td>
+                                 
+                                 <td>6,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5ad.2xlarge</code></td>
+                                 
+                                 <td>1,166</td>
+                                 
+                                 <td>146</td>
+                                 
+                                 <td>8,333</td>
+                                 
+                              </tr>                      
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5d.large</code></td>
+                                 
+                                 <td>480</td>
+                                 
+                                 <td>60</td>
+                                 
+                                 <td>3,600</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5d.xlarge</code></td>
+                                 
+                                 <td>850</td>
+                                 
+                                 <td>106.25</td>
+                                 
+                                 <td>6,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5d.2xlarge</code></td>
+                                 
+                                 <td>1,700</td>
+                                 
+                                 <td>212.5</td>
+                                 
+                                 <td>12,000</td>
+                                 
+                              </tr>                      
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5.large</code></td>
+                                 
+                                 <td>480</td>
+                                 
+                                 <td>60</td>
+                                 
+                                 <td>3,600</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5.xlarge</code></td>
+                                 
+                                 <td>850</td>
+                                 
+                                 <td>106.25</td>
+                                 
+                                 <td>6,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5.2xlarge</code></td>
+                                 
+                                 <td>1,700</td>
+                                 
+                                 <td>212.5</td>
+                                 
+                                 <td>12,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5a.large</code></td>
+                                 
+                                 <td>480</td>
+                                 
+                                 <td>60</td>
+                                 
+                                 <td>3,600</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5a.xlarge</code></td>
+                                 
+                                 <td>800</td>
+                                 
+                                 <td>100</td>
+                                 
+                                 <td>6,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5a.2xlarge</code></td>
+                                 
+                                 <td>1,166</td>
+                                 
+                                 <td>146</td>
+                                 
+                                 <td>8,333</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5ad.large</code></td>
+                                 
+                                 <td>480</td>
+                                 
+                                 <td>60</td>
+                                 
+                                 <td>3,600</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5ad.xlarge</code></td>
+                                 
+                                 <td>800</td>
+                                 
+                                 <td>100</td>
+                                 
+                                 <td>6,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5ad.2xlarge</code></td>
+                                 
+                                 <td>1,166</td>
+                                 
+                                 <td>146</td>
+                                 
+                                 <td>8,333</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5d.large</code></td>
+                                 
+                                 <td>480</td>
+                                 
+                                 <td>60</td>
+                                 
+                                 <td>3,600</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5d.xlarge</code></td>
+                                 
+                                 <td>850</td>
+                                 
+                                 <td>106.25</td>
+                                 
+                                 <td>6,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5d.2xlarge</code></td>
+                                 
+                                 <td>1,700</td>
+                                 
+                                 <td>212.5</td>
+                                 
+                                 <td>12,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.nano</code></td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>250</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.micro</code></td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>500</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.small</code></td>
+                                 
+                                 <td>128</td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>1,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.medium</code></td>
+                                 
+                                 <td>256</td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>2,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.large</code></td>
+                                 
+                                 <td>512</td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>4,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.xlarge</code></td>
+                                 
+                                 <td>512</td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>4,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.2xlarge</code></td>
+                                 
+                                 <td>512</td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>4,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.nano</code></td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>250</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.micro</code></td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>500</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.small</code></td>
+                                 
+                                 <td>128</td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>1,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.medium</code></td>
+                                 
+                                 <td>256</td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>2,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.large</code></td>
+                                 
+                                 <td>512</td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>4,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.xlarge</code></td>
+                                 
+                                 <td>512</td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>4,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.2xlarge</code></td>
+                                 
+                                 <td>512</td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>4,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">z1d.large</code></td>
+                                 
+                                 <td>583</td>
+                                 
+                                 <td>73</td>
+                                 
+                                 <td>3,333</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">z1d.xlarge</code></td>
+                                 
+                                 <td>1,167</td>
+                                 
+                                 <td>146</td>
+                                 
+                                 <td>6,667</td>
+                                 
+                              </tr>
+                              
                            </tbody></table>
                         </div>
                      </div>
                      
+                     <p>The <code class="code">EBSIOBalance%</code> and <code class="code">EBSByteBalance%</code>
+                        metrics can help you determine if your instances are sized correctly. You can view
+                        
+                        these metrics in the CloudWatch console and set
+                        an alarm that is triggered based on a threshold you specify. These metrics are expressed
+                        as
+                        a percentage. Instances with a consistently low balance percentage are candidates
+                        for upsizing.
+                        Instances where the balance percentage never drops below 100% are candidates for downsizing.
+                        
+                        For more information, see <a href="using-cloudwatch.html">Monitoring Your Instances Using CloudWatch</a>.
+                     </p>
+                     
+                     
+                     
+                     <h3 id="previous">Supported Previous Generation Instance Types</h3>
+                     
+                     <p>The following table lists previous-generation instance types that support EBS
+                        optimization.
+                     </p>
+                     
+                     <div class="table">
+                        <p class="title"><b>Previous Generation Instances</b></p>
+                        <div class="table-contents">
+                           <table id="w306aac29c29c21b9c13b5">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Instance type</th>
+                                 
+                                 <th>EBS-optimized by default</th>
+                                 
+                                 <th>Maximum bandwidth (Mbps)</th>
+                                 
+                                 <th>Maximum throughput (MB/s, 128 KB I/O)</th>
+                                 
+                                 <th>Maximum IOPS (16 KB I/O)</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c1.xlarge</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>1,000</td>
+                                 
+                                 <td>125</td>
+                                 
+                                 <td>8,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c3.xlarge</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>500</td>
+                                 
+                                 <td>62.5</td>
+                                 
+                                 <td>4,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c3.2xlarge</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>1,000</td>
+                                 
+                                 <td>125</td>
+                                 
+                                 <td>8,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c3.4xlarge</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>2,000</td>
+                                 
+                                 <td>250</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">g2.2xlarge</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>1,000</td>
+                                 
+                                 <td>125</td>
+                                 
+                                 <td>8,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i2.xlarge</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>500</td>
+                                 
+                                 <td>62.5</td>
+                                 
+                                 <td>4,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i2.2xlarge</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>1,000</td>
+                                 
+                                 <td>125</td>
+                                 
+                                 <td>8,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i2.4xlarge</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>2,000</td>
+                                 
+                                 <td>250</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m1.large</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>500</td>
+                                 
+                                 <td>62.5</td>
+                                 
+                                 <td>4,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m1.xlarge</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>1,000</td>
+                                 
+                                 <td>125</td>
+                                 
+                                 <td>8,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m2.2xlarge</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>500</td>
+                                 
+                                 <td>62.5</td>
+                                 
+                                 <td>4,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m2.4xlarge</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>1,000</td>
+                                 
+                                 <td>125</td>
+                                 
+                                 <td>8,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m3.xlarge</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>500</td>
+                                 
+                                 <td>62.5</td>
+                                 
+                                 <td>4,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m3.2xlarge</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>1,000</td>
+                                 
+                                 <td>125</td>
+                                 
+                                 <td>8,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r3.xlarge</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>500</td>
+                                 
+                                 <td>62.5</td>
+                                 
+                                 <td>4,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r3.2xlarge</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>1,000</td>
+                                 
+                                 <td>125</td>
+                                 
+                                 <td>8,000</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r3.4xlarge</code></td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>2,000</td>
+                                 
+                                 <td>250</td>
+                                 
+                                 <td>16,000</td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                             
                      
                      
                      <h2 id="enable-ebs-optimization">Enabling Amazon EBS Optimization at Launch</h2>
@@ -1185,14 +3481,14 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p><code class="code">--ebs-optimized</code> with <a href="./cli/latest/reference/ec2/run-instances.html" target="_blank">run-instances</a>
+                              <p><code class="code">--ebs-optimized</code> with <a href="./cli/latest/reference/ec2/run-instances.html">run-instances</a>
                                  (AWS CLI)
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><code class="code">-EbsOptimized</code> with <a href="./powershell/latest/reference/items/New-EC2Instance.html" target="_blank">New-EC2Instance</a>
+                              <p><code class="code">-EbsOptimized</code> with <a href="./powershell/latest/reference/items/New-EC2Instance.html">New-EC2Instance</a>
                                  (AWS Tools for Windows PowerShell)
                               </p>
                               
@@ -1232,8 +3528,7 @@
                            <div class="aws-note">
                               <p class="aws-note">Warning</p>
                               <p>When you stop an instance, the data on any instance store volumes is erased. 
-                                 Therefore, if you have any data on instance store volumes that you want to keep, be
-                                 sure to back it up to persistent storage.
+                                 To keep data from instance store volumes, be sure to back it up to persistent storage.
                               </p>
                            </div> 
                            
@@ -1319,28 +3614,32 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p><code class="code">--ebs-optimized</code> with <a href="./cli/latest/reference/ec2/modify-instance-attribute.html" target="_blank">modify-instance-attribute</a> (AWS CLI)
+                              <p><code class="code">--ebs-optimized</code> with <a href="./cli/latest/reference/ec2/modify-instance-attribute.html">modify-instance-attribute</a> (AWS CLI)
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><code class="code">-EbsOptimized</code> with <a href="./powershell/latest/reference/items/Edit-EC2InstanceAttribute.html" target="_blank">Edit-EC2InstanceAttribute</a> (AWS Tools for Windows PowerShell)
+                              <p><code class="code">-EbsOptimized</code> with <a href="./powershell/latest/reference/items/Edit-EC2InstanceAttribute.html">Edit-EC2InstanceAttribute</a> (AWS Tools for Windows PowerShell)
                               </p>
                               
                            </li>
                         </ul>
                      </div>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -1349,8 +3648,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="ebs-modifying-snapshot-permissions.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="EBSEncryption.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="snapshot-lifecycle.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="EBSEncryption.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -1359,7 +3660,7 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Instance Types That Support EBS Optimization"><a class="pagetoc" href="#ebs-optimization-support">Instance Types That Support EBS Optimization</a></li>
+                        <li class="pagetoc" name="Instance Types that Support EBS Optimization"><a class="pagetoc" href="#ebs-optimization-support">Instance Types that Support EBS Optimization</a></li>
                         <li class="pagetoc" name="Enabling Amazon EBS Optimization at Launch"><a class="pagetoc" href="#enable-ebs-optimization">Enabling Amazon EBS Optimization at Launch</a></li>
                         <li class="pagetoc" name="Modifying Amazon EBS Optimization for a Running
                 Instance"><a class="pagetoc" href="#modify-ebs-optimized-attribute">Modifying Amazon EBS Optimization for a Running
@@ -1369,6 +3670,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

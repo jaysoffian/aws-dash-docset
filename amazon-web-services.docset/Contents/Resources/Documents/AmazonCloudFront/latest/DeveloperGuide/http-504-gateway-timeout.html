@@ -4,7 +4,8 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="troubleshooting-response-errors.html" title="Troubleshooting Error Responses from Your Origin">
-      <link rel="prev" href="http-503-service-unavailable.html" title="HTTP 503 Status Code (Service Unavailable)">
+      <link rel="prev" href="http-503-lambda-limit-execeeded-error.html" title="HTTP 503 Status Code 
+			(Lambda Limit Exceeded)">
       <link rel="next" href="load-testing.html" title="Load Testing CloudFront">
       <meta name="description" content="An HTTP 504 status code (Gateway Timeout) indicates that when CloudFront forwarded a request to the origin (because the requested object wasn&#x2019;t in the edge cache), one of the following happened:">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
@@ -12,6 +13,8 @@
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/http-504-gateway-timeout.html">
@@ -21,7 +24,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +36,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="Troubleshooting.html">Troubleshooting</a> &#xBB; <a href="troubleshooting-response-errors.html">Troubleshooting Error Responses from Your Origin</a> &#xBB; <span class="breadcrumb">HTTP 504 Status Code (Gateway Timeout)</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="Troubleshooting.html">Troubleshooting</a> &#xBB; <a href="troubleshooting-response-errors.html">Troubleshooting Error Responses from Your Origin</a> &#xBB; <span class="breadcrumb">HTTP 504 Status Code (Gateway Timeout)</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="http-504-gateway-timeout">HTTP 504 Status Code (Gateway Timeout)</h1>
                      <p>An HTTP 504 status code (Gateway Timeout) indicates that when CloudFront forwarded
@@ -56,8 +62,27 @@
                            </li>
                         </ul>
                      </div>
-                     <p>An origin will return an HTTP 504 status code if CloudFront traffic is blocked to
-                        the origin by a firewall or security group, or 
+                     <div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>If you&apos;re a customer trying to access a website or application, and you&apos;ve gotten
+                           this error, there&apos;s probably just
+                           				unusually high traffic to the site. Please wait a little while, and then try accessing
+                           the site (or running the
+                           				application) again. If you still get an error, please contact the website or application
+                           distributor directly for support. 
+                        </p>
+                        <p><b>Why is this error coming from CloudFront?</b> CloudFront helps websites
+                           					speed up delivery of content, like images or web pages, to customers by storing
+                           copies in servers located around 
+                           					the world. But when there&apos;s a lot of internet traffic to a website and the site
+                           can&apos;t keep up, an error is returned when 
+                           					anyone tries to access the site. When CloudFront can&apos;t access content that you&apos;ve
+                           requested from a website, it passes on the error from the 
+                           					site or application that you&apos;re trying to use. 
+                        </p>
+                     </div>
+                     <p>CloudFront will return an HTTP 504 status code if traffic is blocked to the origin
+                        by a firewall or security group, or 
                         				if the origin isn&#x2019;t accessible on the internet. Check for those issues first.
                         Then, if access isn&#x2019;t the problem, explore  
                         				application delays and server timeouts to help you identify and fix the issues.
@@ -126,11 +151,11 @@
                         						CloudFront Traffic
                      </h2>
                      				
-                     <p>If your origin uses Elastic Load Balancing, review the <a href="./elasticloadbalancing/latest/classic/elb-security-groups.html" target="_blank">
+                     <p>If your origin uses Elastic Load Balancing, review the <a href="./elasticloadbalancing/latest/classic/elb-security-groups.html">
                            					ELB security groups</a> and make sure that the security groups allow inbound traffic from CloudFront.
                      </p>
                      				
-                     <p>You can also use AWS Lambda to <a href="./elasticloadbalancing/latest/classic/elb-security-groups.html" target="_blank"> automatically update your security groups</a> to allow inbound traffic
+                     <p>You can also use AWS Lambda to <a href="./elasticloadbalancing/latest/classic/elb-security-groups.html"> automatically update your security groups</a> to allow inbound traffic
                         					from CloudFront.
                      </p>
                      			
@@ -143,7 +168,7 @@
                      				
                      <p>CloudFront edge locations connect to origin servers through the internet. If your
                         custom origin is on a private network, CloudFront can&#x2019;t reach it. 
-                        					Because of this, you can&#x2019;t use private servers, including <a href="./elasticloadbalancing/latest/classic/elb-internal-load-balancers.html" target="_blank">
+                        					Because of this, you can&#x2019;t use private servers, including <a href="./elasticloadbalancing/latest/classic/elb-internal-load-balancers.html">
                            						internal Classic Load Balancers</a>, as origin servers with CloudFront.
                      </p>
                      				
@@ -288,7 +313,7 @@
                                  If you use an Amazon EC2 instance for 
                                  							your backend server, review the CloudWatch metrics for the server to check
                                  the CPU utilization. For more information, see the 
-                                 							<a href="./AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html" target="_blank"> Amazon CloudWatch User Guide</a>. Or if you&#x2019;re using your own server, refer
+                                 							<a href="./AmazonCloudWatch/latest/monitoring/WhatIsCloudWatch.html"> Amazon CloudWatch User Guide</a>. Or if you&#x2019;re using your own server, refer
                                  							 to the server Help documentation for instructions on how to check CPU utilization.
                               </p>
                            </li>
@@ -325,7 +350,7 @@
                            <li class="listitem">
                               <p>If you use an Amazon EC2 instance as your backend server, make sure that the instance
                                  type has the appropriate resources to fulfill 
-                                 							incoming requests. For more information, see <a href="./AWSEC2/latest/UserGuide/instance-types.html" target="_blank">
+                                 							incoming requests. For more information, see <a href="./AWSEC2/latest/UserGuide/instance-types.html">
                                     							Instance Types</a> in the Amazon EC2 User Guide. 
                               </p>
                               						
@@ -381,21 +406,25 @@
                         						experiencing HTTP 504 errors, then you should consider changing the time that
                         is specified in your web distribution for origin response 
                         						timeout. To learn more, see 
-                        						<a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesOriginResponseTimeout" target="_blank">
+                        						<a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesOriginResponseTimeout">
                            						Origin Response Timeout</a>.
                      </p>
                      				
                      				
                      			
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -404,8 +433,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="http-503-service-unavailable.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="load-testing.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="http-503-lambda-limit-execeeded-error.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="load-testing.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -425,6 +456,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

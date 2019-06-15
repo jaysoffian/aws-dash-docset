@@ -1,17 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Update an API Endpoint Type in API Gateway - Amazon API Gateway</title>
+      <title>Change a Public or Private API Endpoint Type in
+         API Gateway - Amazon API Gateway
+      </title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="updating-api.html" title="Update and Maintain an API in Amazon API Gateway">
-      <link rel="prev" href="updating-api.html" title="Update and Maintain an API in Amazon API Gateway">
+      <link rel="up" href="updating-api.html" title="Update and Maintain a REST API in Amazon API Gateway">
+      <link rel="prev" href="updating-api.html" title="Update and Maintain a REST API in Amazon API Gateway">
       <link rel="next" href="maintain-api-using-console.html" title="Maintain an API Using the API Gateway
                 Console">
-      <meta name="description" content="Learn how to update the type of API from edge-optimized to regional and vice versa.">
+      <meta name="description" content="Learn how to change the type of API from edge-optimized to regional and vice versa, or from public to private or private to regional.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-api-migration.html">
@@ -21,7 +25,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,52 +37,92 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="how-to-create-api.html">Creating an API in Amazon API Gateway</a> &#xBB; <a href="updating-api.html">Update and Maintain an API in Amazon API Gateway</a> &#xBB; <span class="breadcrumb">Update an API Endpoint Type in API Gateway</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="updating-api.html">Update and Maintain a REST API in Amazon API Gateway</a> &#xBB; <span class="breadcrumb">Change a Public or Private API Endpoint Type in
+                                    API Gateway</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="apigateway-api-migration">Update an API Endpoint Type in API Gateway</h1>
-                     <p> Updating an API endpoint type requires you to update the API&apos;s configuration. You
+                     <h1 class="topictitle" id="apigateway-api-migration">Change a Public or Private API Endpoint Type in
+                        API Gateway
+                     </h1>
+                     <p>Changing an API endpoint type requires you to update the API&apos;s configuration. You
                         can
-                        update an existing API type from edge-optimized to regional, and vice-versa, using
-                        the API Gateway
-                        console, AWS CLI, an AWS SDK for API Gateway, or the API Gateway REST API. The update
-                        operation may take
-                        up to 60 seconds to complete. 
+                        change an existing API type using the API Gateway console, the AWS CLI, or an AWS
+                        SDK for API Gateway.
+                        The update operation may take up to 60 seconds to complete. During this time, your
+                        API will
+                        be available, but its endpoint type cannot be changed again until the current change
+                        is
+                        completed.
                      </p>
-                     <p>An edge-optimized API may have different behaviors than a regional API. For example,
+                     <p>The following endpoint type changes are supported:</p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>From edge-optimized to regional or private</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>From regional to edge-optimized or private</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>From private to regional</p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <p>You cannot change a private API into an edge-optimized API.</p>
+                     <p>If you are changing a public API from edge-optimized to regional or vice versa, note
+                        that
+                        an edge-optimized API may have different behaviors than a regional API. For example,
                         an
                         edge-optimized API removes the <code class="code">Content-MD5</code> header. Any MD5 hash value passed to
                         the backend can be expressed in a request string parameter or a body property. However,
                         the
                         regional API passes this header through, although it may remap the header name to
                         some other
-                        name. 
-                        
-                        Understanding the differences helps you decide how to update an edge-optimized API
-                        to a
-                        regional one or from a regional API to an edge-optimized one. 
+                        name. Understanding the differences helps you decide how to update an edge-optimized
+                        API to
+                        a regional one or from a regional API to an edge-optimized one. 
                      </p>
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Topics</strong></p>
                         <ul>
-                           <li><a href="#migrate-api-using-console">Use the API Gateway Console to Update an API Endpoint</a></li>
-                           <li><a href="#migrate-api-using-aws-cli">Use the AWS CLI to Update an API
-                                 Endpoint</a></li>
-                           <li><a href="#migrate-api-using-api-gateway-rest-api">Use the API Gateway REST API to
-                                 Update an API Endpoint</a></li>
+                           <li><a href="#migrate-api-using-console">Use the API Gateway Console to Change an API
+                                 Endpoint Type</a></li>
+                           <li><a href="#migrate-api-using-aws-cli">Use the AWS CLI to Change an API Endpoint
+                                 Type</a></li>
                         </ul>
                      </div>
                      
-                     <h2 id="migrate-api-using-console">Use the API Gateway Console to Update an API Endpoint</h2>
+                     <h2 id="migrate-api-using-console">Use the API Gateway Console to Change an API
+                        Endpoint Type
+                     </h2>
                      
+                     <p>To change the API endpoint type of your API, perform one of the following sets of
+                        steps:
+                     </p>
                      
+                     <p class="title"><b>To convert a public endpoint from regional or edge-optimized and vice
+                           versa</b></p>
                      <ol>
                         <li>
                            
-                           <p> Sign in to the console and choose <b>APIs</b> in the primary
-                              navigation pane.
+                           <p> Sign in to the API Gateway console and choose <b>APIs</b> in the
+                              primary navigation pane.
                            </p>
                            
                         </li>
@@ -88,22 +132,11 @@
                                  API</b>.
                            </p>
                            
-                           <div class="mediaobject">
-                              
-                              <img src="../../..//img/update-api-endpoint-in-console.png" alt="
-                        Update API endpoint in console
-                    " style="max-width:100%">
-                              
-                              
-                              
-                           </div>
-                           
-                           
                         </li>
                         <li>
                            
-                           <p> Change the <b>Endpoint Type</b> option under <b>Endpoint
-                                 Configuration</b> from  <code class="code">Edge Optimized</code> to
+                           <p>Change the <b>Endpoint Type</b> option under <b>Endpoint
+                                 Configuration</b> from <code class="code">Edge Optimized</code> to
                               <code class="code">Regional</code> or from <code class="code">Regional</code> to <code class="code">Edge
                                  Optimized</code>.
                            </p>
@@ -117,14 +150,61 @@
                         </li>
                      </ol>
                      
+                     <p class="title"><b>To convert a private endpoint to a regional endpoint</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p> Sign in to the API Gateway console and choose <b>APIs</b> in the
+                              primary navigation pane.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p> Choose the settings (gear icon) of an API under <b>+ Create
+                                 API</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Edit the resource policy for your API to remove any mention of VPCs or VPC
+                              endpoints so that API calls from outside your VPC as well as inside your VPC
+                              will succeed.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Change the <b>Endpoint Type</b> to <code class="code">Regional</code>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Save</b> to start the update.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Remove the resource policy from your API.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Redeploy your API so that the changes will take effect.</p>
+                           
+                        </li>
+                     </ol>
                      
-                     <h2 id="migrate-api-using-aws-cli">Use the AWS CLI to Update an API
-                        Endpoint
+                     
+                     <h2 id="migrate-api-using-aws-cli">Use the AWS CLI to Change an API Endpoint
+                        Type
                      </h2>
                      
-                     <p> To use the AWS CLI commands to update an edge-optimized API of <code class="code">{api-id}</code>,
-                        call the <a href="./cli/latest/reference/apigateway/update-rest-api.html" target="_blank">restapi:update</a>
-                        as follows: 
+                     <p> To use the AWS CLI to update an edge-optimized API whose API ID is <code class="code"><em class="replaceable"><code>{api-id}</code></em></code>,
+                        call <a href="./cli/latest/reference/apigateway/update-rest-api.html">update-rest-api</a> as follows: 
                      </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws apigateway update-rest-api \
     --rest-api-id {api-id} 
@@ -146,67 +226,24 @@
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws apigateway update-rest-api \
     --rest-api-id {api-id} 
     --patch-operations op=replace,path=/endpointConfiguration/types/REGIONAL,value=EDGE</code></pre>
-                     <p>Because <a href="./cli/latest/reference/apigateway/put-rest-api.html" target="_blank">put-rest-api</a> is for updating API definitions, it is not applicable to
-                        updating an API endpoint type.
-                     </p>
-                     
-                     
-                     <h2 id="migrate-api-using-api-gateway-rest-api">Use the API Gateway REST API to
-                        Update an API Endpoint
-                     </h2>
-                     
-                     <p> To use the API Gateway REST API to update an edge-optimized API of <code class="code">{api-id}</code>,
-                        call the <a href="./apigateway/api-reference/link-relation/restapi-update/" target="_blank">restapi:update</a>
-                        as follows: 
-                     </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">PATCH /restapis/{api-id}
-
-{
-  &quot;patchOperations&quot; : [{
-    &quot;op&quot; : &quot;replace&quot;,
-    &quot;path&quot; : &quot;/endpointConfiguration/types/EDGE&quot;,
-    &quot;value&quot; : &quot;REGIONAL&quot;
-  }]
-}</code></pre>
-                     <p>The successful response has a status code of <code class="code">200 OK</code> and a payload similar
-                        to the following:
-                     </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
-    
-    &quot;createdDate&quot;: &quot;2017-10-16T04:09:31Z&quot;,
-    &quot;description&quot;: &quot;Your first API with Amazon API Gateway. This is a sample API that integrates via HTTP with our demo Pet Store endpoints&quot;,
-    &quot;endpointConfiguration&quot;: {
-        &quot;types&quot;: &quot;REGIONAL&quot;
-    },
-    &quot;id&quot;: &quot;0gsnjtjck8&quot;,
-    &quot;name&quot;: &quot;PetStore imported as edge-optimized&quot;
-}</code></pre>
-                     <p>Conversely, to update a regional API to an edge-optimized API, call the <a href="./apigateway/api-reference/link-relation/restapi-update/" target="_blank"><code class="code">restapi:update</code></a>
-                        as follows:
-                     </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">PATCH /restapis/{api-id}
-
-{
-  &quot;patchOperations&quot; : [{
-    &quot;op&quot; : &quot;replace&quot;,
-    &quot;path&quot; : &quot;/endpointConfiguration/types/REGIONAL&quot;,
-    &quot;value&quot; : &quot;EDGE&quot;
-  }]
-}</code></pre>
-                     <p>Because <a href="./apigateway/api-reference/link-relation/restapi-put/" target="_blank">restapi:put</a> is
+                     <p>Because <a href="./cli/latest/reference/apigateway/put-rest-api.html">put-rest-api</a> is
                         for updating API definitions, it is not applicable to updating an API endpoint
                         type.
                      </p>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -216,7 +253,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="updating-api.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="maintain-api-using-console.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -225,18 +264,21 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Use the API Gateway Console to Update an API Endpoint"><a class="pagetoc" href="#migrate-api-using-console">Use the API Gateway Console to Update an API Endpoint</a></li>
-                        <li class="pagetoc" name="Use the AWS CLI to Update an API
-                Endpoint"><a class="pagetoc" href="#migrate-api-using-aws-cli">Use the AWS CLI to Update an API
-                              Endpoint</a></li>
-                        <li class="pagetoc" name="Use the API Gateway REST API to
-                Update an API Endpoint"><a class="pagetoc" href="#migrate-api-using-api-gateway-rest-api">Use the API Gateway REST API to
-                              Update an API Endpoint</a></li>
+                        <li class="pagetoc" name="Use the API Gateway Console to Change an API
+                Endpoint Type"><a class="pagetoc" href="#migrate-api-using-console">Use the API Gateway Console to Change an API
+                              Endpoint Type</a></li>
+                        <li class="pagetoc" name="Use the AWS CLI to Change an API Endpoint
+                Type"><a class="pagetoc" href="#migrate-api-using-aws-cli">Use the AWS CLI to Change an API Endpoint
+                              Type</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

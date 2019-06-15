@@ -1,0 +1,590 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>How Amazon API Gateway Resource Policies Affect
+         Authorization Workflow - Amazon API Gateway
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="apigateway-resource-policies.html" title="Control Access to an API with Amazon API Gateway
+            Resource Policies">
+      <link rel="prev" href="apigateway-control-access-policy-language-overview.html" title="Access Policy
+                Language Overview for Amazon API Gateway">
+      <link rel="next" href="apigateway-resource-policies-examples.html" title="API Gateway Resource Policy
+                Examples">
+      <meta name="description" content="Understand how resource policies work with other authorization mechanisms to control access to your Amazon API Gateway resources.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon API Gateway">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-authorization-flow.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="apigateway-control-access-to-api.html">Controlling and Managing Access to a REST
+                                    			API in API Gateway</a> &#xBB; <a href="apigateway-resource-policies.html">Control Access to an API with Amazon API Gateway
+                                    Resource Policies</a> &#xBB; <span class="breadcrumb">How Amazon API Gateway Resource Policies Affect
+                                    Authorization Workflow</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="apigateway-authorization-flow">How Amazon API Gateway Resource Policies Affect
+                        Authorization Workflow
+                     </h1>
+                     <p>When API Gateway evaluates the resource policy attached to your API, the result is
+                        affected by
+                        the authentication type that you have defined for the API, as illustrated in the flowcharts
+                        in the following sections.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#apigateway-authorization-flow-resource-policy-only">API Gateway Resource
+                                 Policy Only</a></li>
+                           <li><a href="#apigateway-authorization-flow-lambda">Lambda Authorizer and Resource
+                                 Policy</a></li>
+                           <li><a href="#apigateway-authorization-flow-iam">IAM Authentication and Resource
+                                 Policy</a></li>
+                           <li><a href="#apigateway-authorization-flow-cognito">Amazon Cognito Authentication and
+                                 Resource Policy</a></li>
+                           <li><a href="#apigateway-resource-policies-iam-policies-interaction">Policy
+                                 Evaluation Outcome Tables</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="apigateway-authorization-flow-resource-policy-only">API Gateway Resource
+                        Policy Only
+                     </h2>
+                     
+                     <p>In this workflow, an API Gateway resource policy is attached to the API, but no
+                        authentication type is defined for the API. Evaluation of the policy will involve
+                        seeking an explicit allow based on the inbound criteria of the caller. An implicit
+                        denial or any explicit denial will result in denying the caller.
+                     </p>
+                     
+                     <p>Following is an example of such a resource policy.</p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/apigateway-auth-resource-policy-only.png" alt="
+                
+            " style="max-width:100%">
+                        
+                        
+                        
+                     </div>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;Version&quot;: &quot;2012-10-17&quot;,
+    &quot;Statement&quot;: [
+        {
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Principal&quot;: &quot;*&quot;,
+            &quot;Action&quot;: &quot;execute-api:Invoke&quot;,
+            &quot;Resource&quot;: &quot;arn:aws:execute-api:<em class="replaceable"><code>region</code></em>:<em class="replaceable"><code>account-id</code></em>:<em class="replaceable"><code>api-id</code></em>/&quot;,
+            &quot;Condition&quot;: {
+                &quot;IpAddress&quot;: {
+                    &quot;aws:SourceIp&quot;: [&quot;<em class="replaceable"><code>192.0.2.0/24</code></em>&quot;, &quot;<em class="replaceable"><code>198.51.100.0/24</code></em>&quot; ]
+                }
+            }
+        }
+    ]
+}</code></pre>
+                     
+                     <h2 id="apigateway-authorization-flow-lambda">Lambda Authorizer and Resource
+                        Policy
+                     </h2>
+                     
+                     <p>In this workflow, a Lambda authorizer is configured for the API in addition to a
+                        resource policy. The resource policy will be evaluated in two phases. Prior to calling
+                        the Lambda authorizer, API Gateway will first evaluate the policy and check for any
+                        explicit
+                        denials. If found, the caller is denied access immediately. Otherwise, the Lambda
+                        authorizer is called, and it returns a <a href="api-gateway-lambda-authorizer-output.html">policy document</a>, which is
+                        evaluated in conjunction with the resource policy. The result is determined based
+                        on
+                        <a href="apigateway-authorization-flow.html#apigateway-resource-policies-iam-policies-interaction">Table A</a>
+                        below.
+                     </p>
+                     
+                     <p>The following example resource policy allows calls only from the VPC endpoint whose
+                        VPC endpoint ID is <code class="code"><em class="replaceable"><code>vpce-1a2b3c4d</code></em></code>. During the
+                        pre-auth evaluation, only the calls coming from the VPC endpoint indicated below will
+                        be
+                        allow to move forward and evaluate the Lambda authorizer. All remaining calls will
+                        be
+                        blocked.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/apigateway-auth-lambda-resource-policy.png" alt="
+                
+            " style="max-width:100%">
+                        
+                        
+                        
+                     </div>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;Version&quot;: &quot;2012-10-17&quot;,
+    &quot;Statement&quot;: [
+        {
+            &quot;Effect&quot;: &quot;Deny&quot;,
+            &quot;Principal&quot;: &quot;*&quot;,
+            &quot;Action&quot;: &quot;execute-api:Invoke&quot;,
+            &quot;Resource&quot;: [
+                &quot;arn:aws:execute-api:<em class="replaceable"><code>region</code></em>:<em class="replaceable"><code>account-id</code></em>:<em class="replaceable"><code>api-id</code></em>/&quot;
+            ],
+            &quot;Condition&quot; : {
+                &quot;StringNotEquals&quot;: {
+                    &quot;aws:SourceVpce&quot;: &quot;<em class="replaceable"><code>vpce-1a2b3c4d</code></em>&quot;
+                }
+            }
+        }
+    ]
+}</code></pre>
+                     
+                     <h2 id="apigateway-authorization-flow-iam">IAM Authentication and Resource
+                        Policy
+                     </h2>
+                     
+                     <p>In this workflow, IAM authentication is configured for the API in addition to a
+                        resource policy. After authenticating the user with the IAM service, the policies
+                        attached to the IAM user in addition to the resource policy are evaluated together.
+                        The
+                        outcome will vary based on whether the caller is in the same account, or a separate
+                        AWS
+                        account, from the API owner. If the caller and API owner are from separate accounts,
+                        both the IAM user policies and the resource policy explicitly allow the caller to
+                        proceed. (See <a href="apigateway-authorization-flow.html#apigateway-resource-policies-iam-policies-interaction">Table B</a> below.) In contrast, if the caller and the API owner are in the same
+                        account, then either the user policies or the resource policy must explicitly allow
+                        the
+                        caller to proceed. (See <a href="apigateway-authorization-flow.html#apigateway-resource-policies-iam-policies-interaction">Table A</a>
+                        below.)
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/apigateway-auth-iam-resource-policy.png" alt="
+                
+            " style="max-width:100%">
+                        
+                        
+                        
+                     </div>
+                     
+                     <p>Following is an example of a cross-account resource policy. Assuming the IAM user
+                        policy contains an Allow, this resource policy will allow calls only from the VPC
+                        whose
+                        VPC ID is <code class="code"><em class="replaceable"><code>vpc-2f09a348</code></em></code>. (See <a href="apigateway-authorization-flow.html#apigateway-resource-policies-iam-policies-interaction">Table B</a>
+                        below.)
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;Version&quot;: &quot;2012-10-17&quot;,
+    &quot;Statement&quot;: [
+        {
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Principal&quot;: &quot;&quot;,
+            &quot;Action&quot;: &quot;execute-api:Invoke&quot;,
+            &quot;Resource&quot;: [
+                &quot;arn:aws:execute-api:region:<em class="replaceable"><code>account-id</code></em>:<em class="replaceable"><code>api-id</code></em>/&quot;
+            ],
+            &quot;Condition&quot; : {
+                &quot;StringEquals&quot;: {
+                    &quot;aws:SourceVpc&quot;: &quot;<em class="replaceable"><code>vpc-2f09a348</code></em>&quot;
+                    }
+            }
+        }
+    ]
+}</code></pre>
+                     
+                     <h2 id="apigateway-authorization-flow-cognito">Amazon Cognito Authentication and
+                        Resource Policy
+                     </h2>
+                     
+                     <p>In this workflow, an <a href="apigateway-integrate-with-cognito.html">Amazon Cognito user
+                           pool</a> is configured for the API in addition to a resource policy. API Gateway first
+                        attempts to authenticate the caller via Amazon Cognito. This is typically performed
+                        via a <a href="./cognito/latest/developerguide/amazon-cognito-user-pools-using-tokens-with-identity-providers.html">JWT token</a> provided by the caller. If authentication is successful, the
+                        resource policy is evaluated independently, and an explicit allow is required. A deny
+                        or
+                        neither allow or deny will result in a deny. Following is an example of a resource
+                        policy that might be used together with Amazon Cognito User Pools.
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/apigateway-auth-cognito-resource-policy.png" alt="
+                
+            " style="max-width:100%">
+                        
+                        
+                        
+                     </div>
+                     
+                     <p>Following is an example of a resource policy that allows calls only from specified
+                        source IPs, assuming that the Amazon Cognito authentication token contains an Allow.
+                        (See <a href="apigateway-authorization-flow.html#apigateway-resource-policies-iam-policies-interaction">Table A</a>
+                        below.)
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;Version&quot;: &quot;2012-10-17&quot;,
+    &quot;Statement&quot;: [
+        {
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Principal&quot;: &quot;*&quot;,
+            &quot;Action&quot;: &quot;execute-api:Invoke&quot;,
+            &quot;Resource&quot;: &quot;arn:aws:execute-api:<em class="replaceable"><code>region</code></em>:<em class="replaceable"><code>account-id</code></em>:<em class="replaceable"><code>api-id</code></em>/&quot;,
+            &quot;Condition&quot;: {
+                &quot;IpAddress&quot;: {
+                    &quot;aws:SourceIp&quot;: [&quot;<em class="replaceable"><code>192.0.2.0/24</code></em>&quot;, &quot;<em class="replaceable"><code>198.51.100.0/24</code></em>&quot; ]
+                }
+            }
+        }
+    ]
+}</code></pre>
+                     
+                     <h2 id="apigateway-resource-policies-iam-policies-interaction">Policy
+                        Evaluation Outcome Tables
+                     </h2>
+                     
+                     <p>Table A lists the resulting behavior when access to an API Gateway API is controlled
+                        by an
+                        IAM policy (or a Lambda or Amazon Cognito User Pools authorizer) and an API Gateway
+                        resource policy, both of
+                        which are in the same AWS account.
+                     </p>
+                     
+                     <div class="table">
+                        <p class="title"><b>Table A: Account A Calls API Owned by Account A</b></p>
+                        <div class="table-contents">
+                           <table id="w468aac13b7c17c21c15b5">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>IAM User Policy (or Lambda or Amazon Cognito User Pools authorizer)</th>
+                                 
+                                 <th>API Gateway Resource Policy</th>
+                                 
+                                 <th>Resulting Behavior</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>Allow</td>
+                                 
+                                 <td>Allow</td>
+                                 
+                                 <td>Allow</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Allow</td>
+                                 
+                                 <td>Neither Allow nor Deny</td>
+                                 
+                                 <td>Allow</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Allow</td>
+                                 
+                                 <td>Deny</td>
+                                 
+                                 <td>Explicit Deny</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Neither Allow nor Deny</td>
+                                 
+                                 <td>Allow</td>
+                                 
+                                 <td>Allow</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Neither Allow nor Deny</td>
+                                 
+                                 <td>Neither Allow nor Deny</td>
+                                 
+                                 <td>Implicit Deny</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Neither Allow nor Deny</td>
+                                 
+                                 <td>Deny</td>
+                                 
+                                 <td>Explicit Deny</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Deny</td>
+                                 
+                                 <td>Allow</td>
+                                 
+                                 <td>Explicit Deny</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Deny</td>
+                                 
+                                 <td>Neither Allow nor Deny</td>
+                                 
+                                 <td>Explicit Deny</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Deny</td>
+                                 
+                                 <td>Deny</td>
+                                 
+                                 <td>Explicit Deny</td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     <p>Table B lists the resulting behavior when access to an API Gateway API is controlled
+                        by an
+                        IAM policy (or a Lambda or Amazon Cognito User Pools authorizer) and an API Gateway
+                        resource policy, which are
+                        in different AWS accounts. If either is silent (neither allow nor deny), cross-account
+                        access is denied. This is because cross-account access requires that both the resource
+                        policy and the IAM policy (or a Lambda or Amazon Cognito User Pools authorizer) explicitly
+                        grant
+                        access.
+                     </p>
+                     
+                     <div class="table">
+                        <p class="title"><b>Table B: Account B Calls API Owned by Account A</b></p>
+                        <div class="table-contents">
+                           <table id="w468aac13b7c17c21c15b9">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>IAM User Policy (or Lambda or Amazon Cognito User Pools authorizer)</th>
+                                 
+                                 <th>API Gateway Resource Policy</th>
+                                 
+                                 <th>Resulting Behavior</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>Allow</td>
+                                 
+                                 <td>Allow</td>
+                                 
+                                 <td>Allow</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Allow</td>
+                                 
+                                 <td>Neither Allow nor Deny</td>
+                                 
+                                 <td>Implicit Deny</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Allow</td>
+                                 
+                                 <td>Deny</td>
+                                 
+                                 <td>Explicit Deny</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Neither Allow nor Deny</td>
+                                 
+                                 <td>Allow</td>
+                                 
+                                 <td>Implicit Deny</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Neither Allow nor Deny</td>
+                                 
+                                 <td>Neither Allow nor Deny</td>
+                                 
+                                 <td>Implicit Deny</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Neither Allow nor Deny</td>
+                                 
+                                 <td>Deny</td>
+                                 
+                                 <td>Explicit Deny</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Deny</td>
+                                 
+                                 <td>Allow</td>
+                                 
+                                 <td>Explicit Deny</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Deny</td>
+                                 
+                                 <td>Neither Allow nor Deny</td>
+                                 
+                                 <td>Explicit Deny</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Deny</td>
+                                 
+                                 <td>Deny</td>
+                                 
+                                 <td>Explicit Deny</td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="apigateway-control-access-policy-language-overview.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="apigateway-resource-policies-examples.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="API Gateway Resource
+                Policy Only"><a class="pagetoc" href="#apigateway-authorization-flow-resource-policy-only">API Gateway Resource
+                              Policy Only</a></li>
+                        <li class="pagetoc" name="Lambda Authorizer and Resource
+                Policy"><a class="pagetoc" href="#apigateway-authorization-flow-lambda">Lambda Authorizer and Resource
+                              Policy</a></li>
+                        <li class="pagetoc" name="IAM Authentication and Resource
+                Policy"><a class="pagetoc" href="#apigateway-authorization-flow-iam">IAM Authentication and Resource
+                              Policy</a></li>
+                        <li class="pagetoc" name="Amazon Cognito Authentication and
+                Resource Policy"><a class="pagetoc" href="#apigateway-authorization-flow-cognito">Amazon Cognito Authentication and
+                              Resource Policy</a></li>
+                        <li class="pagetoc" name="Policy
+                Evaluation Outcome Tables"><a class="pagetoc" href="#apigateway-resource-policies-iam-policies-interaction">Policy
+                              Evaluation Outcome Tables</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon API Gateway';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Using AWS Lambda with Other Services - AWS Lambda</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="welcome.html" title="What Is AWS Lambda?">
+      <link rel="prev" href="best-practices.html" title="Best Practices for Working with AWS Lambda Functions">
+      <link rel="next" href="services-alb.html" title="Using AWS Lambda with an Application Load Balancer">
+      <meta name="description" content="Describes using AWS Lambda with other services.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="AWS Lambda">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/lambda-services.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Using AWS Lambda with Other Services</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="lambda-services">Using AWS Lambda with Other Services</h1>
+                     <p>AWS Lambda integrates with other AWS services to invoke functions. You can configure
+                        triggers to invoke a
+                        function in response to resource lifecycle events, respond to incoming HTTP requests,
+                        consume events from a queue,
+                        or <a href="with-scheduled-events.html">run on a schedule</a>.
+                     </p>
+                     <p>Each service that integrates with Lambda sends data to your function in JSON as an
+                        event. The structure of the
+                        event document is different for each event type, and contains data about the resource
+                        or request that triggered the
+                        function. Lambda runtimes convert the event into an object and pass it to your function.
+                     </p>
+                     <p>The following example shows a test event from an <a href="services-alb.html">Application Load Balancer</a> that represents a GET
+                        request to <code class="code">/lambda?query=1234ABCD</code>.
+                     </p>
+                     <div class="example">
+                        <p class="title"><b>Example Event from an Application Load Balancer</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
+    &quot;requestContext&quot;: {
+        &quot;elb&quot;: {
+            &quot;targetGroupArn&quot;: &quot;arn:aws:elasticloadbalancing:us-east-2:123456789012:targetgroup/lambda-279XGJDqGZ5rsrHC2Fjr/49e9d65c45c6791a&quot;
+        }
+    },
+    &quot;httpMethod&quot;: &quot;GET&quot;,
+    &quot;path&quot;: &quot;/lambda&quot;,
+    &quot;queryStringParameters&quot;: {
+        &quot;query&quot;: &quot;1234ABCD&quot;
+    },
+    &quot;headers&quot;: {
+        &quot;accept&quot;: &quot;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8&quot;,
+        &quot;accept-encoding&quot;: &quot;gzip&quot;,
+        &quot;accept-language&quot;: &quot;en-US,en;q=0.9&quot;,
+        &quot;connection&quot;: &quot;keep-alive&quot;,
+        &quot;host&quot;: &quot;lambda-alb-123578498.us-east-2.elb.amazonaws.com&quot;,
+        &quot;upgrade-insecure-requests&quot;: &quot;1&quot;,
+        &quot;user-agent&quot;: &quot;Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36&quot;,
+        &quot;x-amzn-trace-id&quot;: &quot;Root=1-5c536348-3d683b8b04734faae651f476&quot;,
+        &quot;x-forwarded-for&quot;: &quot;72.12.164.125&quot;,
+        &quot;x-forwarded-port&quot;: &quot;80&quot;,
+        &quot;x-forwarded-proto&quot;: &quot;http&quot;,
+        &quot;x-imforwards&quot;: &quot;20&quot;
+    },
+    &quot;body&quot;: &quot;&quot;,
+    &quot;isBase64Encoded&quot;: false
+}</code></pre></div>
+                     </div>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>The Lambda runtime converts the event document into an object and passes it to your
+                           <a href="programming-model-v2.html">function handler</a>. For compiled languages, Lambda provides definitions for
+                           event types in a library. See the following topics for more information.
+                        </p>
+                        <div class="itemizedlist">
+                           
+                           
+                           
+                           
+                           
+                           
+                           
+                           <ul class="itemizedlist" type="disc">
+                              <li class="listitem">
+                                 
+                                 <p><a href="java-programming-model.html">Building Lambda Functions with Java</a></p>
+                                 
+                              </li>
+                              <li class="listitem">
+                                 
+                                 <p><a href="go-programming-model.html">Building Lambda Functions with Go</a></p>
+                                 
+                              </li>
+                              <li class="listitem">
+                                 
+                                 <p><a href="dotnet-programming-model.html">Building Lambda Functions with C#</a></p>
+                                 
+                              </li>
+                           </ul>
+                        </div>
+                     </div>
+                     <p>For services that generate a queue or data stream, you create an <a href="intro-invocation-modes.html">event
+                           source mapping</a> in Lambda and grant Lambda permission to access the other service in the <a href="lambda-intro-execution-role.html">execution role</a>. Lambda reads data from the other service, creates an
+                        event, and invokes your function.
+                     </p>
+                     <div class="itemizedlist">
+                        
+                        <p class="title"><b>Services That Lambda Reads Events From</b></p>
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><a href="with-kinesis.html">Amazon Kinesis</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="with-ddb.html">Amazon DynamoDB</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="with-sqs.html">Amazon Simple Queue Service</a></p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <p>Other services invoke your function directly. You grant the other service permission
+                        in the function&apos;s <a href="access-control-resource-based.html">resource-based policy</a>, and configure the other service to generate
+                        events and invoke your function. Depending on the service, the invocation can be synchronous
+                        or asynchronous. For
+                        synchronous invocation, the other service waits for the response from your function
+                        and might <a href="retries-on-errors.html">retry on errors</a>.
+                     </p>
+                     <div class="itemizedlist">
+                        
+                        <p class="title"><b>Services That Invoke Lambda Functions Synchronously</b></p>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><a href="services-alb.html">Elastic Load Balancing (Application Load Balancer)</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="services-cognito.html">Amazon Cognito</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="services-lex.html">Amazon Lex</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="services-alexa.html">Amazon Alexa</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="with-on-demand-https.html">Amazon API Gateway</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="lambda-edge.html">Amazon CloudFront (Lambda@Edge)</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="services-kinesisfirehose.html">Amazon Kinesis Data Firehose</a></p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <p>For asynchronous invocation, Lambda queues the event before passing it to your function.
+                        The other service gets a
+                        success response as soon as the event is queued and isn&apos;t aware of what happens afterwards.
+                        If an error occurs,
+                        Lambda handles <a href="retries-on-errors.html">retries</a>, and can send failed events to a <a href="dlq.html">dead-letter queue</a> that you configure.
+                     </p>
+                     <div class="itemizedlist">
+                        
+                        <p class="title"><b>Services That Invoke Lambda Functions Asynchronously</b></p>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><a href="with-s3.html">Amazon Simple Storage Service</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="with-sns.html">Amazon Simple Notification Service</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="services-ses.html">Amazon Simple Email Service</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="services-cloudformation.html">AWS CloudFormation</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="services-cloudwatchlogs.html">Amazon CloudWatch Logs</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="with-scheduled-events.html">Amazon CloudWatch Events</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="services-codecommit.html">AWS CodeCommit</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="services-config.html">AWS Config</a></p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <p>See the topics in this chapter for more details about each service, and example events
+                        that you can use to test
+                        your function.
+                     </p>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="best-practices.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="services-alb.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper"></div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='AWS Lambda';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

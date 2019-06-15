@@ -1,0 +1,260 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>AWS CLI Examples for Amazon S3 Batch Operations  - Amazon Simple Storage Service</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="batch-ops-examples.html" title="Amazon S3 Batch Operations Examples">
+      <link rel="prev" href="batch-ops-examples-xcopy.html" title="Cross-Account Copy Examples for Amazon S3 Batch Operations ">
+      <link rel="next" href="batch-ops-examples-java.html" title="Java Examples for Amazon S3 Batch Operations ">
+      <meta name="description" content="Amazon S3 batch operations AWS CLI examples.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Simple Storage Service">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/batch-ops-examples-cli.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="batch-ops.html">Performing Batch Operations</a> &#xBB; <a href="batch-ops-examples.html">Amazon S3 Batch Operations Examples</a> &#xBB; <span class="breadcrumb">AWS CLI Examples for Amazon S3 Batch Operations </span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="batch-ops-examples-cli">AWS CLI Examples for Amazon S3 Batch Operations </h1>
+                     <p>The following example creates an Amazon S3 batch operations <code class="code">S3PutObjectTagging</code> job using
+                        the AWS Command Line Interface (AWS CLI). 
+                     </p>
+                     <ol>
+                        <li>
+                           
+                           <p>Create an IAM role and assign permissions. This role grants Amazon S3 permission to
+                              add object tags, for which you create a job in the next step.
+                           </p>
+                           
+                           <ol>
+                              <li>
+                                 <p>Create an IAM role as follows:</p>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws iam create-role \
+ --role-name S3BatchJobRole \
+ --assume-role-policy-document &apos;{
+   &quot;Version&quot;:&quot;2012-10-17&quot;,
+   &quot;Statement&quot;:[
+      {
+         &quot;Effect&quot;:&quot;Allow&quot;,
+         &quot;Principal&quot;:{
+            &quot;Service&quot;:&quot;batchoperations.s3.amazonaws.com&quot;
+         },
+         &quot;Action&quot;:&quot;sts:AssumeRole&quot;
+      }
+   ]
+}&apos;</code></pre>
+                                 <p>Record the role&apos;s Amazon Resource Name (ARN). You need the ARN when you create a
+                                    job.
+                                 </p>
+                              </li>
+                              <li>
+                                 <p>Create an IAM policy with permissions and attach it to the IAM role that you created
+                                    in
+                                    the previous step. For more information about permissions, see <a href="batch-ops-iam-role-policies.html">Granting Permissions for Batch
+                                       Operations</a>.
+                                 </p>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws iam put-role-policy \
+  --role-name S3BatchJobRole \
+  --policy-name PutObjectTaggingBatchJobPolicy \
+  --policy-document &apos;{
+  &quot;Version&quot;:&quot;2012-10-17&quot;,
+  &quot;Statement&quot;:[
+    {
+      &quot;Effect&quot;:&quot;Allow&quot;,
+      &quot;Action&quot;:[
+        &quot;s3:PutObjectTagging&quot;,
+        &quot;s3:PutObjectVersionTagging&quot;
+      ],
+      &quot;Resource&quot;: &quot;arn:aws:s3:::{{<em class="replaceable"><code>TargetResource</code></em>}}/*&quot;
+    },
+    {
+      &quot;Effect&quot;: &quot;Allow&quot;,
+      &quot;Action&quot;: [
+        &quot;s3:GetObject&quot;,
+        &quot;s3:GetObjectVersion&quot;,
+        &quot;s3:GetBucketLocation&quot;
+      ],
+      &quot;Resource&quot;: [
+        &quot;arn:aws:s3:::{{<em class="replaceable"><code>ManifestBucket</code></em>}}/*&quot;
+      ]
+    },
+    {
+      &quot;Effect&quot;:&quot;Allow&quot;,
+      &quot;Action&quot;:[
+        &quot;s3:PutObject&quot;,
+        &quot;s3:GetBucketLocation&quot;
+      ],
+      &quot;Resource&quot;:[
+        &quot;arn:aws:s3:::{{<em class="replaceable"><code>ReportBucket</code></em>}}/*&quot;
+      ]
+    }
+  ]
+}&apos;</code></pre>
+                                 </li>
+                           </ol>
+                           
+                        </li>
+                        <li>
+                           <p>Create an <code class="code">S3PutObjectTagging</code> job. The <code>manifest.csv</code> file
+                              provides a list of bucket and object key values. The job applies the specified tags
+                              to objects identified in the manifest. The <code class="code">ETag</code> is the ETag of the
+                              <code class="code">manifest.csv</code> object, which you can get from the Amazon S3 console. The
+                              request specifies the <code class="code">no-confirmation-required</code> parameter. Therefore,
+                              Amazon S3 makes the job eligible for execution without you having to confirm it using
+                              the
+                              <code class="code">udpate-job-status</code> command.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws s3control create-job \
+    --region us-west-2 \
+    --account-id <em class="replaceable"><code>acct-id</code></em> \
+    --operation &apos;{&quot;S3PutObjectTagging&quot;: { &quot;TagSet&quot;: [{&quot;Key&quot;:&quot;keyOne&quot;, &quot;Value&quot;:&quot;ValueOne&quot;}] }}&apos; \
+    --manifest &apos;{&quot;Spec&quot;:{&quot;Format&quot;:&quot;S3BatchOperations_CSV_20180820&quot;,&quot;Fields&quot;:[&quot;Bucket&quot;,&quot;Key&quot;]},&quot;Location&quot;:{&quot;ObjectArn&quot;:&quot;arn:aws:s3:::my_manifests/manifest.csv&quot;,&quot;ETag&quot;:&quot;60e460c9d1046e73f7dde5043ac3ae85&quot;}}&apos; \
+    --report &apos;{&quot;Bucket&quot;:&quot;arn:aws:s3:::<em class="replaceable"><code>bucket-where-completion-report-goes</code></em>&quot;,&quot;Prefix&quot;:&quot;final-reports&quot;, &quot;Format&quot;:&quot;Report_CSV_20180820&quot;,&quot;Enabled&quot;:true,&quot;ReportScope&quot;:&quot;AllTasks&quot;}&apos; \
+    --priority 42 \
+    --role-arn <em class="replaceable"><code>IAM-role</code></em> \
+    --client-request-token $(uuidgen) \
+    --description &quot;job Description&quot; \
+    --no-confirmation-required
+</code></pre>
+                           <p>In response, Amazon S3 returns a job ID (for example,
+                              <code class="code">00e123a4-c0d8-41f4-a0eb-b46f9ba5b07c</code>). You need the ID in the
+                              next commands.
+                           </p>
+                        </li>
+                        <li>
+                           <p>Get the job description.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws s3control describe-job \
+    --region us-west-2 \
+    --account-id <em class="replaceable"><code>acct-id</code></em> \
+    --job-id <em class="replaceable"><code>00e123a4-c0d8-41f4-a0eb-b46f9ba5b07c</code></em></code></pre>
+                           </li>
+                        <li>
+                           <p>Get a list of <code class="code">Active</code> and <code class="code">Complete</code> jobs.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws s3control list-jobs \
+    --region us-west-2 \
+    --account-id <em class="replaceable"><code>acct-id</code></em> \
+    --job-statuses &apos;[&quot;Active&quot;,&quot;Complete&quot;]&apos; \
+    --max-results 20
+</code></pre>
+                           </li>
+                        <li>
+                           <p>Update the job priority (a higher number indicates a higher execution priority).</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws s3control update-job-priority \
+    --region us-west-2 \
+    --account-id <em class="replaceable"><code>acct-id</code></em> \
+    --priority 98 \
+    --job-id <em class="replaceable"><code>00e123a4-c0d8-41f4-a0eb-b46f9ba5b07c</code></em>
+</code></pre>
+                           </li>
+                        <li>
+                           <p>If you didn&apos;t specify the <code class="code">--no-confirmation-required</code> parameter in the
+                              <code class="code">create-job</code>, the job remains in a suspended state until you confirm
+                              the job by setting its status to <code class="code">Ready</code>. Amazon S3 then makes the job
+                              eligible for execution.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws s3control update-job-status \
+    --region us-west-2 \
+    --account-id 181572960644 \
+    --job-id <em class="replaceable"><code>00e123a4-c0d8-41f4-a0eb-b46f9ba5b07c</code></em> \
+    --requested-job-status &apos;Ready&apos;
+</code></pre>
+                           </li>
+                        <li>
+                           <p>Cancel the job by setting the job status to <code class="code">Cancelled</code>.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws s3control update-job-status \
+     --region us-west-2 \
+     --account-id 181572960644 \
+     --job-id <em class="replaceable"><code>00e123a4-c0d8-41f4-a0eb-b46f9ba5b07c</code></em> \
+     --status-update-reason &quot;No longer needed&quot; \
+     --requested-job-status Cancelled
+</code></pre>
+                           </li>
+                     </ol>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="batch-ops-examples-xcopy.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="batch-ops-examples-java.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper"></div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Simple Storage Service';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

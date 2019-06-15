@@ -6,7 +6,8 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="apigateway-use-lambda-authorizer.html" title="Use API Gateway Lambda Authorizers">
-      <link rel="prev" href="apigateway-use-lambda-authorizer.html" title="Use API Gateway Lambda Authorizers">
+      <link rel="prev" href="configure-api-gateway-lambda-authorization-programmatically.html" title="Configure
+                a Lambda Authorizer Using the AWS CLI or an AWS SDK">
       <link rel="next" href="api-gateway-lambda-authorizer-output.html" title="Output from an Amazon API Gateway Lambda
                 Authorizer">
       <meta name="description" content="Learn the format of input to a Lambda authorizer">
@@ -14,6 +15,8 @@
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-lambda-authorizer-input.html">
@@ -23,7 +26,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -35,12 +38,16 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-control-access-to-api.html"> Controlling Access to an API in
-                                    			API Gateway</a> &#xBB; <a href="apigateway-use-lambda-authorizer.html">Use API Gateway Lambda Authorizers</a> &#xBB; <span class="breadcrumb">Input to an Amazon API Gateway Lambda
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="apigateway-control-access-to-api.html">Controlling and Managing Access to a REST
+                                    			API in API Gateway</a> &#xBB; <a href="apigateway-use-lambda-authorizer.html">Use API Gateway Lambda Authorizers</a> &#xBB; <span class="breadcrumb">Input to an Amazon API Gateway Lambda
                                     Authorizer</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="api-gateway-lambda-authorizer-input">Input to an Amazon API Gateway Lambda
                         Authorizer
@@ -48,27 +55,27 @@
                      <p> For a Lambda authorizer (formerly known as a custom authorizer) of the
                         <code class="code">TOKEN</code> type, you must specify a custom header as the <b>Token
                            Source</b> when you configure the authorizer for your API. The API client
-                        must pass the required authorization token in the incoming request. Upon receiving
-                        the
-                        incoming method request, API Gateway extracts the token from the custom header. It
-                        then passes
-                        the token as the <code class="code">authorizationToken</code> property of the <code class="code">event</code>
-                        object of the Lambda function, in addition to the method ARN as the
-                        <code class="code">methodArn</code> property: 
+                        must pass the required authorization token in that header in the incoming request.
+                        Upon
+                        receiving the incoming method request, API Gateway extracts the token from the custom
+                        header.
+                        It then passes the token as the <code class="code">authorizationToken</code> property of the
+                        <code class="code">event</code> object of the Lambda function, in addition to the method ARN as
+                        the <code class="code">methodArn</code> property: 
                      </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
     &quot;type&quot;:&quot;TOKEN&quot;,
-    &quot;authorizationToken&quot;:&quot;<em class="replaceable"><code>&lt;caller-supplied-token&gt;</code></em>&quot;,
-&#xA0;&#xA0;&#xA0; &quot;methodArn&quot;:&quot;arn:aws:execute-api:<em class="replaceable"><code>&lt;regionId&gt;</code></em>:<em class="replaceable"><code>&lt;accountId&gt;</code></em>:<em class="replaceable"><code>&lt;apiId&gt;</code></em>/<em class="replaceable"><code>&lt;stage&gt;</code></em>/<em class="replaceable"><code>&lt;method&gt;</code></em>/<em class="replaceable"><code>&lt;resourcePath&gt;</code></em>&quot;
+    &quot;authorizationToken&quot;:&quot;<em class="replaceable"><code>{caller-supplied-token}</code></em>&quot;,
+&#xA0;&#xA0;&#xA0; &quot;methodArn&quot;:&quot;arn:aws:execute-api:<em class="replaceable"><code>{regionId}</code></em>:<em class="replaceable"><code>{accountId}</code></em>:<em class="replaceable"><code>{appId}</code></em>/<em class="replaceable"><code>{stage}</code></em>/<em class="replaceable"><code>{httpVerb}</code></em>/[<em class="replaceable"><code>{resource}</code></em>/[<em class="replaceable"><code>{child-resources}</code></em>]]&quot;
 }</code></pre><p> In this example, the <code class="code">type</code> property specifies the authorizer type, which
                         is a <code class="code">TOKEN</code> authorizer. The
-                        <code class="code"><em class="replaceable"><code>&lt;caller-supplied-token&gt;</code></em></code> originates
+                        <code class="code"><em class="replaceable"><code>{caller-supplied-token}</code></em></code> originates
                         from the authorization header in a client request. The <code class="code">methodArn</code> is the ARN
                         of the incoming method request and is populated by API Gateway in accordance with
                         the Lambda
                         authorizer configuration. 
                      </p>
                      <p> For the example <code class="code">TOKEN</code> authorizer Lambda function shown in the preceding
-                        section, the <em class="replaceable"><code>&lt;caller-supplied-token&gt;</code></em> string is
+                        section, the <em class="replaceable"><code>{caller-supplied-token}</code></em> string is
                         <code class="code">allow</code>, <code class="code">deny</code>, <code class="code">unauthorized</code>, or any other
                         string value. An empty string value is the same as <code class="code">unauthorized</code>. The
                         following shows an example of such an input to obtain an <code class="code">Allow</code> policy on
@@ -88,6 +95,12 @@
                         context
                         at run time. 
                      </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>Path parameters can be passed as request parameters to the Lambda authorizer
+                           function, but they cannot be used as identity sources.
+                        </p>
+                     </div>
                      <p> The following example shows an input to a <code class="code">REQUEST</code> authorizer for an API
                         method (<code class="code">GET /request</code>) with a proxy integration: 
                      </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
@@ -143,20 +156,23 @@
 }</code></pre><p> The <code class="code">requestContext</code> is a map of key-value pairs and corresponds to the
                         <a href="api-gateway-mapping-template-reference.html#context-variable-reference">$context</a> variable. Its outcome is
                         API-dependent. API Gateway may add new keys to the map. For more information about
-                        the Lambda
-                        function input in a proxy integration, see <a href="set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format">Input Format of a Lambda
-                           Function for Proxy Integration
-                           </a>. 
+                        Lambda
+                        function input in Lambda proxy integration, see <a href="set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format">Input Format of a
+                           Lambda Function for Proxy Integration</a>. 
                      </p>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -165,8 +181,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="apigateway-use-lambda-authorizer.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="api-gateway-lambda-authorizer-output.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="configure-api-gateway-lambda-authorization-programmatically.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="api-gateway-lambda-authorizer-output.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -174,6 +192,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

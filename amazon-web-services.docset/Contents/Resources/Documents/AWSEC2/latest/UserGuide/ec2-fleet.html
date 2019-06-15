@@ -12,6 +12,8 @@
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-fleet.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,29 +35,30 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="ec2-instance-lifecycle.html">Instance Lifecycle</a> &#xBB; <a href="LaunchingAndUsingInstances.html">Launch Your Instance</a> &#xBB; <span class="breadcrumb">Launching an EC2 Fleet</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="ec2-instance-lifecycle.html">Instance Lifecycle</a> &#xBB; <a href="LaunchingAndUsingInstances.html">Launch Your Instance</a> &#xBB; <span class="breadcrumb">Launching an EC2 Fleet</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="ec2-fleet">Launching an EC2 Fleet</h1>
-                     <p>An <em>EC2 Fleet</em> contains the configuration information to
-                        		launch a fleet&#x2014;or group&#x2014;of instances. In a single API call, a fleet can launch
-                        		multiple instance types across multiple Availability Zones, using the On-Demand
-                        Instance, Reserved Instance, and Spot Instance
-                        		purchasing models together. Using EC2 Fleet, you can define separate On-Demand and
-                        Spot capacity
+                     <p>An <em>EC2 Fleet</em> contains the configuration information to launch a
+                        		fleet&#x2014;or group&#x2014;of instances. In a single API call, a fleet can launch multiple
+                        		instance types across multiple Availability Zones, using the On-Demand Instance,
+                        Reserved Instance, and Spot Instance
+                        		purchasing options together. Using EC2 Fleet, you can define separate On-Demand
+                        and Spot capacity
                         		targets, specify the instance types that work best for your applications, and specify
                         how
-                        		Amazon EC2 should distribute your fleet capacity within each purchasing model.
+                        		Amazon EC2 should distribute your fleet capacity within each purchasing option.
                      </p>
                      <p>The EC2 Fleet attempts to launch the number of instances that are required to meet
                         the target
-                        		capacity specified in your request. The fleet also attempts to maintain its target
+                        		capacity specified in your request. The fleet can also attempt to maintain its target
                         Spot
-                        		capacity if your Spot Instances are interrupted due to a change in Spot prices or
-                        available capacity.
-                        		For more information, see <a href="how-spot-instances-work.html">How Spot Instances Work</a>.
+                        		capacity if your Spot Instances are interrupted. For more information, see <a href="how-spot-instances-work.html">How Spot Instances Work</a>.
                      </p>
                      <div class="mediaobject">
                         		
@@ -99,6 +102,7 @@
                         <p><strong>Contents</strong></p>
                         <ul>
                            <li><a href="#EC2-fleet-limitations">EC2 Fleet Limitations</a></li>
+                           <li><a href="#ec2-fleet-limits">EC2 Fleet Limits</a></li>
                            <li><a href="ec2-fleet-configuration-strategies.html">EC2 Fleet Configuration Strategies</a></li>
                            <li><a href="manage-ec2-fleet.html">Managing an EC2 Fleet</a></li>
                         </ul>
@@ -111,6 +115,7 @@
                      <div class="itemizedlist">
                         			
                         			
+                        			
                         		
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
@@ -120,21 +125,130 @@
                            </li>
                            <li class="listitem">
                               				
-                              <p>You need to create a separate EC2 Fleet for each AWS Region.</p>
+                              <p>An EC2 Fleet request can&apos;t span Regions. You need to create a separate EC2 Fleet for
+                                 					each Region.
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>An EC2 Fleet request can&apos;t span different subnets from the same Availability
+                                 					Zone.
+                              </p>
                               			
                            </li>
                         </ul>
                      </div>
                      	
+                     			
+                     <h2 id="ec2-fleet-limits">EC2 Fleet Limits</h2>
+                     		
+                     <p>The usual Amazon EC2 limits apply to instances launched by an EC2 Fleet, such as Spot
+                        request price
+                        			limits, instance limits, and volume limits. In addition, the following limits
+                        			apply:
+                     </p>
+                     		
+                     <div class="itemizedlist">
+                        			
+                        			
+                        			
+                        			
+                        			
+                        		
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              				
+                              <p>The number of active EC2 Fleets per Region: 1,000 * &#x2020;</p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>The number of launch specifications per fleet: 50 &#x2020;</p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>The size of the user data in a launch specification: 16 KB &#x2020;</p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>The target capacity per EC2 Fleet: 10,000</p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>The target capacity across all EC2 Fleets in a Region: 100,000 *</p>
+                              			
+                           </li>
+                        </ul>
+                     </div>
+                     		
+                     <p>If you need more than the default limits for target capacity, complete the AWS Support
+                        			Center <a href="https://console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase&amp;limitType=service-code-ec2-fleet" target="_blank">Create
+                           				case</a> form to request a limit increase. For <b>Limit type</b>,
+                        			choose <b>EC2 Fleet</b>, choose a Region, and then choose <b>Target
+                           				Fleet Capacity per Fleet (in units)</b> or <b>Target Fleet Capacity
+                           				per Region (in units)</b>, or both.
+                     </p>
+                     			
+                     <p>* These limits apply to both your EC2 Fleets and your Spot Fleets.</p>
+                     			
+                     <p>&#x2020; These are hard limits. You cannot request a limit increase for these limits.</p>
+                     			
+                     			
+                     				
+                     <h3 id="ec2-fleet-t3-spot-instances">T3 Instances</h3>
+                     				
+                     <p>If you plan to use your T3 Spot Instances immediately and for a short duration, with
+                        no idle time
+                        					for accruing CPU credits, we recommend that you launch your T3 Spot Instances
+                        in
+                        					<a href="burstable-performance-instances-standard-mode.html">standard</a> mode to avoid paying higher costs.
+                     </p>
+                     				
+                     <p>If you launch your T3 Spot Instances in <a href="burstable-performance-instances-unlimited-mode.html">unlimited</a> mode and burst CPU immediately, you&apos;ll spend
+                        					surplus credits for bursting. If you use the instance for a short duration, your
+                        					instance doesn&apos;t have time to accrue CPU credits to pay down the surplus credits,
+                        					and you are charged for the surplus credits when you terminate your instance.
+                     </p>
+                     				
+                     <p><code class="code">Unlimited</code> mode for T3 Spot Instances is suitable only if the instance runs for
+                        					long enough to accrue  CPU credits for bursting. Otherwise, paying for surplus
+                        					credits makes T3 Spot Instances more expensive than M5 or C5 instances.
+                     </p>
+                     			
+                     			
+                     			
+                     				
+                     <h3 id="ec2-fleet-t2-spot-instances">T2 Instances</h3>
+                     				
+                     				
+                     <p>Launch credits are meant to provide a productive initial launch experience for 
+                        					T2 instances by providing sufficient compute resources to configure the instance.
+                        
+                        					Repeated launches of T2 instances to access new launch credits is not permitted.
+                        					If you require sustained CPU, you can earn credits (by idling over some period),
+                        
+                        					use <a href="burstable-performance-instances-unlimited-mode.html">T2 Unlimited</a>, 
+                        					or use an instance type with dedicated CPU (for example, <code class="code">c4.large</code>).
+                     </p>
+                     			
+                     		
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -144,7 +258,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="launch-marketplace-console.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="ec2-fleet-configuration-strategies.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -154,11 +270,16 @@
                      <p>On this page:</p>
                      <ul class="pagetoc">
                         <li class="pagetoc" name="EC2 Fleet Limitations"><a class="pagetoc" href="#EC2-fleet-limitations">EC2 Fleet Limitations</a></li>
+                        <li class="pagetoc" name="EC2 Fleet Limits"><a class="pagetoc" href="#ec2-fleet-limits">EC2 Fleet Limits</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

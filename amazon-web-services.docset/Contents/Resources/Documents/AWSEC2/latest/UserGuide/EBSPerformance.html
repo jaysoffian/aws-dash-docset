@@ -4,7 +4,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="AmazonEBS.html" title="Amazon Elastic Block Store (Amazon EBS)">
-      <link rel="prev" href="nvme-ebs-volumes.html" title="Amazon EBS and NVMe">
+      <link rel="prev" href="nvme-ebs-volumes.html" title="Amazon EBS and NVMe on Linux Instances">
       <link rel="next" href="ebs-ec2-config.html" title="Amazon EC2 Instance Configuration">
       <meta name="description" content="Lists best practices for optimizing the Amazon EBS volume performance.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
@@ -12,6 +12,8 @@
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EBSPerformance.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <span class="breadcrumb">Amazon EBS Volume Performance on Linux Instances</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <span class="breadcrumb">Amazon EBS Volume Performance on Linux Instances</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="EBSPerformance">Amazon EBS Volume Performance on <span>Linux</span> Instances
                      </h1>
@@ -59,6 +64,16 @@
                         you require and at your options for increasing Amazon EBS performance to meet those
                         requirements.
                      </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>AWS updates to the performance of EBS volume types may not immediately take effect
+                           on
+                           your existing volumes. To see full performance on an older volume, you may first need
+                           to
+                           perform a <code class="code">ModifyVolume</code> action on it. For more information, see <a href="./AWSEC2/latest/UserGuide/ebs-modify-volume.html">Modifying the Size, IOPS, or Type of
+                              an EBS Volume on Linux</a>.
+                        </p>
+                     </div>
                      <div class="highlights">
                         <p><strong>Contents</strong></p>
                         <ul>
@@ -70,6 +85,7 @@
                            <li><a href="benchmark_procedures.html">Benchmark EBS Volumes</a></li>
                         </ul>
                      </div>
+                     
                      <h2 id="tips">Amazon EBS Performance Tips</h2>
                      
                      
@@ -78,8 +94,9 @@
                         in a variety of user scenarios.
                      </p>
                      
-                     <h3 id="optimize">Use EBS-Optimized Instances</h3>
                      
+                     
+                     <h3 id="optimize">Use EBS-Optimized Instances</h3>
                      
                      <p>On instances without support for EBS-optimized throughput, network traffic can contend
                         with traffic between your instance and your EBS volumes; on EBS-optimized instances,
@@ -92,8 +109,8 @@
                      </p>
                      
                      
-                     <h3 id="performance_calculation">Understand How Performance is Calculated</h3>
                      
+                     <h3 id="performance_calculation">Understand How Performance is Calculated</h3>
                      
                      <p>When you measure the performance of your EBS volumes, it is important to understand
                         the
@@ -102,8 +119,8 @@
                      </p>
                      
                      
-                     <h3 id="workload_types">Understand Your Workload</h3>
                      
+                     <h3 id="workload_types">Understand Your Workload</h3>
                      
                      <p>There is a relationship between the maximum performance of your EBS volumes, the size
                         and number of I/O operations, and the time it takes for each action to complete. Each
@@ -112,10 +129,10 @@
                         are more sensitive to one factor or another. <span>For more information, see <a href="benchmark_procedures.html">Benchmark EBS Volumes</a>.</span></p>
                      
                      
+                     
                      <h3 id="initialize">Be Aware of the Performance Penalty When Initializing Volumes
                         from Snapshots
                      </h3>
-                     
                      
                      <p>There is a significant increase in latency when you first access each block of data
                         on a
@@ -128,8 +145,8 @@
                      </p>
                      
                      
-                     <h3 id="snapshotting_latency">Factors That Can Degrade HDD Performance</h3>
                      
+                     <h3 id="snapshotting_latency">Factors That Can Degrade HDD Performance</h3>
                      
                      <p>When you create a snapshot of a Throughput Optimized HDD (<code class="code">st1</code>) or Cold HDD (<code class="code">sc1</code>) volume,
                         performance may drop as far as the volume&apos;s baseline value while the snapshot is in
@@ -138,7 +155,7 @@
                         performance include driving more throughput than the instance can support, the performance
                         penalty encountered while initializing volumes restored from a snapshot, and excessive
                         amounts of small, random I/O on the volume. For more information about calculating
-                        throughput for HDD volumes, see <a href="./AWSEC2/latest/UserGuide/EBSVolumeTypes.html" target="_blank">Amazon EBS
+                        throughput for HDD volumes, see <a href="./AWSEC2/latest/UserGuide/EBSVolumeTypes.html">Amazon EBS
                            Volume Types </a>. 
                      </p>
                      
@@ -154,16 +171,15 @@
                         ensuring consistent performance of your volumes, see <a href="ebs-io-characteristics.html">I/O Characteristics and Monitoring</a></p>
                      
                      
-                     <h3 id="read_ahead">Increase Read-Ahead for High-Throughput, Read-Heavy Workloads on
-                        <code class="code">st1</code> and <code class="code">sc1</code></h3>
+                     
+                     <h3 id="read_ahead">Increase Read-Ahead for High-Throughput, Read-Heavy Workloads on <code class="code">st1</code> and <code class="code">sc1</code></h3>
                      
                      
                      <p>Some workloads are read-heavy and access the block device through the operating system
                         page cache (for example, from a file system). In this case, to achieve the maximum
                         throughput, we recommend that you configure the read-ahead setting to 1 MiB. This
                         is a
-                        per-block-device setting that should only be applied to your HDD volumes. The following
-                        examples assume that you are on an Amazon Linux instance. 
+                        per-block-device setting that should only be applied to your HDD volumes.
                      </p>
                      
                      <p>To examine the current value of read-ahead for your block devices, use the following
@@ -190,11 +206,11 @@ rw   256   512  4096       4096      8587820544   /dev/&lt;device&gt;</code></pr
                      </p>
                      
                      
+                     
                      <h3 id="ModernKernel">Use a Modern Linux Kernel</h3>
                      
-                     
                      <p>Use a modern Linux kernel with support for indirect descriptors. Any Linux kernel
-                        3.11
+                        3.8
                         and above has this support, as well as any current-generation EC2 instance. If your
                         average
                         I/O size is at or near 44 KiB, you may be using an instance or kernel without support
@@ -219,7 +235,7 @@ rw   256   512  4096       4096      8587820544   /dev/&lt;device&gt;</code></pr
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">kernel /boot/vmlinuz-4.9.20-11.31.amzn1.x86_64 root=LABEL=/ console=tty1 console=ttyS0 xen_blkfront.max_indirect_segments=256</code></pre>
                      <p>Reboot your instance for this setting to take effect.</p>
                      
-                     <p>For more information, see <a href="./AWSEC2/latest/UserGuide/UserProvidedKernels.html#configuringGRUB" target="_blank">Configuring GRUB</a>.
+                     <p>For more information, see <a href="./AWSEC2/latest/UserGuide/UserProvidedKernels.html#configuringGRUB">Configuring GRUB</a>.
                         Other Linux distributions, especially those that do not use the GRUB boot loader,
                         may require
                         a different approach to adjusting the kernel parameters.
@@ -230,19 +246,19 @@ rw   256   512  4096       4096      8587820544   /dev/&lt;device&gt;</code></pr
                      </p>
                      
                      
-                     <h3 id="RAID">Use RAID 0 to Maximize Utilization of Instance Resources</h3>
                      
+                     <h3 id="RAID">Use RAID 0 to Maximize Utilization of Instance Resources</h3>
                      
                      <p>Some instance types can drive more I/O throughput than what you can provision for
                         a
                         single EBS volume. You can join multiple <code class="code">gp2</code>, <code class="code">io1</code>, <code class="code">st1</code>, or <code class="code">sc1</code> volumes together in a
                         RAID 0 configuration to use the available bandwidth for these instances. For more
-                        information, see <a href="raid-config.html">RAID Configuration on <span>Linux</span></a>.
+                        information, see <a href="raid-config.html">RAID Configuration on Linux</a>.
                      </p>
                      
                      
-                     <h3 id="cloudwatch">Track Performance with Amazon CloudWatch </h3>
                      
+                     <h3 id="cloudwatch">Track Performance Using Amazon CloudWatch </h3>
                      
                      <p>Amazon Web Services provides performance metrics for Amazon EBS that you can analyze
                         and view with
@@ -252,15 +268,19 @@ rw   256   512  4096       4096      8587820544   /dev/&lt;device&gt;</code></pr
                      </p>
                      
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -270,7 +290,9 @@ rw   256   512  4096       4096      8587820544   /dev/&lt;device&gt;</code></pr
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="nvme-ebs-volumes.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="ebs-ec2-config.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -285,6 +307,10 @@ rw   256   512  4096       4096      8587820544   /dev/&lt;device&gt;</code></pr
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

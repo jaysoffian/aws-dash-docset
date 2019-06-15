@@ -1,0 +1,295 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Performance Guidelines for Amazon S3 - Amazon Simple Storage Service</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="optimizing-performance.html" title="Best Practices Design Patterns: Optimizing Amazon S3
+      Performance">
+      <link rel="prev" href="optimizing-performance.html" title="Best Practices Design Patterns: Optimizing Amazon S3
+      Performance">
+      <link rel="next" href="optimizing-performance-design-patterns.html" title="Performance Design Patterns for
+        Amazon S3">
+      <meta name="description" content="Describes Amazon S3 performance guidelines.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Simple Storage Service">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/optimizing-performance-guidelines.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="optimizing-performance.html">Best Practices Design Patterns: Optimizing Amazon S3
+                                    Performance</a> &#xBB; <span class="breadcrumb">Performance Guidelines for Amazon S3</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="optimizing-performance-guidelines">Performance Guidelines for Amazon S3</h1>
+                     <p>When building applications that upload and retrieve storage from Amazon S3, follow
+                        our best
+                        practices guidelines to optimize performance. We also offer more detailed <a href="optimizing-performance-design-patterns.html">Performance Design
+                           Patterns</a>. 
+                     </p>
+                     <p>To obtain the best performance for your application on Amazon S3, we recommend the
+                        following
+                        guidelines.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#optimizing-performance-guidelines-measure">Measure Performance</a></li>
+                           <li><a href="#optimizing-performance-guidelines-scale">Scale Storage Connections
+                                 Horizontally</a></li>
+                           <li><a href="#optimizing-performance-guidelines-get-range">Use Byte-Range Fetches</a></li>
+                           <li><a href="#optimizing-performance-guidelines-retry">Retry Requests for
+                                 Latency-Sensitive Applications</a></li>
+                           <li><a href="#optimizing-performance-guidelines-combine">Combine Amazon S3 (Storage) and Amazon EC2
+                                 (Compute) in the Same AWS Region</a></li>
+                           <li><a href="#optimizing-performance-guidelines-acceleration">Use Amazon S3 Transfer
+                                 Acceleration to Minimize Latency Caused by Distance</a></li>
+                           <li><a href="#optimizing-performance-guidelines-sdk">Use the Latest Version of the AWS
+                                 SDKs</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="optimizing-performance-guidelines-measure">Measure Performance</h2>
+                     
+                     <p>When optimizing performance, look at network throughput, CPU, and DRAM requirements.
+                        Depending on the mix of demands for these different resources, it might be worth evaluating
+                        different <a href="./ec2/index.html">Amazon EC2</a> instance types. For more
+                        information about instance types, see <a href="./AWSEC2/latest/UserGuide/instance-types.html">Instance Types</a> in the <em>Amazon EC2 User Guide for Linux Instances</em>. 
+                     </p>
+                     
+                     <p>It&#x2019;s also helpful to look at DNS lookup time, latency, and data transfer speed using
+                        HTTP analysis tools when measuring performance.
+                     </p>
+                     
+                     
+                     <h2 id="optimizing-performance-guidelines-scale">Scale Storage Connections
+                        Horizontally
+                     </h2>
+                     
+                     <p>Spreading requests across many connections is a common design pattern to horizontally
+                        scale performance. When you build high performance applications, think of Amazon S3
+                        as a very
+                        large distributed system, not as a single network endpoint like a traditional storage
+                        server. You can achieve the best performance by issuing multiple concurrent requests
+                        to
+                        Amazon S3. Spread these requests over separate connections to maximize the accessible
+                        bandwidth
+                        from Amazon S3. Amazon S3 doesn&apos;t have any limits for the number of connections made
+                        to your bucket. 
+                     </p>
+                     
+                     
+                     <h2 id="optimizing-performance-guidelines-get-range">Use Byte-Range Fetches</h2>
+                     
+                     <p>Using the <code class="code">Range</code> HTTP header in a <a href="./AmazonS3/latest/API/RESTObjectGET.html">GET Object</a> request, you can fetch a
+                        byte-range from an object, transferring only the specified portion. You can use concurrent
+                        connections to Amazon S3 to fetch different byte ranges from within the same object.
+                        This helps
+                        you achieve higher aggregate throughput versus a single whole-object request. Fetching
+                        smaller ranges of a large object also allows your application to improve retry times
+                        when
+                        requests are interrupted. For more information, see <a href="GettingObjectsUsingAPIs.html">Getting Objects</a>.
+                     </p>
+                     
+                     <p>Typical sizes for byte-range requests are 8 MB or 16 MB. If objects are PUT using
+                        a
+                        multipart upload, it&#x2019;s a good practice to GET them in the same part sizes (or at least
+                        aligned to part boundaries) for best performance. GET requests can directly address
+                        individual parts; for example, <code class="code">GET ?partNumber=N.</code></p>
+                     
+                     
+                     <h2 id="optimizing-performance-guidelines-retry">Retry Requests for
+                        Latency-Sensitive Applications
+                     </h2>
+                     
+                     <p>Aggressive timeouts and retries help drive consistent latency. Given the large scale
+                        of
+                        Amazon S3, if the first request is slow, a retried request is likely to take a different
+                        path and
+                        quickly succeed. The AWS SDKs have configurable timeout and retry values that you
+                        can tune
+                        to the tolerances of your specific application.
+                     </p>
+                     
+                     
+                     <h2 id="optimizing-performance-guidelines-combine">Combine Amazon S3 (Storage) and Amazon EC2
+                        (Compute) in the Same AWS Region
+                     </h2>
+                     
+                     <p>Although S3 bucket names are <a href="./AmazonS3/latest/dev/UsingBucket.html">globally
+                           unique</a>, each bucket is stored in a Region that you select when you create the
+                        bucket. To optimize performance, we recommend that you access the bucket from Amazon
+                        EC2
+                        instances in the same AWS Region when possible. This helps reduce network latency
+                        and data
+                        transfer costs.
+                     </p>
+                     
+                     <p>For more information about data transfer costs, see <a href="https://aws.amazon.com/s3/pricing/" target="_blank">Amazon S3 Pricing</a>.
+                     </p>
+                     
+                     
+                     <h2 id="optimizing-performance-guidelines-acceleration">Use Amazon S3 Transfer
+                        Acceleration to Minimize Latency Caused by Distance
+                     </h2>
+                     
+                     <p><a href="transfer-acceleration.html">Amazon S3 Transfer Acceleration</a> manages
+                        fast, easy, and secure transfers of files over long geographic distances between the
+                        client
+                        and an S3 bucket. Transfer Acceleration takes advantage of the globally distributed
+                        edge
+                        locations in <a href="./cloudfront/index.html">Amazon CloudFront</a>. As the
+                        data arrives at an edge location, it is routed to Amazon S3 over an optimized network
+                        path.
+                        Transfer Acceleration is ideal for transferring gigabytes to terabytes of data regularly
+                        across continents. It&apos;s also useful for clients that upload to a centralized bucket
+                        from all
+                        over the world.
+                     </p>
+                     
+                     <p>You can use the <a href="http://s3-accelerate-speedtest.s3-accelerate.amazonaws.com/en/accelerate-speed-comparsion.html" target="_blank">Amazon S3 Transfer Acceleration Speed Comparison tool</a> to compare accelerated and
+                        non-accelerated upload speeds across Amazon S3 Regions. The Speed Comparison tool
+                        uses multipart
+                        uploads to transfer a file from your browser to various Amazon S3 Regions with and
+                        without using
+                        Amazon S3 Transfer Acceleration.
+                     </p>
+                     
+                     
+                     <h2 id="optimizing-performance-guidelines-sdk">Use the Latest Version of the AWS
+                        SDKs
+                     </h2>
+                     
+                     <p>The AWS SDKs provide built-in support for many of the recommended guidelines for
+                        optimizing Amazon S3 performance. The SDKs provide a simpler API for taking advantage
+                        of Amazon S3
+                        from within an application and are regularly updated to follow the latest best practices.
+                        For example, the SDKs include logic to automatically retry requests on HTTP 503 errors
+                        and
+                        are investing in code to respond and adapt to slow connections. 
+                     </p>
+                     
+                     <p>The SDKs also provide the <a href="./sdk-for-java/v1/developer-guide/examples-s3-transfermanager.html">Transfer Manager</a>, which automates horizontally scaling connections to achieve
+                        thousands of requests per second, using byte-range requests where appropriate. It&#x2019;s
+                        important to use the latest version of the AWS SDKs to obtain the latest performance
+                        optimization features.
+                     </p>
+                     
+                     <p>You can also optimize performance when you are using HTTP REST API requests. When
+                        using
+                        the REST API, you should follow the same best practices that are part of the SDKs.
+                        Allow for
+                        timeouts and retries on slow requests, and multiple connections to allow fetching
+                        of object
+                        data in parallel. For information about using the REST API, see the <a href="./AmazonS3/latest/API/">Amazon Simple Storage Service API Reference</a>.
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="optimizing-performance.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="optimizing-performance-design-patterns.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Measure Performance"><a class="pagetoc" href="#optimizing-performance-guidelines-measure">Measure
+                              Performance</a></li>
+                        <li class="pagetoc" name="Scale Storage Connections
+          Horizontally"><a class="pagetoc" href="#optimizing-performance-guidelines-scale">Scale
+                              Horizontally</a></li>
+                        <li class="pagetoc" name="Use Byte-Range Fetches"><a class="pagetoc" href="#optimizing-performance-guidelines-get-range">Use Byte-Range
+                              Fetches</a></li>
+                        <li class="pagetoc" name="Retry Requests for
+          Latency-Sensitive Applications"><a class="pagetoc" href="#optimizing-performance-guidelines-retry">Retry
+                              Requests</a></li>
+                        <li class="pagetoc" name="Combine Amazon S3 (Storage) and Amazon EC2
+          (Compute) in the Same AWS Region"><a class="pagetoc" href="#optimizing-performance-guidelines-combine">Combine Amazon S3 and
+                              Amazon EC2 the Same Region</a></li>
+                        <li class="pagetoc" name="Use Amazon S3 Transfer
+          Acceleration to Minimize Latency Caused by Distance"><a class="pagetoc" href="#optimizing-performance-guidelines-acceleration">Use Transfer
+                              Acceleration to Minimize Latency</a></li>
+                        <li class="pagetoc" name="Use the Latest Version of the AWS
+          SDKs"><a class="pagetoc" href="#optimizing-performance-guidelines-sdk">Use the Latest AWS
+                              SDKs</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Simple Storage Service';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

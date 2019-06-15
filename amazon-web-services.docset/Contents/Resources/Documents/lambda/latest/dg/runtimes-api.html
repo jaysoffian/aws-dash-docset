@@ -1,0 +1,301 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>AWS Lambda Runtime Interface - AWS Lambda</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="lambda-runtimes.html" title="AWS Lambda Runtimes">
+      <link rel="prev" href="runtimes-custom.html" title="Custom AWS Lambda Runtimes">
+      <link rel="next" href="runtimes-walkthrough.html" title="Tutorial &#x2013; Publishing a Custom Runtime">
+      <meta name="description" content="AWS Lambda provides an HTTP API for custom runtimes to receive invocation events from Lambda and send response data back within the Lambda execution environment .">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="AWS Lambda">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/runtimes-api.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-runtimes.html">AWS Lambda Runtimes</a> &#xBB; <span class="breadcrumb">AWS Lambda Runtime Interface</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="runtimes-api">AWS Lambda Runtime Interface</h1>
+                     <p>AWS Lambda provides an HTTP API for <a href="runtimes-custom.html">custom runtimes</a> to receive invocation
+                        events from Lambda and send response data back within the Lambda <a href="lambda-runtimes.html">execution
+                           environment</a>.
+                     </p>
+                     <p>The OpenAPI specification for the runtime API version <b>2018-06-01</b> is available
+                        here: <a href="samples/runtime-api.zip" target="_blank">runtime-api.zip</a></p>
+                     <p>Runtimes get an endpoint from the <code class="code">AWS_LAMBDA_RUNTIME_API</code> environment variable, add the API version,
+                        and use the following resource paths to interact with the API.
+                     </p>
+                     <div class="example">
+                        <p class="title"><b>Example Request</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">curl &quot;http://${AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime/invocation/next&quot;</code></pre></div>
+                     </div>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Resources</strong></p>
+                        <ul>
+                           <li><a href="#runtimes-api-next">Next Invocation</a></li>
+                           <li><a href="#runtimes-api-response">Invocation Response</a></li>
+                           <li><a href="#runtimes-api-invokeerror">Invocation Error</a></li>
+                           <li><a href="#runtimes-api-initerror">Initialization Error</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="runtimes-api-next">Next Invocation</h2>
+                     
+                     <p><b>Path</b> &#x2013; <code class="code">/runtime/invocation/next</code></p>
+                     
+                     <p><b>Method</b> &#x2013; <b>GET</b></p>
+                     
+                     <p>Retrieves an invocation event. The response body contains the payload from the invocation,
+                        which is a JSON
+                        document that contains event data from the function trigger. The response headers
+                        contain additional data about
+                        the invocation. 
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        <p class="title"><b>Response Headers</b></p>
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><code class="code">Lambda-Runtime-Aws-Request-Id</code> &#x2013; The request ID, which identifies the request that
+                                 triggered the function invocation.
+                              </p>
+                              
+                              <p>For example, <code class="code">8476a536-e9f4-11e8-9739-2dfe598c3fcd</code>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><code class="code">Lambda-Runtime-Deadline-Ms</code> &#x2013; The date that the function times out in Unix time
+                                 milliseconds. 
+                              </p>
+                              
+                              <p>For example, <code class="code">1542409706888</code>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><code class="code">Lambda-Runtime-Invoked-Function-Arn</code> &#x2013; The ARN of the Lambda function, version, or alias
+                                 that&apos;s specified in the invocation. 
+                              </p>
+                              
+                              <p>For example, <code class="code">arn:aws:lambda:us-east-2:123456789012:function:custom-runtime</code>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><code class="code">Lambda-Runtime-Trace-Id</code> &#x2013; The <a href="./xray/latest/devguide/xray-concepts.html#xray-concepts-tracingheader">AWS X-Ray tracing header</a>. 
+                              </p>
+                              
+                              <p>For example,
+                                 <code class="code">Root=1-5bef4de7-ad49b0e87f6ef6c87fc2e700;Parent=9a9197af755a6419;Sampled=1</code>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><code class="code">Lambda-Runtime-Client-Context</code> &#x2013; For invocations from the AWS Mobile SDK, data about
+                                 the client application and device.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><code class="code">Lambda-Runtime-Cognito-Identity</code> &#x2013; For invocations from the AWS Mobile SDK, data about
+                                 the Amazon Cognito identity provider.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <p>The request ID tracks the invocation within Lambda. Use it to specify the invocation
+                        when you send the
+                        response.
+                     </p>
+                     
+                     
+                     <p>The tracing header contains the trace ID, parent ID, and sampling decision. If the
+                        request is sampled, the
+                        request was sampled by Lambda or an upstream service. The runtime should set the <code class="code">_X_AMZN_TRACE_ID</code> with
+                        the value of the header. The X-Ray SDK reads this to get the IDs and determine whether
+                        to trace the
+                        request.
+                     </p>
+                     
+                     
+                     <h2 id="runtimes-api-response">Invocation Response</h2>
+                     
+                     <p><b>Path</b> &#x2013;
+                        <code class="code">/runtime/invocation/<em class="replaceable"><code>AwsRequestId</code></em>/response</code></p>
+                     
+                     <p><b>Method</b> &#x2013; <b>POST</b></p>
+                     
+                     <p>Sends an invocation response to Lambda. After the runtime invokes the function handler,
+                        it posts the response
+                        from the function to the invocation response path. For synchronous invocations, Lambda
+                        then sends the response back
+                        to the client.
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example Success Request</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">REQUEST_ID=156cb537-e2d4-11e8-9b34-d36013741fb9
+curl -X POST  &quot;http://${AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime/invocation/$REQUEST_ID/response&quot;  -d &quot;SUCCESS&quot;</code></pre></div>
+                     </div>
+                     
+                     
+                     <h2 id="runtimes-api-invokeerror">Invocation Error</h2>
+                     
+                     <p><b>Path</b> &#x2013;
+                        <code class="code">/runtime/invocation/<em class="replaceable"><code>AwsRequestId</code></em>/error</code></p>
+                     
+                     <p><b>Method</b> &#x2013; <b>POST</b></p>
+                     
+                     <p>If the function returns an error, the runtime formats the error into a JSON document,
+                        and posts it to the
+                        invocation error path.
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example Request Body</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
+    &quot;errorMessage&quot; : &quot;Error parsing event data.&quot;,
+    &quot;errorType&quot; : &quot;InvalidEventDataException&quot;
+}</code></pre></div>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example Error Request</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">REQUEST_ID=156cb537-e2d4-11e8-9b34-d36013741fb9
+ERROR=&quot;{\&quot;errorMessage\&quot; : \&quot;Error parsing event data.\&quot;, \&quot;errorType\&quot; : \&quot;InvalidEventDataException\&quot;}&quot;
+curl -X POST &quot;http://${AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime/invocation/$REQUEST_ID/error&quot; -d &quot;$ERROR&quot; --header &quot;Lambda-Runtime-Function-Error-Type: Unhandled&quot;</code></pre></div>
+                     </div>
+                     
+                     
+                     <h2 id="runtimes-api-initerror">Initialization Error</h2>
+                     
+                     <p><b>Path</b> &#x2013; <code class="code">/runtime/init/error</code></p>
+                     
+                     <p><b>Method</b> &#x2013; <b>POST</b></p>
+                     
+                     <p>If the runtime encounters an error during initialization, it posts an error message
+                        to the initialization
+                        error path.
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example Initialization Error Request</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">ERROR=&quot;{\&quot;errorMessage\&quot; : \&quot;Failed to load function.\&quot;, \&quot;errorType\&quot; : \&quot;InvalidFunctionException\&quot;}&quot;
+curl -X POST &quot;http://${AWS_LAMBDA_RUNTIME_API}/2018-06-01/runtime/init/error&quot; -d &quot;$ERROR&quot; --header &quot;Lambda-Runtime-Function-Error-Type: Unhandled&quot;</code></pre></div>
+                     </div>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="runtimes-custom.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="runtimes-walkthrough.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Next Invocation"><a class="pagetoc" href="#runtimes-api-next">Next Invocation</a></li>
+                        <li class="pagetoc" name="Invocation Response"><a class="pagetoc" href="#runtimes-api-response">Invocation Response</a></li>
+                        <li class="pagetoc" name="Invocation Error"><a class="pagetoc" href="#runtimes-api-invokeerror">Invocation Error</a></li>
+                        <li class="pagetoc" name="Initialization Error"><a class="pagetoc" href="#runtimes-api-initerror">Initialization Error</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='AWS Lambda';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

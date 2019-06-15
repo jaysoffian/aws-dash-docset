@@ -4,14 +4,16 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="EC2_Network_and_Security.html" title="Network and Security">
-      <link rel="prev" href="vpc-migrate.html" title="Migrating from a Linux Instance in EC2-Classic to a Linux Instance in a VPC">
+      <link rel="prev" href="authorizing-access-to-an-instance.html" title="Authorizing Inbound Traffic for Your Linux Instances">
       <link rel="next" href="MultipleIP.html" title="Multiple IP Addresses">
-      <meta name="description" content="Learn how Amazon EC2 provides your instances with public and private IP addresses and DNS hostnames depending on whether you launched the instance in Amazon EC2 or in a VPC.">
+      <meta name="description" content="Learn how Amazon EC2 provides your instances with public and private IP addresses and DNS hostnames.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-instance-addressing.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,18 +35,15 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="EC2_Network_and_Security.html">Network and Security</a> &#xBB; <span class="breadcrumb">Amazon EC2 Instance IP Addressing</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="EC2_Network_and_Security.html">Network and Security</a> &#xBB; <span class="breadcrumb">Amazon EC2 Instance IP Addressing</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="using-instance-addressing">Amazon EC2 Instance IP Addressing</h1>
-                     <p>We provide your instances with IP addresses and IPv4 DNS hostnames. These can vary
-                        depending
-                        		on whether you launched the instance in the EC2-Classic platform or in a virtual
-                        private
-                        		cloud (VPC). For information about the EC2-Classic and EC2-VPC platforms, see <a href="ec2-supported-platforms.html">Supported Platforms</a>.
-                     </p>
                      <p>Amazon EC2 and Amazon VPC support both the IPv4 and IPv6 addressing protocols. By
                         default, Amazon EC2 and
                         		Amazon VPC use the IPv4 addressing protocol; you can&apos;t disable this behavior. When
@@ -55,36 +54,29 @@
                         from
                         		that block to instances in your subnet. IPv6 addresses are reachable over the Internet.
                         For
-                        		more information about IPv6, see <a href="./AmazonVPC/latest/UserGuide/vpc-ip-addressing.html" target="_blank">IP Addressing
-                           			in Your VPC</a> in the <em>Amazon VPC User Guide</em>.
+                        		more information about IPv6, see <a href="./vpc/latest/userguide/vpc-ip-addressing.html">IP Addressing
+                           		in Your VPC</a> in the <em>Amazon VPC User Guide</em>.
                      </p>
-                     <p>IPv6 is not supported for the EC2-Classic platform. </p>
                      <div class="highlights">
                         <p><strong>Contents</strong></p>
                         <ul>
-                           <li><a href="#concepts-private-addresses">Private IPv4 Addresses and Internal DNS
-                                 			Hostnames</a></li>
-                           <li><a href="#concepts-public-addresses">Public IPv4 Addresses and External DNS
-                                 			Hostnames</a></li>
+                           <li><a href="#concepts-private-addresses">Private IPv4 Addresses and Internal DNS Hostnames</a></li>
+                           <li><a href="#concepts-public-addresses">Public IPv4 Addresses and External DNS Hostnames</a></li>
                            <li><a href="#ip-addressing-eips">Elastic IP Addresses (IPv4)</a></li>
                            <li><a href="#amazon-dns-server">Amazon DNS Server</a></li>
                            <li><a href="#ipv6-addressing">IPv6 Addresses</a></li>
-                           <li><a href="#differences">IP Address Differences Between EC2-Classic and
-                                 			EC2-VPC</a></li>
                            <li><a href="#working-with-ip-addresses">Working with IP Addresses for Your Instance</a></li>
                            <li><a href="MultipleIP.html">Multiple IP Addresses</a></li>
                         </ul>
                      </div>
-                     <h2 id="concepts-private-addresses">Private IPv4 Addresses and Internal DNS
-                        			Hostnames
-                     </h2>
+                     		
+                     <h2 id="concepts-private-addresses">Private IPv4 Addresses and Internal DNS Hostnames</h2>
                      		
                      		
                      <p>A private IPv4 address is an IP address that&apos;s not reachable over the Internet. You
                         can use
-                        private IPv4 addresses for communication between instances in the same network
-                        (EC2-Classic or a VPC). For more information about the standards and specifications
-                        of
+                        private IPv4 addresses for communication between instances in the same VPC.
+                        For more information about the standards and specifications of
                         private IPv4 addresses, see <a href="http://www.faqs.org/rfcs/rfc1918.html" target="_blank">RFC
                            1918</a>. We allocate private IPv4 addresses to instances using DHCP.
                      </p>
@@ -109,13 +101,11 @@
                         in.
                      </p>
                      		
-                     <p>An instance launched in a VPC receives a primary private IP address from the IPv4
-                        address
-                        range of the subnet. For more information, see <a href="./AmazonVPC/latest/UserGuide/VPC_Subnets.html#SubnetSize" target="_blank">Subnet Sizing</a> in the
+                     <p>An instance receives a primary private IP address from the IPv4 address
+                        range of the subnet. For more information, see <a href="./vpc/latest/userguide/VPC_Subnets.html#VPC_Sizing">VPC and Subnet Sizing</a> in the
                         <em>Amazon VPC User Guide</em>. If you don&apos;t specify a primary private IP
                         address when you launch the instance, we select an available IP address in the subnet&apos;s
-                        IPv4 range for you. Each instance in a VPC has a default network interface (eth0)
-                        that
+                        IPv4 range for you. Each instance has a default network interface (eth0) that
                         is assigned the primary private IPv4 address. You can also specify additional private
                         IPv4 addresses, known as <em>secondary private IPv4 addresses</em>. Unlike
                         primary private IP addresses, secondary private IP addresses can be reassigned from
@@ -123,41 +113,18 @@
                         instance to another. For more information, see <a href="MultipleIP.html">Multiple IP Addresses</a>. 
                      </p>
                      		
-                     <p>For instances launched in EC2-Classic, we release the private IPv4 address when the
-                        			instance is stopped or terminated. If you restart your stopped instance, it receives
-                        a
-                        			new private IPv4 address.
+                     <p>A private IPv4 address remains associated with the network interface when the instance
+                        
+                        			is stopped and restarted, and is released when the instance is terminated.
                      </p>
+                     	
                      		
-                     <p>For instances launched in a VPC, a private IPv4 address remains associated with the
-                        network
-                        			interface when the instance is stopped and restarted, and is released when the
-                        instance
-                        			is terminated.
-                     </p>
-                     		
-                     <p>If you create a custom firewall configuration in EC2-Classic, you must create a rule
-                        in
-                        			your firewall that allows inbound traffic from port 53 (DNS)&#x2014;with a destination
-                        			port from the ephemeral range&#x2014;from the address of the Amazon DNS server;
-                        			otherwise, internal DNS resolution from your instances fails. If your firewall
-                        doesn&apos;t
-                        			automatically allow DNS query responses, then you need to allow traffic from the
-                        IP
-                        			address of the Amazon DNS server. To get the IP address of the Amazon DNS server,
-                        use
-                        			the following command from within your instance:
-                     </p>
-                     		<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">grep nameserver /etc/resolv.conf</code></pre>
-                     		
-                     	<h2 id="concepts-public-addresses">Public IPv4 Addresses and External DNS
-                        			Hostnames
-                     </h2>
+                     <h2 id="concepts-public-addresses">Public IPv4 Addresses and External DNS Hostnames</h2>
                      		
                      		
                      <p>A public IP address is an IPv4 address that&apos;s reachable from the Internet. You can
                         use
-                        			public addresses for communication between your instances and the Internet. 
+                        			public addresses for communication between your instances and the Internet.
                      </p>
                      		
                      <p>Each instance that receives a public IP address is also given an external DNS hostname;
@@ -171,22 +138,17 @@
                            				Translator (NAT)</a>.
                      </p>
                      		
-                     <p>When you launch an instance in EC2-Classic, we automatically assign a public IP address
-                        to
-                        			the instance from the EC2-Classic public IPv4 address pool. You cannot modify this
-                        			behavior. When you launch an instance into a VPC, your subnet has an attribute
+                     <p>When you launch an instance in a default VPC, we assign it a public IP address by
+                        default.
+                        			When you launch an instance into a nondefault VPC, the subnet has an attribute
                         that
                         			determines whether instances launched into that subnet receive a public IP address
                         from
-                        			the EC2-VPC public IPv4 address pool. By default, we assign a public IP address
-                        to
-                        			instances launched in a default VPC, and we don&apos;t assign a public IP address to
-                        			instances launched in a nondefault subnet. 
+                        			the public IPv4 address pool. By default, we don&apos;t assign a public IP address to
+                        			instances launched in a nondefault subnet.
                      </p>
                      		
-                     <p>You can control whether your instance in a VPC receives a public IP address by doing
-                        			the following:
-                     </p>
+                     <p>You can control whether your instance receives a public IP address as follows:</p>
                      		
                      <div class="itemizedlist">
                         			
@@ -197,7 +159,7 @@
                               				
                               <p>Modifying the public IP addressing attribute of your subnet. For more information,
                                  see
-                                 						<a href="./AmazonVPC/latest/UserGuide/vpc-ip-addressing.html#subnet-public-ip" target="_blank">Modifying
+                                 						<a href="./vpc/latest/userguide/vpc-ip-addressing.html#subnet-public-ip">Modifying
                                     						the Public IPv4 Addressing Attribute for Your Subnet</a> in the
                                  						<em>Amazon VPC User Guide</em>.
                               </p>
@@ -208,8 +170,7 @@
                               <p>Enabling or disabling the public IP addressing feature during launch, which
                                  					overrides the subnet&apos;s public IP addressing attribute. For more information,
                                  see
-                                 						<a href="using-instance-addressing.html#public-ip-addresses">Assigning a Public IPv4 Address During Instance
-                                    				Launch</a>.
+                                 						<a href="using-instance-addressing.html#public-ip-addresses">Assigning a Public IPv4 Address During Instance Launch</a>.
                               </p>
                               			
                            </li>
@@ -221,7 +182,7 @@
                         is
                         			disassociated from your instance, it is released back into the public IPv4 address
                         pool,
-                        			and you cannot reuse it. 
+                        			and you cannot reuse it.
                      </p>
                      		
                      <p>You cannot manually associate or disassociate a public IP address from your instance.
@@ -233,55 +194,62 @@
                         				
                         				
                         				
+                        				 
                         			
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
-                              <p>We release the public IP address for your instance when it&apos;s stopped or
-                                 						terminated. Your stopped instance receives a new public IP address when it&apos;s
-                                 						restarted.
+                              <p>We release your instance&apos;s public IP address when it is stopped or terminated. 
+                                 						Your stopped instance receives a new public IP address when it is restarted.
                               </p>
                               				
                            </li>
                            <li class="listitem">
                               					
-                              <p>We release the public IP address for your instance when you associate an Elastic IP
-                                 						address with your instance, or when you associate an Elastic IP address with
-                                 						the primary network interface (eth0) of your instance in a VPC. When you
-                                 						disassociate the Elastic IP address from your instance, it receives a new
-                                 						public IP address.
+                              <p>We release your instance&apos;s public IP address when you associate an Elastic IP address
+                                 					with it. When you disassociate the Elastic IP address from your instance, it
+                                 					receives a new public IP address.
                               </p>
                               				
                            </li>
                            <li class="listitem">
                               					
-                              <p>If the public IP address of your instance in a VPC has been released, it
-                                 						will not receive a new one if there is more than one network interface
-                                 						attached to your instance. 
+                              <p>If the public IP address of your instance in a VPC has been released, it will
+                                 					not receive a new one if there is more than one network interface attached to
+                                 					your instance. 
+                              </p>
+                              				
+                           </li>
+                           <li class="listitem">
+                              					
+                              <p>If your instance&apos;s public IP address is released while it has a 
+                                 						secondary private IP address that is associated with an Elastic IP address,
+                                 the
+                                 						instance does not receive a new public IP address.
                               </p>
                               				
                            </li>
                         </ul>
                      </div>
+                     
                      		
                      <p>If you require a persistent public IP address that can be associated to and from instances
-                        as you require, use an Elastic IP address instead. For example, if you use dynamic
-                        DNS to map
-                        an existing DNS name to a new instance&apos;s public IP address, it might take up to 24
-                        hours for
-                        the IP address to propagate through the Internet. As a result, new instances might
-                        not receive
-                        traffic while terminated instances continue to receive requests. To solve this problem,
-                        use an
-                        Elastic IP address. You can allocate your own Elastic IP address, and associate it
-                        with your
-                        instance. For more information, see <a href="elastic-ip-addresses-eip.html">Elastic IP Addresses</a>. 
+                        as you
+                        				require, use an Elastic IP address instead.
+                     </p>
+                     
+                     		
+                     <p>If you use dynamic DNS to map an existing DNS name to a new instance&apos;s public IP
+                        			address, it might take up to 24 hours for the IP address to propagate through the
+                        			Internet. As a result, new instances might not receive traffic while terminated
+                        			instances continue to receive requests. To solve this problem, use an Elastic IP
+                        			address. You can allocate your own Elastic IP address, and associate it with your
+                        			instance. For more information, see <a href="elastic-ip-addresses-eip.html">Elastic IP Addresses</a>. 
                      </p>
                      		
-                     <p>If your instance is in a VPC and you assign it an Elastic IP address, it receives
-                        an IPv4
-                        			DNS hostname if DNS hostnames are enabled. For more information, see <a href="./AmazonVPC/latest/UserGuide/vpc-dns.html" target="_blank">Using DNS with Your VPC</a> in the
-                        				<em>Amazon VPC User Guide</em>.
+                     <p>If you assign an Elastic IP address to an instance, it receives an IPv4
+                        			DNS hostname if DNS hostnames are enabled. For more information, see <a href="./vpc/latest/userguide/vpc-dns.html">Using DNS with Your VPC</a> in the
+                        			<em>Amazon VPC User Guide</em>.
                      </p>
                      		
                      <div class="aws-note">
@@ -292,6 +260,7 @@
                         </p>
                      </div>
                      	
+                     		
                      <h2 id="ip-addressing-eips">Elastic IP Addresses (IPv4)</h2>
                      		
                      		
@@ -304,16 +273,17 @@
                      		
                      <p>We do not support Elastic IP addresses for IPv6.</p>
                      	
+                     		
                      <h2 id="amazon-dns-server">Amazon DNS Server</h2>
                      		
                      		
                      <p>Amazon provides a DNS server that resolves Amazon-provided IPv4 DNS hostnames to IPv4
-                        			addresses. In EC2-Classic, the Amazon DNS server is located at
-                        			<code class="code">172.16.0.23</code>. In EC2-VPC, the Amazon DNS server is located at the base of
-                        			your VPC network range plus two. For more information, see <a href="./AmazonVPC/latest/UserGuide/VPC_DHCP_Options.html#AmazonDNS" target="_blank">Amazon DNS Server</a> in the
-                        				<em>Amazon VPC User Guide</em>.
+                        			addresses. The Amazon DNS server is located at the base of your VPC network range
+                        plus two. 
+                        			For more information, see <a href="./vpc/latest/userguide/VPC_DHCP_Options.html#AmazonDNS">Amazon DNS Server</a> in the <em>Amazon VPC User Guide</em>.
                      </p>
                      	
+                     		
                      <h2 id="ipv6-addressing">IPv6 Addresses</h2>
                      		
                      		
@@ -324,6 +294,7 @@
                         more
                         			information, see the following topics in the <em>Amazon VPC User Guide</em>:
                      </p>
+                     		
                      <div class="itemizedlist">
                         				
                         				
@@ -332,18 +303,18 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
-                              <p><a href="./AmazonVPC/latest/UserGuide/VPC_Subnets.html#vpc-sizing-ipv6" target="_blank">VPC and Subnet
+                              <p><a href="./vpc/latest/userguide/VPC_Subnets.html#vpc-sizing-ipv6">VPC and Subnet
                                     							Sizing for IPv6</a></p>
                               				
                            </li>
                            <li class="listitem">
                               					
-                              <p><a href="./AmazonVPC/latest/UserGuide/VPC_Subnets.html#vpc-associate-ipv6-cidr" target="_blank">Associating an IPv6 CIDR Block with Your VPC</a></p>
+                              <p><a href="./vpc/latest/userguide/working-with-vpcs.html#vpc-associate-ipv6-cidr">Associating an IPv6 CIDR Block with Your VPC</a></p>
                               				
                            </li>
                            <li class="listitem">
                               					
-                              <p><a href="./AmazonVPC/latest/UserGuide/VPC_Subnets.html#subnet-associate-ipv6-cidr" target="_blank">Associating an IPv6 CIDR Block with Your Subnet</a></p>
+                              <p><a href="./vpc/latest/userguide/working-with-vpcs.html#subnet-associate-ipv6-cidr">Associating an IPv6 CIDR Block with Your Subnet</a></p>
                               				
                            </li>
                         </ul>
@@ -351,10 +322,10 @@
                      		
                      <p>IPv6 addresses are globally unique, and therefore reachable over the Internet. Your
                         instance
-                        			in a VPC receives an IPv6 address if an IPv6 CIDR block is associated with your
-                        VPC and
+                        			receives an IPv6 address if an IPv6 CIDR block is associated with your VPC and
                         			subnet, and if one of the following is true:
                      </p>
+                     		
                      <div class="itemizedlist">
                         				
                         				
@@ -365,7 +336,7 @@
                            <li class="listitem">
                               					
                               <p>Your subnet is configured to automatically assign an IPv6 address to an
-                                 						instance during launch. For more information, see <a href="./AmazonVPC/latest/UserGuide/vpc-ip-addressing.html#subnet-ipv6" target="_blank">Modifying the
+                                 						instance during launch. For more information, see <a href="./vpc/latest/userguide/vpc-ip-addressing.html#subnet-ipv6">Modifying the
                                     							IPv6 Addressing Attribute for Your Subnet</a>.
                               </p>
                               				
@@ -411,264 +382,10 @@
                         			interface attached to your instance. The number of IPv6 addresses you can assign
                         to a
                         			network interface and the number of network interfaces you can attach to an instance
-                        			varies per instance type. For more information, see <a href="using-eni.html#AvailableIpPerENI">IP Addresses Per Network Interface Per Instance
-                           			Type</a>.
+                        			varies per instance type. For more information, see <a href="using-eni.html#AvailableIpPerENI">IP Addresses Per Network Interface Per Instance Type</a>.
                      </p>
                      	
-                     <h2 id="differences">IP Address Differences Between EC2-Classic and
-                        			EC2-VPC
-                     </h2>
                      		
-                     		
-                     <p>The following table summarizes the differences between IP addresses for instances
-                        			launched in EC2-Classic, instances launched in a default subnet, and instances
-                        launched
-                        			in a nondefault subnet.
-                     </p>
-                     		
-                     <div class="table">
-                        <div class="table-contents">
-                           <table id="w185aac21c23c21b4">
-                              					
-                              <tbody><tr>
-                                 						
-                                 <th>Characteristic</th>
-                                 						
-                                 <th>EC2-Classic</th>
-                                 						
-                                 <th>Default Subnet</th>
-                                 						
-                                 <th>Nondefault Subnet</th>
-                                 					
-                              </tr>
-                              				
-                              					
-                              <tr>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Public IP address (from Amazon&apos;s public IPv4 address pool)</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Your instance receives a public IP address.</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Your instance receives a public IP address by default, unless you
-                                       								specify otherwise during launch, or you modify the subnet&apos;s public
-                                       								IP address attribute.
-                                    </p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Your instance doesn&apos;t receive a public IP address by default,
-                                       								unless you specify otherwise during launch, or you modify the
-                                       								subnet&apos;s public IP address attribute.
-                                    </p>
-                                    						
-                                 </td>
-                                 					
-                              </tr>
-                              					
-                              <tr>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Private IPv4 address</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Your instance receives a private IP address from the EC2-Classic
-                                       								range each time it&apos;s started.
-                                    </p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Your instance receives a static private IP address from the IPv4 address range of
-                                       your
-                                       								default subnet.
-                                    </p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Your instance receives a static private IP address from the IPv4 address range of
-                                       your
-                                       								subnet.
-                                    </p>
-                                    						
-                                 </td>
-                                 					
-                              </tr>
-                              					
-                              <tr>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Multiple IPv4 addresses</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>We select a single private IP address for your instance; multiple
-                                       								IP addresses are not supported.
-                                    </p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>You can assign multiple private IP addresses to your
-                                       								instance.
-                                    </p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>You can assign multiple private IP addresses to your
-                                       								instance.
-                                    </p>
-                                    						
-                                 </td>
-                                 					
-                              </tr>
-                              					
-                              <tr>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Network interfaces</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>IP addresses are associated with the instance; network interfaces
-                                       								aren&apos;t supported.
-                                    </p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>IP addresses are associated with a network interface. Each
-                                       								instance has one or more network interfaces.
-                                    </p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>IP addresses are associated with a network interface. Each
-                                       								instance has one or more network interfaces.
-                                    </p>
-                                    						
-                                 </td>
-                                 					
-                              </tr>
-                              					
-                              <tr>
-                                 						
-                                 <td>
-                                    							
-                                    <p>Elastic IP address (IPv4)</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>An Elastic IP address is disassociated from your instance when you
-                                       								stop it.
-                                    </p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>An Elastic IP address remains associated with your instance when
-                                       								you stop it.
-                                    </p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>An Elastic IP address remains associated with your instance when
-                                       								you stop it.
-                                    </p>
-                                    						
-                                 </td>
-                                 					
-                              </tr>
-                              					
-                              <tr>
-                                 						
-                                 <td>
-                                    							
-                                    <p>DNS hostnames (IPv4)</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>DNS hostnames are enabled by default.</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>DNS hostnames are enabled by default.</p>
-                                    						
-                                 </td>
-                                 						
-                                 <td>
-                                    							
-                                    <p>DNS hostnames are disabled by default, except if you&apos;ve created
-                                       								your VPC using the VPC wizard in the Amazon VPC console.
-                                    </p>
-                                    						
-                                 </td>
-                                 					
-                              </tr>
-                              					
-                              <tr>
-                                 						
-                                 <td>IPv6 address</td>
-                                 						
-                                 <td>Not supported. Your instance cannot receive an IPv6 address.</td>
-                                 						
-                                 <td>Your instance does not receive an IPv6 address by default unless
-                                    							you&apos;ve associated an IPv6 CIDR block with your VPC and subnet, and
-                                    							either specified an IPv6 address during launch, or modified your
-                                    							subnet&apos;s IPv6 addressing attribute.
-                                 </td>
-                                 						
-                                 <td>Your instance does not receive an IPv6 address by default unless
-                                    							you&apos;ve associated an IPv6 CIDR block with your VPC and subnet, and
-                                    							either specified an IPv6 address during launch, or modified your
-                                    							subnet&apos;s IPv6 addressing attribute.
-                                 </td>
-                                 					
-                              </tr>
-                              				
-                           </tbody></table>
-                        </div>
-                     </div>
-                     	
                      <h2 id="working-with-ip-addresses">Working with IP Addresses for Your Instance</h2>
                      		
                      		
@@ -681,19 +398,16 @@
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Contents</strong></p>
                         <ul>
-                           <li><a href="#using-instance-addressing-common">Determining Your Public, Private, and
-                                 			Elastic IP Addresses</a></li>
+                           <li><a href="#using-instance-addressing-common">Determining Your Public, Private, and Elastic IP Addresses</a></li>
                            <li><a href="#view-ipv6-addresses">Determining Your IPv6 Addresses</a></li>
-                           <li><a href="#public-ip-addresses">Assigning a Public IPv4 Address During Instance
-                                 				Launch</a></li>
+                           <li><a href="#public-ip-addresses">Assigning a Public IPv4 Address During Instance Launch</a></li>
                            <li><a href="#assign-ipv6-address">Assigning an IPv6 Address to an Instance</a></li>
                            <li><a href="#unassign-ipv6-address">Unassigning an IPv6 Address From an Instance</a></li>
                         </ul>
                      </div>
                      	
-                     <h3 id="using-instance-addressing-common">Determining Your Public, Private, and
-                        			Elastic IP Addresses
-                     </h3>
+                     		
+                     <h3 id="using-instance-addressing-common">Determining Your Public, Private, and Elastic IP Addresses</h3>
                      		
                      		
                      <p>You can use the Amazon EC2 console to determine the private IPv4 addresses, public
@@ -727,7 +441,7 @@
                         </li>
                         <li>
                            				
-                           <p>(VPC only) If you have one or more secondary private IPv4 addresses assigned to network
+                           <p>If you have one or more secondary private IPv4 addresses assigned to network
                               						interfaces that are attached to your instance, get those IP addresses from
                               						the <b>Secondary private IPs</b> field. 
                            </p>
@@ -735,7 +449,7 @@
                         </li>
                         <li>
                            				
-                           <p>(VPC only) Alternatively, in the navigation pane, choose <b>Network
+                           <p>Alternatively, in the navigation pane, choose <b>Network
                                  							Interfaces</b>, and then select the network interface that&apos;s
                               						associated with your instance. 
                            </p>
@@ -799,7 +513,7 @@
                         </li>
                         <li>
                            				
-                           <p>(VPC only) Alternatively, in the navigation pane, choose <b>Network
+                           <p>Alternatively, in the navigation pane, choose <b>Network
                                  						Interfaces</b>, and then select a network interface that&apos;s associated
                               					with your instance. 
                            </p>
@@ -852,13 +566,13 @@
                         </li>
                      </ol>
                      	
-                     	
+                     
+                     		
+                     		
                      <h3 id="view-ipv6-addresses">Determining Your IPv6 Addresses</h3>
                      		
                      		
-                     <p>(VPC only) You can use the Amazon EC2 console to determine the IPv6 addresses of your
-                        instances. 
-                     </p>
+                     <p>You can use the Amazon EC2 console to determine the IPv6 addresses of your instances.</p>
                      		
                      <p class="title"><b>To determine your instance&apos;s IPv6 addresses using the console</b></p>
                      <ol>
@@ -900,18 +614,11 @@
                      </ol>
                      	
                      	
-                     <h3 id="public-ip-addresses">Assigning a Public IPv4 Address During Instance
-                        				Launch
-                     </h3>
+                     		
+                     <h3 id="public-ip-addresses">Assigning a Public IPv4 Address During Instance Launch</h3>
                      		
                      		
-                     <p>If you launch an instance in EC2-Classic, it is assigned a public IPv4 address by
-                        default.
-                        				You can&apos;t modify this behavior. 
-                     </p>
-                     		
-                     <p>In a VPC, all subnets have an attribute that determines whether instances launched
-                        into that
+                     <p>Each subnet has an attribute that determines whether instances launched into that
                         				subnet are assigned a public IP address. By default, nondefault subnets have this
                         				attribute set to false, and default subnets have this attribute set to true. When
                         				you launch an instance, a public IPv4 addressing feature is also available for
@@ -928,8 +635,7 @@
                         <p class="aws-note">Important</p>
                         <p>You can&apos;t manually disassociate the public IP address from your instance after
                            				launch. Instead, it&apos;s automatically released in certain cases, after which you
-                           				cannot reuse it. For more information, see <a href="using-instance-addressing.html#concepts-public-addresses">Public IPv4 Addresses and External DNS
-                              			Hostnames</a>. If you require a persistent public
+                           				cannot reuse it. For more information, see <a href="using-instance-addressing.html#concepts-public-addresses">Public IPv4 Addresses and External DNS Hostnames</a>. If you require a persistent public
                            				IP address that you can associate or disassociate at will, assign an Elastic IP
                            				address to the instance after launch instead. For more information, see <a href="elastic-ip-addresses-eip.html">Elastic IP Addresses</a>.
                         </p>
@@ -958,7 +664,7 @@
                         <li>
                            				
                            <p>On the <b>Configure Instance Details</b> page, for
-                              							<b>Network</b>, select a VPC . The <b>Auto-assign
+                              							<b>Network</b>, select a VPC. The <b>Auto-assign
                                  							Public IP</b> list is displayed. Choose
                               							<b>Enable</b> or <b>Disable</b> to override
                               						the default setting for the subnet. 
@@ -999,45 +705,46 @@
                         				assign a public IP address to your instance during launch or not, you can associate
                         				an Elastic IP address with your instance after it&apos;s launched. For more information,
                         				see <a href="elastic-ip-addresses-eip.html">Elastic IP Addresses</a>. You can also modify your subnet&apos;s
-                        				public IPv4 addressing behavior. For more information, see <a href="./AmazonVPC/latest/UserGuide/vpc-ip-addressing.html#subnet-public-ip" target="_blank">Modifying the Public
+                        				public IPv4 addressing behavior. For more information, see <a href="./vpc/latest/userguide/vpc-ip-addressing.html#subnet-public-ip">Modifying the Public
                            					IPv4 Addressing Attribute for Your Subnet</a>.
                      </p>
-                     		<a id="publicip-cli"></a><p class="title"><b>To enable or disable the public IP addressing feature using the
-                           				command line</b></p>
-                     <ul>
-                        <li>
-                           <p>You can use one of the following commands. For more information about these
-                              				command line interfaces, see <a href="concepts.html#access-ec2">Accessing Amazon EC2</a>.
-                           </p>
-                           			
-                           <div class="itemizedlist">
-                              			
-                              <ul class="itemizedlist" type="disc">
-                                 <li class="listitem">
-                                    				
-                                    <p>Use the <code class="code">--associate-public-ip-address</code> or the
-                                       						<code class="code">--no-associate-public-ip-address</code> option with the <a href="./cli/latest/reference/ec2/run-instances.html" target="_blank">run-instances</a> command
-                                       					(AWS CLI)
-                                    </p>
-                                    			
-                                 </li>
-                                 <li class="listitem">
-                                    				
-                                    <p>Use the <code class="code">-AssociatePublicIp</code> parameter with the <a href="./powershell/latest/reference/items/New-EC2Instance.html" target="_blank">New-EC2Instance</a>
-                                       					command (AWS Tools for Windows PowerShell)
-                                    </p>
-                                    			
-                                 </li>
-                              </ul>
-                           </div>
-                        </li>
-                     </ul>
                      		
+                     <div class="itemizedlist">
+                        			
+                        <p class="title"><b>To enable or disable the public IP addressing feature using the
+                              				command line</b></p>
+                        			
+                        <p>You can use one of the following commands. For more information about these
+                           				command line interfaces, see <a href="concepts.html#access-ec2">Accessing Amazon EC2</a>.
+                        </p>
+                        			
+                        			
+                        		
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              				
+                              <p>Use the <code class="code">--associate-public-ip-address</code> or the
+                                 					<code class="code">--no-associate-public-ip-address</code> option with the <a href="./cli/latest/reference/ec2/run-instances.html">run-instances</a> command
+                                 					(AWS CLI)
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>Use the <code class="code">-AssociatePublicIp</code> parameter with the <a href="./powershell/latest/reference/items/New-EC2Instance.html">New-EC2Instance</a>
+                                 					command (AWS Tools for Windows PowerShell)
+                              </p>
+                              			
+                           </li>
+                        </ul>
+                     </div>		
                      	
-                     	
+                     
+                     		
+                     			
                      <h3 id="assign-ipv6-address">Assigning an IPv6 Address to an Instance</h3>
                      		
-                     		
+                     		    
                      <p>If your VPC and subnet have IPv6 CIDR blocks associated with them, you can assign
                         an IPv6
                         				address to your instance during or after launch. The IPv6 address is assigned
@@ -1045,6 +752,10 @@
                         				the IPv6 address range of the subnet, and is assigned to the network interface
                         with
                         				the device index of eth0. 
+                     </p>
+                     			
+                     <p>IPv6 is supported on all current generation instance types and the C3, R3, and I2
+                        previous generation instance types.
                      </p>
                      		
                      <p class="title"><b>To assign an IPv6 address to an instance during launch</b></p>
@@ -1056,16 +767,9 @@
                         </li>
                         <li>
                            				
-                           <p>Select an AMI, an instance type, and choose <b>Next: Configure Instance
-                                 							Details</b>.
+                           <p>Select an AMI and an instance type that supports IPv6, and choose <b>Next: Configure Instance
+                                 						Details</b>.
                            </p>
-                           				
-                           <div class="aws-note">
-                              <p class="aws-note">Note</p>
-                              <p>Ensure that you select an instance type that supports IPv6 addresses. For more
-                                 						information, see <a href="instance-types.html">Instance Types</a>.
-                              </p>
-                           </div>
                            			
                         </li>
                         <li>
@@ -1084,7 +788,7 @@
                         </li>
                      </ol>
                      		
-                     <p>Alternatively, you can assign an IPv6 address to your instance after launch. </p>
+                     <p>Alternatively, you can assign an IPv6 address to your instance after launch.</p>
                      		
                      <p class="title"><b>To assign an IPv6 address to your instance after launch</b></p>
                      <ol>
@@ -1131,7 +835,7 @@
                            					or later, your instance is configured for IPv6, and no additional steps are
                            					needed to ensure that the IPv6 address is recognized on the instance. If you
                            					launched your instance from an older AMI, you may have to configure your
-                           					instance manually. For more information, see <a href="./AmazonVPC/latest/UserGuide/vpc-migrate-ipv6.html#vpc-migrate-ipv6-dhcpv6" target="_blank">Configure
+                           					instance manually. For more information, see <a href="./vpc/latest/userguide/vpc-migrate-ipv6.html#vpc-migrate-ipv6-dhcpv6">Configure
                               						IPv6 on Your Instances</a> in the
                            					<em>Amazon VPC User Guide</em>.
                         </p>
@@ -1152,7 +856,7 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               				
-                              <p>Use the <code class="code">--ipv6-addresses</code> option with the <a href="./cli/latest/reference/ec2/run-instances.html" target="_blank">run-instances</a> command
+                              <p>Use the <code class="code">--ipv6-addresses</code> option with the <a href="./cli/latest/reference/ec2/run-instances.html">run-instances</a> command
                                  					(AWS CLI)
                               </p>
                               			
@@ -1160,19 +864,19 @@
                            <li class="listitem">
                               				
                               <p>Use the <code class="code">Ipv6Addresses</code> property for <code class="code">-NetworkInterface</code> in the
-                                 							<a href="./powershell/latest/reference/items/New-EC2Instance.html" target="_blank">New-EC2Instance</a> command (AWS Tools for Windows PowerShell)
+                                 							<a href="./powershell/latest/reference/items/New-EC2Instance.html">New-EC2Instance</a> command (AWS Tools for Windows PowerShell)
                               </p>
                               			
                            </li>
                            <li class="listitem">
                               				
-                              <p><a href="./cli/latest/reference/ec2/assign-ipv6-addresses.html" target="_blank">assign-ipv6-addresses</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/assign-ipv6-addresses.html">assign-ipv6-addresses</a> (AWS CLI)
                               </p>
                               			
                            </li>
                            <li class="listitem">
                               				
-                              <p><a href="./powershell/latest/reference/items/Register-EC2Ipv6AddressList.html" target="_blank">Register-EC2Ipv6AddressList</a> (AWS Tools for Windows PowerShell)
+                              <p><a href="./powershell/latest/reference/items/Register-EC2Ipv6AddressList.html">Register-EC2Ipv6AddressList</a> (AWS Tools for Windows PowerShell)
                               </p>
                               			
                            </li>
@@ -1232,13 +936,13 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
-                              <p><a href="./cli/latest/reference/ec2/unassign-ipv6-addresses.html" target="_blank">unassign-ipv6-addresses</a> (AWS CLI)
+                              <p><a href="./cli/latest/reference/ec2/unassign-ipv6-addresses.html">unassign-ipv6-addresses</a> (AWS CLI)
                               </p>
                               				
                            </li>
                            <li class="listitem">
                               					
-                              <p><a href="./powershell/latest/reference/items/Unregister-EC2Ipv6AddressList.html" target="_blank">Unregister-EC2Ipv6AddressList</a> (AWS Tools for Windows PowerShell).
+                              <p><a href="./powershell/latest/reference/items/Unregister-EC2Ipv6AddressList.html">Unregister-EC2Ipv6AddressList</a> (AWS Tools for Windows PowerShell).
                               </p>
                               				
                            </li>
@@ -1246,15 +950,19 @@
                      </div>
                      		
                      	
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -1263,8 +971,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="vpc-migrate.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="MultipleIP.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="authorizing-access-to-an-instance.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="MultipleIP.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -1273,24 +983,21 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Private IPv4 Addresses and Internal DNS
-			Hostnames"><a class="pagetoc" href="#concepts-private-addresses">Private IPv4 Addresses and Internal DNS
-                              			Hostnames</a></li>
-                        <li class="pagetoc" name="Public IPv4 Addresses and External DNS
-			Hostnames"><a class="pagetoc" href="#concepts-public-addresses">Public IPv4 Addresses and External DNS
-                              			Hostnames</a></li>
+                        <li class="pagetoc" name="Private IPv4 Addresses and Internal DNS Hostnames"><a class="pagetoc" href="#concepts-private-addresses">Private IPv4 Addresses and Internal DNS Hostnames</a></li>
+                        <li class="pagetoc" name="Public IPv4 Addresses and External DNS Hostnames"><a class="pagetoc" href="#concepts-public-addresses">Public IPv4 Addresses and External DNS Hostnames</a></li>
                         <li class="pagetoc" name="Elastic IP Addresses (IPv4)"><a class="pagetoc" href="#ip-addressing-eips">Elastic IP Addresses (IPv4)</a></li>
                         <li class="pagetoc" name="Amazon DNS Server"><a class="pagetoc" href="#amazon-dns-server">Amazon DNS Server</a></li>
                         <li class="pagetoc" name="IPv6 Addresses"><a class="pagetoc" href="#ipv6-addressing">IPv6 Addresses</a></li>
-                        <li class="pagetoc" name="IP Address Differences Between EC2-Classic and
-			EC2-VPC"><a class="pagetoc" href="#differences">IP Address Differences Between EC2-Classic and
-                              			EC2-VPC</a></li>
                         <li class="pagetoc" name="Working with IP Addresses for Your Instance"><a class="pagetoc" href="#working-with-ip-addresses">Working with IP Addresses for Your Instance</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

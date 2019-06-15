@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Controlling How Long CloudFront Caches
+         		Errors - Amazon CloudFront
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="GeneratingCustomErrorResponses.html" title="Generating Custom Error Responses">
+      <link rel="prev" href="custom-error-pages-response-code.html" title="Changing Response Codes
+		Returned by CloudFront">
+      <link rel="next" href="custom-error-pages-unavailable.html" title="How CloudFront Responds When a Custom Error Page Is
+				Unavailable">
+      <meta name="description" content="By default, when your origin returns an HTTP 4xx or 5xx status code, CloudFront caches these error responses for five minutes. CloudFront then submits the next request for the object to your origin to see whether the problem that caused the error has been resolved and the requested object is now available.">
+      <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon CloudFront">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/custom-error-pages-expiration.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="GeneratingCustomErrorResponses.html">Generating Custom Error Responses</a> &#xBB; <span class="breadcrumb">Controlling How Long CloudFront Caches
+                                    		Errors</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="custom-error-pages-expiration">Controlling How Long CloudFront Caches
+                        		Errors
+                     </h1>
+                     <p>By default, when your origin returns an HTTP 4xx or 5xx status code, CloudFront caches
+                        these
+                        				error responses for five minutes. CloudFront then submits the next request for
+                        the object to your
+                        				origin to see whether the problem that caused the error has been resolved and
+                        the requested
+                        				object is now available.
+                     </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>You can create a custom error page for HTTP status code 416 (Requested Range Not
+                           					Satisfiable), and you can change the HTTP status code that CloudFront returns
+                           to viewers when
+                           					your origin returns a status code 416 to CloudFront. (For more information, see
+                           <a href="custom-error-pages-response-code.html">Changing Response Codes
+                              		Returned by CloudFront</a>.) However, CloudFront doesn&apos;t cache status
+                           					code 416 responses, so although you can specify a value for <b>Error Caching Minimum
+                              					TTL</b> for status code 416, CloudFront doesn&apos;t use it. 
+                        </p>
+                     </div>
+                     <p>You can specify the error-caching duration&#x2014;the <b>Error Caching Minimum
+                           					TTL</b>&#x2014;for each 4xx and 5xx status code that CloudFront caches. For a procedure,
+                        				see <a href="custom-error-pages-procedure.html">Configuring Error Response Behavior</a>. When 
+                        				you specify a duration, note the following:
+                     </p>
+                     <div class="itemizedlist">
+                        				
+                        				
+                        			
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              					
+                              <p>If you specify a short error-caching duration, CloudFront forwards more requests to
+                                 your
+                                 						origin than if you specify a longer duration. For 5xx errors, this may aggravate
+                                 the
+                                 						problem that originally caused your origin to return an error.
+                              </p>
+                              				
+                           </li>
+                           <li class="listitem">
+                              					
+                              <p>When your origin returns an error for an object, CloudFront responds to requests for
+                                 the
+                                 						object either with the error response or with your custom error page until the
+                                 						error-caching duration elapses. If you specify a long error-caching duration,
+                                 CloudFront might
+                                 						continue to respond to requests with an error response or your custom error
+                                 page for a
+                                 						long time after the object becomes available again.
+                              </p>
+                              				
+                           </li>
+                        </ul>
+                     </div>
+                     <p>If you want to control how long CloudFront caches errors for individual objects, you
+                        can
+                        				configure your origin server to add the applicable header to the error response
+                        for that
+                        				object: 
+                     </p>
+                     <div class="itemizedlist">
+                        				
+                        				
+                        			
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              					
+                              <p><b>If the origin adds a <code class="code">Cache-Control max-age</code> or
+                                    								<code class="code">Cache-Control s-maxage</code> directive, or an <code class="code">Expires</code>
+                                    							header:</b> CloudFront caches error responses for the greater of the value in the
+                                 						header or the value of <b>Error Caching Minimum TTL</b>.
+                              </p>
+                              					
+                              <p>Be aware that <code class="code">Cache-Control max-age</code> and <code class="code">Cache-Control s-maxage</code>
+                                 						values cannot be greater than the <b>Maximum TTL</b> value set for the cache behavior for
+                                 						which the error page is being fetched.
+                              </p>
+                              				
+                           </li>
+                           <li class="listitem">
+                              					
+                              <p><b>If the origin adds other <code class="code">Cache-Control</code> directives
+                                    							or adds no headers:</b> CloudFront caches error responses for the value of
+                                 							<b>Error Caching Minimum TTL</b>.
+                              </p>
+                              				
+                           </li>
+                        </ul>
+                     </div>
+                     <p>If the expiration time for a 4xx or 5xx status code for an object is longer than you
+                        				want to wait, you can invalidate the status code by using the URL of the requested
+                        object.
+                        				If your origin is returning an error response for multiple objects, you need to
+                        invalidate
+                        				each object separately. For more information about invalidating objects, see <a href="Invalidation.html">Invalidating Files</a>.
+                     </p>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="custom-error-pages-response-code.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="custom-error-pages-unavailable.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper"></div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon CloudFront';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

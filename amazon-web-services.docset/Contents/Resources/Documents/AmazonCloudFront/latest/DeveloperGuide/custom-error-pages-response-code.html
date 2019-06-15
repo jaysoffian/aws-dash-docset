@@ -1,0 +1,194 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Changing Response Codes
+         		Returned by CloudFront - Amazon CloudFront
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="GeneratingCustomErrorResponses.html" title="Generating Custom Error Responses">
+      <link rel="prev" href="custom-error-pages-cache-behavior.html" title="Storing
+		Objects and Custom Error Pages in Different Locations">
+      <link rel="next" href="custom-error-pages-expiration.html" title="Controlling How Long CloudFront Caches
+		Errors">
+      <meta name="description" content="You can choose the HTTP status code CloudFront returns along with a custom error page for a given HTTP status code. For example, if your origin returns a 500 status code to CloudFront, you might want CloudFront to return a custom error page and a 200 status code (OK) to the viewer. There are a variety of reasons that you might want CloudFront to return a status code to the viewer that is different from the one that your origin returned to CloudFront:">
+      <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon CloudFront">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/custom-error-pages-response-code.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="GeneratingCustomErrorResponses.html">Generating Custom Error Responses</a> &#xBB; <span class="breadcrumb">Changing Response Codes
+                                    		Returned by CloudFront</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="custom-error-pages-response-code">Changing Response Codes
+                        		Returned by CloudFront
+                     </h1>
+                     <p>You can choose the HTTP status code CloudFront returns along with a custom error page
+                        for a
+                        				given HTTP status code. For example, if your origin returns a 500 status code
+                        to CloudFront, you
+                        				might want CloudFront to return a custom error page and a 200 status code (OK)
+                        to the viewer.
+                        				There are a variety of reasons that you might want CloudFront to return a status
+                        code to the
+                        				viewer that is different from the one that your origin returned to CloudFront:
+                     </p>
+                     <div class="itemizedlist">
+                        				
+                        				
+                        				
+                        			
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              					
+                              <p>Some internet devices (some firewalls and corporate proxies, for example) intercept
+                                 						HTTP 4xx and 5xx and prevent the response from being returned to the viewer.
+                                 If you
+                                 						substitute <code class="code">200</code>, the response typically won&apos;t be intercepted.
+                              </p>
+                              				
+                           </li>
+                           <li class="listitem">
+                              					
+                              <p>If you don&apos;t care about distinguishing among different client errors or server
+                                 						errors, you can specify <b>400</b> or <b>500</b> as the
+                                 						value that CloudFront returns for all 4xx or 5xx status codes.
+                              </p>
+                              				
+                           </li>
+                           <li class="listitem">
+                              					
+                              <p>You might want to return a <code class="code">200</code> status code (OK) and static website so
+                                 						your customers don&apos;t know that your website is down.
+                              </p>
+                              				
+                           </li>
+                        </ul>
+                     </div>
+                     <p>If you enable CloudFront access logs and you configure CloudFront to change the HTTP
+                        status code in
+                        				the response, the value of the <code class="code">sc-status</code> column in access logs will contain the
+                        				status code that you specify. However, the value of the <code class="code">x-edge-result-type</code>
+                        				column will not be affected; it will still contain the result type of the response
+                        from the
+                        				origin. For example, suppose you configure CloudFront to return a status code
+                        of <code class="code">200</code>
+                        				to the viewer when the origin returns <code class="code">404</code> (Not Found) to CloudFront. When the origin
+                        				responds to a request with a <code class="code">404</code> status code, the value in the
+                        					<code class="code">sc-status</code> column in the access log will be <code class="code">200</code>, but the value in
+                        				the <code class="code">x-edge-result-type</code> column will be <code class="code">Error</code>.
+                     </p>
+                     <p>You can configure CloudFront to return any of the following HTTP status codes along
+                        with a
+                        				custom error page:
+                     </p>
+                     <div class="itemizedlist">
+                        				
+                        				
+                        				
+                        			
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              					
+                              <p>200</p>
+                              				
+                           </li>
+                           <li class="listitem">
+                              					
+                              <p>400, 403, 404, 405, 414, 416</p>
+                              				
+                           </li>
+                           <li class="listitem">
+                              					
+                              <p>500, 501, 502, 503, 504</p>
+                              				
+                           </li>
+                        </ul>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="custom-error-pages-cache-behavior.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="custom-error-pages-expiration.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper"></div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon CloudFront';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

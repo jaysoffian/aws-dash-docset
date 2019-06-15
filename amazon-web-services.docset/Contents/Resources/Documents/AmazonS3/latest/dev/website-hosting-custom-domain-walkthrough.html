@@ -10,12 +10,14 @@
       <link rel="prev" href="HostingWebsiteOnS3Setup.html" title="Example: Setting up a Static
 					Website">
       <link rel="next" href="website-hosting-cloudfront-walkthrough.html" title="Example: Speed Up Your Website with
-        Amazon CloudFront">
+            Amazon CloudFront">
       <meta name="description" content="Walk through a code example of how to set up a static website using a custom domain.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/website-hosting-custom-domain-walkthrough.html">
@@ -25,7 +27,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -37,12 +39,15 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="WebsiteHosting.html">Hosting a Static Website on Amazon S3</a> &#xBB; <a href="hosting-websites-on-s3-examples.html">Example Walkthroughs - Hosting
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="WebsiteHosting.html">Hosting a Static Website on Amazon S3</a> &#xBB; <a href="hosting-websites-on-s3-examples.html">Example Walkthroughs - Hosting
                                     				Websites on Amazon S3</a> &#xBB; <span class="breadcrumb">Example: Setting up a Static
                                     			Website Using a Custom Domain</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="website-hosting-custom-domain-walkthrough">Example: Setting up a Static
                         			Website Using a Custom Domain
@@ -65,69 +70,34 @@
                                  				Register a Domain</a></li>
                            <li><a href="#root-domain-walkthrough-s3-tasks">Step 2: Create and Configure Buckets
                                  				and Upload Data</a></li>
-                           <li><a href="#root-domain-walkthrough-switch-to-route53-as-dnsprovider">Step 3:
-                                 				Create and Configure Amazon Route&#xA0;53 Hosted Zone </a></li>
-                           <li><a href="#root-domain-walkthrough-update-ns-record">Step 4: Switch to Amazon Route&#xA0;53
-                                 				as Your DNS Provider</a></li>
-                           <li><a href="#root-domain-testing">Step 5: Testing</a></li>
+                           <li><a href="#root-domain-walkthrough-add-arecord-to-hostedzone">Step 3: Add Alias
+                                 				Records for example.com and www.example.com</a></li>
+                           <li><a href="#root-domain-testing">Step 4: Testing</a></li>
                         </ul>
                      </div>
                      		
                      <h2 id="root-domain-walkthrough-before-you-begin">Before You Begin</h2>
                      
                      
+                     
                      		
-                     <p>As you walk through the steps in this example, you work with the following
-                        			services:
-                     </p>
+                     <p>As you follow the steps in this example, you work with the following services:</p>
+                     
                      		
-                     <p><span class="topcom">Domain registrar of your choice &#x2013;</span> If you don&apos;t
-                        			already have a registered domain name, such as <code class="code">example.com</code>, create and
-                        			register one with a registrar of your choice. You can typically register a domain
-                        for a
-                        			small yearly fee. For procedural information about registering a domain name, see
-                        the
-                        			registrar&apos;s website.
+                     <p><span class="topcom">Amazon Route&#xA0;53 &#x2013;</span> You use Route&#xA0;53 to register domains and
+                        			to define where you want to route internet traffic for your domain. We explain
+                        how to
+                        			create Route&#xA0;53 alias records that route traffic for your domain (example.com)
+                        and
+                        			subdomain (www.example.com) to an Amazon S3 bucket that contains an HTML file.
                      </p>
+                     
                      		
                      <p><span class="topcom">Amazon S3 &#x2013;</span> You use Amazon S3 to create buckets, upload a
                         			sample website page, configure permissions so that everyone can see the content,
                         and
-                        			then configure the buckets for website hosting. In this example, because you want
-                        to
-                        			allow requests for both <code class="code">http://www.example.com</code> and
-                        				<code class="code">http://example.com</code>, you create two buckets; however, you host content
-                        			in only one bucket. You configure the other Amazon S3 bucket to redirect requests
-                        to the
-                        			bucket that hosts the content.
+                        			then configure the buckets for website hosting.
                      </p>
-                     		
-                     <p><span class="topcom">Amazon Route&#xA0;53 &#x2013;</span> You configure Amazon Route&#xA0;53 as your
-                        			Domain Name System (DNS) provider. You create a hosted zone in Amazon Route&#xA0;53
-                        for your domain
-                        			and configure applicable DNS records. If you are switching from an existing DNS
-                        			provider, you need to ensure that you have transferred all of the DNS records for
-                        your
-                        			domain. 
-                     </p>
-                     		
-                     <p>We recommend that you have basic familiarity with domains, DNS, CNAME records, and
-                        A
-                        			records. A detailed explanation of these concepts is beyond the scope of this guide.
-                        			Your domain registrar should provide any basic information that you need.
-                     </p>
-                     		
-                     <p>In this example, we use Route&#xA0;53. However, you can use most registrars to define a
-                        CNAME
-                        			record that points to an Amazon S3 bucket.
-                     </p>
-                     		
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p>All the steps in this example use <code class="code">example.com</code> as a domain name.
-                           				Replace this domain name with the one that you registered.
-                        </p>
-                     </div>
                      
                      	
                      		
@@ -136,19 +106,12 @@
                      </h2>
                      
                      		
-                     <p>If you already have a registered domain, you can skip this step. If you are new to
-                        			hosting a website, your first step is to register a domain, such as
-                        				<code class="code">example.com</code>,&#xA0;with a registrar of your choice. &#xA0; 
-                     </p>
-                     		
-                     <p>After you choose a registrar, register your domain name according to the instructions
-                        			at the registrar&#x2019;s website. For a list of registrar websites that you can use to
-                        			register your domain name, see <a href="https://www.icann.org/resources/pages/registrars-0d-2012-02-25-en" target="_blank">Information
-                           				for Registrars and Registrants</a> at the ICANN.org website.
-                     </p>
-                     		
-                     <p> When you have a registered domain name, your next task is to create and configure
-                        			Amazon S3 buckets for website hosting and to upload your website content. 
+                     <p>If you don&apos;t already have a registered domain name, such as <code class="code">example.com</code>,
+                        			register one with Route&#xA0;53. For more information, see <a href="./Route53/latest/DeveloperGuide/domain-register.html">Registering a New Domain</a> in the
+                        				<em>Amazon Route&#xA0;53 Developer Guide</em>. When you have a registered domain name, your
+                        			next tasks are to create and configure Amazon S3 buckets for website hosting and
+                        to upload
+                        			your website content. 
                      </p>
                      	
                      		
@@ -228,7 +191,7 @@
                               								<code class="code">www.<em class="replaceable"><code>example.com</code></em></code>.
                            </p>
                            					
-                           <p>For step-by-step instructions, see <a href="./AmazonS3/latest/user-guide/create-bucket.html" target="_blank">How Do I Create an S3
+                           <p>For step-by-step instructions, see <a href="./AmazonS3/latest/user-guide/create-bucket.html">How Do I Create an S3
                                  							Bucket?</a> in the <em>Amazon Simple Storage Service Console User Guide</em>.
                            </p>
                            				
@@ -262,20 +225,20 @@
   &lt;p&gt;Now hosted on Amazon S3!&lt;/p&gt;
 &lt;/body&gt;
 &lt;/html&gt;</code></pre>
-                           					<p>For step-by-step instructions, see <a href="./AmazonS3/latest/user-guide/upload-objects.html" target="_blank">How Do I Upload an Object to an
+                           					<p>For step-by-step instructions, see <a href="./AmazonS3/latest/user-guide/upload-objects.html">How Do I Upload an Object to an
                                  							S3 Bucket?</a> in the <em>Amazon Simple Storage Service Console User Guide</em>. 
                            </p>
                            				
                         </li>
                         <li>
                            					
-                           <p>Configure permissions for your objects to make them publicly accessible. </p>
-                           					
-                           <p>Attach the following bucket policy to the
+                           <p>To host a website, your bucket must have public read access. It is
+                              						intentional that everyone in the world will have read access to this bucket.
+                              						To grant public read access, attach the following bucket policy to the
                               								<code class="code"><em class="replaceable"><code>example.com</code></em></code> bucket,
                               						substituting the name of your bucket for
                               							<em class="replaceable"><code>example.com</code></em>. For step-by-step instructions to
-                              						attach a bucket policy, see <a href="./AmazonS3/latest/user-guide/add-bucket-policy.html" target="_blank">How Do I Add an S3 Bucket Policy?</a> in the
+                              						attach a bucket policy, see <a href="./AmazonS3/latest/user-guide/add-bucket-policy.html">How Do I Add an S3 Bucket Policy?</a> in the
                               							<em>Amazon Simple Storage Service Console User Guide</em>. 
                            </p>
                            					<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
@@ -285,10 +248,8 @@
         &quot;Effect&quot;:&quot;Allow&quot;,
 	  &quot;Principal&quot;: &quot;*&quot;,
       &quot;Action&quot;:[&quot;s3:GetObject&quot;],
-      &quot;Resource&quot;:[&quot;arn:aws:s3:::<code class="code" copy="true"><em class="replaceable"><code>example.com</code></em></code>/*&quot;
-      ]
-    }
-  ]
+      &quot;Resource&quot;:[&quot;arn:aws:s3:::<code class="code" copy="true"><em class="replaceable"><code>example.com</code></em></code>/*&quot;]
+    }]
 }</code></pre>
                            					
                            					<p> You now have two buckets, <em class="replaceable"><code>example.com</code></em> and
@@ -475,326 +436,204 @@
                      		
                      	
                      		
-                     <h2 id="root-domain-walkthrough-switch-to-route53-as-dnsprovider">Step 3:
-                        				Create and Configure Amazon Route&#xA0;53 Hosted Zone 
+                     <h2 id="root-domain-walkthrough-add-arecord-to-hostedzone">Step 3: Add Alias
+                        				Records for example.com and www.example.com
                      </h2>
                      
                      		
-                     <p> Configure Amazon Route&#xA0;53 as your Domain Name System (DNS) provider. If you want
-                        to serve
-                        			content from your root domain, such as
-                        				<code class="code"><em class="replaceable"><code>example.com</code></em></code>, you must use Amazon Route&#xA0;53. You
-                        			create a hosted zone, which holds the DNS records associated with your domain:
+                     <p>In this step, you create the alias records that you add to the hosted zone for your
+                        			domain maps <code class="code"><em class="replaceable"><code>example.com</code></em></code> and
+                        					<code class="code"><em class="replaceable"><code>www.example.com</code></em></code> to the corresponding S3
+                        			buckets. Instead of using IP addresses, the alias records use the Amazon S3 website
+                        			endpoints. Amazon Route&#xA0;53 maintains a mapping between the alias records and the
+                        IP addresses
+                        			where the Amazon S3 buckets reside.
                      </p>
                      
                      		
-                     <div class="itemizedlist">
-                        
-                        			
-                        			
-                        		
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              				
-                              <p>An alias record that maps the domain <em>example.com</em> to the example.com bucket. This is the bucket that
-                                 					you configured as a website endpoint in step 2.2.
-                              </p>
-                              			
-                           </li>
-                           <li class="listitem">
-                              				
-                              <p>Another alias record that maps the subdomain www.<em>example.com</em> to the www.<em>example.com</em> bucket. You configured this bucket to redirect
-                                 					requests to the example.com bucket in step 2.2.
-                              </p>
-                              			
-                           </li>
-                        </ul>
-                     </div>
-                     
-                     
-                     
-                     		
-                     		
-                     			
-                     <h3 id="root-domain-walkthrough-create-route53-hostedzone">Step 3.1: Create
-                        					a Hosted Zone for Your Domain
-                     </h3>
-                     
-                     			
-                     <p>Go
-                        				to the Amazon Route&#xA0;53 console at <a href="https://console.aws.amazon.com/route53/home" target="_blank">https://console.aws.amazon.com/route53</a> and then create a hosted zone for your
-                        				domain. For instructions, go to <a href="./Route53/latest/DeveloperGuide/MigratingDNS.html#Step_CreateHostedZone" target="_blank">Creating a Hosted
-                           					Zone</a> in the <em>http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/</em>. 
-                     </p>
-                     			
-                     <p>The following example shows the hosted zone created for the
-                        					<code class="code">example.com</code> domain. Write down the Route&#xA0;53 name servers (NS) for this
-                        				domain. You will need them later. 
-                     </p>
-                     
-                     			
-                     <div class="mediaobject">
-                        				
-                        					<img src="../../..//img/RootDomainR53NameServers.png">
-                        				
-                        			
-                     </div>
-                     
-                     
-                     			
-                     		
-                     		
-                     			
-                     <h3 id="root-domain-walkthrough-add-arecord-to-hostedzone">Step 3.2: Add
-                        					Alias Records for example.com and www.example.com
-                     </h3>
-                     
-                     			
-                     <p>The alias records that you add to the hosted zone for your domain maps
-                        						<code class="code"><em class="replaceable"><code>example.com</code></em></code> and
-                        						<code class="code"><em class="replaceable"><code>www.example.com</code></em></code> to the corresponding
-                        				S3 buckets. Instead of using IP addresses, the alias records use the Amazon S3
-                        				website endpoints. Amazon Route&#xA0;53 maintains a mapping between the alias records
-                        and the
-                        				IP addresses where the S3 buckets reside. 
-                     </p>
-                     			
-                     <p>For step-by-step instructions, see <a href="./Route53/latest/DeveloperGuide/resource-record-sets-creating.html" target="_blank">Creating Resource Record
-                           					Sets by Using the Amazon Route 53 Console</a> in the
-                        					<em>Amazon Route&#xA0;53 Developer Guide</em>. 
-                     </p>
-                     			
-                     <p>The following screenshot shows the alias record for
-                        						<code class="code"><em class="replaceable"><code>example.com</code></em></code> as an illustration. You
-                        				also need to create an alias record for
-                        						<code class="code"><em class="replaceable"><code>www.example.com</code></em></code>.
-                     </p>
-                     			
-                     			
-                     <div class="mediaobject">
-                        				
-                        					<img src="../../..//img/RootDomainAliasRecord.png">
-                        				
-                        			
-                     </div>
-                     
-                     			
-                     			
-                     			
-                     <p>To enable this hosted zone, you must use Amazon Route&#xA0;53 as the DNS server for your
-                        				domain <em><em class="replaceable"><code>example.com</code></em></em>. If
-                        				you are moving an existing website to Amazon S3, first you must transfer DNS records
-                        				associated with your domain <em><em class="replaceable"><code>example.com</code></em></em> to the hosted zone that
-                        				you created in Amazon Route&#xA0;53 for your domain. If you are creating a new website,
-                        you can
-                        				go directly to step 4.
-                     </p>
-                     
-                     			
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p>Creating, changing, and deleting resource record sets take time to propagate
-                           					to the Route&#xA0;53 DNS servers. Changes generally propagate to all Route&#xA0;53 name
-                           servers
-                           					in a couple of minutes. In rare circumstances, propagation can take up to 30
-                           					minutes.
-                        </p>
-                     </div>
-                     
-                     		
-                     
-                     
-                     		
-                     			
-                     <h3 id="root-domain-walkthrough-migrate-dns-records">Step 3.3: Transfer
-                        					Other DNS Records from Your Current DNS Provider to Route&#xA0;53
-                     </h3>
-                     
-                     			
-                     <p>Before you switch to Amazon Route&#xA0;53 as your DNS provider, you must transfer the
-                        				remaining DNS records&#x2014;including MX records, CNAME records, and A
-                        				records&#x2014;from your DNS provider to Amazon Route&#xA0;53. You don&apos;t need to transfer
-                        the
-                        				following records:
-                     </p>
-                     			
-                     <div class="itemizedlist">
-                        				
-                        				
-                        			
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              					
-                              <p>NS records&#x2013; Instead of transferring these, replace their values with
-                                 						the name server values that are provided by Amazon Route&#xA0;53.
-                              </p>
-                              				
-                           </li>
-                           <li class="listitem">
-                              					
-                              <p>SOA record&#x2013; Amazon Route&#xA0;53 provides this record in the hosted zone with a
-                                 						default value. 
-                              </p>
-                              				
-                           </li>
-                        </ul>
-                     </div>
-                     
-                     
-                     			
-                     <p>Migrating required DNS records is a critical step to ensure the continued
-                        				availability of all the existing services hosted under the domain name.
-                     </p>
-                     
-                     		
-                     
-                     		
-                     			
-                     <h3 id="root-domain-walkthroguh-add-a-type-record">Step 3.4: Create A Type
-                        					DNS Records
-                     </h3>
-                     
-                     			
-                     <p>If you&apos;re not transferring your website from another existing website, you need to
-                        				create new A type DNS records.
-                     </p>
-                     
-                     			
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p>If you&apos;ve already transferred A type records for this website from a different
-                           					DNS provider, you can skip the rest of this step.
-                        </p>
-                     </div>
-                     
-                     			
-                     <p class="title"><b>To create A type DNS records in the Route&#xA0;53 console</b></p>
+                     <p class="title"><b>To route traffic to your website</b></p>
                      <ol>
                         <li>
-                           					
-                           <p>Open the Route&#xA0;53 console in your web browser.</p>
-                           				
-                        </li>
-                        <li>
-                           					
-                           <p>On the <b>Dashboard</b>, choose <b>Hosted
-                                 							zones</b>.
+                           <p>Open the Route&#xA0;53 console at
+                              <a href="https://console.aws.amazon.com/route53/" target="_blank">https://console.aws.amazon.com/route53/</a>.
                            </p>
                            				
+                           <div class="aws-note">
+                              <p class="aws-note">Note</p>
+                              <p>If you dont already use Amazon Route&#xA0;53, you can get started <a href="./Route53/latest/DeveloperGuide//getting-started.html#getting-started-find-domain-name">here.</a>
+                                 				After you have completed your set up, you can resume the instructions below.
+                              </p>
+                           </div>
+                           			
                         </li>
                         <li>
-                           					
-                           <p>Choose your domain name in the table of hosted zones.</p>
                            				
+                           <p>In the list of hosted zones, choose the name of your domain.</p>
+                           			
                         </li>
                         <li>
-                           					
+                           				
                            <p>Choose <b>Create Record Set</b>.
                            </p>
                            				
+                           <div class="aws-note">
+                              <p class="aws-note">Note</p>
+                              <p>Each record contains information about how you want to route traffic for
+                                 						one domain (example.com) or subdomain (www.example.com). Records are stored
+                                 						in the hosted zone for your domain.
+                              </p>
+                           </div>
+                           			
                         </li>
                         <li>
-                           					
-                           <p>In the <b>Create Record Set</b> form that appears on the
-                              						right, choose <b>Yes</b> for
-                              						<b>Alias</b>.
-                           </p>
                            				
+                           <p>Specify the following values:</p>
+                           				
+                           <div class="variablelist">
+                              					
+                              					
+                              					
+                              					
+                              					
+                              					
+                              				
+                              <dl>
+                                 						
+                                 <dt><b><span class="term">Name</span></b></dt>
+                                 						
+                                 <dd>
+                                    							
+                                    <p>For the first record that you&apos;ll create, accept the default value,
+                                       								which is the name of your hosted zone and your domain. This will
+                                       								route internet traffic to the bucket that has the same name as your
+                                       								domain.
+                                    </p>
+                                    							
+                                    <p>Repeat this step to create a second record for your subdomain. For
+                                       								the second record, type <b>www</b>. This will route
+                                       								internet traffic to the www.<em class="replaceable"><code>example.com</code></em>
+                                       								bucket.
+                                    </p>
+                                    						
+                                 </dd>
+                                 					
+                                 						
+                                 <dt><b><span class="term">Type</span></b></dt>
+                                 						
+                                 <dd>
+                                    							
+                                    <p>Choose <b>A &#x2013; IPv4 address</b>.
+                                    </p>
+                                    						
+                                 </dd>
+                                 					
+                                 						
+                                 <dt><b><span class="term">Alias</span></b></dt>
+                                 						
+                                 <dd>
+                                    							
+                                    <p>Choose <b>Yes</b>.
+                                    </p>
+                                    						
+                                 </dd>
+                                 					
+                                 						
+                                 <dt><b><span class="term">Alias Target</span></b></dt>
+                                 						
+                                 <dd>
+                                    							
+                                    <p>Type the name of your Amazon S3 bucket endpoint, for example
+                                       								<code class="code"><em class="replaceable"><code>example</code></em>.com (s3-website-us-west-2)</code>.
+                                    </p>
+                                    							
+                                    <div class="aws-note">
+                                       <p class="aws-note">Note</p>
+                                       <p>You specify the same value for <b>Alias
+                                             										Target</b> for both records. Route&#xA0;53 figures out which
+                                          									bucket to route traffic to based on the name of the
+                                          									record.
+                                       </p>
+                                    </div>
+                                    						
+                                 </dd>
+                                 					
+                                 						
+                                 <dt><b><span class="term">Routing Policy</span></b></dt>
+                                 						
+                                 <dd>
+                                    							
+                                    <p>Accept the default value of <b>Simple</b>.
+                                    </p>
+                                    						
+                                 </dd>
+                                 					
+                                 						
+                                 <dt><b><span class="term">Evaluate Target Health</span></b></dt>
+                                 						
+                                 <dd>
+                                    							
+                                    <p>Accept the default value of <b>No</b>.
+                                    </p>
+                                    						
+                                 </dd>
+                                 					
+                              </dl>
+                           </div>
+                           			
                         </li>
                         <li>
-                           					
-                           <p>In <b>Alias Target</b>, provide the Amazon S3 website
-                              						endpoint&#x2014;for example,
-                              						<code class="code">s3-website-us-west-2.amazonaws.com</code>.
-                           </p>
                            				
+                           <p>Choose <b>Create</b>.
+                           </p>
+                           			
                         </li>
                         <li>
-                           					
-                           <p>Choose <b>Save Record Set</b>.
-                           </p>
                            				
+                           <p>For www.<em class="replaceable"><code>example.com</code></em>, repeat steps 3 through 5 to
+                              					create a record.
+                           </p>
+                           			
                         </li>
                      </ol>
-                     			
-                     <p>Now that you&apos;ve added an A type DNS record to your record set, it appears in the
-                        				table as in the following example.
-                     </p>
                      
-                     			
-                     			
-                     <div class="mediaobject">
-                        				
-                        				
-                        					<img src="../../..//img/RootDomainARecord.png" alt="
-					Screenshot showing table of record sets in Route 53 console
-				">
-                        				
-                        			
-                     </div>
-                     
-                     			
-                     			
                      
                      		
-                     
-                     
-                     	
                      		
-                     <h2 id="root-domain-walkthrough-update-ns-record">Step 4: Switch to Amazon Route&#xA0;53
-                        				as Your DNS Provider
-                     </h2>
-                     
-                     		
-                     <p>To switch to Amazon Route&#xA0;53 as your DNS provider, contact your DNS provider and update
-                        the
-                        			name server (NS) record to use the name servers in the delegation that you set
-                        in
-                        			Amazon Route&#xA0;53. 
+                     <p>The following screenshot shows the alias record for
+                        					<code class="code"><em class="replaceable"><code>example.com</code></em></code> as an illustration. You also
+                        			need to create an alias record for
+                        				<code class="code"><em class="replaceable"><code>www.example.com</code></em></code>.
                      </p>
                      		
-                     <p>On your DNS provider&apos;s site, update the NS record with the delegation set values of
-                        			the hosted zone as shown in the following Amazon Route&#xA0;53 console screenshot. For
-                        more
-                        			information, see <a href="./Route53/latest/DeveloperGuide/MigratingDNS.html#Step_UpdateRegistrar" target="_blank">Updating Your DNS Service&apos;s Name Server Records</a> in
-                        				<em>Amazon Route&#xA0;53 Developer Guide</em>.
-                     </p>
-                     
                      		
                      <div class="mediaobject">
                         			
-                        				<img src="../../..//img/RootDomainR53NameServers.png">
+                        				<img src="../../..//img/RootDomainAliasRecord.png">
                         			
                         		
                      </div>
                      
                      		
-                     <p>When the transfer to Route&#xA0;53 is complete, verify that the name server for your domain
-                        			has indeed changed. On a Linux computer, use the <code class="code">dig</code> DNS lookup utility.
-                        			For example, use this <code class="code">dig</code> command:
-                     </p>
-                     
-                     		<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">dig +recurse +trace www.example.com any</code></pre>
-                     
-                     		<p>It returns the following output (only partial output is shown). The output shows the
-                        			same name servers on the Amazon Route&#xA0;53 hosted zone that you created for the
-                        				<code class="code">example.com</code> domain.
-                     </p>
-                     
-                     		<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">...
-example.com.      172800  IN      NS      ns-<em class="replaceable"><code>9999</code></em>.awsdns-<em class="replaceable"><code>99</code></em>.com.
-example.com.      172800  IN      NS      ns-<em class="replaceable"><code>9999</code></em>.awsdns-<em class="replaceable"><code>99</code></em>.org.
-example.com.      172800  IN      NS      ns-<em class="replaceable"><code>9999</code></em>.awsdns-<em class="replaceable"><code>99</code></em>.co.uk.
-example.com.      172800  IN      NS      ns-<em class="replaceable"><code>9999</code></em>.awsdns-<em class="replaceable"><code>99</code></em>.net.
-
-www.example.com.  300     IN      CNAME   www.example.com.s3-website-<span>us-east-1</span>.amazonaws.com.
-...</code></pre>
-                     
-                     	
-                     		<h2 id="root-domain-testing">Step 5: Testing</h2>
+                     		
+                     		
                      
                      		
-                     <p> To verify that the website is working correctly, in your browser, try the following
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>Creating, changing, and deleting resource record sets take time to propagate to
+                           				the Route&#xA0;53 DNS servers. Changes generally propagate to all Route&#xA0;53 name servers
+                           in a
+                           				couple of minutes. In rare circumstances, propagation can take up to 30
+                           				minutes.
+                        </p>
+                     </div>
+                     
+                     	
+                     		
+                     <h2 id="root-domain-testing">Step 4: Testing</h2>
+                     
+                     		
+                     <p>To verify that the website is working correctly, in your browser, try the following
                         			URLs:
                      </p>
                      
@@ -806,16 +645,17 @@ www.example.com.  300     IN      CNAME   www.example.com.s3-website-<span>us-ea
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               				
-                              <p><code class="code">http://<em class="replaceable"><code>example.com</code></em></code> - Displays the
-                                 					index document in the <code class="code"><em class="replaceable"><code>example.com</code></em></code>
+                              <p><code class="code">http://<em class="replaceable"><code>example.com</code></em></code> &#x2013; Displays
+                                 					the index document in the <code class="code"><em class="replaceable"><code>example.com</code></em></code>
                                  					bucket.
                               </p>
                               			
                            </li>
                            <li class="listitem">
                               				
-                              <p><code class="code">http://www.<em class="replaceable"><code>example.com</code></em></code>- Redirects your
-                                 					request to <code class="code">http://<em class="replaceable"><code>example.com</code></em></code>. 
+                              <p><code class="code">http://www.<em class="replaceable"><code>example.com</code></em></code> &#x2013;
+                                 					Redirects your request to
+                                 						<code class="code">http://<em class="replaceable"><code>example.com</code></em></code>. 
                               </p>
                               			
                            </li>
@@ -823,20 +663,24 @@ www.example.com.  300     IN      CNAME   www.example.com.s3-website-<span>us-ea
                      </div>
                      
                      		
-                     <p> In some cases, you might need to clear the cache of your web browser to see the
+                     <p>In some cases, you might need to clear the cache of your web browser to see the
                         			expected behavior.
                      </p>
                      
                      	
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -846,7 +690,9 @@ www.example.com.  300     IN      CNAME   www.example.com.s3-website-<span>us-ea
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="HostingWebsiteOnS3Setup.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="website-hosting-cloudfront-walkthrough.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -862,18 +708,19 @@ www.example.com.  300     IN      CNAME   www.example.com.s3-website-<span>us-ea
                         <li class="pagetoc" name="Step 2: Create and Configure Buckets
 				and Upload Data"><a class="pagetoc" href="#root-domain-walkthrough-s3-tasks">Step 2: Create and Configure Buckets
                               				and Upload Data</a></li>
-                        <li class="pagetoc" name="Step 3:
-				Create and Configure Amazon Route&#xA0;53 Hosted Zone "><a class="pagetoc" href="#root-domain-walkthrough-switch-to-route53-as-dnsprovider">Step 3:
-                              				Create and Configure Amazon Route&#xA0;53 Hosted Zone </a></li>
-                        <li class="pagetoc" name="Step 4: Switch to Amazon Route&#xA0;53
-				as Your DNS Provider"><a class="pagetoc" href="#root-domain-walkthrough-update-ns-record">Step 4: Switch to Amazon Route&#xA0;53
-                              				as Your DNS Provider</a></li>
-                        <li class="pagetoc" name="Step 5: Testing"><a class="pagetoc" href="#root-domain-testing">Step 5: Testing</a></li>
+                        <li class="pagetoc" name="Step 3: Add Alias
+				Records for example.com and www.example.com"><a class="pagetoc" href="#root-domain-walkthrough-add-arecord-to-hostedzone">Step 3: Add Alias
+                              				Records for example.com and www.example.com</a></li>
+                        <li class="pagetoc" name="Step 4: Testing"><a class="pagetoc" href="#root-domain-testing">Step 4: Testing</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

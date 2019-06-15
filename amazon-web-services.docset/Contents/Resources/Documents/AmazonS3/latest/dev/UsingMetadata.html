@@ -5,12 +5,14 @@
       <link rel="home" href="#top">
       <link rel="up" href="UsingObjects.html" title="Working with Amazon S3 Objects">
       <link rel="prev" href="UsingObjects.html" title="Working with Amazon S3 Objects">
-      <link rel="next" href="storage-class-intro.html" title="Storage Classes">
+      <link rel="next" href="storage-class-intro.html" title="Amazon S3 Storage Classes">
       <meta name="description" content="Describes the object key, uniquely identifying the object, and the metadata, a set of name-values pairs, that are required for each Amazon S3 object.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html">
@@ -20,7 +22,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,19 +34,15 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="UsingObjects.html">Working with Amazon S3 Objects</a> &#xBB; <span class="breadcrumb">Object Key and Metadata</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="UsingObjects.html">Working with Amazon S3 Objects</a> &#xBB; <span class="breadcrumb">Object Key and Metadata</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="UsingMetadata">Object Key and Metadata</h1>
-                     <div class="highlights" id="inline-topiclist">
-                        <p><strong>Topics</strong></p>
-                        <ul>
-                           <li><a href="#object-keys">Object Keys</a></li>
-                           <li><a href="#object-metadata">Object Metadata</a></li>
-                        </ul>
-                     </div>
                      <p>Each Amazon S3 object has data, a key, and metadata. Object key (or key name) uniquely
                         identifies the object in a bucket. Object metadata is a set of name-value pairs. You
                         can set
@@ -54,9 +52,15 @@
                         and
                         set the metadata. 
                      </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#object-keys">Object Keys</a></li>
+                           <li><a href="#object-metadata">Object Metadata</a></li>
+                        </ul>
+                     </div>
                      
                      <h2 id="object-keys">Object Keys</h2>
-                     
                      
                      <p>When you create an object, you specify the key name, which uniquely identifies the
                         object in the bucket. For example, in the Amazon S3 console (see <a href="https://console.aws.amazon.com/s3/home" target="_blank">AWS Management Console</a>), when you highlight a
@@ -67,49 +71,197 @@
                         long. 
                      </p>
                      
+                     <p>The Amazon S3 data model is a flat structure: you create a bucket, and the bucket
+                        stores
+                        objects. There is no hierarchy of subbuckets or subfolders. However, you can infer
+                        logical
+                        hierarchy using key name prefixes and delimiters as the Amazon S3 console does. The
+                        Amazon S3 console
+                        supports a concept of folders. Suppose that your bucket (<code>admin-created</code>)
+                        has four objects with the following object keys:
+                     </p>
+                     
+                     <p><code>Development/Projects.xls</code></p>
+                     
+                     <p><code>Finance/statement1.pdf</code></p>
+                     
+                     <p><code>Private/taxdocument.pdf</code></p>
+                     
+                     <p><code>s3-dg.pdf</code></p>
+                     
+                     <p>The console uses the key name prefixes (<code>Development/</code>,
+                        <code>Finance/</code>, and <code>Private/</code>) and delimiter (&apos;/&apos;) to
+                        present a folder structure as shown:
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        
+                        <img src="../../..//img/ui-folder.png" alt="
+          Screenshot of Amazon S3 console with Development, Finance, and Private
+            folders.
+        ">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                     </div>
+                     
+                     <p>The <code>s3-dg.pdf</code> key does not have a prefix, so its object appears
+                        directly at the root level of the bucket. If you open the <code>Development/</code>
+                        folder, you see the <code>Projects.xlsx</code> object in it. 
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        
+                        <img src="../../..//img/ui-file-in-folder.png" alt="
+          Screenshot of Amazon S3 console with Projects.xlsx file selected in the
+            Development folder.
+        ">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                     </div>
+                     
                      <div class="aws-note">
                         <p class="aws-note">Note</p>
-                        <p>If you anticipate that your workload against Amazon S3 will exceed 100 requests per
-                           second,
-                           follow the Amazon S3 key naming guidelines for best performance. For information,
-                           see <a href="request-rate-perf-considerations.html">Request Rate and Performance Considerations</a>.
+                        <p>Amazon S3 supports buckets and objects, and there is no hierarchy in Amazon S3. However,
+                           the
+                           prefixes and delimiters in an object key name enable the Amazon S3 console and the
+                           AWS SDKs to
+                           infer hierarchy and introduce the concept of folders.
                         </p>
                      </div>
                      
                      
                      <h3 id="object-key-guidelines">Object Key Naming Guidelines</h3>
                      
-                     
-                     <p>Although you can use any UTF-8 characters in an object key name, the following best
-                        practices for key naming help ensure maximum compatibility with other applications.&#xA0;
-                        Each
-                        application might parse special characters differently. The following guidelines help
-                        you
-                        maximize compliance with DNS, web safe characters, XML parsers, and other APIs. 
+                     <p>You can use any UTF-8 character in an object key name. However, using certain
+                        characters in key names may cause problems with some applications and protocols. The
+                        following guidelines help you maximize compliance with DNS, web-safe characters, XML
+                        parsers, and other APIs. 
                      </p>
                      
                      
                      <h4 id="object-key-guidelines-safe-characters">Safe Characters</h4>
                      
-                     
                      <p>The following character sets are generally safe for use in key names:</p>
                      
-                     <div class="itemizedlist">
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
+                     
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w203aac19c11b7c25b5b5">
                               
-                              <p>Alphanumeric characters [0-9a-zA-Z]</p>
+                              <tbody><tr>
+                                 
+                                 <td>Alphanumeric characters</td>
+                                 
+                                 <td>
+                                    
+                                    <div class="itemizedlist">
+                                       
+                                       
+                                       
+                                       
+                                       <ul class="itemizedlist" type="disc">
+                                          <li class="listitem">
+                                             
+                                             <p>0-9</p>
+                                             
+                                          </li>
+                                          <li class="listitem">
+                                             
+                                             <p>a-z</p>
+                                             
+                                          </li>
+                                          <li class="listitem">
+                                             
+                                             <p>A-Z</p>
+                                             
+                                          </li>
+                                       </ul>
+                                    </div>
+                                    
+                                 </td>
+                                 
+                              </tr>
                               
-                           </li>
-                           <li class="listitem">
+                              <tr>
+                                 
+                                 <td>Special characters</td>
+                                 
+                                 <td>
+                                    
+                                    <div class="itemizedlist">
+                                       
+                                       
+                                       
+                                       
+                                       
+                                       
+                                       
+                                       
+                                       
+                                       <ul class="itemizedlist" type="disc">
+                                          <li class="listitem">
+                                             
+                                             <p>!</p>
+                                             
+                                          </li>
+                                          <li class="listitem">
+                                             
+                                             <p>-</p>
+                                             
+                                          </li>
+                                          <li class="listitem">
+                                             
+                                             <p>_</p>
+                                             
+                                          </li>
+                                          <li class="listitem">
+                                             
+                                             <p>.</p>
+                                             
+                                          </li>
+                                          <li class="listitem">
+                                             
+                                             <p>*</p>
+                                             
+                                          </li>
+                                          <li class="listitem">
+                                             
+                                             <p>&apos;</p>
+                                             
+                                          </li>
+                                          <li class="listitem">
+                                             
+                                             <p>(</p>
+                                             
+                                          </li>
+                                          <li class="listitem">
+                                             
+                                             <p>)</p>
+                                             
+                                          </li>
+                                       </ul>
+                                    </div>
+                                    
+                                 </td>
+                                 
+                              </tr>
                               
-                              <p>Special characters !, -, _, ., *, &apos;, (, and )</p>
-                              
-                           </li>
-                        </ul>
+                           </tbody></table>
+                        </div>
                      </div>
                      
                      <p>The following are examples of valid object key names:</p>
@@ -138,79 +290,13 @@
                         </ul>
                      </div>
                      
-                     <p>The Amazon S3 data model is a flat structure: you create a bucket, and the bucket
-                        stores
-                        objects. There is no hierarchy of subbuckets or subfolders; however, you can infer
-                        logical hierarchy using key name prefixes and delimiters as the Amazon S3 console
-                        does. The
-                        Amazon S3 console supports a concept of folders. Suppose that your bucket
-                        (<code>admin-created</code>) has four objects with the following object
-                        keys:
-                     </p>
-                     
-                     <p><code>Development/Projects1.xls</code></p>
-                     
-                     <p><code>Finance/statement1.pdf</code></p>
-                     
-                     <p><code>Private/taxdocument.pdf</code></p>
-                     
-                     <p><code>s3-dg.pdf</code></p>
-                     
-                     <p>The console uses the key name prefixes (<code>Development/</code>,
-                        <code>Finance/</code>, and <code>Private/</code>) and delimiter (&apos;/&apos;)
-                        to present a folder structure as shown:
-                     </p>
-                     
-                     
-                     <div class="mediaobject">
-                        
-                        
-                        <img src="../../..//img/ui-folder.png" alt="
-              Screenshot of Amazon S3 console with Development, Finance, and Private
-                folders.
-            ">
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                     </div>
-                     
-                     
-                     <p>The <code>s3-dg.pdf</code> key does not have a prefix, so its object appears
-                        directly at the root level of the bucket. If you open the
-                        <code>Development/</code> folder, you see the
-                        <code>Projects.xlsx</code> object in it. 
-                     </p>
-                     
-                     <div class="mediaobject">
-                        
-                        
-                        <img src="../../..//img/ui-file-in-folder.png" alt="
-              Screenshot of Amazon S3 console with Projects.xlsx file selected in the
-                Development folder.
-            ">
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                     </div>
-                     
-                     
                      <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p>Amazon S3 supports buckets and objects, and there is no hierarchy in Amazon S3. However,
-                           the
-                           prefixes and delimiters in an object key name enable the Amazon S3 console and the
-                           AWS SDKs
-                           to infer hierarchy and introduce the concept of folders.
+                        <p class="aws-note">Important</p>
+                        <p>If an object key name consists of a single period (.), or two periods (..), you can&#x2019;t
+                           download
+                           the object using the Amazon S3 console. To download an object with a key name of &#x201C;.&#x201D;
+                           or
+                           &#x201C;..&#x201D;, you must use the AWS CLI, AWS SDKs, or REST API.
                         </p>
                      </div>
                      
@@ -220,183 +306,190 @@
                         Special Handling
                      </h4>
                      
-                     
                      <p>The following characters in a key name might require additional code handling and
-                        likely will need to be URL encoded or referenced as HEX. Some of these are non-printable
+                        likely need to be URL encoded or referenced as HEX. Some of these are non-printable
                         characters and your browser might not handle them, which also requires special
                         handling:
                      </p>
                      
-                     <div class="table">
-                        <div class="table-contents">
-                           <table id="w70aac18c11b7b7b7b5">
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
                               
-                              <tbody><tr>
-                                 
-                                 <td>
-                                    <p>Ampersand (&quot;&amp;&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    <p>Dollar (&quot;$&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    <p>ASCII character ranges 00&#x2013;1F hex (0&#x2013;31 decimal) and 7F (127 decimal) </p>
-                                 </td>
-                                 
-                              </tr>
+                              <p>Ampersand (&quot;&amp;&quot;) </p>
                               
-                              <tr>
-                                 
-                                 <td>
-                                    <p>&apos;At&apos; symbol (&quot;@&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    <p>Equals (&quot;=&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    <p>Semicolon (&quot;;&quot;) </p>
-                                 </td>
-                                 
-                              </tr>
+                           </li>
+                           <li class="listitem">
                               
-                              <tr>
-                                 
-                                 <td>
-                                    <p>Colon (&quot;:&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    <p>Plus (&quot;+&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    <p>Space &#x2013; Significant sequences of spaces may be lost in some uses (especially multiple
-                                       spaces) 
-                                    </p>
-                                 </td>
-                                 
-                              </tr>
+                              <p>Dollar (&quot;$&quot;) </p>
                               
-                              <tr>
-                                 
-                                 <td>
-                                    <p>Comma (&quot;,&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    <p>Question mark (&quot;?&quot;) </p>
-                                 </td>
-                                 
-                                 <td>&#xA0;</td>
-                                 
-                              </tr>
+                           </li>
+                           <li class="listitem">
                               
-                           </tbody></table>
-                        </div>
+                              <p>ASCII character ranges 00&#x2013;1F hex (0&#x2013;31 decimal) and 7F (127 decimal)
+                                 
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>&apos;At&apos; symbol (&quot;@&quot;) </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Equals (&quot;=&quot;) </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Semicolon (&quot;;&quot;) </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Colon (&quot;:&quot;) </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Plus (&quot;+&quot;) </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Space &#x2013; Significant sequences of spaces may be lost in some uses
+                                 (especially multiple spaces) 
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Comma (&quot;,&quot;) </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Question mark (&quot;?&quot;) </p>
+                              
+                           </li>
+                        </ul>
                      </div>
                      
                      
                      
                      <h4 id="object-key-guidelines-avoid-characters">Characters to Avoid</h4>
                      
-                     
                      <p>Avoid the following characters in a key name because of significant special handling
                         for consistency across all applications. 
                      </p>
                      
-                     <div class="table">
-                        <div class="table-contents">
-                           <table id="w70aac18c11b7b7b9b5">
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
                               
-                              <tbody><tr>
-                                 
-                                 <td>
-                                    <p>Backslash (&quot;\&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    <p>Left curly brace (&quot;{&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    <p>Non-printable ASCII characters (128&#x2013;255 decimal
-                                       characters)
-                                    </p>
-                                 </td>
-                                 
-                              </tr>
+                              <p>Backslash (&quot;\&quot;) </p>
                               
-                              <tr>
-                                 
-                                 <td>
-                                    <p>Caret (&quot;^&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    
-                                    <p>Right curly brace (&quot;}&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    <p>Percent character (&quot;%&quot;) </p>
-                                 </td>
-                                 
-                              </tr>
+                           </li>
+                           <li class="listitem">
                               
-                              <tr>
-                                 
-                                 <td>
-                                    <p>Grave accent / back tick (&quot;`&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    <p>Right square bracket (&quot;]&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    <p>Quotation marks </p>
-                                 </td>
-                                 
-                              </tr>
+                              <p>Left curly brace (&quot;{&quot;) </p>
                               
-                              <tr>
-                                 
-                                 <td>
-                                    <p>&apos;Greater Than&apos; symbol (&quot;&gt;&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    <p>Left square bracket (&quot;[&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    <p>Tilde (&quot;~&quot;) </p>
-                                 </td>
-                                 
-                              </tr>
+                           </li>
+                           <li class="listitem">
                               
-                              <tr>
-                                 
-                                 <td>
-                                    <p>&apos;Less Than&apos; symbol (&quot;&lt;&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    <p>&apos;Pound&apos; character (&quot;#&quot;) </p>
-                                 </td>
-                                 
-                                 <td>
-                                    <p>Vertical bar / pipe (&quot;|&quot;) </p>
-                                 </td>
-                                 
-                              </tr>
+                              <p>Non-printable ASCII characters (128&#x2013;255 decimal characters)</p>
                               
-                           </tbody></table>
-                        </div>
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Caret (&quot;^&quot;) </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Right curly brace (&quot;}&quot;) </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Percent character (&quot;%&quot;) </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Grave accent / back tick (&quot;`&quot;) </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Right square bracket (&quot;]&quot;) </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Quotation marks </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>&apos;Greater Than&apos; symbol (&quot;&gt;&quot;) </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Left square bracket (&quot;[&quot;) </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Tilde (&quot;~&quot;) </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>&apos;Less Than&apos; symbol (&quot;&lt;&quot;) </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>&apos;Pound&apos; character (&quot;#&quot;) </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Vertical bar / pipe (&quot;|&quot;) </p>
+                              
+                           </li>
+                        </ul>
                      </div>
                      
                      
@@ -404,12 +497,10 @@
                      
                      <h2 id="object-metadata">Object Metadata</h2>
                      
-                     
                      <p>There are two kinds of metadata: system metadata and user-defined metadata. </p>
                      
                      
-                     <h3 id="SysMetadata">System-Defined Metadata</h3>
-                     
+                     <h3 id="SysMetadata">System-Defined Object Metadata</h3>
                      
                      <p>For each object stored in a bucket, Amazon S3 maintains a set of system metadata.
                         Amazon S3
@@ -420,19 +511,19 @@
                      
                      <p>There are two categories of system metadata: </p>
                      
-                     <div class="itemizedlist">
+                     <div class="orderedlist">
                         
                         
                         
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
+                        <ol>
+                           <li>
                               
                               <p>Metadata such as object creation date is system controlled where only Amazon S3 can
                                  modify the value. 
                               </p>
                               
                            </li>
-                           <li class="listitem">
+                           <li>
                               
                               <p>Other system metadata, such as the storage class configured for the object and
                                  whether the object has server-side encryption enabled, are examples of system metadata
@@ -446,15 +537,13 @@
                               <p>When you create objects, you can configure values of these system metadata items
                                  or update the values when you need to. For more information about storage classes,
                                  see
-                                 <a href="storage-class-intro.html">Storage Classes</a>. For more
+                                 <a href="storage-class-intro.html">Amazon S3 Storage Classes</a>. For more
                                  information about server-side encryption, see <a href="UsingEncryption.html">Protecting Data Using Encryption</a>. 
                               </p>
                               
                            </li>
-                        </ul>
+                        </ol>
                      </div>
-                     
-                     
                      
                      <p>The following table provides a list of system-defined metadata and whether you can
                         update it.
@@ -462,7 +551,7 @@
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w70aac18c11b9b5c11">
+                           <table id="w203aac19c11b9b5c11">
                               
                               <tbody><tr>
                                  
@@ -484,7 +573,6 @@
                                  <td>No</td>
                                  
                               </tr>
-                              
                               
                               <tr>
                                  
@@ -527,8 +615,9 @@
                                  <td>x-amz-server-side-encryption</td>
                                  
                                  <td>Indicates whether server-side encryption is enabled for the object, and
-                                    whether that encryption is from the AWS Key Management Service (SSE-KMS) or from
-                                    AWS managed encryption (SSE-S3). For more information, see <a href="serv-side-encryption.html">Protecting Data Using Server-Side Encryption</a>. 
+                                    whether that encryption is from the AWS Key Management Service (SSE-KMS) or from AWS
+                                    managed
+                                    encryption (SSE-S3). For more information, see <a href="serv-side-encryption.html">Protecting Data Using Server-Side Encryption</a>. 
                                  </td>
                                  
                                  <td>Yes</td>
@@ -563,7 +652,7 @@
                                  
                                  <td>x-amz-storage-class</td>
                                  
-                                 <td>Storage class used for storing the object. For more information, see <a href="storage-class-intro.html">Storage Classes</a>.
+                                 <td>Storage class used for storing the object. For more information, see <a href="storage-class-intro.html">Amazon S3 Storage Classes</a>.
                                  </td>
                                  
                                  <td>Yes</td>
@@ -588,7 +677,7 @@
                                  
                                  <td>x-amz-server-side-encryption-aws-kms-key-id</td>
                                  
-                                 <td>If  x-amz-server-side-encryption is present and has the value of
+                                 <td>If x-amz-server-side-encryption is present and has the value of
                                     <code class="code">aws:kms</code>, this indicates the ID of the AWS Key Management Service (AWS KMS) master
                                     encryption key that was used for the object.
                                  </td>
@@ -616,10 +705,7 @@
                      
                      
                      
-                     
-                     
-                     <h3 id="UserMetadata">User-Defined Metadata</h3>
-                     
+                     <h3 id="UserMetadata">User-Defined Object Metadata</h3>
                      
                      <p>When uploading an object, you can also assign metadata to the object. You provide
                         this
@@ -633,7 +719,8 @@
                         the object using the SOAP API, the prefix is removed, regardless of which API you
                         used to
                         upload the object. 
-                     </p> 
+                     </p>
+                     
                      
                      <div class="aws-note">
                         <p class="aws-note">Note</p>
@@ -645,12 +732,12 @@
                         </p>
                      </div>
                      
-                     <p>When metadata is retrieved through the REST API,
-                        Amazon S3 combines headers that have the same name (ignoring case) into a comma-delimited
-                        list.
-                        If some metadata contains unprintable characters, it is not returned. Instead, the
-                        <code class="code">x-amz-missing-meta</code> header is returned with a value of the number of
-                        unprintable metadata entries.
+                     
+                     <p>When metadata is retrieved through the REST API, Amazon S3 combines headers that have
+                        the
+                        same name (ignoring case) into a comma-delimited list. If some metadata contains
+                        unprintable characters, it is not returned. Instead, the <code class="code">x-amz-missing-meta</code>
+                        header is returned with a value of the number of unprintable metadata entries.
                      </p>
                      
                      <p>User-defined metadata is a set of key-value pairs. Amazon S3 stores user-defined metadata
@@ -670,21 +757,24 @@
                      </div>
                      
                      <p>For information about adding metadata to your object after it&#x2019;s been uploaded, see
-                        <a href="./AmazonS3/latest/user-guide/add-object-metadata.html" target="_blank">How Do I Add Metadata to an S3 Object?</a>
-                        in the <em>Amazon Simple Storage Service Console User Guide</em>.
+                        <a href="./AmazonS3/latest/user-guide/add-object-metadata.html">How Do I Add Metadata to an S3
+                           Object?</a> in the <em>Amazon Simple Storage Service Console User Guide</em>.
                      </p>
                      
                      
-                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -694,7 +784,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="UsingObjects.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="storage-class-intro.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -710,6 +802,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

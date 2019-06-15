@@ -3,15 +3,16 @@
       <title>Hosting a Static Website on Amazon S3 - Amazon Simple Storage Service</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="Welcome.html" title="What Is Amazon S3?">
-      <link rel="prev" href="DeletingObjectsfromVersioningSuspendedBuckets.html" title="Deleting Objects from
-				Versioning-Suspended Buckets">
+      <link rel="up" href="Welcome.html" title="What is Amazon S3?">
+      <link rel="prev" href="batch-ops-examples-java.html" title="Java Examples for Amazon S3 Batch Operations ">
       <link rel="next" href="WebsiteEndpoints.html" title="Website Endpoints">
       <meta name="description" content="Host a static website on Amazon S3 by configuring your bucket for website hosting and then uploading your content to the bucket.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteHosting.html">
@@ -21,7 +22,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +34,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Hosting a Static Website on Amazon S3</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Hosting a Static Website on Amazon S3</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="WebsiteHosting">Hosting a Static Website on Amazon S3</h1>
                      <p>You can host a static website on Amazon Simple Storage Service (Amazon S3). On a static
@@ -62,10 +66,13 @@
                      </div>
                      <p>To host a static website, you configure an Amazon S3 bucket for website hosting, and
                         then
-                        		upload your website content to the bucket. The website is then available at the
-                        AWS
-                        		Region-specific website endpoint of the bucket, which is in one of the following
-                        		formats:
+                        		upload your website content to the bucket. This bucket must have public read access.
+                        It is
+                        		intentional that everyone in the world will have read access to this bucket. The
+                        website is
+                        		then available at the AWS Region-specific website endpoint of the bucket, which
+                        is in one
+                        		of the following formats:
                      </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">&lt;bucket-name&gt;.s3-website-&lt;AWS-region&gt;.amazonaws.com</code></pre><pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">&lt;bucket-name&gt;.s3-website.&lt;AWS-region&gt;.amazonaws.com</code></pre><p>For a list of AWS Region-specific website endpoints for Amazon S3, see <a href="WebsiteEndpoints.html">Website Endpoints</a>. <span>For example, suppose you create a bucket called
                            				<code class="code">examplebucket</code> in the US West (Oregon) Region, and configure it as a website. </span>
                         		 The following example URLs provide access to your website content: 
@@ -124,15 +131,28 @@
                         		For more information, see <a href="HowDoIWebsiteConfiguration.html">Configuring a Bucket for Website
                            				Hosting</a>.
                      </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>The Amazon S3 website endpoints do not support HTTPS. For information about using
+                           HTTPS with an Amazon S3 bucket, 
+                           			see <a href="https://aws.amazon.com/premiumsupport/knowledge-center/cloudfront-https-requests-s3" target="_blank">How do I use CloudFront to serve HTTPS requests for my Amazon S3 bucket?</a> and  
+                           			<a href="./AmazonCloudFront/latest/DeveloperGuide/using-https-cloudfront-to-s3-origin.html">Requiring HTTPS for Communication Between CloudFront and Your Amazon S3 Origin.</a>
+                           		
+                        </p>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -141,8 +161,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="DeletingObjectsfromVersioningSuspendedBuckets.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="WebsiteEndpoints.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="batch-ops-examples-java.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="WebsiteEndpoints.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -150,6 +172,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

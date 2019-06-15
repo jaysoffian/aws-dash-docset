@@ -1,16 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Creating a Deployment Package (Node.js) - AWS Lambda</title>
+      <title>AWS Lambda Deployment Package in Node.js - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="deployment-package-v2.html" title="Creating a Deployment Package">
-      <link rel="prev" href="deployment-package-v2.html" title="Creating a Deployment Package">
-      <link rel="next" href="lambda-dotnet-how-to-create-deployment-package.html" title="Creating a Deployment Package (C#)">
-      <meta name="description" content="To create a Lambda function you first create a Lambda function deployment package, a .zip file consisting of your code and any dependencies. As noted previously, you need to set the appropriate security permissions for the zip package. For more information, see">
+      <link rel="up" href="programming-model.html" title="Building Lambda Functions with Node.js">
+      <link rel="prev" href="nodejs-prog-model-handler.html" title="AWS Lambda Function Handler in Node.js">
+      <link rel="next" href="nodejs-prog-model-context.html" title="AWS Lambda Context Object in Node.js">
+      <meta name="description" content="A deployment package is a ZIP archive that contains your function code and dependencies. You need to create a deployment package if you use the Lambda API to manage functions, or to include libraries and dependencies other than the AWS SDK. You can upload the package directly to Lambda, or you can use an Amazon S3 bucket, and then upload it to Lambda.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/nodejs-create-deployment-pkg.html">
@@ -20,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,26 +35,152 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-introduction-function.html">Lambda Functions</a> &#xBB; <a href="lambda-app.html">Building Lambda Functions</a> &#xBB; <a href="deployment-package-v2.html">Creating a Deployment Package</a> &#xBB; <span class="breadcrumb">Creating a Deployment Package (Node.js)</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="programming-model.html">Building Lambda Functions with Node.js</a> &#xBB; <span class="breadcrumb">AWS Lambda Deployment Package in Node.js</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="nodejs-create-deployment-pkg">Creating a Deployment Package (Node.js)</h1>
-                     <p>To create a Lambda function you first create a Lambda function deployment package,
-                        a .zip
-                        file consisting of your code and any dependencies. As noted previously, you need to
-                        set the appropriate security permissions for the zip package. For more information,
-                        see <a href="lambda-auth-and-access-control.html">Authentication and Access Control for
-                           AWS Lambda</a> policies.
+                     <h1 class="topictitle" id="nodejs-create-deployment-pkg">AWS Lambda Deployment Package in Node.js</h1>
+                     <p>A deployment package is a ZIP archive that contains your function code and dependencies.
+                        You need to create a
+                        deployment package if you use the Lambda API to manage functions, or to include libraries
+                        and dependencies other than the
+                        AWS SDK. You can upload the package directly to Lambda, or you can use an Amazon S3
+                        bucket, and then upload it to Lambda.
                      </p>
-                     <p>You can create a deployment package yourself or write your code directly in the Lambda
-                        console, in which case the console creates the deployment package for you and uploads
-                        it,
-                        creating your Lambda function. Note the following to determine if you can use the
-                        console to
-                        create your Lambda function:
+                     <p>If you use the Lambda <a href="code-editor.html">console editor</a> to author your function, the console
+                        manages the deployment package. You can use this method as long as you don&apos;t need
+                        to add any libraries. You can also
+                        use it to update a function that already has libraries in the deployment package,
+                        as long as the total size doesn&apos;t
+                        exceed 3 MB.
                      </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>To keep your deployment package size low, package your function&apos;s dependencies in
+                           layers.
+                           Layers let you manage your dependencies independently, can be used by multiple functions,
+                           and can be shared with other accounts.
+                           See <a href="configuration-layers.html">AWS Lambda Layers</a> for details.
+                        </p>
+                     </div>
+                     <p> Files in your deployment package must have an appropriate file mode to run on Lambda.
+                        For more information,
+                        see <a href="deployment-package-v2.html#lambda-zip-package-permission-policies">Permissions Policies on Lambda Deployment Packages</a>.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Sections</strong></p>
+                        <ul>
+                           <li><a href="#nodejs-package-codeonly">Updating a Function with No Dependencies</a></li>
+                           <li><a href="#nodejs-package-dependencies">Updating a Function with Additional Dependencies</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="nodejs-package-codeonly">Updating a Function with No Dependencies</h2>
+                      
+                     <p>To create or update a function with the Lambda API, create an archive that contains
+                        your function code and
+                        upload it with the AWS CLI.
+                     </p>
+                     
+                     <p class="title"><b>To update a Node.js function with no dependencies</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Create a ZIP archive.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function$ <strong class="userinput"><code>zip function.zip index.js</code></strong></code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Use the <code class="code">update-function-code</code> command to upload the package.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function$ <strong class="userinput"><code>aws lambda update-function-code --function-name my-function --zip-file fileb://function.zip</code></strong>
+{
+    &quot;FunctionName&quot;: &quot;my-function&quot;,
+    &quot;FunctionArn&quot;: &quot;arn:aws:lambda:us-west-2:123456789012:function:my-function&quot;,
+    &quot;Runtime&quot;: &quot;nodejs10.x&quot;,
+    &quot;Role&quot;: &quot;arn:aws:iam::123456789012:role/lambda-role&quot;,
+    &quot;Handler&quot;: &quot;index.handler&quot;,
+    &quot;CodeSize&quot;: 300,
+    &quot;Description&quot;: &quot;&quot;,
+    &quot;Timeout&quot;: 3,
+    &quot;MemorySize&quot;: 128,
+    &quot;LastModified&quot;: &quot;2018-11-23T21:00:10.248+0000&quot;,
+    &quot;CodeSha256&quot;: &quot;Qf0hMc1I2di6YFMi9aXm3JtGTmcDbjniEuiYonYptAk=&quot;,
+    &quot;Version&quot;: &quot;$LATEST&quot;,
+    &quot;TracingConfig&quot;: {
+        &quot;Mode&quot;: &quot;Active&quot;
+    },
+    &quot;RevisionId&quot;: &quot;983ed1e3-ca8e-434b-8dc1-7d72ebadd83d&quot;
+}</code></pre>
+                           </li>
+                     </ol> 
+                     
+                     <h2 id="nodejs-package-dependencies">Updating a Function with Additional Dependencies</h2>
+                     
+                     <p>If your function depends on libraries other than the SDK for JavaScript, install them
+                        to a local directory with <a href="https://www.npmjs.com/" target="_blank">NPM</a>, and include them in your deployment package. You can also include the
+                        SDK for JavaScript if you need a newer version than the one <a href="programming-model.html">included on the runtime</a>,
+                        or to ensure that the version doesn&apos;t change in the future.
+                     </p>
+                     
+                     <p class="title"><b>To update a Node.js function with dependencies</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Install libraries in the node_modules directory with the <code class="code">npm install</code> command.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function$ <strong class="userinput"><code>npm install aws-xray-sdk</code></strong></code></pre>
+                           <p>This creates a folder structure similar to the following.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">~/my-function
+&#x251C;&#x2500;&#x2500; index.js
+&#x2514;&#x2500;&#x2500; node_modules
+    &#x251C;&#x2500;&#x2500; async
+    &#x251C;&#x2500;&#x2500; async-listener
+    &#x251C;&#x2500;&#x2500; atomic-batcher
+    &#x251C;&#x2500;&#x2500; aws-sdk
+    &#x251C;&#x2500;&#x2500; aws-xray-sdk
+    &#x251C;&#x2500;&#x2500; aws-xray-sdk-core</code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Create a ZIP file containing the contents of your project folder.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function$ <strong class="userinput"><code>zip -r function.zip .</code></strong></code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Use the <code class="code">update-function-code</code> command to upload the package.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function$ <strong class="userinput"><code>aws lambda update-function-code --function-name my-function --zip-file fileb://function.zip</code></strong>
+{
+    &quot;FunctionName&quot;: &quot;my-function&quot;,
+    &quot;FunctionArn&quot;: &quot;arn:aws:lambda:us-west-2:123456789012:function:my-function&quot;,
+    &quot;Runtime&quot;: &quot;nodejs10.x&quot;,
+    &quot;Role&quot;: &quot;arn:aws:iam::123456789012:role/lambda-role&quot;,
+    &quot;Handler&quot;: &quot;index.handler&quot;,
+    &quot;CodeSize&quot;: 300,
+    &quot;Description&quot;: &quot;&quot;,
+    &quot;Timeout&quot;: 3,
+    &quot;MemorySize&quot;: 128,
+    &quot;LastModified&quot;: &quot;2018-11-23T21:00:10.248+0000&quot;,
+    &quot;CodeSha256&quot;: &quot;Qf0hMc1I2di6YFMi9aXm3JtGTmcDbjniEuiYonYptAk=&quot;,
+    &quot;Version&quot;: &quot;$LATEST&quot;,
+    &quot;TracingConfig&quot;: {
+        &quot;Mode&quot;: &quot;Active&quot;
+    },
+    &quot;RevisionId&quot;: &quot;983ed1e3-ca8e-434b-8dc1-7d72ebadd83d&quot;
+}</code></pre>
+                           </li>
+                     </ol>
+                     
+                     <p>In addition to code and libraries, your deployment package can also contain executable
+                        files and other
+                        resources. For more information, see the following:
+                     </p>
+                     
                      <div class="itemizedlist">
                         
                         
@@ -59,120 +188,32 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p><b>Simple scenario</b> &#x2013; 
-                                 If your custom code requires only the AWS SDK library, then
-                                 you can use the inline editor in the AWS Lambda console. Using the console, you can
-                                 edit and upload your code to AWS Lambda. The console will zip up your code with the
-                                 relevant configuration information into a deployment package that the Lambda service
-                                 can run. 
-                              </p>
-                              
-                              <p>You can also test your code in the console by manually invoking it using sample
-                                 event data. 
-                              </p>
-                              
-                              <div class="aws-note">
-                                 <p class="aws-note">Note</p>
-                                 <p>The Lambda service has preinstalled the AWS SDK for Node.js.</p>
-                              </div>
+                              <p><a href="https://aws.amazon.com/blogs/compute/running-executables-in-aws-lambda/" target="_blank">Running Executables in
+                                    AWS Lambda</a></p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><b>Advanced scenario</b> &#x2013; 
-                                 If you are writing code that uses other resources, such as
-                                 a graphics library for image processing, or you want to use the AWS CLI instead of
-                                 the console, you need to first create the Lambda function deployment package, and
-                                 then use the console or the CLI to upload the package.
-                              </p>
+                              <p><a href="https://aws.amazon.com/blogs/compute/nodejs-packages-in-lambda/" target="_blank">Using Packages and Native nodejs
+                                    Modules in AWS Lambda </a></p>
                               
                            </li>
                         </ul>
                      </div>
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p>After you create a deployment package, you may either upload it directly or upload
-                           the .zip file first to an Amazon S3 bucket in the same AWS region where you want to
-                           create the Lambda function, and then specify the bucket name and object key name
-                           when you create the Lambda function using the console or the AWS CLI.
-                        </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
-                     <p>The following is an example procedure to create a deployment package (outside the
-                        console). Suppose you want to create a deployment package that includes a
-                        <code>filename.js</code> code file and your code uses the <code class="code">async</code>
-                        library. 
-                     </p>
-                     <div class="orderedlist">
-                        
-                        
-                        
-                        
-                        
-                        <ol>
-                           <li>
-                              
-                              <p>Open a text editor, and write your code. Save the file (for example,
-                                 <code class="code">filename.js</code>).
-                              </p>
-                              
-                              <p>You will use the file name to specify the handler at the time
-                                 of creating the Lambda function.
-                              </p>
-                              
-                           </li>
-                           <li>
-                              
-                              <p>In the same directory, use <b>npm</b> to install the libraries that your code
-                                 depends on. For example, if your code uses the <code class="code">async</code> library, use the following
-                                 <b>npm</b> command.
-                              </p>
-                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">npm install async</code></pre>
-                              </li>
-                           <li>
-                              
-                              <p>Your directory will then have the following structure:</p>
-                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">filename.js
-node_modules/async
-node_modules/async/lib
-node_modules/async/lib/async.js
-node_modules/async/package.json
-     </code></pre>
-                              </li>
-                           <li>
-                              
-                              <p>Zip the content of the folder, that is your deployment package (for example,
-                                 <code>sample.zip</code>).
-                              </p>
-                              
-                           </li>
-                        </ol>
-                     </div>
-                     <p>Then, specify the .zip file name as your deployment package at the time you create
-                        your Lambda function.
-                     </p>
-                     <p>If you want to include your own binaries, including native ones, just package them
-                        in the Zip file you upload 
-                        and then reference them (including the relative path within the Zip file you created)
-                        when you call them from Node.js or from other processes that you&#x2019;ve previously started.
-                        
-                        Ensure that you include the following at the start of your function code:
-                        
-                        <code class="code">process.env[&#x2018;PATH&#x2019;] = process.env[&#x2018;PATH&#x2019;] + &#x2018;:&#x2019; + process.env[&#x2018;LAMBDA_TASK_ROOT&#x2019;]</code></p>
-                     <p>For more information on including native binaries 
-                        in your Lambda function package, see <a href="https://aws.amazon.com/blogs/compute/running-executables-in-aws-lambda/" target="_blank">Running Executables in AWS Lambda</a>. Also note that you need to supply the requisite permissions to the contents of the
-                        Zip file.
-                        For more information, see <a href="deployment-package-v2.html#lambda-zip-package-permission-policies">Permissions Polices on Lambda Deployment Packages</a>.
-                        
-                     </p>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -181,15 +222,29 @@ node_modules/async/package.json
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="deployment-package-v2.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="lambda-dotnet-how-to-create-deployment-package.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="nodejs-prog-model-handler.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="nodejs-prog-model-context.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
             <div id="right-expanded">
-               <div id="right-content-wrapper"></div>
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Updating a Function with No Dependencies"><a class="pagetoc" href="#nodejs-package-codeonly">Updating a Function with No Dependencies</a></li>
+                        <li class="pagetoc" name="Updating a Function with Additional Dependencies"><a class="pagetoc" href="#nodejs-package-dependencies">Updating a Function with Additional Dependencies</a></li>
+                     </ul>
+                  </div>
+               </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

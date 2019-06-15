@@ -1,0 +1,773 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Detecting Unmanaged Configuration Changes to Stacks and
+         Resources - AWS CloudFormation
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="stacks.html" title="Working with Stacks">
+      <link rel="prev" href="using-cfn-updating-stacks-continueupdaterollback.html" title="Continue Rolling Back an
+    Update">
+      <link rel="next" href="detect-drift-stack.html" title="Detect Drift on an Entire CloudFormation Stack Detect Drift on Individual Stack Resources">
+      <meta name="description" content="Drift detection enables you to detect whether a stack&apos;s actual configuration differs, or has drifted, from its expected configuration.">
+      <meta name="keywords" content="CloudFormation,AWSCloudFormation,resource provisioning,resource configuration,infrastructure management,CloudFormer,CloudFormation Designer,CloudFormation stack,CloudFormation stackset,CloudFormation template,change set">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="AWS CloudFormation">
+      <meta name="guide" content="User Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudformation/index.html">AWS CloudFormation</a> &#xBB; <a href="index.html">User Guide</a> &#xBB; <a href="stacks.html">Working with Stacks</a> &#xBB; <span class="breadcrumb">Detecting Unmanaged Configuration Changes to Stacks and
+                                    Resources</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="using-cfn-stack-drift">Detecting Unmanaged Configuration Changes to Stacks and
+                        Resources
+                     </h1>
+                     <p>Even as you manage your resources through CloudFormation, users can change those resources
+                        <em>outside</em> of CloudFormation. Users can edit resources directly by using the
+                        underlying service that created the resource. For example, you can use the Amazon
+                        EC2 console to
+                        update a server instance that was created as part of an CloudFormation stack. Some
+                        changes may be
+                        accidental, and some may be made intentionally to respond to time-sensitive operational
+                        events. Regardless, changes made outside of CloudFormation can complicate stack update
+                        or deletion
+                        operations. You can use drift detection to identify stack resources to which configuration
+                        changes have been made outside of CloudFormation management. You can then take corrective
+                        action so that your stack resources are again in synch with their definitions in the
+                        stack template, such as updating the drifted resources directly so that they agree
+                        with their template definition. Resolving drift helps to ensure configuration consistency
+                        and successful stack operations.
+                     </p>
+                     <div class="highlights">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#what-is-drift">What Is Drift?</a></li>
+                           <li><a href="#drift-status-codes">Drift Detection Status Codes</a></li>
+                           <li><a href="#drift-considerations">Considerations When Detecting Drift</a></li>
+                           <li><a href="detect-drift-stack.html">Detect Drift on an Entire CloudFormation Stack</a></li>
+                           <li><a href="detect-drift-resource.html">Detect Drift on Individual Stack Resources</a></li>
+                           <li><a href="using-cfn-stack-drift-resource-list.html">Resources that Support Drift Detection</a></li>
+                        </ul>
+                     </div>
+                     <h2 id="what-is-drift">What Is Drift?</h2>
+                     
+                     <p>Drift detection enables you to detect whether a stack&apos;s actual configuration differs,
+                        or
+                        has <em>drifted</em>, from its expected configuration. Use AWS CloudFormation to detect
+                        drift on an entire stack, or on individual resources within the stack. A resource
+                        is
+                        considered to have drifted if any of its actual property values differ from the expected
+                        property values. This includes if the property or resource has been deleted. A stack
+                        is
+                        considered to have drifted if one or more of its resources have drifted. 
+                     </p>
+                     
+                     <p>In order to determine whether a resource has drifted, CloudFormation determines the
+                        expected
+                        resource property values, as defined in the stack template and any values specified
+                        as
+                        template parameters. CloudFormation then compares those expected values with the actual
+                        values of
+                        those resource properties as they currently exist in the stack. A resource is considered
+                        to have drifted if one or more of its properties have been deleted, or had their value
+                        changed. 
+                     </p>
+                     
+                     <p>AWS CloudFormation generates detailed information on each resource in the stack that
+                        has drifted.
+                     </p>
+                     
+                     <p>CloudFormation detects drift on those resources that support drift detection. Resources
+                        that do not support drift detection are assigned a drift status of NOT_CHECKED. For
+                        a list of resources that support drift detection, see <a href="./AWSCloudFormation/latest/UserGuide/using-cfn-stack-drift-resource-list.html">Resources that
+                           Support Drift Detection</a>.
+                     </p>
+                     
+                     <p>You can perform drift detection on stacks with the following statuses:
+                        <code class="code">CREATE_COMPLETE</code>, <code class="code">UPDATE_COMPLETE</code>,
+                        <code class="code">UPDATE_ROLLBACK_COMPLETE</code>, and
+                        <code class="code">UPDATE_ROLLBACK_FAILED</code>.
+                     </p>
+                     
+                     <p>When detecting drift on a stack, CloudFormation does not detect drift on any <a href="./AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html">nested stacks</a> that
+                        belong to that stack. Instead, you can initiate a drift detection operation directly
+                        on the nested stack.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>CloudFormation only determines drift for property values that are explicitly set,
+                           either through the stack template or by specifying template parameters. This does
+                           not include default values for resource properties. To have CloudFormation track a
+                           resource property for purposes of determining drift, explicitly set the property value,
+                           even if you are setting it to the default value. 
+                        </p>
+                     </div>
+                     
+                     <h2 id="drift-status-codes">Drift Detection Status Codes</h2>
+                     
+                     <p>The tables in this section describe the various status types used with drift
+                        detection:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p><b>Drift detection operation status</b> describes the current state of the drift
+                                 operation.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p><b>Stack drift status</b> describes the drift status of the stack as a whole,
+                                 based on the drift status of its resources.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p><b>Resource drift status</b> describes the drift status of an individual
+                                 resource.
+                              </p>
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>The following table lists the status codes CloudFormation assigns to stack drift detection
+                        operations.
+                     </p>
+                     
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w208ab1c15c19b9b8">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Drift Detection Operation Status</th>
+                                 
+                                 <th>Description</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">DETECTION_COMPLETE</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>The stack drift detection operation has successfully completed for
+                                       all resources in the stack that support drift detection. 
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">DETECTION_FAILED</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>The stack drift detection operation has failed for at least one
+                                       resource in the stack. Results will be available for resources on
+                                       which CloudFormation successfully completed drift detection.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">DETECTION_IN_PROGRESS</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>The stack drift detection operation is currently in progress.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     <p>The following table lists the drift status codes CloudFormation assigns to stacks.</p>
+                     
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w208ab1c15c19b9c12">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Stack Drift Status</th>
+                                 
+                                 <th>Description</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">DRIFTED</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>The stack differs, or has <em>drifted</em>, from its expected template
+                                       configuration. A stack is considered to have drifted if one or more
+                                       of its resources have drifted.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">NOT_CHECKED</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>AWS CloudFormation has not checked if the stack differs from its expected
+                                       template configuration.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">IN_SYNC</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>The current configuration of each supported resource matches its
+                                       expected template configuration. A stack with no resources that
+                                       support drift detection will also have a status of IN_SYNC.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     <p>The following table lists the drift status codes CloudFormation assigns to stack
+                        resources.
+                     </p>
+                     
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w208ab1c15c19b9c16">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Resource Drift Status</th>
+                                 
+                                 <th>Description</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">DELETED</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>The resource differs from its expected template configuration
+                                       because the resource has been deleted.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">MODIFIED</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>The resource differs from its expected template
+                                       configuration.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">NOT_CHECKED</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>CloudFormation has not checked if the resource differs from its expected
+                                       template configuration.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">IN_SYNC</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>The resource&#x2019;s current configuration matches its expected template
+                                       configuration.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     <p>The following table lists the difference-type status codes CloudFormation assigns
+                        to resource
+                        properties that differ from their expected template configuration.
+                     </p>
+                     
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w208ab1c15c19b9c20">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Property Difference Types</th>
+                                 
+                                 <th>Description</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">ADD</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>A value has been added to a resource property that is an array or
+                                       list data type. 
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">REMOVE</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>The property has been removed from the current resource
+                                       configuration.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">NOT_EQUAL</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>The current property value differs from its expected value as
+                                       defined in the stack template.
+                                    </p>                        
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     <h2 id="drift-considerations">Considerations When Detecting Drift</h2>
+                     
+                     <p>In order to successfully perform drift detection on a stack, a user must have the
+                        following permissions:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p>Read permission for each resource that supports drift detection included in the stack.
+                                 For
+                                 example, if the stack includes an <code class="code">AWS::EC2::Instance</code> resource, you must have <code class="code">ec2:DescribeInstances</code> permission to perform drift detection on the stack.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p><code class="code">cloudformation:DetectStackDrift</code></p>
+                           </li>
+                           <li class="listitem">
+                              <p><code class="code">cloudformation:DetectStackResourceDrift</code></p>
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>For more information on setting permissions in CloudFormation, see <a href="using-iam-template.html">Controlling Access with AWS Identity and Access Management</a>.
+                     </p>
+                     
+                     
+                     <p>In certain edge cases, CloudFormation may not be able to always return accurate drift
+                        results.
+                        You should be aware of these edge cases in order to properly interpret your drift
+                        detection results.
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>In certain cases, objects contained in property arrays will be reported as
+                                 drift, when in actuality they are default values supplied to the property from
+                                 the underlying service responsible for the resource.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Certain resources have <em>attachment relationships</em> with
+                                 related resources, such that a resource may actually attach or remove property
+                                 values for another resource, defined in the same or another template. For
+                                 example, the <code class="code">AWS::EC2::SecurityGroupIngress</code> and
+                                 <code class="code">AWS::EC2::SecurityGroupEgress</code> resources may be used to attach
+                                 and remove values from <code class="code">AWS::EC2::SecurityGroup</code> resources. In these
+                                 cases, CloudFormation analyses the stack template for attachments before performing
+                                 the
+                                 drift comparison. However, CloudFormation cannot perform this analysis across stacks,
+                                 and
+                                 so may not return accurate drift results where resources that are attached
+                                 reside in different stacks.
+                              </p>
+                              
+                              <p>Resources that support drift detection and allow or require attachments from other
+                                 resources include:
+                              </p>  
+                              
+                              <div class="table">
+                                 <div class="table-contents">
+                                    <table id="w208ab1c15c19c11c10b3b5">
+                                       
+                                       <tbody><tr>
+                                          
+                                          <th>Resource Type</th>
+                                          
+                                          <th>Attachment Resource Type</th>
+                                          
+                                       </tr>
+                                       
+                                       
+                                       <tr>
+                                          
+                                          <td>AWS::SNS::Topic</td>
+                                          
+                                          <td>AWS::SNS::Subscription</td>
+                                          
+                                       </tr>
+                                       
+                                       <tr>
+                                          
+                                          <td>AWS::IAM::User</td>
+                                          
+                                          <td>AWS::IAM::UserToGroupAddition</td>
+                                          
+                                       </tr>
+                                       
+                                       <tr>
+                                          
+                                          <td>
+                                             <p>AWS::IAM::Group</p>
+                                             <p>AWS::IAM::Role</p>
+                                             <p>AWS::IAM::User</p>
+                                          </td>
+                                          
+                                          <td>
+                                             <p>AWS::IAM::Policy</p>
+                                             <p>AWS::IAM::ManagedPolicy</p>
+                                          </td>
+                                          
+                                       </tr>
+                                       
+                                       <tr>
+                                          
+                                          <td>AWS::ElasticLoadBalancingV2::Listener</td>
+                                          
+                                          <td>AWS::ElasticLoadBalancingV2::ListenerCertificate</td>
+                                          
+                                       </tr>
+                                       
+                                       <tr>
+                                          
+                                          <td>AWS::EC2::SecurityGroup</td>
+                                          
+                                          <td>
+                                             <p>AWS::EC2::SecurityGroupEgress</p>
+                                             <p>AWS::EC2::SecurityGroupIngress</p>
+                                          </td>
+                                          
+                                       </tr>
+                                       
+                                    </tbody></table>
+                                 </div>
+                              </div>              
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>CloudFormation does not perform drift detection on the <code class="code">KMSKeyId</code> property
+                                 of any resources. Because AWS KMS keys can be referenced by multiple aliases,
+                                 CloudFormation cannot guarantee consistently accurate drift results for this property.
+                                 
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>There are certain resource properties that you can specify in your stack
+                                 template that, by their very nature, CloudFormation will not be able to compare
+                                 to the properties in the resulting stack resources. These properties therefore
+                                 cannot be included in drift detection results. Such properties fall into two
+                                 broad categories:
+                              </p>
+                              
+                              <div class="itemizedlist">
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       
+                                       <p>Property values that CloudFormation cannot map back to their initial resource property
+                                          value in the stack template.
+                                       </p>
+                                       
+                                       <p>For example, CloudFormation cannot map the source code of a Lambda function back to
+                                          the <a href="./AWSCloudFormation/latest/UserGuide/aws-properties-lambda-function-code.html">Code</a> property type of the <a href="./AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html">Function</a> resource, and therefore CloudFormation cannot include it in drift detection results.
+                                          
+                                       </p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p>Property values that the service that is responsible for the resource
+                                          does not return.
+                                       </p>
+                                       
+                                       <p>There are certain property values that, by design, are never returned by the service
+                                          to which the resource belongs. These tend to contain confidential information, such
+                                          as passwords or other sensitive data that should not be exposed. For example, the
+                                          IAM service will never return the value of the <code class="code">Password</code> property of the <a href="./AWSCloudFormation/latest/UserGuide/aws-properties-iam-user-loginprofile.html">IAM User LoginProfile</a> property type, and therefore CloudFormation cannot include it in drift detection
+                                          results. 
+                                       </p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       <p>Objects in an array: they may be actually service defaults, not drift added manually
+                                          out-of-band.
+                                       </p>
+                                    </li>
+                                 </ul>
+                              </div>
+                              
+                           </li>
+                           <li class="listitem">
+                              <p>Drift detection is available in the US East (N. Virginia), US East (Ohio), US West
+                                 (N.
+                                 California), US West (Oregon), Canada (Central), Asia Pacific (Mumbai), Asia
+                                 Pacific (Seoul), Asia Pacific (Singapore), Asia Pacific (Sydney), Asia Pacific
+                                 (Tokyo), Europe (Frankfurt), Europe (Ireland), Europe (London), Europe (Paris),
+                                 and South America (S&#xE3;o Paulo) regions.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p>If you encounter any false positive, send us your comments using the feedback link
+                                 in the
+                                 CloudFormation console, or reach out to us via the AWS forums at <a href="https://forums.aws.amazon.com" target="_blank">https://forums.aws.amazon.com</a>.
+                              </p>
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="using-cfn-updating-stacks-continueupdaterollback.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="detect-drift-stack.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="What Is Drift?"><a class="pagetoc" href="#what-is-drift">What Is Drift?</a></li>
+                        <li class="pagetoc" name="Drift Detection Status Codes"><a class="pagetoc" href="#drift-status-codes">Drift Detection Status Codes</a></li>
+                        <li class="pagetoc" name="Considerations When Detecting Drift"><a class="pagetoc" href="#drift-considerations">Considerations When Detecting Drift</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='AWS CloudFormation';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

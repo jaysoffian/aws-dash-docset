@@ -1,17 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Configuring CloudFront to Cache Objects Based on Request Headers - Amazon CloudFront</title>
+      <title>Caching Content Based on Request Headers - Amazon CloudFront</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="WorkingWithObjects.html" title="Working with Objects">
-      <link rel="prev" href="Cookies.html" title="Configuring CloudFront to Cache Objects Based on Cookies">
-      <link rel="next" href="forward-custom-headers.html" title="Forwarding Custom Headers to Your Origin (Web Distributions Only)">
+      <link rel="up" href="ConfiguringCaching.html" title="Optimizing Content Caching and Availability">
+      <link rel="prev" href="Cookies.html" title="Caching Content Based on Cookies">
+      <link rel="next" href="Expiration.html" title="Managing How Long Content Stays in an Edge Cache (Expiration)">
       <meta name="description" content="Describes how CloudFront caches objects based on the values of HTTP headers.">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/header-caching.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,12 +35,15 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="WorkingWithObjects.html">Working with Objects</a> &#xBB; <span class="breadcrumb">Configuring CloudFront to Cache Objects Based on Request Headers</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="ConfiguringCaching.html">Optimizing Content Caching and Availability</a> &#xBB; <span class="breadcrumb">Caching Content Based on Request Headers</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="header-caching">Configuring CloudFront to Cache Objects Based on Request Headers</h1>
+                     <h1 class="topictitle" id="header-caching">Caching Content Based on Request Headers</h1>
                      <p>For web distributions, CloudFront lets you choose whether you want CloudFront to forward
                         headers to
                         			your origin and to cache separate versions of a specified object based on the header
@@ -51,14 +56,39 @@
                         to cache based on
                         			header values.
                      </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>For RTMP distributions, you cannot configure CloudFront to cache your content based
+                           on the
+                           			headers in viewer requests.
+                        </p>
+                     </div>
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Topics</strong></p>
                         <ul>
-                           <li><a href="#header-caching-web">Headers and Web Distributions</a></li>
-                           <li><a href="#header-caching-rtmp">Headers and RTMP Distributions</a></li>
+                           <li><a href="#header-caching-web">Headers and Distributions - Overview</a></li>
+                           <li><a href="#header-caching-web-selecting">Selecting the Headers
+                                 					to Base Caching On</a></li>
+                           <li><a href="#header-caching-web-cors">Configuring CloudFront to Respect CORS Settings</a></li>
+                           <li><a href="#header-caching-web-device">Configuring Caching Based on the
+                                 					Device Type</a></li>
+                           <li><a href="#header-caching-web-language">Configuring Caching Based on the
+                                 					Language of the Viewer</a></li>
+                           <li><a href="#header-caching-web-location">Configuring Caching Based on the
+                                 					Location of the Viewer</a></li>
+                           <li><a href="#header-caching-web-protocol">Configuring Caching Based on the
+                                 					Protocol of the Request</a></li>
+                           <li><a href="#header-caching-web-compressed">Configuring Caching 
+                                 			For Compressed Files</a></li>
+                           <li><a href="#header-caching-web-performance">How Caching Based on Headers Affects
+                                 					Performance</a></li>
+                           <li><a href="#header-caching-web-case">How the Case of Headers and Header Values Affects
+                                 					Caching</a></li>
+                           <li><a href="#header-caching-web-response">Headers that CloudFront Returns to the
+                                 					Viewer</a></li>
                         </ul>
                      </div>
-                     <h2 id="header-caching-web">Headers and Web Distributions</h2>
+                     <h2 id="header-caching-web">Headers and Distributions - Overview</h2>
                      			
                      			
                      <p>By default, CloudFront doesn&apos;t consider headers when caching your objects in edge
@@ -73,7 +103,9 @@
                         To configure
                         				CloudFront to cache objects based on the values of specific headers, you specify
                         cache behavior settings 
-                        				for your distribution. For more information, see <a href="distribution-web-values-specify.html#DownloadDistValuesForwardHeaders">Cache Based on Selected Request Headers</a>.
+                        				for your distribution. For more information, see 
+                        				<a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesForwardHeaders">
+                           				Cache Based on Selected Request Headers</a>.
                      </p>
                      			
                      <p> For example, suppose viewer requests for <code class="code">logo.jpg</code> contain a custom
@@ -136,48 +168,22 @@
                      
                      			
                      <p>For the current limit on the number of headers that you can whitelist for each cache
-                        				behavior, see <a href="./general/latest/gr/aws_service_limits.html#limits_cloudfront" target="_blank">Amazon CloudFront
-                           					Limits</a> in the <em>Amazon Web Services General Reference</em>. To request a higher limit,
-                        				go to <a href="https://console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase&amp;limitType=service-code-cloudfront-distributions" target="_blank">https://console.aws.amazon.com/support/home#/case/create?issueType=service-limit-increase&amp;limitType=service-code-cloudfront-distributions</a>.
+                        				behavior or to request a higher limit, see <a href="cloudfront-limits.html#limits-custom-headers">Limits on Custom Headers (Web Distributions Only)</a>.
                      </p>
                      
                      			
                      <p>For information about using the CloudFront console to update a distribution so CloudFront
                         forwards
-                        				headers to the origin, see <a href="HowToUpdateDistribution.html">Viewing and Updating CloudFront Distributions</a>. For information about using the CloudFront API to
-                        				update an existing web distribution, see <a href="./cloudfront/latest/APIReference/PutConfig.html" target="_blank">PUT
-                           					Distribution Config</a> in the <em>Amazon CloudFront API Reference</em>.
+                        				headers to the origin, see <a href="HowToUpdateDistribution.html">Updating a Distribution</a>. 
+                        				For information about using the CloudFront API to update an existing distribution,
+                        see 
+                        				<a href="./cloudfront/latest/APIReference/API_UpdateDistribution.html">Update Distribution</a> in the 
+                        				<em>Amazon CloudFront API Reference</em>.
                      </p>
-                     
-                     			
-                     <div class="highlights" id="inline-topiclist">
-                        <p><strong>Topics</strong></p>
-                        <ul>
-                           <li><a href="#header-caching-web-selecting">Selecting the Headers on Which You Want CloudFront
-                                 					to Base Caching</a></li>
-                           <li><a href="#header-caching-web-cors">Configuring CloudFront to Respect Cross-Origin Resource
-                                 					Sharing (CORS) Settings</a></li>
-                           <li><a href="#header-caching-web-device">Configuring CloudFront to Cache Objects Based on the
-                                 					Device Type</a></li>
-                           <li><a href="#header-caching-web-language">Configuring CloudFront to Cache Objects Based on the
-                                 					Language of the Viewer</a></li>
-                           <li><a href="#header-caching-web-location">Configuring CloudFront to Cache Objects Based on the
-                                 					Location of the Viewer</a></li>
-                           <li><a href="#header-caching-web-protocol">Configuring CloudFront to Cache Objects Based on the
-                                 					Protocol of the Request</a></li>
-                           <li><a href="#header-caching-web-performance">How Caching Based on Headers Affects
-                                 					Performance</a></li>
-                           <li><a href="#header-caching-web-case">How the Case of Headers and Header Values Affects
-                                 					Caching</a></li>
-                           <li><a href="#header-caching-web-response">Headers that CloudFront Returns to the
-                                 					Viewer</a></li>
-                        </ul>
-                     </div>
-                     
-                     			
-                     <h3 id="header-caching-web-selecting">Selecting the Headers on Which You Want CloudFront
-                        					to Base Caching
-                     </h3>
+                     		
+                     <h2 id="header-caching-web-selecting">Selecting the Headers
+                        					to Base Caching On
+                     </h2>
                      				
                      				
                      <p>The headers that you can forward to the origin and that CloudFront bases caching on
@@ -213,8 +219,7 @@
                                           for 
                                           										websites that are enabled for cross-origin resource sharing (CORS). For
                                           more information, see 
-                                          										<a href="header-caching.html#header-caching-web-cors">Configuring CloudFront to Respect Cross-Origin Resource
-                                             					Sharing (CORS) Settings</a>.
+                                          										<a href="header-caching.html#header-caching-web-cors">Configuring CloudFront to Respect CORS Settings</a>.
                                           									
                                        </p>
                                        								
@@ -227,7 +232,8 @@
                                           to be triggered by 
                                           										an origin-facing event. For more information about working with headers
                                           to personalize content, see 
-                                          										<a href="lambda-examples.html#lambda-examples-redirecting-examples">Personalize Content by Country or Device Type Headers - Examples</a>.
+                                          										<a href="lambda-examples.html#lambda-examples-redirecting-examples">Personalize Content by Country or Device Type Headers -
+                                             					Examples</a>.
                                        </p>
                                        									
                                        <p>We recommend that you avoid whitelisting headers that you aren&apos;t using to 
@@ -261,11 +267,6 @@
                                  <ul class="itemizedlist" type="disc">
                                     <li class="listitem">
                                        								
-                                       <p><code class="code">Accept-Encoding</code></p>
-                                       							
-                                    </li>
-                                    <li class="listitem">
-                                       								
                                        <p><code class="code">Connection</code></p>
                                        							
                                     </li>
@@ -273,7 +274,7 @@
                                        								
                                        <p><code class="code">Cookie</code> &#x2013; If you want to forward and cache based on
                                           									cookies, you use a separate setting in your distribution. For more information,
-                                          									see <a href="Cookies.html">Configuring CloudFront to Cache Objects Based on Cookies</a>.
+                                          									see <a href="Cookies.html">Caching Content Based on Cookies</a>.
                                        </p>
                                        							
                                     </li>
@@ -316,11 +317,7 @@
                            						(Custom and S3 Origins)</a>.
                      </p>
                      			
-                     
-                     			
-                     <h3 id="header-caching-web-cors">Configuring CloudFront to Respect Cross-Origin Resource
-                        					Sharing (CORS) Settings
-                     </h3>
+                     <h2 id="header-caching-web-cors">Configuring CloudFront to Respect CORS Settings</h2>
                      				
                      <p>If you have enabled cross-origin resource sharing (CORS) on an Amazon S3 bucket or
                         a custom
@@ -379,15 +376,13 @@
                      </p>
                      
                      				
-                     <p>For more information about CORS and Amazon S3, see <a href="./AmazonS3/latest/dev/cors.html" target="_blank">Enabling Cross-Origin Resource Sharing</a> in the
+                     <p>For more information about CORS and Amazon S3, see <a href="./AmazonS3/latest/dev/cors.html">Enabling Cross-Origin Resource Sharing</a> in the
                         						<em>Amazon Simple Storage Service Developer Guide</em>.
                      </p>
                      			
-                     
-                     			
-                     <h3 id="header-caching-web-device">Configuring CloudFront to Cache Objects Based on the
+                     <h2 id="header-caching-web-device">Configuring Caching Based on the
                         					Device Type
-                     </h3>
+                     </h2>
                      				
                      				
                      <p>If you want CloudFront to cache different versions of your objects based on the device
@@ -435,11 +430,9 @@
                         						<code class="code">true</code>.
                      </p>
                      			
-                     
-                     			
-                     <h3 id="header-caching-web-language">Configuring CloudFront to Cache Objects Based on the
+                     <h2 id="header-caching-web-language">Configuring Caching Based on the
                         					Language of the Viewer
-                     </h3>
+                     </h2>
                      				
                      				
                      <p>If you want CloudFront to cache different versions of your objects based on the language
@@ -449,11 +442,9 @@
                         						<code class="code">Accept-Language</code> header to your origin.
                      </p>
                      			
-                     
-                     			
-                     <h3 id="header-caching-web-location">Configuring CloudFront to Cache Objects Based on the
+                     <h2 id="header-caching-web-location">Configuring Caching Based on the
                         					Location of the Viewer
-                     </h3>
+                     </h2>
                      				
                      				
                      <p>If you want CloudFront to cache different versions of your objects based on the country
@@ -468,11 +459,9 @@
                            						alpha-2</a>.
                      </p>
                      			
-                     
-                     			
-                     <h3 id="header-caching-web-protocol">Configuring CloudFront to Cache Objects Based on the
+                     <h2 id="header-caching-web-protocol">Configuring Caching Based on the
                         					Protocol of the Request
-                     </h3>
+                     </h2>
                      				
                      				
                      <p>If you want CloudFront to cache different versions of your objects based on the protocol
@@ -481,11 +470,19 @@
                         						<code class="code">CloudFront-Forwarded-Proto</code> header to your origin.
                      </p>
                      			
-                     
+                     <h2 id="header-caching-web-compressed">Configuring Caching 
+                        			For Compressed Files
+                     </h2>
                      			
-                     <h3 id="header-caching-web-performance">How Caching Based on Headers Affects
+                     			
+                     <p>If your origin supports Brotli compression, you can whitelist the <code class="code">Accept-Encoding</code> header 
+                        			and cache based on the header. You should configure caching based on <code class="code">Accept-Encoding</code> only
+                        			if your origin serves different content based on the header.
+                     </p>
+                     		
+                     <h2 id="header-caching-web-performance">How Caching Based on Headers Affects
                         					Performance
-                     </h3>
+                     </h2>
                      				
                      				
                      <p>When you configure CloudFront to cache based on one or more headers and the headers
@@ -509,11 +506,9 @@
                         					just one copy of the object.
                      </p>
                      			
-                     
-                     			
-                     <h3 id="header-caching-web-case">How the Case of Headers and Header Values Affects
+                     <h2 id="header-caching-web-case">How the Case of Headers and Header Values Affects
                         					Caching
-                     </h3>
+                     </h2>
                      				
                      				
                      <p>When CloudFront caches based on header values, it doesn&apos;t consider the case of the
@@ -545,11 +540,9 @@
                         </ul>
                      </div>
                      			
-                     
-                     			
-                     <h3 id="header-caching-web-response">Headers that CloudFront Returns to the
+                     <h2 id="header-caching-web-response">Headers that CloudFront Returns to the
                         					Viewer
-                     </h3>
+                     </h2>
                      				
                      				
                      <p>Configuring CloudFront to forward and cache headers does not affect which headers
@@ -580,25 +573,19 @@
                         </ul>
                      </div>
                      			
-                     
-                     		
-                     <h2 id="header-caching-rtmp">Headers and RTMP Distributions</h2>
-                     			
-                     			
-                     <p>For RTMP distributions, you cannot configure CloudFront to cache your content based
-                        on the
-                        				headers in viewer requests. 
-                     </p>
-                     		
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -607,8 +594,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="Cookies.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="forward-custom-headers.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="Cookies.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="Expiration.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -617,13 +606,44 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Headers and Web Distributions"><a class="pagetoc" href="#header-caching-web">Headers and Web Distributions</a></li>
-                        <li class="pagetoc" name="Headers and RTMP Distributions"><a class="pagetoc" href="#header-caching-rtmp">Headers and RTMP Distributions</a></li>
+                        <li class="pagetoc" name="Headers and Distributions - Overview"><a class="pagetoc" href="#header-caching-web">Headers and Distributions - Overview</a></li>
+                        <li class="pagetoc" name="Selecting the Headers
+					to Base Caching On"><a class="pagetoc" href="#header-caching-web-selecting">Selecting the Headers
+                              					to Base Caching On</a></li>
+                        <li class="pagetoc" name="Configuring CloudFront to Respect CORS Settings"><a class="pagetoc" href="#header-caching-web-cors">Configuring CloudFront to Respect CORS Settings</a></li>
+                        <li class="pagetoc" name="Configuring Caching Based on the
+					Device Type"><a class="pagetoc" href="#header-caching-web-device">Configuring Caching Based on the
+                              					Device Type</a></li>
+                        <li class="pagetoc" name="Configuring Caching Based on the
+					Language of the Viewer"><a class="pagetoc" href="#header-caching-web-language">Configuring Caching Based on the
+                              					Language of the Viewer</a></li>
+                        <li class="pagetoc" name="Configuring Caching Based on the
+					Location of the Viewer"><a class="pagetoc" href="#header-caching-web-location">Configuring Caching Based on the
+                              					Location of the Viewer</a></li>
+                        <li class="pagetoc" name="Configuring Caching Based on the
+					Protocol of the Request"><a class="pagetoc" href="#header-caching-web-protocol">Configuring Caching Based on the
+                              					Protocol of the Request</a></li>
+                        <li class="pagetoc" name="Configuring Caching 
+			For Compressed Files"><a class="pagetoc" href="#header-caching-web-compressed">Configuring Caching 
+                              			For Compressed Files</a></li>
+                        <li class="pagetoc" name="How Caching Based on Headers Affects
+					Performance"><a class="pagetoc" href="#header-caching-web-performance">How Caching Based on Headers Affects
+                              					Performance</a></li>
+                        <li class="pagetoc" name="How the Case of Headers and Header Values Affects
+					Caching"><a class="pagetoc" href="#header-caching-web-case">How the Case of Headers and Header Values Affects
+                              					Caching</a></li>
+                        <li class="pagetoc" name="Headers that CloudFront Returns to the
+					Viewer"><a class="pagetoc" href="#header-caching-web-response">Headers that CloudFront Returns to the
+                              					Viewer</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

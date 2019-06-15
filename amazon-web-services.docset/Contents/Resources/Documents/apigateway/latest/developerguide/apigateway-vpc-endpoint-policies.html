@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Use VPC Endpoint Policies for Private
+         APIs in API Gateway - Amazon API Gateway
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="apigateway-control-access-to-api.html" title="Controlling and Managing Access to a REST
+			API in API Gateway">
+      <link rel="prev" href="api-gateway-create-and-attach-iam-policy.html" title="Create and Attach a Policy to
+                an IAM User">
+      <link rel="next" href="apigateway-control-access-tags.html" title="Using Tags to Control Access to a
+            REST API in API Gateway">
+      <meta name="description" content="Learn how to create endpoint policies for VPC endpoints in Amazon API Gateway.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon API Gateway">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-vpc-endpoint-policies.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="apigateway-control-access-to-api.html">Controlling and Managing Access to a REST
+                                    			API in API Gateway</a> &#xBB; <span class="breadcrumb">Use VPC Endpoint Policies for Private
+                                    APIs in API Gateway</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="apigateway-vpc-endpoint-policies">Use VPC Endpoint Policies for Private
+                        APIs in API Gateway
+                     </h1>
+                     <p>You can improve the security of your <a href="./apigateway/latest/developerguide/apigateway-private-apis.html">private APIs</a>
+                        by configuring API Gateway to use an <a href="./vpc/latest/userguide/vpce-interface.html">interface VPC
+                           endpoint</a>. Interface endpoints are powered by AWS PrivateLink, a
+                        technology that enables you to privately access AWS services by using private IP
+                        addresses. For more information about creating VPC endpoints, see <a href="./vpc/latest/userguide/vpce-interface.html#create-interface-endpoint">Creating an
+                           Interface Endpoint</a>.
+                     </p>
+                     <p>A <em>VPC endpoint policy</em> is an IAM resource policy that you can attach
+                        to an interface VPC endpoint to control access to the endpoint. For more information,
+                        see
+                        <a href="./vpc/latest/userguide/vpc-endpoints-access.html">Controlling Access to Services with VPC Endpoints</a>. You can use an endpoint
+                        policy to restrict the traffic going from your internal network to access your private
+                        APIs.
+                        You can choose to allow or disallow access to specific private APIs that can be accessed
+                        through the VPC endpoint.
+                     </p>
+                     <p>VPC endpoint policies can be used together with API Gateway resource policies. The
+                        resource
+                        policy is used to specify which principals can access the API. The endpoint policy
+                        specifies
+                        which private APIs can be called via the VPC endpoint. For more information about
+                        resource
+                        policies, see <a href="apigateway-resource-policies.html">Control Access to an API with Amazon API Gateway
+                           Resource Policies</a>.
+                     </p>
+                     
+                     <h2 id="apigateway-vpc-endpoint-policies-examples">VPC Endpoint Policy Examples</h2>
+                     
+                     <p>You can create policies for Amazon Virtual Private Cloud endpoints for Amazon API
+                        Gateway in which you can
+                        specify:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>The principal that can perform actions.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The actions that can be performed.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The resources that can have actions performed on them.</p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>To attach the policy to the VPC endpoint, you&apos;ll need to use the VPC console. For
+                        more
+                        information, see <a href="./vpc/latest/userguide/vpc-endpoints-access.html">Controlling Access to Services
+                           with VPC Endpoints</a>.
+                     </p>
+                     
+                     
+                     <h2 id="apigateway-vpc-endpoint-policies-example-1">Example 1: VPC Endpoint
+                        Policy Granting Access to Two APIs
+                     </h2>
+                     
+                     <p>The following example policy grants access to only two specific APIs via the VPC endpoint
+                        that the policy is attached to.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;Statement&quot;: [
+        {
+            &quot;Principal&quot;: &quot;*&quot;,
+            &quot;Action&quot;: [
+                &quot;execute-api:Invoke&quot;
+            ],
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Resource&quot;: [
+                &quot;arn:aws:execute-api:<em class="replaceable"><code>us-east-1</code></em>:<em class="replaceable"><code>123412341234</code></em>:<em class="replaceable"><code>a1b2c3d4e5</code></em>/*&quot;,
+                &quot;arn:aws:execute-api:<em class="replaceable"><code>us-east-1</code></em>:<em class="replaceable"><code>123412341234</code></em>:<em class="replaceable"><code>aaaaa11111</code></em>/*&quot;
+            ]
+        }
+    ]
+}</code></pre>
+                     
+                     <h2 id="apigateway-vpc-endpoint-policies-example-2">Example 2: VPC Endpoint
+                        Policy Granting Access to GET Methods
+                     </h2>
+                     
+                     <p>The following example policy grants users access to <code class="code">GET</code> methods for a
+                        specific API via the VPC endpoint that the policy is attached to.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;Statement&quot;: [
+        {
+            &quot;Principal&quot;: &quot;*&quot;,
+            &quot;Action&quot;: [
+                &quot;execute-api:Invoke&quot;
+            ],
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Resource&quot;: [
+                &quot;arn:aws:execute-api:<em class="replaceable"><code>us-east-1</code></em>:<em class="replaceable"><code>123412341234</code></em>:<em class="replaceable"><code>a1b2c3d4e5</code></em>/<em class="replaceable"><code>stageName</code></em>/GET/*&quot;
+            ]
+        }
+    ]
+}</code></pre>
+                     
+                     <h2 id="apigateway-vpc-endpoint-policies-example-3">Example 3: VPC Endpoint
+                        Policy Granting a Specific User Access to a Specific API
+                     </h2>
+                     
+                     <p>The following example policy grants a specific user access to a specific API via
+                        the VPC endpoint that the policy is attached to.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;Statement&quot;: [
+        {
+            &quot;Principal&quot;: {
+                &quot;AWS&quot;: [
+                    &quot;arn:aws:iam::123412341234:user/<em class="replaceable"><code>MyUser</code></em>&quot;
+                ]
+            },
+            &quot;Action&quot;: [
+                &quot;execute-api:Invoke&quot;
+            ],
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Resource&quot;: [
+                &quot;arn:aws:execute-api:<em class="replaceable"><code>us-east-1</code></em>:<em class="replaceable"><code>123412341234</code></em>:<em class="replaceable"><code>a1b2c3d4e5</code></em>/*&quot;
+            ]
+        }
+    ]
+}</code></pre>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="api-gateway-create-and-attach-iam-policy.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="apigateway-control-access-tags.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="VPC Endpoint Policy Examples"><a class="pagetoc" href="#apigateway-vpc-endpoint-policies-examples">VPC Endpoint Policy Examples</a></li>
+                        <li class="pagetoc" name="Example 1: VPC Endpoint
+                    Policy Granting Access to Two APIs"><a class="pagetoc" href="#apigateway-vpc-endpoint-policies-example-1">Example 1: VPC Endpoint
+                              Policy Granting Access to Two APIs</a></li>
+                        <li class="pagetoc" name="Example 2: VPC Endpoint
+                    Policy Granting Access to GET Methods"><a class="pagetoc" href="#apigateway-vpc-endpoint-policies-example-2">Example 2: VPC Endpoint
+                              Policy Granting Access to GET Methods</a></li>
+                        <li class="pagetoc" name="Example 3: VPC Endpoint
+                    Policy Granting a Specific User Access to a Specific API"><a class="pagetoc" href="#apigateway-vpc-endpoint-policies-example-3">Example 3: VPC Endpoint
+                              Policy Granting a Specific User Access to a Specific API</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon API Gateway';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

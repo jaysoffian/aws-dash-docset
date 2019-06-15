@@ -1,19 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Creating a Deployment Package
-         			(Python) - AWS Lambda
-      </title>
+      <title>AWS Lambda Deployment Package in Python - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="deployment-package-v2.html" title="Creating a Deployment Package">
-      <link rel="prev" href="java-author-using-eclipse-sdk-plugin.html" title="Authoring Lambda Functions Using Eclipse IDE and
-        AWS SDK Plugin (Java)">
-      <link rel="next" href="test-sam-local.html" title="Test Your Serverless Applications Locally Using SAM Local (Public Beta)">
-      <meta name="description" content="To create a Lambda function you first create a Lambda function deployment package, a .zip file consisting of your code and any dependencies. You will then need to set the appropriate security permissions for the zip package. For more information, see">
+      <link rel="up" href="python-programming-model.html" title="Building Lambda Functions with Python">
+      <link rel="prev" href="python-programming-model-handler-types.html" title="AWS Lambda Function Handler in Python">
+      <link rel="next" href="python-context-object.html" title="AWS Lambda Context Object in Python">
+      <meta name="description" content="A deployment package is a ZIP archive that contains your function code and dependencies. You need to create a deployment package if you use the Lambda API to manage functions, or to include libraries and dependencies other than the AWS SDK. You can upload the package directly to Lambda, or you can use an Amazon S3 bucket, and then upload it to Lambda.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/lambda-python-how-to-create-deployment-package.html">
@@ -23,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -35,246 +35,272 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-introduction-function.html">Lambda Functions</a> &#xBB; <a href="lambda-app.html">Building Lambda Functions</a> &#xBB; <a href="deployment-package-v2.html">Creating a Deployment Package</a> &#xBB; <span class="breadcrumb">Creating a Deployment Package
-                                    			(Python)</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="python-programming-model.html">Building Lambda Functions with Python</a> &#xBB; <span class="breadcrumb">AWS Lambda Deployment Package in Python</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="lambda-python-how-to-create-deployment-package">Creating a Deployment Package
-                        			(Python)
-                     </h1>
-                     <p>To create a Lambda function you first create a Lambda function deployment package,
-                        a
-                        			.zip file consisting of your code and any dependencies. You will then need to
-                        			set the appropriate security permissions for the zip package. For more information,
-                        see <a href="lambda-auth-and-access-control.html">Authentication and Access Control for
-                           AWS Lambda</a> policies.
+                     <h1 class="topictitle" id="lambda-python-how-to-create-deployment-package">AWS Lambda Deployment Package in Python</h1>
+                     <p>A deployment package is a ZIP archive that contains your function code and dependencies.
+                        You need to create a
+                        deployment package if you use the Lambda API to manage functions, or to include libraries
+                        and dependencies other than the
+                        AWS SDK. You can upload the package directly to Lambda, or you can use an Amazon S3
+                        bucket, and then upload it to Lambda.
                      </p>
-                     <p>You can create a deployment package yourself or write your code directly in the Lambda
-                        			console, in which case the console creates the deployment package for you and uploads
-                        			it, creating your Lambda function. Note the following to determine if you can use
-                        the
-                        			console to create your Lambda function:
+                     <p>If you use the Lambda <a href="code-editor.html">console editor</a> to author your function, the console
+                        manages the deployment package. You can use this method as long as you don&apos;t need
+                        to add any libraries. You can also
+                        use it to update a function that already has libraries in the deployment package,
+                        as long as the total size doesn&apos;t
+                        exceed 3 MB.
                      </p>
-                     <div class="itemizedlist">
-                        			
-                        			
-                        		
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              				
-                              <p><b>Simple scenario</b> &#x2013; 
-                                 					If your custom code requires only the AWS SDK library,
-                                 					then you can use the inline editor in the AWS Lambda console. Using the console,
-                                 					you can edit and upload your code to AWS Lambda. The console will zip up your
-                                 					code with the relevant configuration information into a deployment package that
-                                 					the Lambda service can run. 
-                              </p>
-                              				
-                              <p>You can also test your code in the console by manually invoking it using
-                                 					sample event data. 
-                              </p>
-                              				
-                              <div class="aws-note">
-                                 <p class="aws-note">Note</p>
-                                 <p>The Lambda service has preinstalled the AWS SDK for Python.</p>
-                              </div>
-                              			
-                           </li>
-                           <li class="listitem">
-                              				
-                              <p><b>Advanced scenario</b> &#x2013; 
-                                 					If you are writing code that uses other resources,
-                                 					such as a graphics library for image processing, or you want to use the AWS CLI
-                                 					instead of the console, you need to first create the Lambda function deployment
-                                 					package, and then use the console or the CLI to upload the package.
-                              </p>
-                              			
-                           </li>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>You can use the AWS SAM CLI <code class="code">build</code> command to create a deployment package for your Python function
+                           code and dependencies. See <a href="./serverless-application-model/latest/developerguide/serverless-sam-cli-using-build.html">Building Applications with Dependencies</a> in the AWS SAM Developer Guide for instructions.
+                        </p>
+                     </div>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Sections</strong></p>
+                        <ul>
+                           <li><a href="#python-package-codeonly">Updating a Function with No Dependencies</a></li>
+                           <li><a href="#python-package-dependencies">Updating a Function with Additional Dependencies</a></li>
+                           <li><a href="#python-package-venv">With a Virtual Environment</a></li>
                         </ul>
                      </div>
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p>After you create a deployment package, you may either upload it directly or
-                           					upload the .zip file first to an Amazon S3 bucket in the same AWS region where
-                           					you want to create the Lambda function, and then specify the bucket name and
-                           					object key name when you create the Lambda function using the console or the
-                           AWS
-                           					CLI.
-                        </p>
-                     </div>
-                     <p>The following is an example procedure to create a deployment package (outside the
-                        console). 
+                     
+                     <h2 id="python-package-codeonly">Updating a Function with No Dependencies</h2>
+                     
+                     <p>To create or update a function with the Lambda API, create an archive that contains
+                        your function code and
+                        upload it with the AWS CLI.
                      </p>
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p>This should work for most standard installations of Python and pip when using pure
-                           Python
-                           					modules in your Lambda function. If you are including modules that have native
-                           					dependencies or have Python installed with Homebrew on OS X, you should see the
-                           					next section which provides instructions to create a deployment package when
-                           					using Virtualenv. For more information, see <a href="lambda-python-how-to-create-deployment-package.html#deployment-pkg-for-virtualenv">Create Deployment Package Using a Python
-                              				Environment Created with Virtualenv</a> and the <a href="http://virtualenv.readthedocs.io/en/latest/" target="_blank">Virtualenv</a> website.
-                        </p>
-                     </div>
-                     <p>You will use <code class="code">pip</code> to install dependencies/libraries. For information to install
-                        				<code class="code">pip</code>, go to <a href="https://pip.pypa.io/en/stable/installing/" target="_blank">Installation</a>. 
-                     </p>
+                     
+                     <p class="title"><b>To update a Python function with no dependencies</b></p>
                      <ol>
                         <li>
-                           				
-                           <p>You create a directory, for example <code>project-dir</code>. 
-                           </p>
-                           			
-                        </li>
-                        <li>
-                           				
-                           <p>Save all of your Python source files (the .py files) at the root level of this
-                              					directory.
-                           </p>
-                           			
-                        </li>
-                        <li>
-                           <p>Install any libraries using <b>pip</b>. Again, you install these libraries at the root level of
-                              				the directory.
-                           </p>
-                           				
-                           				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">pip install <em class="replaceable"><code>module-name</code></em> -t <em class="replaceable"><code>/path/to</code></em>/project-dir</code></pre>
-                           				<p>For example, the following command installs the <code class="code">requests</code> HTTP library in the
-                              						<code>project-dir</code> directory.
-                           </p>
-                           				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">pip install requests -t <em class="replaceable"><code>/path/to</code></em>/project-dir</code></pre>
-                           				<p>If using Mac OS X and you have Python installed using Homebrew (see <a href="http://brew.sh/" target="_blank">Homebrew</a>), the preceding command will not
-                              					work. A simple workaround is to add a <code>setup.cfg</code> file in
-                              					your <code class="code"><em class="replaceable"><code>/path/to</code></em>/project-dir</code> with the
-                              					following content.
-                           </p>
-                           				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">[install]
-prefix= </code></pre>
-                           			</li>
-                        <li>
-                           <p>Zip the content of the <code>project-dir</code> directory, which is your deployment
-                              					package. 
-                           </p>
-                           				
-                           <div class="aws-note">
-                              <p class="aws-note">Important</p>
-                              <p>Zip the directory <em>content</em>, not the directory. The contents of the Zip file are available as the current
-                                 					working directory of the Lambda function. For example: <em>/project-dir/codefile.py/lib/yourlibraries</em></p>
-                           </div>
-                        </li>
-                     </ol>
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p>AWS Lambda includes the AWS SDK for Python (Boto 3), so you don&apos;t need to
-                           				include it in your deployment package. However, if you want to use a version of
-                           				Boto3 other than the one included by default, you can include it in your deployment
-                           				package.
-                        </p>
-                     </div>
-                     <h2 id="deployment-pkg-for-virtualenv">Create Deployment Package Using a Python
-                        				Environment Created with Virtualenv
-                     </h2>
-                     			
-                     			
-                     <p>This section explains how to create a deployment package if you are using a Python
-                        				environment that you created with the Virtualenv tool. Consider the following
-                        example: 
-                     </p>
-                     			
-                     <div class="itemizedlist">
-                        					
-                        					
-                        				
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              						
-                              <p>Created the following isolated Python environment using the Virtualenv
-                                 							tool and activated the environment:
-                              </p>
-                              						<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">virtualenv <em class="replaceable"><code>path/to/my/virtual-env</code></em></code></pre>
-                              						<p>You can activate the environment on Windows, OS X, and Linux as
-                                 							follows:
-                              </p>
-                              						
-                              <div class="itemizedlist">
-                                 								
-                                 								
-                                 							
-                                 <ul class="itemizedlist" type="disc">
-                                    <li class="listitem">
-                                       									
-                                       <p>On Windows, you activate using the
-                                          										<code class="code">activate.bat</code>:
-                                       </p>
-                                       									<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><em class="replaceable"><code>path\to\my\virtual-env</code></em>\Scripts\activate.bat  </code></pre>
-                                       								</li>
-                                    <li class="listitem">
-                                       									
-                                       <p>On OS X and Linux, you source the <code class="code">activate</code>
-                                          										script:
-                                       </p>
-                                       									<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">source <em class="replaceable"><code>path/to/my/virtual-env</code></em>/bin/activate</code></pre>
-                                       									
-                                       								</li>
-                                 </ul>
-                              </div>
-                              					
+                           
+                           <p>Create a ZIP archive.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function$ <strong class="userinput"><code>zip function.zip function.py</code></strong></code></pre>
                            </li>
-                           <li class="listitem">
-                              						
-                              <p>Also, to install the <b>requests</b> package in the activated environment, do the following: :
-                              </p>
-                              						<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">pip install requests  </code></pre>
-                              					</li>
-                        </ul>
-                     </div>
-                     			
-                     <p>Now, to create a deployment package you do the following:</p>
-                     			
+                        <li>
+                           
+                           <p>Use the <code class="code">update-function-code</code> command to upload the package.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function$ <strong class="userinput"><code>aws lambda update-function-code --function-name python37 --zip-file fileb://function.zip</code></strong>
+{
+    &quot;FunctionName&quot;: &quot;python37&quot;,
+    &quot;FunctionArn&quot;: &quot;arn:aws:lambda:us-west-2:123456789012:function:python37&quot;,
+    &quot;Runtime&quot;: &quot;python3.7&quot;,
+    &quot;Role&quot;: &quot;arn:aws:iam::123456789012:role/lambda-role&quot;,
+    &quot;Handler&quot;: &quot;function.handler&quot;,
+    &quot;CodeSize&quot;: 815,
+    &quot;Description&quot;: &quot;&quot;,
+    &quot;Timeout&quot;: 3,
+    &quot;MemorySize&quot;: 128,
+    &quot;LastModified&quot;: &quot;2018-11-20T20:41:16.647+0000&quot;,
+    &quot;CodeSha256&quot;: &quot;GcZ05oeHoJi61VpQj7vCLPs8DwCXmX5sE/fE2IHsizc=&quot;,
+    &quot;Version&quot;: &quot;$LATEST&quot;,
+    &quot;VpcConfig&quot;: {
+        &quot;SubnetIds&quot;: [],
+        &quot;SecurityGroupIds&quot;: [],
+        &quot;VpcId&quot;: &quot;&quot;
+    },
+    &quot;TracingConfig&quot;: {
+        &quot;Mode&quot;: &quot;Active&quot;
+    },
+    &quot;RevisionId&quot;: &quot;d1e983e3-ca8e-434b-8dc1-7add83d72ebd&quot;
+}</code></pre>
+                           </li>
+                     </ol>
+                     
+                     
+                     <h2 id="python-package-dependencies">Updating a Function with Additional Dependencies</h2>
+                     
+                     <p>If your function depends on libraries other than the SDK for Python (Boto 3), install
+                        them to a local directory with <a href="https://pypi.org/project/pip/" target="_blank">pip</a>, and include them in your deployment package.
+                     </p>
+                     
+                     <p class="title"><b>To update a Python function with dependencies</b></p>
                      <ol>
                         <li>
-                           <p>First, create .zip file with your Python code you want to upload to AWS Lambda. </p>
+                           
+                           <p>Create a directory for dependencies.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function$ <strong class="userinput"><code>mkdir package</code></strong></code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Install libraries in the package directory with the <code class="code">--target</code> option.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function$ <strong class="userinput"><code>cd package</code></strong>
+~/my-function/package$ <strong class="userinput"><code>pip install Pillow --target .</code></strong>
+Collecting Pillow
+  Using cached https://files.pythonhosted.org/packages/62/8c/230204b8e968f6db00c765624f51cfd1ecb6aea57b25ba00b240ee3fb0bd/Pillow-5.3.0-cp37-cp37m-manylinux1_x86_64.whl
+Installing collected packages: Pillow
+Successfully installed Pillow-5.3.0</code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Create a ZIP archive.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">package$ <strong class="userinput"><code>zip -r9 ../function.zip .</code></strong>
+  adding: PIL/ (stored 0%)
+  adding: PIL/.libs/ (stored 0%)
+  adding: PIL/.libs/libfreetype-7ce95de6.so.6.16.1 (deflated 65%)
+  adding: PIL/.libs/libjpeg-3fe7dfc0.so.9.3.0 (deflated 72%)
+  adding: PIL/.libs/liblcms2-a6801db4.so.2.0.8 (deflated 67%)
+...</code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Add your function code to the archive.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function/package$ <strong class="userinput"><code>cd ../</code></strong>
+~/my-function$ <strong class="userinput"><code>zip -g function.zip function.py</code></strong>
+  adding: function.py (deflated 56%)</code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Update the function code.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function$ <strong class="userinput"><code>aws lambda update-function-code --function-name python37 --zip-file fileb://function.zip</code></strong>
+{
+    &quot;FunctionName&quot;: &quot;python37&quot;,
+    &quot;FunctionArn&quot;: &quot;arn:aws:lambda:us-west-2:123456789012:function:python37&quot;,
+    &quot;Runtime&quot;: &quot;python3.7&quot;,
+    &quot;Role&quot;: &quot;arn:aws:iam::123456789012:role/lambda-role&quot;,
+    &quot;Handler&quot;: &quot;function.handler&quot;,
+    &quot;CodeSize&quot;: 2269409,
+    &quot;Description&quot;: &quot;&quot;,
+    &quot;Timeout&quot;: 3,
+    &quot;MemorySize&quot;: 128,
+    &quot;LastModified&quot;: &quot;2018-11-20T20:51:35.871+0000&quot;,
+    &quot;CodeSha256&quot;: &quot;GcZ05oeHoJi61VpQj7vCLPs8DwCXmX5sE/fE2IHsizc=&quot;,
+    &quot;Version&quot;: &quot;$LATEST&quot;,
+    &quot;VpcConfig&quot;: {
+        &quot;SubnetIds&quot;: [],
+        &quot;SecurityGroupIds&quot;: [],
+        &quot;VpcId&quot;: &quot;&quot;
+    },
+    &quot;TracingConfig&quot;: {
+        &quot;Mode&quot;: &quot;Active&quot;
+    },
+    &quot;RevisionId&quot;: &quot;a9c05ffd-8ad6-4d22-b6cd-d34a00c1702c&quot;
+}</code></pre>
+                           </li>
+                     </ol>
+                     
+                     
+                     <h2 id="python-package-venv">With a Virtual Environment</h2>
+                     
+                     <p>In some cases, you may need to use a <a href="https://virtualenv.pypa.io/en/latest/" target="_blank">virtual
+                           environment</a> to install dependencies for your function. This can occur if your function or its
+                        dependencies have dependencies on native libraries, or if you used Homebrew to install
+                        Python.
+                     </p>
+                     
+                     <p class="title"><b>To update a Python function with a virtual environment</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Create a virtual environment.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function$ <strong class="userinput"><code>virtualenv v-env</code></strong>
+Using base prefix &apos;~/.local/python-3.7.0&apos;
+New python executable in v-env/bin/python3.7
+Also creating executable in v-env/bin/python
+Installing setuptools, pip, wheel...
+done.</code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Activate the environment.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function$ <strong class="userinput"><code>source v-env/bin/activate</code></strong>
+(v-env) ~/my-function$</code></pre>
+                           <p>For the Windows command line, the activation script is in the Scripts directory.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&gt; <strong class="userinput"><code>v-env\Scripts\activate.bat</code></strong></code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Install libraries with pip.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function$ <strong class="userinput"><code>pip install Pillow</code></strong>
+Collecting Pillow
+  Using cached https://files.pythonhosted.org/packages/62/8c/230204b8e968f6db00c765624f51cfd1ecb6aea57b25ba00b240ee3fb0bd/Pillow-5.3.0-cp37-cp37m-manylinux1_x86_64.whl
+Installing collected packages: Pillow
+Successfully installed Pillow-5.3.0</code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Deactivate the virtual environment.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">(v-env)~/my-function$ <strong class="userinput"><code>deactivate</code></strong></code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Create a ZIP archive with the contents of the library.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function$ <strong class="userinput"><code>cd v-env/lib/python3.7/site-packages/</code></strong>  
+~/my-function/v-env/lib/python3.7/site-packages$ <strong class="userinput"><code>zip -r9 ../../../../function.zip .</code></strong>
+  adding: easy_install.py (deflated 17%)
+  adding: PIL/ (stored 0%)
+  adding: PIL/.libs/ (stored 0%)
+  adding: PIL/.libs/libfreetype-7ce95de6.so.6.16.1 (deflated 65%)
+  adding: PIL/.libs/libjpeg-3fe7dfc0.so.9.3.0 (deflated 72%)
+...</code></pre>
+                           <p>Depending on the library, dependencies may appear in either <code class="code">site-packages</code> or
+                              <code class="code">dist-packages</code>, and the first folder in the virtual environment may be <code class="code">lib</code> or
+                              <code class="code">lib64</code>. You can use the <code class="code">pip show</code> command to locate a specific package.
+                           </p>
+                           
                         </li>
                         <li>
-                           					
-                           <p>Add the libraries from preceding activated virtual environment to the .zip
-                              						file. That is, you add the content of the following directory to the .zip
-                              						file (note again that you add the content of the directory and not the
-                              						directory itself).
-                           </p>
-                           					
-                           <p>For Windows the directory is:</p>
-                           					<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">%VIRTUAL_ENV%\Lib\site-packages </code></pre>
-                           					<p>For OS X, Linux, the directory is:</p>
-                           					<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">$VIRTUAL_ENV/lib/python3.6/site-packages</code></pre>
-                           					<div class="aws-note">
-                              <p class="aws-note">Note</p>
-                              <p>If you don&apos;t find the packages in the
-                                 								<code>site-packages</code> directory in your virtual
-                                 								environment, you might find it in the
-                                 								<code>dist-packages</code> directory.
-                              </p>
-                           </div>
-                           				
-                        </li>
+                           
+                           <p>Add your function code to the archive.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function/v-env/lib/python3.7/site-packages$ <strong class="userinput"><code>cd ../../../../</code></strong>
+~/my-function$ <strong class="userinput"><code>zip -g function.zip function.py</code></strong>
+  adding: function.py (deflated 56%)</code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Update the function code.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/my-function$ <strong class="userinput"><code>aws lambda update-function-code --function-name python37 --zip-file fileb://function.zip</code></strong>
+{
+    &quot;FunctionName&quot;: &quot;python37&quot;,
+    &quot;FunctionArn&quot;: &quot;arn:aws:lambda:us-west-2:123456789012:function:python37&quot;,
+    &quot;Runtime&quot;: &quot;python3.7&quot;,
+    &quot;Role&quot;: &quot;arn:aws:iam::123456789012:role/lambda-role&quot;,
+    &quot;Handler&quot;: &quot;function.handler&quot;,
+    &quot;CodeSize&quot;: 5912988,
+    &quot;Description&quot;: &quot;&quot;,
+    &quot;Timeout&quot;: 3,
+    &quot;MemorySize&quot;: 128,
+    &quot;LastModified&quot;: &quot;2018-11-20T21:08:26.326+0000&quot;,
+    &quot;CodeSha256&quot;: &quot;A2P0NUWq1J+LtSbkuP8tm9uNYqs1TAa3M76ptmZCw5g=&quot;,
+    &quot;Version&quot;: &quot;$LATEST&quot;,
+    &quot;VpcConfig&quot;: {
+        &quot;SubnetIds&quot;: [],
+        &quot;SecurityGroupIds&quot;: [],
+        &quot;VpcId&quot;: &quot;&quot;
+    },
+    &quot;TracingConfig&quot;: {
+        &quot;Mode&quot;: &quot;Active&quot;
+    },
+    &quot;RevisionId&quot;: &quot;5afdc7dc-2fcb-4ca8-8f24-947939ca707f&quot;
+}</code></pre>
+                           </li>
                      </ol>
-                     			
-                     <p>For an example of creating a Python deployment package, see <a href="with-s3-example-deployment-pkg.html#with-s3-example-deployment-pkg-python">Python</a>.
-                        				
-                     </p>
-                     			
-                     		
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -283,8 +309,10 @@ prefix= </code></pre>
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="java-author-using-eclipse-sdk-plugin.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="test-sam-local.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="python-programming-model-handler-types.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="python-context-object.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -293,14 +321,18 @@ prefix= </code></pre>
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Create Deployment Package Using a Python
-				Environment Created with Virtualenv"><a class="pagetoc" href="#deployment-pkg-for-virtualenv">Create Deployment Package Using a Python
-                              				Environment Created with Virtualenv</a></li>
+                        <li class="pagetoc" name="Updating a Function with No Dependencies"><a class="pagetoc" href="#python-package-codeonly">Updating a Function with No Dependencies</a></li>
+                        <li class="pagetoc" name="Updating a Function with Additional Dependencies"><a class="pagetoc" href="#python-package-dependencies">Updating a Function with Additional Dependencies</a></li>
+                        <li class="pagetoc" name="With a Virtual Environment"><a class="pagetoc" href="#python-package-venv">With a Virtual Environment</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

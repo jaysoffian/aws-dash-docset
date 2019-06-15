@@ -1,19 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Import a Swagger File to Update an
+      <title>Import an OpenAPI File to Update an
          Existing API Definition - Amazon API Gateway
       </title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="api-gateway-import-api.html" title="Import an API into API Gateway">
-      <link rel="prev" href="import-export-api-endpoints.html" title="">
-      <link rel="next" href="api-gateway-import-api-basePath.html" title="Set the Swagger basePath
-                Property">
+      <link rel="up" href="api-gateway-import-api.html" title="Import a REST API into API Gateway">
+      <link rel="prev" href="import-export-api-endpoints.html" title="Import a Regional API into API Gateway">
+      <link rel="next" href="api-gateway-import-api-basePath.html" title="Set the OpenAPI
+                basePath Property">
       <meta name="description" content="You can import API definitions only to update an existing API, without changing its endpoint configuration, as well as stages and stage variables, or references to API Keys.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-import-api-update.html">
@@ -23,7 +25,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -35,13 +37,17 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="how-to-create-api.html">Creating an API in Amazon API Gateway</a> &#xBB; <a href="api-gateway-import-api.html">Import an API into API Gateway</a> &#xBB; <span class="breadcrumb">Import a Swagger File to Update an
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="how-to-create-api.html">Creating a REST API in Amazon API Gateway</a> &#xBB; <a href="api-gateway-import-api.html">Import a REST API into API Gateway</a> &#xBB; <span class="breadcrumb">Import an OpenAPI File to Update an
                                     Existing API Definition</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="api-gateway-import-api-update">Import a Swagger File to Update an
+                     <h1 class="topictitle" id="api-gateway-import-api-update">Import an OpenAPI File to Update an
                         Existing API Definition
                      </h1>
                      <p> You can import API definitions only to update an existing API, without changing its
@@ -49,15 +55,19 @@
                         Keys. 
                      </p>
                      <p> The import-to-update operation can occur in two modes: merge or overwrite. </p>
-                     <p>When an API (A) is merged into another (B), the resulting API retains the definitions
-                        of both A and B if the two APIs do not share any conflicting definitions. When conflicts
-                        arise, the method definitions of the merging API (A) overrides the corresponding method
-                        definitions of the merged API (B).  For example, suppose B has declared the following
-                        methods to return <code class="code">200</code> and <code class="code">206</code> responses:
+                     <p>When an API (<code class="code">A</code>) is merged into another (<code class="code">B</code>), the resulting
+                        API retains the definitions of both <code class="code">A</code> and <code class="code">B</code> if the two APIs do
+                        not share any conflicting definitions. When conflicts arise, the method definitions
+                        of
+                        the merging API (<code class="code">A</code>) overrides the corresponding method definitions of the
+                        merged API (<code class="code">B</code>). For example, suppose <code class="code">B</code> has declared the
+                        following methods to return <code class="code">200</code> and <code class="code">206</code> responses:
                      </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">GET /a
-POST /a</code></pre><p>and A declares the following method to return <code class="code">200</code> and <code class="code">400</code>
-                        responses:
-                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">GET /a</code></pre><p>When A is merged into B, the resulting API will yield the following methods:</p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">GET /a</code></pre><p>which will return <code class="code">200</code> and <code class="code">400</code> responses, and 
+POST /a</code></pre><p>and <code class="code">A</code> declares the following method to return <code class="code">200</code> and
+                        <code class="code">400</code> responses:
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">GET /a</code></pre><p>When <code class="code">A</code> is merged into <code class="code">B</code>, the resulting API will yield the
+                        following methods:
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">GET /a</code></pre><p>which will return <code class="code">200</code> and <code class="code">400</code> responses, and 
                      </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">POST /a</code></pre><p>which will return <code class="code">200</code> and <code class="code">206</code> responses.
                      </p>
                      <p>Merging an API is useful when you have decomposed your external API definitions into
@@ -70,59 +80,60 @@ POST /a</code></pre><p>and A declares the following method to return <code class
                         be
                         left alone. 
                      </p>
-                     <p>When an API (A) overwrites another API (B), the resulting API takes the definitions
-                        of
-                        the overwriting API (A).  Overwriting an API is useful when an external API definition
-                        contains the complete definition of an API. In this mode, items from an existing API
-                        that are not specifically defined in the imported definition will be deleted. 
+                     <p>When an API (<code class="code">A</code>) overwrites another API (<code class="code">B</code>), the resulting
+                        API takes the definitions of the overwriting API (<code class="code">A</code>). Overwriting an API is
+                        useful when an external API definition contains the complete definition of an API.
+                        In
+                        this mode, items from an existing API that are not specifically defined in the imported
+                        definition will be deleted. 
                      </p>
-                     <p> To merge an API, submit a PUT request to
+                     <p> To merge an API, submit a <code class="code">PUT</code> request to
                         <code class="code">https://apigateway.<em class="replaceable"><code>&lt;region&gt;</code></em>.amazonaws.com/restapis/<em class="replaceable"><code>&lt;restapi_id&gt;</code></em>?mode=merge</code>.
                         The <code class="code">restapi_id</code> path parameter value specifies the API to which the supplied
                         API definition will be merged. 
                      </p>
-                     <p> The following code snippet shows an example of the PUT request to merge a Swagger
-                        API
-                        definition in JSON, as the payload, with the specified API already in API Gateway.
-                        
-                        
+                     <p> The following code snippet shows an example of the <code class="code">PUT</code> request to merge
+                        an OpenAPI API definition in JSON, as the payload, with the specified API
+                        already in API Gateway. 
                      </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">
 PUT /restapis/<em class="replaceable"><code>&lt;restapi_id&gt;</code></em>?mode=merge
 Host:apigateway.<em class="replaceable"><code>&lt;region&gt;</code></em>.amazonaws.com
 Content-Type: application/json
 Content-Length: ...
 
-
-<em class="replaceable"><code><a href="api-as-lambda-proxy-export-swagger-with-extensions.html">A Swagger API definition in JSON</a></code></em> 
+<em class="replaceable"><code><a href="api-as-lambda-proxy-export-swagger-with-extensions.html">An OpenAPI API definition in JSON</a></code></em> 
         </code></pre><p> The merging update operation takes two complete API definitions and merges them
-                        together. For a small and incremental change, you can use the <a href="./apigateway/api-reference/link-relation/resource-update/" target="_blank">resource update</a> operation. 
+                        together. For a small and incremental change, you can use the <a href="./apigateway/api-reference/link-relation/resource-update/">resource update</a> operation. 
                      </p>
-                     <p> To overwrite an API, submit a PUT request to
+                     <p> To overwrite an API, submit a <code class="code">PUT</code> request to
                         <code class="code">https://apigateway.<em class="replaceable"><code>&lt;region&gt;</code></em>.amazonaws.com/restapis/<em class="replaceable"><code>&lt;restapi_id&gt;</code></em>?mode=overwrite</code>.
                         The <code class="code">restapi_id</code> path parameter specifies the API that will be overwritten
                         with the supplied API definitions. 
                      </p>
                      <p> The following code snippet shows an example of an overwriting request with the
-                        payload of a JSON-formatted Swagger definition: 
+                        payload of a JSON-formatted OpenAPI definition: 
                      </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">
 PUT /restapis/<em class="replaceable"><code>&lt;restapi_id&gt;</code></em>?mode=overwrite
 Host:apigateway.<em class="replaceable"><code>&lt;region&gt;</code></em>.amazonaws.com
 Content-Type: application/json
 Content-Length: ...
 
-<em class="replaceable"><code><a href="api-as-lambda-proxy-export-swagger-with-extensions.html">A Swagger API definition in JSON</a></code></em> 
+<em class="replaceable"><code><a href="api-as-lambda-proxy-export-swagger-with-extensions.html">An OpenAPI API definition in JSON</a></code></em> 
             
         </code></pre><p> When the <code class="code">mode</code> query parameter is not specified, merge is assumed.
                      </p>
                      <div class="aws-note">
                         <p class="aws-note">Note</p>
-                        <p> The PUT operations are idempotent, but not atomic. That means if a system error
-                           occurs part way through processing, the API can end up in a bad state. However,
-                           repeating the operation will put the API into the same final state as if the first
-                           operation had succeeded.
+                        <p> The <code class="code">PUT</code> operations are idempotent, but not atomic. That means if a
+                           system error occurs part way through processing, the API can end up in a bad state.
+                           However, repeating the operation will put the API into the same final state as if
+                           the first operation had succeeded.
                            
                            
                         </p>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
                   </div>
                   <noscript>
@@ -130,9 +141,10 @@ Content-Length: ...
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -142,7 +154,9 @@ Content-Length: ...
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="import-export-api-endpoints.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="api-gateway-import-api-basePath.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -150,6 +164,10 @@ Content-Length: ...
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

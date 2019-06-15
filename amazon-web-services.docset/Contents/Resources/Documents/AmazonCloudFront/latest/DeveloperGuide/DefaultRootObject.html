@@ -1,17 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Specifying a Default Root Object (Web Distributions Only) - Amazon CloudFront</title>
+      <title>Specifying a Default Root Object - Amazon CloudFront</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="WorkingWithObjects.html" title="Working with Objects">
+      <link rel="up" href="ConfiguringCaching.html" title="Optimizing Content Caching and Availability">
       <link rel="prev" href="RangeGETs.html" title="How CloudFront Processes Partial Requests for an Object (Range GETs)">
-      <link rel="next" href="ServingCompressedFiles.html" title="Serving Compressed Files">
+      <link rel="next" href="Troubleshooting.html" title="Troubleshooting">
       <meta name="description" content="Configure CloudFront to return a specific object, the default root object, and avoid exposing the contents of your distribution.">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/DefaultRootObject.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,195 +35,86 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="WorkingWithObjects.html">Working with Objects</a> &#xBB; <span class="breadcrumb">Specifying a Default Root Object (Web Distributions Only)</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="ConfiguringCaching.html">Optimizing Content Caching and Availability</a> &#xBB; <span class="breadcrumb">Specifying a Default Root Object</span></div>
                            </td>
                         </tr>
                      </tbody></table>
-                     <div></div>
-                     <h1 class="topictitle" id="DefaultRootObject">Specifying a Default Root Object (Web Distributions Only)</h1>
-                     <p>You can configure CloudFront to return a specific object (the default root object)
-                        when an end
-                        			user requests the root URL for your distribution instead of an object in your distribution.
-                        			Specifying a default root object avoids exposing the contents of your distribution.
-                     </p>
-                     <p>For example, the following request points to the object <code class="code">image.jpg</code>:
-                     </p>
-                     <p><code class="code">http://d111111abcdef8.cloudfront.net/image.jpg</code></p>
-                     <p>The following request points to the root URL of the same distribution instead of to
-                        a
-                        			specific object:
-                     </p>
-                     <p><code class="code">http://d111111abcdef8.cloudfront.net/</code></p>
-                     <p>When you define a default root object, an end-user request that calls the root of
-                        your
-                        			distribution returns the default root object. For example, if you designate the
-                        file
-                        				<code class="code">index.html</code> as your default root object, a request for:
-                     </p>
-                     <p><code class="code">http://d111111abcdef8.cloudfront.net/</code></p>
-                     <p>returns:</p>
-                     <p><code class="code">http://d111111abcdef8.cloudfront.net/index.html</code></p>
-                     <p>However, if you define a default root object, an end-user request for a subdirectory
-                        of
-                        			your distribution does not return the default root object. For example, suppose
-                        				<code class="code">index.html</code> is your default root object and that CloudFront receives an end-user
-                        			request for the <code class="code">install</code> directory under your CloudFront distribution:
-                     </p>
-                     <p><code class="code">http://d111111abcdef8.cloudfront.net/install/</code></p>
-                     <p>CloudFront will not return the default root object even if a copy of <code class="code">index.html</code>
-                        			appears in the <code class="code">install</code> directory.
-                     </p>
-                     <p>If you configure your distribution to allow all of the HTTP methods that CloudFront
-                        supports,
-                        			the default root object applies to all methods. For example, if your default root
-                        object is
-                        			index.php and you write your application to submit a <code class="code">POST</code> request to the root of
-                        			your domain (http://example.com), CloudFront will send the request to
-                        			http://example.com/index.php.
-                     </p>
-                     <p>The behavior of CloudFront default root objects is different from the behavior of
-                        Amazon S3 index
-                        			documents. When you configure an Amazon S3 bucket as a website and specify the
-                        index document, Amazon S3
-                        			returns the index document even if a user requests a subdirectory in the bucket.
-                        (A copy of
-                        			the index document must appear in every subdirectory.) For more information about
-                        configuring
-                        			Amazon S3 buckets as websites and about index documents, see the <a href="./AmazonS3/latest/dev/WebsiteHosting.html" target="_blank">Hosting Websites on Amazon S3</a> chapter in the
-                        				<em>Amazon Simple Storage Service Developer Guide</em>.
-                     </p>
-                     <div class="aws-note">
-                        <p class="aws-note">Important</p>
-                        <p>Remember that a default root object applies only to your CloudFront distribution.
-                           You still
-                           				need to manage security for your origin. For example, if you are using an Amazon
-                           S3 origin, you
-                           				still need to set your Amazon S3 bucket ACLs appropriately to ensure the level
-                           of access you want
-                           				on your bucket.
-                        </p>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
                      </div>
-                     <p>If you don&apos;t define a default root object, requests for the root of your distribution
-                        pass
-                        			to your origin server. If you are using an Amazon S3 origin, any of the following
-                        might be
-                        			returned:
+                     <div></div>
+                     <h1 class="topictitle" id="DefaultRootObject">Specifying a Default Root Object</h1>
+                     <p>You can configure CloudFront to return a specific object (the default root object)
+                        when a
+                        			user requests the root URL for your web distribution instead of requesting an object
+                        in your distribution.
+                        			Specifying a default root object lets you avoid exposing the contents of your distribution.
                      </p>
-                     <div class="itemizedlist">
-                        			
-                        			
-                        			
-                        		
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              				
-                              <p><span class="topcom">A list of the contents of your Amazon S3 bucket</span>&#x2014;Under
-                                 					any of the following conditions, the contents of your origin are visible to anyone
-                                 who
-                                 					uses CloudFront to access your distribution:
-                              </p>
-                              				
-                              <div class="itemizedlist">
-                                 					
-                                 					
-                                 					
-                                 				
-                                 <ul class="itemizedlist" type="disc">
-                                    <li class="listitem">
-                                       						
-                                       <p>Your bucket is not properly configured. </p>
-                                       					
-                                    </li>
-                                    <li class="listitem">
-                                       						
-                                       <p>The Amazon S3 permissions on the bucket associated with your distribution and on the
-                                          							objects in the bucket grant access to <em>everyone</em>.
-                                       </p>
-                                       					
-                                    </li>
-                                    <li class="listitem">
-                                       						
-                                       <p>An end user accesses your origin using your origin root URL. </p>
-                                       					
-                                    </li>
-                                 </ul>
-                              </div>
-                              			
-                           </li>
-                           <li class="listitem">
-                              				
-                              <p><span class="topcom">A list of the private contents of your origin</span>&#x2014;If
-                                 					you configure your origin as a private distribution (only you and CloudFront
-                                 have access), the
-                                 					contents of the Amazon S3 bucket associated with your distribution are visible
-                                 to anyone who
-                                 					has the credentials to access your distribution through CloudFront. In this case,
-                                 users are not
-                                 					able to access your content through your origin root URL. For more information
-                                 about
-                                 					distributing private content, see <a href="PrivateContent.html">Serving Private Content through CloudFront</a>.
-                              </p>
-                              			
-                           </li>
-                           <li class="listitem">
-                              				
-                              <p><span class="topcom">Error 403 Forbidden</span>&#x2014;CloudFront returns this error if
-                                 					the permissions on the Amazon S3 bucket associated with your distribution or
-                                 the permissions on
-                                 					the objects in that bucket deny access to CloudFront and to everyone.
-                              </p>
-                              			
-                           </li>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#DefaultRootObjectHowToDefine">How to Specify
+                                 			a Default Root Object</a></li>
+                           <li><a href="#DefaultRootObjectHow">How Headers Work With Default
+                                 			Root Objects</a></li>
+                           <li><a href="#DefaultRootObjectNotSet">How CloudFront Works if You Don&apos;t
+                                 			Define a Root Object</a></li>
                         </ul>
                      </div>
-                     <p>To avoid exposing the contents of your web distribution or returning an error, perform
-                        the
-                        			following procedure to specify a default root object for your distribution.
-                     </p><a id="DefaultRootObjectProcedure"></a><p class="title"><b>To specify a default root object for your
-                           				distribution</b></p>
+                     <h2 id="DefaultRootObjectHowToDefine">How to Specify
+                        			a Default Root Object
+                     </h2>
+                     			
+                     <p>To avoid exposing the contents of your web distribution or returning an error, specify
+                        a default root 
+                        				object for your distribution by completing the following steps.
+                     </p>
+                     			
+                     			<a id="DefaultRootObjectProcedure"></a><p class="title"><b>To specify a default root object for your
+                           					distribution</b></p>
                      <ol>
                         <li>
-                           				
+                           					
                            <p>Upload the default root object to the origin that your distribution points to.</p>
-                           				
+                           					
                            <p>The file can be any type supported by CloudFront. For a list of constraints on the
                               file
-                              					name, see the description of the <code class="code">DefaultRootObject</code> element in <a href="./cloudfront/latest/APIReference/DistributionConfigDatatype.html" target="_blank">DistributionConfig Complex
-                                 						Type</a>.
+                              						name, see the description of the <code class="code">DefaultRootObject</code> element in <a href="./cloudfront/latest/APIReference/DistributionConfigDatatype.html">DistributionConfig Complex
+                                 							Type</a>.
                            </p>
-                           				
+                           					
                            <div class="aws-note">
                               <p class="aws-note">Note</p>
                               <p>If the file name of the default root object is too long or contains an invalid
-                                 						character, CloudFront returns the error <code class="code">HTTP 400 Bad Request -
-                                    							InvalidDefaultRootObject</code>. In addition, CloudFront caches the code for five minutes
-                                 						and writes the results to the access logs.
+                                 							character, CloudFront returns the error <code class="code">HTTP 400 Bad Request -
+                                    								InvalidDefaultRootObject</code>. In addition, CloudFront caches the code for five minutes
+                                 							and writes the results to the access logs.
                               </p>
                            </div>
-                           			
+                           				
                         </li>
                         <li>
-                           				
+                           					
                            <p>Confirm that the permissions for the object grant CloudFront at least <code class="code">read</code>
-                              					access.
+                              						access.
+                           </p>
+                           					
+                           <p>For more information about Amazon S3 permissions, see <a href="./AmazonS3/latest/dev/UsingAuthAccess.html">Access Control</a> in the
+                              						<em>Amazon Simple Storage Service Developer Guide</em>. For information on using the Amazon S3 console to update
+                              						permissions, go to the <a href="./AmazonS3/latest/UG/Welcome.html"><em>Amazon Simple Storage Service Console User Guide</em></a>. 
                            </p>
                            				
-                           <p>For more information about Amazon S3 permissions, see <a href="./AmazonS3/latest/dev/UsingAuthAccess.html" target="_blank">Access Control</a> in the
-                              						<em>Amazon Simple Storage Service Developer Guide</em>. For information on using the Amazon S3 console to update
-                              					permissions, go to the <a href="./AmazonS3/latest/UG/Welcome.html" target="_blank"><em>Amazon Simple Storage Service Console User Guide</em></a>. 
-                           </p>
-                           			
                         </li>
                         <li>
-                           				
+                           					
                            <p>Update your distribution to refer to the default root object using the CloudFront
                               console or
-                              					the CloudFront API.
+                              						the CloudFront API.
                            </p>
-                           
-                           				
+                           					
+                           					
                            <p>To specify a default root object using the CloudFront console:</p>
-                           				
+                           					
                            <ol>
                               <li>
                                  <p>Sign in to the AWS Management Console and open the CloudFront console at
@@ -229,82 +122,258 @@
                                  </p>
                               </li>
                               <li>
-                                 						
+                                 							
                                  <p>In the list of distributions in the top pane, select the distribution to
-                                    							update.
+                                    								update.
                                  </p>
-                                 					
+                                 						
                               </li>
                               <li>
-                                 						
+                                 							
                                  <p>In the <b>Distribution Details</b> pane, on the
                                     								<b>General</b> tab, choose <b>Edit</b>.
                                  </p>
-                                 					
+                                 						
                               </li>
                               <li>
-                                 						
+                                 							
                                  <p>In the <b>Edit Distribution</b> dialog box, in the <b>Default
                                        								Root Object</b> field, enter the file name of the default root object.
                                  </p>
-                                 						
+                                 							
                                  <p>Enter only the object name, for example, <code>index.html</code>. Do not
-                                    							add a <code class="code">/</code> before the object name.
+                                    								add a <code class="code">/</code> before the object name.
                                  </p>
-                                 					
+                                 						
                               </li>
                               <li>
-                                 						
+                                 							
                                  <p>To save your changes, choose <b>Yes, Edit</b>.
                                  </p>
-                                 					
+                                 						
                               </li>
                            </ol>
-                           
-                           				
+                           					
+                           					
                            <p>To update your configuration using the CloudFront API, you specify a value for the
                               						<code class="code">DefaultRootObject</code> element in your distribution. For information about using
-                              					the CloudFront API to specify a default root object, see <a href="./cloudfront/latest/APIReference/PutConfig.html" target="_blank">PUT Distribution Config</a> in the <em>Amazon CloudFront API Reference</em>.
+                              						the CloudFront API to specify a default root object, see <a href="./cloudfront/latest/APIReference/PutConfig.html">PUT Distribution Config</a> in the <em>Amazon CloudFront API Reference</em>.
                            </p>
-                           			
+                           				
                         </li>
                         <li>
-                           				
+                           					
                            <p>Confirm that you have enabled the default root object by requesting your root URL.
                               If
-                              					your browser doesn&apos;t display the default root object, perform the following steps:
+                              						your browser doesn&apos;t display the default root object, perform the following
+                              steps:
                            </p>
-                           				
+                           					
                            <ol>
                               <li>
-                                 						
+                                 							
                                  <p>Confirm that your distribution is fully deployed by viewing the status of your
-                                    							distribution in the CloudFront console.
+                                    								distribution in the CloudFront console.
                                  </p>
-                                 					
+                                 						
                               </li>
                               <li>
-                                 						
+                                 							
                                  <p>Repeat Steps 2 and 3 to verify that you granted the correct permissions and that
-                                    							you correctly updated the configuration of your distribution to specify the
+                                    								you correctly updated the configuration of your distribution to specify the
                                     default
-                                    							root object.
+                                    								root object.
                                  </p>
-                                 					
+                                 						
                               </li>
                            </ol>
-                           			
+                           				
                         </li>
                      </ol>
+                     		
+                     <h2 id="DefaultRootObjectHow">How Headers Work With Default
+                        			Root Objects
+                     </h2>
+                     
+                     			
+                     <p>Here&apos;s an example of how a default root object works. Suppose the following request
+                        
+                        				points to the object <code class="code">image.jpg</code>:
+                     </p>
+                     			
+                     			
+                     <p><code class="code">http://d111111abcdef8.cloudfront.net/image.jpg</code></p>
+                     			
+                     			
+                     <p>In contrast, the following request points to the root URL of the same distribution
+                        instead of to a
+                        				specific object, as in the first example:
+                     </p>
+                     			
+                     			
+                     <p><code class="code">http://d111111abcdef8.cloudfront.net/</code></p>
+                     			
+                     			
+                     <p>When you define a default root object, an end-user request that calls the root of
+                        your
+                        				distribution returns the default root object. For example, if you designate the
+                        file
+                        				<code class="code">index.html</code> as your default root object, a request for:
+                     </p>
+                     			
+                     			
+                     <p><code class="code">http://d111111abcdef8.cloudfront.net/</code></p>
+                     			
+                     			
+                     <p>returns:</p>
+                     			
+                     			
+                     <p><code class="code">http://d111111abcdef8.cloudfront.net/index.html</code></p>
+                     			
+                     			
+                     <p>However, if you define a default root object, an end-user request for a subdirectory
+                        of
+                        				your distribution does not return the default root object. For example, suppose
+                        				<code class="code">index.html</code> is your default root object and that CloudFront receives an end-user
+                        				request for the <code class="code">install</code> directory under your CloudFront distribution:
+                     </p>
+                     			
+                     			
+                     <p><code class="code">http://d111111abcdef8.cloudfront.net/install/</code></p>
+                     			
+                     			
+                     <p>CloudFront will not return the default root object even if a copy of <code class="code">index.html</code>
+                        				appears in the <code class="code">install</code> directory.
+                     </p>
+                     			
+                     			
+                     <p>If you configure your distribution to allow all of the HTTP methods that CloudFront
+                        supports,
+                        				the default root object applies to all methods. For example, if your default root
+                        object is
+                        				index.php and you write your application to submit a <code class="code">POST</code> request to the root of
+                        				your domain (http://example.com), CloudFront will send the request to
+                        				http://example.com/index.php.
+                     </p>
+                     			
+                     			
+                     <p>The behavior of CloudFront default root objects is different from the behavior of
+                        Amazon S3 index
+                        				documents. When you configure an Amazon S3 bucket as a website and specify the
+                        index document, Amazon S3
+                        				returns the index document even if a user requests a subdirectory in the bucket.
+                        (A copy of
+                        				the index document must appear in every subdirectory.) For more information about
+                        configuring
+                        				Amazon S3 buckets as websites and about index documents, see the <a href="./AmazonS3/latest/dev/WebsiteHosting.html">Hosting Websites on Amazon S3</a> chapter in the
+                        				<em>Amazon Simple Storage Service Developer Guide</em>.
+                     </p>
+                     			
+                     			
+                     <div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>Remember that a default root object applies only to your CloudFront distribution.
+                           You still
+                           					need to manage security for your origin. For example, if you are using an Amazon
+                           S3 origin, you
+                           					still need to set your Amazon S3 bucket ACLs appropriately to ensure the level
+                           of access you want
+                           					on your bucket.
+                        </p>
+                     </div>		
+                     <h2 id="DefaultRootObjectNotSet">How CloudFront Works if You Don&apos;t
+                        			Define a Root Object
+                     </h2>
+                     			
+                     			
+                     <p>If you don&apos;t define a default root object, requests for the root of your distribution
+                        pass
+                        				to your origin server. If you are using an Amazon S3 origin, any of the following
+                        might be
+                        				returned:
+                     </p>
+                     			
+                     <div class="itemizedlist">
+                        				
+                        				
+                        				
+                        			
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              					
+                              <p><span class="topcom">A list of the contents of your Amazon S3 bucket</span>&#x2014;Under
+                                 						any of the following conditions, the contents of your origin are visible to
+                                 anyone who
+                                 						uses CloudFront to access your distribution:
+                              </p>
+                              					
+                              <div class="itemizedlist">
+                                 						
+                                 						
+                                 						
+                                 					
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       							
+                                       <p>Your bucket is not properly configured. </p>
+                                       						
+                                    </li>
+                                    <li class="listitem">
+                                       							
+                                       <p>The Amazon S3 permissions on the bucket associated with your distribution and on the
+                                          								objects in the bucket grant access to <em>everyone</em>.
+                                       </p>
+                                       						
+                                    </li>
+                                    <li class="listitem">
+                                       							
+                                       <p>An end user accesses your origin using your origin root URL. </p>
+                                       						
+                                    </li>
+                                 </ul>
+                              </div>
+                              				
+                           </li>
+                           <li class="listitem">
+                              					
+                              <p><span class="topcom">A list of the private contents of your origin</span>&#x2014;If
+                                 						you configure your origin as a private distribution (only you and CloudFront
+                                 have access), the
+                                 						contents of the Amazon S3 bucket associated with your distribution are visible
+                                 to anyone who
+                                 						has the credentials to access your distribution through CloudFront. In this
+                                 case, users are not
+                                 						able to access your content through your origin root URL. For more information
+                                 about
+                                 						distributing private content, see <a href="PrivateContent.html">Serving Private Content with Signed URLs and Signed Cookies</a>.
+                              </p>
+                              				
+                           </li>
+                           <li class="listitem">
+                              					
+                              <p><span class="topcom">Error 403 Forbidden</span>&#x2014;CloudFront returns this error if
+                                 						the permissions on the Amazon S3 bucket associated with your distribution or
+                                 the permissions on
+                                 						the objects in that bucket deny access to CloudFront and to everyone.
+                              </p>
+                              				
+                           </li>
+                        </ul>
+                     </div>
+                     		
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -313,15 +382,36 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="RangeGETs.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="ServingCompressedFiles.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="RangeGETs.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="Troubleshooting.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
             <div id="right-expanded">
-               <div id="right-content-wrapper"></div>
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="How to Specify
+			a Default Root Object"><a class="pagetoc" href="#DefaultRootObjectHowToDefine">How to Specify
+                              			a Default Root Object</a></li>
+                        <li class="pagetoc" name="How Headers Work With Default
+			Root Objects"><a class="pagetoc" href="#DefaultRootObjectHow">How Headers Work With Default
+                              			Root Objects</a></li>
+                        <li class="pagetoc" name="How CloudFront Works if You Don&apos;t
+			Define a Root Object"><a class="pagetoc" href="#DefaultRootObjectNotSet">How CloudFront Works if You Don&apos;t
+                              			Define a Root Object</a></li>
+                     </ul>
+                  </div>
+               </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

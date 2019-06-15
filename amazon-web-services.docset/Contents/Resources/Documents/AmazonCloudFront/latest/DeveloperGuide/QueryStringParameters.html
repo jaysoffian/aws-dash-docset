@@ -1,17 +1,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Configuring CloudFront to Cache Based on Query String Parameters - Amazon CloudFront</title>
+      <title>Caching Content Based on Query String Parameters - Amazon CloudFront</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="WorkingWithObjects.html" title="Working with Objects">
-      <link rel="prev" href="cache-hit-ratio.html" title="Increasing the Proportion of Requests that Are Served from CloudFront Edge Caches">
-      <link rel="next" href="Cookies.html" title="Configuring CloudFront to Cache Objects Based on Cookies">
+      <link rel="up" href="ConfiguringCaching.html" title="Optimizing Content Caching and Availability">
+      <link rel="prev" href="cache-hit-ratio.html" title="Increasing the Proportion of Requests that Are Served from CloudFront Edge Caches 
+			(Cache Hit Ratio)">
+      <link rel="next" href="Cookies.html" title="Caching Content Based on Cookies">
       <meta name="description" content="Describes how CloudFront forwards, caches, and logs query string parameters to your origin.">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/QueryStringParameters.html">
@@ -21,7 +24,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,16 +36,19 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="WorkingWithObjects.html">Working with Objects</a> &#xBB; <span class="breadcrumb">Configuring CloudFront to Cache Based on Query String Parameters</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="ConfiguringCaching.html">Optimizing Content Caching and Availability</a> &#xBB; <span class="breadcrumb">Caching Content Based on Query String Parameters</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="QueryStringParameters">Configuring CloudFront to Cache Based on Query String Parameters</h1>
+                     <h1 class="topictitle" id="QueryStringParameters">Caching Content Based on Query String Parameters</h1>
                      <p>Some web applications use query strings to send information to the origin. A query
                         string
                         			is the part of a web request that appears after a <code class="code">?</code> character; the string can
-                        			contain one or more parameters separated by &amp; characters. In the following example,
+                        			contain one or more parameters, separated by &amp; characters. In the following example,
                         the
                         			query string includes two parameters, <em class="replaceable"><code>color=red</code></em> and
                         				<em class="replaceable"><code>size=large</code></em>:
@@ -52,7 +58,7 @@
                         strings to
                         			your origin and, if so, whether to cache your content based on all parameters or
                         on selected
-                        			parameters.
+                        			parameters. Why might this be useful? Consider the following example.
                      </p>
                      <p>Suppose your website is available in five languages. The directory structure and file
                         			names for all five versions of the website are identical. As a user views your
@@ -117,9 +123,9 @@
                            <li class="listitem">
                               				
                               <p>For RTMP distributions, you cannot configure CloudFront to forward query string parameters
-                                 					to your origin. Before CloudFront forwards a request to the origin server, it
-                                 removes any query
-                                 					string parameters.
+                                 					to your origin. If you have an RTMP distribution, before CloudFront forwards
+                                 a request to the origin server, 
+                                 					it removes any query string parameters.
                               </p>
                               			
                            </li>
@@ -138,14 +144,19 @@
                            </li>
                            <li class="listitem">
                               				
-                              <p>You must use the &amp; character as the delimiter between query string parameters. If
-                                 					you use a different delimiter, caching depends on which parameters you want CloudFront
-                                 to use as
-                                 					a basis for caching and the order in which they appear in the query string. The
-                                 following
-                                 					examples show what happens if you configure CloudFront to cache based only on
-                                 the
-                                 						<code class="code">color</code> parameter: 
+                              <p>For query string parameters to work as described in the example above with the languages,
+                                 
+                                 					you must use the &amp; character as the delimiter between query string parameters.
+                                 If
+                                 					you use a different delimiter, you may get unexpected results, depending on which
+                                 parameters you specify 
+                                 					for CloudFront to use as a basis for caching, and the order in which the parameters
+                                 appear in the query string. 
+                              </p>
+                              				
+                              <p>The following examples show what happens if you use a different delimiter and you
+                                 configure CloudFront to 
+                                 					cache based only on the <code class="code">color</code> parameter: 
                               </p>
                               				
                               <div class="itemizedlist">
@@ -184,7 +195,7 @@
                            </li>
                         </ul>
                      </div>
-                     <p>You can configure CloudFront do to one of the following:</p>
+                     <p>You can configure CloudFront do one of the following:</p>
                      <div class="itemizedlist">
                         			
                         			
@@ -234,7 +245,7 @@
                      			
                      <p>To configure query string forwarding and caching in the CloudFront console, see the
                         following
-                        				settings in <a href="distribution-web-values-specify.html">Values That You Specify When You Create or Update a Web Distribution</a>:
+                        				settings in <a href="distribution-web-values-specify.html">Values That You Specify When You Create or Update a Distribution</a>:
                      </p>
                      			
                      <div class="itemizedlist">
@@ -258,8 +269,8 @@
                      			
                      <p>To configure query string forwarding and caching with the CloudFront API, see the
                         following
-                        				settings in <a href="./cloudfront/latest/APIReference/DistributionConfigDatatype.html" target="_blank">DistributionConfig
-                           					Complex Type</a> and in <a href="./cloudfront/latest/APIReference/DistributionConfigWithTagsDatatype.html" target="_blank">DistributionConfigWithTags
+                        				settings in <a href="./cloudfront/latest/APIReference/DistributionConfigDatatype.html">DistributionConfig
+                           					Complex Type</a> and in <a href="./cloudfront/latest/APIReference/DistributionConfigWithTagsDatatype.html">DistributionConfigWithTags
                            					Complex Type</a> in the <em>Amazon CloudFront API Reference</em>:
                      </p>
                      			
@@ -492,18 +503,22 @@
                         you have
                         				configured CloudFront to forward query strings to the origin. For more information
                         about CloudFront
-                        				logging, see <a href="AccessLogs.html">Access Logs</a>.
+                        				logging, see <a href="AccessLogs.html">Configuring and Using Access Logs</a>.
                      </p>
                      		
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -513,7 +528,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="cache-hit-ratio.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="Cookies.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -534,6 +551,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

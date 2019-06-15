@@ -1,16 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>What Is and Is Not Replicated - Amazon Simple Storage Service</title>
+      <title>What Does Amazon S3 Replicate? - Amazon Simple Storage Service</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="crr.html" title="Cross-Region Replication (CRR)">
-      <link rel="prev" href="crr.html" title="Cross-Region Replication (CRR)">
-      <link rel="next" href="crr-how-setup.html" title="Setting Up Cross-Region Replication">
-      <meta name="description" content="An explanation of what is and what is not replicated in cross-region replication for Amazon S3.">
+      <link rel="up" href="crr.html" title="Cross-Region Replication">
+      <link rel="prev" href="crr.html" title="Cross-Region Replication">
+      <link rel="next" href="crr-how-setup.html" title="Overview of Setting Up CRR
+        ">
+      <meta name="description" content="Describes what is and what is not replicated in Amazon S3 cross-region replication.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/crr-what-is-isnot-replicated.html">
@@ -20,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,18 +35,20 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="crr.html">Cross-Region Replication (CRR)</a> &#xBB; <span class="breadcrumb">What Is and Is Not Replicated</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="crr.html">Cross-Region Replication</a> &#xBB; <span class="breadcrumb">What Does Amazon S3 Replicate?</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="crr-what-is-isnot-replicated">What Is and Is Not Replicated</h1>
-                     <p>This section explains what Amazon S3 replicates and what it does not replicate after
-                        you add
-                        a replication configuration on a bucket.
+                     <h1 class="topictitle" id="crr-what-is-isnot-replicated">What Does Amazon S3 Replicate?</h1>
+                     <p>Amazon S3 replicates only specific items in buckets that are configured for cross-region
+                        replication. 
                      </p>
                      
-                     <h2 id="crr-what-is-replicated">What Is Replicated</h2>
+                     <h2 id="crr-what-is-replicated">What Is Replicated?</h2>
                      
                      <p>Amazon S3 replicates the following:</p>
                      
@@ -55,11 +60,12 @@
                         
                         
                         
+                        
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p>Any new objects created after you add a replication configuration, with exceptions
-                                 described in the next section.
+                              <p>Objects created after you add a replication configuration, with exceptions described
+                                 in the next section.
                               </p>
                               
                               <p>&#xA0;</p>
@@ -67,57 +73,130 @@
                            </li>
                            <li class="listitem">
                               
-                              <p>In addition to unencrypted objects, Amazon S3 replicates objects encrypted using Amazon
-                                 S3
-                                 managed keys (SSE-S3) or AWS KMS managed keys (SSE-KMS). The replicated copy of the
-                                 object
-                                 is also encrypted using the same type of server-side encryption that was used for
+                              <p>Both unencrypted objects and objects encrypted using Amazon S3 managed keys (SSE-S3)
+                                 or
+                                 AWS KMS managed keys (SSE-KMS), although you must explicitly enable the option to
+                                 replicate objects encrypted using KMS keys. The replicated copy of the object is
+                                 encrypted using the same type of server-side encryption that was used for the source
+                                 object. For more information about server-side encryption, see <a href="serv-side-encryption.html">Protecting Data Using Server-Side Encryption</a>.
+                              </p>
+                              
+                              <p>&#xA0;</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Object metadata.</p>
+                              
+                              <p>&#xA0;</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Only objects in the source bucket for which the bucket owner has permissions to read
+                                 objects and access control lists (ACLs). For more information about resource ownership,
+                                 For more information, 
+                                 see <a href="access-control-overview.html#about-resource-owner">Amazon S3 Bucket and Object Ownership</a>.
+                              </p>
+                              
+                              <p>&#xA0;</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Object ACL updates, unless you direct Amazon S3 to change the replica ownership when
+                                 source and destination buckets aren&apos;t owned by the same accounts 
+                              </p>
+                              
+                              <p> (see <a href="crr-change-owner.html">CRR Additional Configuration: Changing the Replica
+                                    Owner</a>). 
+                              </p>
+                              
+                              <p>&#xA0;</p>
+                              
+                              <p>It can take a while until Amazon S3 can bring the two ACLs in sync. This applies only
+                                 to
+                                 objects created after you add a replication configuration to the bucket.
+                              </p>
+                              
+                              <p>&#xA0;</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p> Object tags, if there are any.</p>
+                              
+                              <p>&#xA0;</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Amazon S3 object lock retention information, if there is any. When Amazon S3 replicates
+                                 objects that have retention information applied, it applies those same retention
+                                 controls to your replicas, overriding the default retention period configured on your
+                                 destination bucket. If you don&apos;t have retention controls applied to the objects in
+                                 your
+                                 source bucket, and you replicate into a destination bucket that has a default retention
+                                 period set, the destination bucket&apos;s default retention period is applied to your object
+                                 replicas. For more information, see <a href="object-lock.html">Locking Objects Using Amazon S3 Object Lock</a>.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <h3 id="crr-delete-op">How Delete Operations Affect CRR</h3>
+                     
+                     <p>If you delete an object from the source bucket, the following occurs:</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>If you make a DELETE request without specifying an object version ID, Amazon S3 adds
+                                 a
+                                 delete marker. Amazon S3 deals with the delete marker as follows:
+                              </p>
+                              
+                              <div class="itemizedlist">
+                                 
+                                 
+                                 
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       
+                                       <p>If you are using the latest version of the replication configuration, that is,
+                                          you specify the <code class="code">Filter</code> element in a replication configuration rule,
+                                          Amazon S3 does not replicate the delete marker.
+                                       </p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p>If you don&apos;t specify the <code class="code">Filter</code> element, Amazon S3 assumes that
+                                          the replication configuration is a prior version V1. In the earlier version, Amazon
+                                          S3
+                                          handled replication of delete markers differently. For more information, see <a href="crr-add-config.html#crr-backward-compat-considerations">Backward Compatibility </a>. 
+                                       </p>
+                                       
+                                    </li>
+                                 </ul>
+                              </div>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>If you specify an object version ID to delete in a DELETE request, Amazon S3 deletes
+                                 that object version in the source bucket, but it doesn&apos;t replicate the deletion in
                                  the
-                                 source object, SSE-S3, or SSE-KMS. For more information about server-side encryption.
-                                 see
-                                 <a href="serv-side-encryption.html">Protecting Data Using Server-Side Encryption</a>.
+                                 destination bucket. In other words, it doesn&apos;t delete the same object version from
+                                 the
+                                 destination bucket. This protects data from malicious deletions. 
                               </p>
-                              
-                              <p>&#xA0;</p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p>Along with the objects, Amazon S3 also replicates object metadata.</p>
-                              
-                              <p>&#xA0;</p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p>Amazon S3 replicates only objects in the source bucket for which the bucket owner
-                                 has
-                                 permissions to read objects and read access control lists (ACLs). For more information
-                                 about resource ownership, see <a href="access-control-overview.html#about-resource-owner">About the Resource Owner</a>.
-                              </p>
-                              
-                              <p>&#xA0;</p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p>Any object ACL updates are replicated, unless you directed Amazon S3 to change the
-                                 replica ownership in a cross-account scenario (see <a href="crr-change-owner.html">Cross-Region Replication Additional Configuration: Change
-                                    Replica Owner</a>). 
-                              </p>
-                              
-                              <p>&#xA0;</p>
-                              
-                              <p>There can be some delay before Amazon S3 can bring the two ACLs in sync. This applies
-                                 only to objects created after you add a replication configuration to the bucket.
-                              </p>
-                              
-                              <p>&#xA0;</p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p>Amazon S3 replicates object tags, if any.</p>
                               
                            </li>
                         </ul>
@@ -125,48 +204,9 @@
                      
                      
                      
-                     <h3 id="crr-delete-op">Delete Operation and Cross-Region Replication</h3>
+                     <h2 id="crr-what-is-not-replicated">What Isn&apos;t Replicated?</h2>
                      
-                     <p>If you delete an object from the source bucket, the cross-region replication behavior
-                        is
-                        as follows:
-                     </p>
-                     
-                     <div class="itemizedlist">
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              
-                              <p>If a DELETE request is made without specifying an object version ID, Amazon S3 adds
-                                 a delete marker, which cross-region replication replicates to the
-                                 destination bucket. For more information about versioning and delete markers, see
-                                 <a href="Versioning.html">Using Versioning</a>.
-                              </p>
-                              
-                              <p>&#xA0;</p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p>If a DELETE request specifies a particular object version ID to delete, Amazon S3
-                                 deletes that object version in the source bucket, but it does not replicate the
-                                 deletion in the destination bucket (in other words, it does not delete the same object
-                                 version from the destination bucket). This behavior protects data from malicious
-                                 deletions. 
-                              </p>
-                              
-                              
-                           </li>
-                        </ul>
-                     </div>
-                     
-                     
-                     
-                     <h2 id="crr-what-is-not-replicated">What Is Not Replicated</h2>
-                     
-                     <p>Amazon S3 does not replicate the following:</p>
+                     <p>Amazon S3 doesn&apos;t replicate the following:</p>
                      
                      <div class="itemizedlist">
                         
@@ -179,8 +219,8 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p>Amazon S3 does not retroactively replicate objects that existed before you added
-                                 replication configuration.
+                              <p> Objects that existed before you added the replication configuration to the bucket.
+                                 In other words, Amazon S3 doesn&apos;t replicate objects retroactively.
                               </p>
                               
                               <p>&#xA0;</p>
@@ -188,8 +228,7 @@
                            </li>
                            <li class="listitem">
                               
-                              <p>The following encrypted objects are not replicated:</p>
-                              
+                              <p>The following encrypted objects:</p>
                               
                               <div class="itemizedlist">
                                  
@@ -205,15 +244,16 @@
                                     </li>
                                     <li class="listitem">
                                        
-                                       <p>Objects created with server-side encryption using AWS KMS&#x2013;managed
-                                          encryption (SSE-KMS) keys, unless you explicitly enable this option.
-                                          
+                                       <p>Objects created with server-side encryption using AWS KMS&#x2013;managed encryption
+                                          (SSE-KMS) keys. By default, Amazon S3 does not replicate objects encrypted using KMS
+                                          keys. However, you can explicitly enable replication of these objects in the
+                                          replication configuration, and provide relevant information so that Amazon S3 can
+                                          replicate these objects. 
                                        </p>
                                        
                                     </li>
                                  </ul>
                               </div>
-                              
                               
                               <p> For more information about server-side encryption, see <a href="serv-side-encryption.html">Protecting Data Using Server-Side Encryption</a>. 
                               </p>
@@ -224,10 +264,10 @@
                            </li>
                            <li class="listitem">
                               
-                              <p>Objects in the source bucket for which the bucket owner does not have permissions.
-                                 This can happen when the object owner is different from the bucket owner. For
-                                 information about how an object owner can grant permissions to the bucket owner, see
-                                 <a href="example-bucket-policies.html#example-bucket-policies-use-case-8">Granting Cross-Account Permissions to Upload
+                              <p>Objects in the source bucket that the bucket owner doesn&apos;t have permissions for
+                                 (when the bucket owner is not the owner of the object). For information about how
+                                 an
+                                 object owner can grant permissions to a bucket owner, see <a href="example-bucket-policies.html#example-bucket-policies-use-case-8">Granting Cross-Account Permissions to Upload
                                     			Objects While Ensuring the Bucket Owner Has Full Control</a>.
                               </p>
                               
@@ -236,11 +276,10 @@
                            </li>
                            <li class="listitem">
                               
-                              <p>Updates to bucket-level subresources are not replicated. For example, you might
-                                 change lifecycle configuration on your source bucket or add notification configuration
-                                 to your source bucket. These changes are not applied to the destination bucket. This
-                                 allows you to have different bucket configurations on the source and destination
-                                 buckets. 
+                              <p>Updates to bucket-level subresources. For example, if you change the lifecycle
+                                 configuration or add a notification configuration to your source bucket, these changes
+                                 are not applied to the destination bucket. This makes it possible to have different
+                                 configurations on source and destination buckets. 
                               </p>
                               
                               <p>&#xA0;</p>
@@ -248,37 +287,54 @@
                            </li>
                            <li class="listitem">
                               
-                              <p>Only customer actions are replicated. Actions performed by lifecycle configuration
-                                 are not replicated. For more information about lifecycle configuration, see <a href="object-lifecycle-mgmt.html">Object Lifecycle Management</a>.
+                              <p>Actions performed by lifecycle configuration.
+                                 
                               </p>
-                              
-                              <p>&#xA0;</p>
                               
                               <p>For example, if lifecycle configuration is enabled only on your source bucket, Amazon
                                  S3
                                  creates delete markers for expired objects, but it does not replicate those markers.
-                                 However, you can have the same lifecycle configuration on both the source and
-                                 destination buckets if you want the same lifecycle configuration applied to both
-                                 buckets. 
+                                 If
+                                 you want the same lifecycle configuration applied to both source and destination
+                                 buckets, enable the same lifecycle configuration on both.
                               </p>
                               
-                              <p>&#xA0;</p>
+                              <p>For more information about lifecycle configuration, see <a href="object-lifecycle-mgmt.html">Object Lifecycle Management</a>.
+                              </p>
+                              
+                              <div class="aws-note">
+                                 <p class="aws-note">Note</p>
+                                 <p>If using the latest version of the replication configuration (the XML specifies
+                                    <code class="code">Filter</code> as the child of <code class="code">Rule</code>), delete markers created either
+                                    by a user action or by Amazon S3 as part of the lifecycle action are not replicated.
+                                    However, if you are using an earlier version of the replication configuration (the
+                                    XML
+                                    specifies <code class="code">Prefix</code> as the child of <code class="code">Rule</code>), delete markers
+                                    resulting from user actions are replicated. For more information, see <a href="crr-add-config.html#crr-backward-compat-considerations">Backward Compatibility </a>.
+                                 </p>
+                              </div>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>Objects in the source bucket that are replicas, created by another cross-region
-                                 replication, are not replicated.
+                              <p>Objects in the source bucket that are replicas that were created by another
+                                 cross-region replication.
+                              </p>        
+                              
+                              <p>You can replicate objects from a source bucket to <em>only one</em>
+                                 destination bucket. After Amazon S3 replicates an object, the object can&apos;t be replicated
+                                 again. For example, if you change the destination bucket in an existing replication
+                                 configuration, Amazon S3 won&apos;t replicate the object again.
                               </p>
                               
-                              <p>&#xA0;</p>
-                              
-                              <p>Suppose that you configure cross-region replication where bucket A is the source and
-                                 bucket B is the destination. Now suppose that you add another cross-region replication
-                                 where bucket B is the source and bucket C is the destination. In this case, objects
-                                 in
-                                 bucket B that are replicas of objects in bucket A are not replicated to bucket C.
-                                 
+                              <p>Another example: Suppose that you configure cross-region replication where bucket
+                                 A
+                                 is the source and bucket B is the destination. Now suppose that you add another
+                                 cross-region replication configuration where bucket B is the source and bucket C is
+                                 the
+                                 destination. In this case, objects in bucket B that are replicas of objects in bucket
+                                 A
+                                 are not replicated to bucket C. 
                               </p>
                               
                            </li>
@@ -288,22 +344,27 @@
                      
                      <h2 id="crr-whatis-isnot-related-topics">Related Topics</h2>
                      
-                     <p><a href="crr.html">Cross-Region Replication (CRR)</a></p>
+                     <p><a href="crr.html">Cross-Region Replication</a></p>
                      
-                     <p><a href="crr-how-setup.html">Setting Up Cross-Region Replication</a></p>
+                     <p><a href="crr-how-setup.html">Overview of Setting Up CRR
+                           </a></p>
                      
                      
-                     <p><a href="crr-status.html">Finding the Cross-Region Replication Status </a></p>
+                     <p><a href="crr-status.html">Cross-Region Replication Status Information</a></p>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -313,7 +374,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="crr.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="crr-how-setup.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -322,14 +385,18 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="What Is Replicated"><a class="pagetoc" href="#crr-what-is-replicated">What Is Replicated</a></li>
-                        <li class="pagetoc" name="What Is Not Replicated"><a class="pagetoc" href="#crr-what-is-not-replicated">What Is Not Replicated</a></li>
+                        <li class="pagetoc" name="What Is Replicated?"><a class="pagetoc" href="#crr-what-is-replicated">What Is Replicated?</a></li>
+                        <li class="pagetoc" name="What Isn&apos;t Replicated?"><a class="pagetoc" href="#crr-what-is-not-replicated">What Isn&apos;t Replicated?</a></li>
                         <li class="pagetoc" name="Related Topics"><a class="pagetoc" href="#crr-whatis-isnot-related-topics">Related Topics</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

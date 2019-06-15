@@ -5,7 +5,8 @@
       </title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="api-gateway-api-usage-plans.html" title="Create and Use API Gateway Usage Plans">
+      <link rel="up" href="api-gateway-api-usage-plans.html" title="Create and Use Usage Plans with API
+            Keys">
       <link rel="prev" href="api-gateway-setup-api-key-with-console.html" title="Set Up API Keys Using the API Gateway
                 Console">
       <link rel="next" href="api-gateway-setup-api-key-with-restapi.html" title="Set Up API Keys Using the API Gateway
@@ -15,6 +16,8 @@
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-usage-plans-with-console.html">
@@ -24,7 +27,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -36,12 +39,17 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-control-access-to-api.html"> Controlling Access to an API in
-                                    			API Gateway</a> &#xBB; <a href="api-gateway-api-usage-plans.html">Create and Use API Gateway Usage Plans</a> &#xBB; <span class="breadcrumb">Create, Configure, and
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="apigateway-control-access-to-api.html">Controlling and Managing Access to a REST
+                                    			API in API Gateway</a> &#xBB; <a href="api-gateway-api-usage-plans.html">Create and Use Usage Plans with API
+                                    Keys</a> &#xBB; <span class="breadcrumb">Create, Configure, and
                                     Test Usage Plans with the API Gateway Console</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="api-gateway-create-usage-plans-with-console">Create, Configure, and
                         Test Usage Plans with the API Gateway Console
@@ -58,9 +66,9 @@
                         <ul>
                            <li><a href="#api-gateway-usage-plan-migrate-to-default">Migrate Your API to
                                  Default Usage Plans (If Needed)</a></li>
-                           <li><a href="#api-gateway-usage-plan-create">Create Usage Plans</a></li>
+                           <li><a href="#api-gateway-usage-plan-create">Create a Usage Plan</a></li>
                            <li><a href="#api-gateway-usage-plan-test-console">Test a Usage Plan</a></li>
-                           <li><a href="#api-gateway-usage-plan-manage-usage">Maintain Plan Usage</a></li>
+                           <li><a href="#api-gateway-usage-plan-manage-usage">Maintain a Usage Plan</a></li>
                         </ul>
                      </div>
                      
@@ -75,32 +83,31 @@
                      
                      <p>If you started to use API Gateway before that date, you may need to migrate to default
                         usage plans. You&apos;ll be prompted with the <b>Enable Usage Plans</b>
-                        option before using usage plans for the first time in the
-                        selected region. When you enable this option, you have default usage plans created
-                        for every unique API stage that&apos;s associated with existing API keys. In the default
-                        usage plan, no throttle or quota limits are set initially, and the associations between
-                        the API keys and API stages are
-                        copied to the usage plans. The API behaves the same as before. However, you must use
-                        the <a href="./apigateway/api-reference/resource/usage-plan/" target="_blank">UsagePlan</a>
+                        option before using usage plans for the first time in the selected region. When you
+                        enable this option, you have default usage plans created for every unique API stage
+                        that&apos;s associated with existing API keys. In the default usage plan, no throttle or
+                        quota limits are set initially, and the associations between the API keys and API
+                        stages are copied to the usage plans. The API behaves the same as before. However,
+                        you must use the <a href="./apigateway/api-reference/resource/usage-plan/"><code class="code">UsagePlan</code></a>
                         <code class="code">apiStages</code> property to associate specified API stage values
-                        (<code class="code">apiId</code> and <code class="code">stage</code>) with included API keys (via <a href="./apigateway/api-reference/resource/usage-plan-key/" target="_blank">UsagePlanKey</a>), instead of using the <a href="./apigateway/api-reference/resource/api-key/" target="_blank">ApiKey</a>
+                        (<code class="code">apiId</code> and <code class="code">stage</code>) with included API keys (via <a href="./apigateway/api-reference/resource/usage-plan-key/"><code class="code">UsagePlanKey</code></a>), instead of using the <a href="./apigateway/api-reference/resource/api-key/">ApiKey</a>
                         <code class="code">stageKeys</code> property.
                      </p>
                      
-                     <p>To check whether you&apos;ve already migrated to default usage plans, use the <a href=" ./cli/latest/reference/apigateway/get-account.html" target="_blank">get-account</a> CLI command. In the command output, the
+                     <p>To check whether you&apos;ve already migrated to default usage plans, use the <a href="./cli/latest/reference/apigateway/get-account.html"><code class="code">get-account</code></a> CLI command. In the command output, the
                         <code class="code">features</code> list will include an entry of <code class="code">&quot;UsagePlans&quot;</code>
                         when usage plans are enabled.
                      </p>
                      
-                     <p>You can also migrate your APIs to default usage
-                        plans by using the AWS CLI as follows:
+                     <p>You can also migrate your APIs to default usage plans by using the AWS CLI as
+                        follows:
                      </p>
                      
                      <p class="title"><b>To migrate to default usage plans using the AWS CLI</b></p>
                      <ol>
                         <li>
                            
-                           <p>Call this CLI command: <a href="./cli/latest/reference/apigateway/update-account.html" target="_blank">update-account</a>.
+                           <p>Call this CLI command: <a href="./cli/latest/reference/apigateway/update-account.html"><code class="code">update-account</code></a>.
                            </p>
                            
                         </li>
@@ -120,8 +127,7 @@
                      </ol>
                      
                      
-                     
-                     <h2 id="api-gateway-usage-plan-create">Create Usage Plans</h2>
+                     <h2 id="api-gateway-usage-plan-create">Create a Usage Plan</h2>
                      
                      <p>The following procedure describes how to create a usage plan.</p>
                      
@@ -173,7 +179,7 @@
                               </li>
                               <li>
                                  
-                                 <p> Choose <b>Save</b>.
+                                 <p> Choose <b>Next</b>.
                                  </p>
                                  
                               </li>
@@ -223,19 +229,13 @@
                                  <p>Choose the checkmark icon to save.</p>
                                  
                               </li>
-                              <li>
-                                 
-                                 <p>Choose <b>Next</b>.
-                                 </p>
-                                 
-                              </li>
                            </ol>
                            
                            
                            <div class="mediaobject">
                               
                               <img src="../../..//img/api-gateway-usage-plan-keys-create-add-stage.png" alt="
-                            API usage plan entities
+                            Adding an API stage
                         " style="max-width:100%">
                               
                               
@@ -245,8 +245,63 @@
                         </li>
                         <li>
                            
-                           <p>To add a key to the plan, do the following in the <b>Usage Plan API
-                                 Keys</b> pane:
+                           <p>To configure <a href="api-gateway-request-throttling.html#apig-request-throttling-stage-and-method-level-limits">method
+                                 throttling</a>, do the following:
+                           </p>
+                           
+                           <ol>
+                              <li>
+                                 
+                                 <p>Choose <b>Configure Method Throttling</b>.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Choose <b>Add Resource/Method</b>.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Choose the resource from the <b>Resource</b>
+                                    drop-down menu.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Choose the method from the <b>Method</b> drop-down
+                                    menu.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Set <b>Rate (requests per second)</b> (for example,
+                                    <strong class="userinput"><code>100</code></strong>) and <b>Burst</b> (for
+                                    example, <strong class="userinput"><code>200</code></strong>).
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Choose the checkmark icon to save.</p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Choose <b>Close</b>.
+                                 </p>
+                                 
+                              </li>
+                           </ol>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>To add a key to the plan, do the following in the <b>API
+                                 Keys</b> tab:
                            </p>
                            
                            <ol>
@@ -281,8 +336,6 @@
                            
                            <div class="mediaobject">
                               
-                              
-                              
                               <img src="../../..//img/api-gateway-usage-plan-keys-create-add-key.png" alt="
                             API usage plan entities
                         " style="max-width:100%">
@@ -293,10 +346,18 @@
                            
                            <div class="aws-note">
                               <p class="aws-note">Note</p>
-                              <p>To
-                                 add a new API key to the usage plan, choose <b>Create API Key and
-                                    add to Usage Plan</b> and follow the
-                                 instructions.
+                              <p>Alternatively, to create a new API key and add it to the usage plan,
+                                 choose <b>Create API Key and add to Usage Plan</b> and
+                                 follow the instructions.
+                              </p>
+                           </div>
+                           
+                           <div class="aws-note">
+                              <p class="aws-note">Note</p>
+                              <p>An API key can be associated with more than one usage plan. A usage
+                                 plan can be associated with more than one stage. However, a given API
+                                 key can only be associated with one usage plan for each stage of your
+                                 API.
                               </p>
                            </div>
                            
@@ -325,11 +386,11 @@
                      </p>
                      
                      
-                     <h2 id="api-gateway-usage-plan-manage-usage">Maintain Plan Usage</h2>
+                     <h2 id="api-gateway-usage-plan-manage-usage">Maintain a Usage Plan</h2>
                      
                      <p>Maintaining a usage plan involves monitoring the used and remaining quotas over a
-                        given time period and extending the remaining quotas by a specified amount. The
-                        following procedures describe how to monitor and extend quotas.
+                        given time period and, if needed, extending the remaining quotas by a specified
+                        amount. The following procedures describe how to monitor and extend quotas.
                      </p>
                      
                      <p class="title"><b>To monitor used and remaining quotas</b></p>
@@ -343,10 +404,7 @@
                         </li>
                         <li>
                            
-                           <p>Choose a usage plan from the list of the usage plans in
-                              the
-                              secondary navigation pane in the middle.
-                           </p>
+                           <p>Choose a usage plan from the list of usage plans.</p>
                            
                         </li>
                         <li>
@@ -413,9 +471,8 @@
                         </li>
                         <li>
                            
-                           <p>On the usage plan
-                              page,
-                              choose <b>Extension</b> from the usage plan window.
+                           <p>In the usage plan pane, choose <b>Extension</b> from the
+                              usage plan window.
                            </p>
                            
                         </li>
@@ -434,15 +491,19 @@
                         </li>
                      </ol>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -452,7 +513,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="api-gateway-setup-api-key-with-console.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="api-gateway-setup-api-key-with-restapi.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -464,14 +527,18 @@
                         <li class="pagetoc" name="Migrate Your API to
                     Default Usage Plans (If Needed)"><a class="pagetoc" href="#api-gateway-usage-plan-migrate-to-default">Migrate Your API to
                               Default Usage Plans (If Needed)</a></li>
-                        <li class="pagetoc" name="Create Usage Plans"><a class="pagetoc" href="#api-gateway-usage-plan-create">Create Usage Plans</a></li>
+                        <li class="pagetoc" name="Create a Usage Plan"><a class="pagetoc" href="#api-gateway-usage-plan-create">Create a Usage Plan</a></li>
                         <li class="pagetoc" name="Test a Usage Plan"><a class="pagetoc" href="#api-gateway-usage-plan-test-console">Test a Usage Plan</a></li>
-                        <li class="pagetoc" name="Maintain Plan Usage"><a class="pagetoc" href="#api-gateway-usage-plan-manage-usage">Maintain Plan Usage</a></li>
+                        <li class="pagetoc" name="Maintain a Usage Plan"><a class="pagetoc" href="#api-gateway-usage-plan-manage-usage">Maintain a Usage Plan</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

@@ -1,19 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Create an API as an Amazon S3 Proxy - Amazon API Gateway</title>
+      <title>TUTORIAL: Create a REST API as an Amazon S3 Proxy in API Gateway - Amazon API Gateway</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="api-gateway-tutorials.html" title="Samples and Tutorials">
+      <link rel="up" href="api-gateway-tutorials.html" title="Amazon API Gateway Tutorials">
       <link rel="prev" href="api-as-lambda-proxy-export-swagger-with-extensions.html" title="">
-      <link rel="next" href="api-as-s3-proxy-export-swagger-with-extensions.html" title="Swagger Definitions of
+      <link rel="next" href="api-as-s3-proxy-export-swagger-with-extensions.html" title="OpenAPI Definitions of
       the
       Sample
       API as an Amazon S3 Proxy">
-      <meta name="description" content="Learn how to create and configure an API in API Gateway as an Amazon S3 proxy.">
+      <meta name="description" content="Learn how to create and configure a REST API in API Gateway as an Amazon S3 proxy.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/integrating-api-with-aws-services-s3.html">
@@ -23,7 +25,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -35,14 +37,17 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="api-gateway-tutorials.html">Samples and Tutorials</a> &#xBB; <span class="breadcrumb">Create an API as an Amazon S3 Proxy</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="api-gateway-tutorials.html">Amazon API Gateway Tutorials</a> &#xBB; <span class="breadcrumb">TUTORIAL: Create a REST API as an Amazon S3 Proxy in API Gateway</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="integrating-api-with-aws-services-s3">Create an API as an Amazon S3 Proxy</h1>
-                     <p>As an example to showcase using an API in API Gateway to proxy Amazon S3, 
-                        this section describes how to create and configure an API to expose the following
+                     <h1 class="topictitle" id="integrating-api-with-aws-services-s3">TUTORIAL: Create a REST API as an Amazon S3 Proxy in API Gateway</h1>
+                     <p>As an example to showcase using a REST API in API Gateway to proxy Amazon S3, 
+                        this section describes how to create and configure a REST API to expose the following
                         Amazon S3 operations: 
                      </p>
                      <div class="itemizedlist">
@@ -58,54 +63,54 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p>Expose GET on the API&apos;s root resource to <a href="./AmazonS3/latest/API/RESTServiceGET.html" target="_blank">list all of the Amazon S3 buckets of a
+                              <p>Expose GET on the API&apos;s root resource to <a href="./AmazonS3/latest/API/RESTServiceGET.html">list all of the Amazon S3 buckets of a
                                     caller</a>.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>Expose GET on a Folder resource to <a href="./AmazonS3/latest/API/RESTBucketGET.html" target="_blank">view a list of all of the objects in an Amazon S3 bucket</a>.
+                              <p>Expose GET on a Folder resource to <a href="./AmazonS3/latest/API/RESTBucketGET.html">view a list of all of the objects in an Amazon S3 bucket</a>.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>Expose PUT on a Folder resource to <a href="./AmazonS3/latest/API/RESTBucketPUT.html" target="_blank">add a bucket to Amazon S3</a>.
+                              <p>Expose PUT on a Folder resource to <a href="./AmazonS3/latest/API/RESTBucketPUT.html">add a bucket to Amazon S3</a>.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>Expose DELETE on a Folder resource to <a href="./AmazonS3/latest/API/RESTBucketDELETE.html" target="_blank">remove a bucket from
+                              <p>Expose DELETE on a Folder resource to <a href="./AmazonS3/latest/API/RESTBucketDELETE.html">remove a bucket from
                                     Amazon S3</a>.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>Expose GET on a Folder/Item resource to <a href="./AmazonS3/latest/API/RESTObjectGET.html" target="_blank">view or download an object from an Amazon S3
+                              <p>Expose GET on a Folder/Item resource to <a href="./AmazonS3/latest/API/RESTObjectGET.html">view or download an object from an Amazon S3
                                     bucket</a>.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>Expose PUT on a Folder/Item resource to <a href="./AmazonS3/latest/API/RESTObjectPUT.html" target="_blank">upload an object to an Amazon S3
+                              <p>Expose PUT on a Folder/Item resource to <a href="./AmazonS3/latest/API/RESTObjectPUT.html">upload an object to an Amazon S3
                                     bucket</a>.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>Expose HEAD on a Folder/Item resource to <a href="./AmazonS3/latest/API/RESTObjectHEAD.html" target="_blank">get object metadata in an Amazon S3
+                              <p>Expose HEAD on a Folder/Item resource to <a href="./AmazonS3/latest/API/RESTObjectHEAD.html">get object metadata in an Amazon S3
                                     bucket</a>.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>Expose DELETE on a Folder/Item resource to <a href="./AmazonS3/latest/API/RESTObjectDELETE.html" target="_blank">remove an object from an Amazon S3
+                              <p>Expose DELETE on a Folder/Item resource to <a href="./AmazonS3/latest/API/RESTObjectDELETE.html">remove an object from an Amazon S3
                                     bucket</a>.
                               </p>
                               
@@ -117,16 +122,16 @@
                         <p>
                            To integrate your API Gateway API with Amazon S3, you must choose a region where both
                            the API Gateway and Amazon S3 services are available. For region availability, see
-                           <a href="./general/latest/gr/rande.html#apigateway_region" target="_blank">Regions and Endpoints</a>.
+                           <a href="./general/latest/gr/rande.html#apigateway_region">Regions and Endpoints</a>.
                            
                         </p>
                      </div>
                      <p> 
-                        You may want to import the sample API as an Amazon S3 proxy, as shown in <a href="api-as-s3-proxy-export-swagger-with-extensions.html">Swagger Definitions of
+                        You may want to import the sample API as an Amazon S3 proxy, as shown in <a href="api-as-s3-proxy-export-swagger-with-extensions.html">OpenAPI Definitions of
                            the
                            Sample
                            API as an Amazon S3 Proxy</a>. For instructions on
-                        how to import an API using the Swagger definition, see <a href="api-gateway-import-api.html">Import an API into API Gateway</a>. 
+                        how to import an API using the OpenAPI definition, see <a href="api-gateway-import-api.html">Import a REST API into API Gateway</a>. 
                         
                      </p>
                      <p> 
@@ -134,16 +139,21 @@
                         account. 
                         
                      </p>
-                     <p>If you do not have an AWS account, use the following procedure to create one.</p>
-                     <p class="title"><b>To sign up for AWS</b></p>
+                     <p>If you do not have an AWS account, complete the following steps to create one.</p>
+                     <p class="title"><b>To sign up for an AWS account</b></p>
                      <ol>
                         <li>
-                           <p>Open <a href="https://aws.amazon.com/" target="_blank">https://aws.amazon.com/</a> and 
-                              choose <b>Create an AWS Account</b>.
+                           <p>Open <a href="https://portal.aws.amazon.com/billing/signup" target="_blank">https://portal.aws.amazon.com/billing/signup</a>.
                            </p>
+                           
                         </li>
                         <li>
                            <p>Follow the online instructions.</p>
+                           
+                           <p>Part of the sign-up procedure involves receiving a phone call and entering 
+                              a verification code on the phone keypad.
+                           </p>
+                           
                         </li>
                      </ol>
                      <div class="highlights">
@@ -156,7 +166,7 @@
                            <li><a href="#api-folder-operations-as-s3-bucket-actions">Expose API Methods to Access an Amazon S3 Bucket</a></li>
                            <li><a href="#api-items-in-folder-as-s3-objects-in-bucket">Expose API Methods to Access an Amazon S3 Object in a Bucket</a></li>
                            <li><a href="#api-as-s3-proxy-test-using-postman">Call the API Using a REST API Client</a></li>
-                           <li><a href="api-as-s3-proxy-export-swagger-with-extensions.html">Swagger Definitions of
+                           <li><a href="api-as-s3-proxy-export-swagger-with-extensions.html">OpenAPI Definitions of
                                  the
                                  Sample
                                  API as an Amazon S3 Proxy</a></li>
@@ -214,7 +224,7 @@
                      
                      <p> For your API to invoke the Amazon S3 <code class="code">Post*</code> actions, you must use an Allow
                         policy for the <code class="code">s3:Post*</code> actions in the IAM  role. For a complete list of
-                        Amazon S3 actions, see <a href="./AmazonS3/latest/dev/using-with-s3-actions.html" target="_blank">Specifying Amazon S3 Permissions in a Policy</a>. 
+                        Amazon S3 actions, see <a href="./AmazonS3/latest/dev/using-with-s3-actions.html">Specifying Amazon S3 Permissions in a Policy</a>. 
                      </p>
                      
                      <p> For your API to create, view, update, and delete buckets and objects in Amazon S3,
@@ -312,7 +322,7 @@
                      </h2>
                      
                      
-                     <p>Getting the list of Amazon S3 buckets of the caller involves invoking the <a href="./AmazonS3/latest/API/RESTServiceGET.html" target="_blank">GET Service</a>
+                     <p>Getting the list of Amazon S3 buckets of the caller involves invoking the <a href="./AmazonS3/latest/API/RESTServiceGET.html">GET Service</a>
                         action on Amazon S3. On the API&apos;s root resource, (<b>/</b>), create the GET method.
                         Configure the GET method to integrate with the Amazon S3, as follows. 
                      </p>
@@ -379,7 +389,7 @@
                            
                            <p>For <b>Action Type</b>, choose <b>Use path
                                  override</b>. With path override, API Gateway forwards the client request
-                              to Amazon S3 as the corresponding <a href="./AmazonS3/latest/dev/RESTAPI.html" target="_blank">Amazon S3 REST API
+                              to Amazon S3 as the corresponding <a href="./AmazonS3/latest/dev/RESTAPI.html">Amazon S3 REST API
                                  path-style request</a>, in which a Amazon S3 resource is expressed by the
                               resource path of the <code class="code">s3-host-name/bucket/key</code> pattern. API Gateway sets
                               the <code class="code">s3-host-name</code> and passes the client specified
@@ -622,7 +632,7 @@
                      <p>To work with an Amazon S3 bucket, we expose the GET, PUT, and DELETE methods on the
                         /{folder} resource to list objects in a bucket, create a new bucket, and delete an
                         existing
-                        bucket. The instructions are  similar  to those prescribed in <a href="integrating-api-with-aws-services-s3.html#api-root-get-as-s3-get-service">Expose an API Method to List the Caller&apos;s Amazon S3
+                        bucket. The instructions are similar to those described in <a href="integrating-api-with-aws-services-s3.html#api-root-get-as-s3-get-service">Expose an API Method to List the Caller&apos;s Amazon S3
                            Buckets</a>.
                         In the following discussions, we outline the general tasks and highlight  relevant
                         differences.
@@ -735,7 +745,7 @@
                            
                            <p>
                               The <code class="literal">x-amz-acl</code> header is for specifying access control on the folder (or the corresponding Amazon
-                              S3 bucket).  For more information, see <a href="./AmazonS3/latest/API/RESTBucketPUT.html#RESTBucketPUT-requests" target="_blank">Amazon S3 PUT Bucket Request</a>. 
+                              S3 bucket).  For more information, see <a href="./AmazonS3/latest/API/RESTBucketPUT.html#RESTBucketPUT-requests">Amazon S3 PUT Bucket Request</a>. 
                               
                            </p>
                            
@@ -793,14 +803,14 @@
                         bucket operations
                         allow you work with the metadata or properties of the bucket. For example, you can
                         set up your
-                        API to call the Amazon S3&apos;s <a href="./AmazonS3/latest/API/RESTBucketPUTnotification.html#RESTBucketPUTnotification-requests" target="_blank">PUT /?notification</a> action to set up notifications on the bucket, to call <a href="./AmazonS3/latest/API/RESTBucketPUTacl.html#RESTBucketPUTacl-requests" target="_blank">PUT /?acl</a> to set an access control list on the bucket, etc. The API set up is
+                        API to call the Amazon S3&apos;s <a href="./AmazonS3/latest/API/RESTBucketPUTnotification.html#RESTBucketPUTnotification-requests">PUT /?notification</a> action to set up notifications on the bucket, to call <a href="./AmazonS3/latest/API/RESTBucketPUTacl.html#RESTBucketPUTacl-requests">PUT /?acl</a> to set an access control list on the bucket, etc. The API set up is
                         similar, except for that you must append appropriate query parameters to the Amazon
                         S3 endpoint
                         URLs. At run time, you must provide the appropriate XML payload to the method request.
                         The
                         same can be said about supporting the other GET and DELETE operations on a Amazon
                         S3 bucket. For
-                        more information on possible &amp;S3; actions on a bucket, see <a href="./AmazonS3/latest/API/RESTBucketOps.html" target="_blank">Amazon S3 Operations on
+                        more information on possible &amp;S3; actions on a bucket, see <a href="./AmazonS3/latest/API/RESTBucketOps.html">Amazon S3 Operations on
                            Buckets</a>.
                      </p>
                      
@@ -810,16 +820,16 @@
                      
                      <p>Amazon S3 supports GET, DELETE, HEAD, OPTIONS, POST and PUT actions to access and
                         manage objects in a given bucket. For the complete list of supported actions, see
-                        <a href="./AmazonS3/latest/API/RESTObjectOps.html" target="_blank">Amazon S3 Operations on Objects</a>.
+                        <a href="./AmazonS3/latest/API/RESTObjectOps.html">Amazon S3 Operations on Objects</a>.
                      </p>
                      
                      
-                     <p>In this tutorial, we expose the <a href="./AmazonS3/latest/API/RESTObjectPUT.html" target="_blank">PUT
+                     <p>In this tutorial, we expose the <a href="./AmazonS3/latest/API/RESTObjectPUT.html">PUT
                            Object</a> operation,
                         the
-                        <a href="./AmazonS3/latest/API/RESTObjectGET.html" target="_blank">GET Object</a>
-                        operation, <a href="./AmazonS3/latest/API/RESTObjectHEAD.html" target="_blank">HEAD Object</a>
-                        operation, and the <a href="./AmazonS3/latest/API/RESTObjectDELETE.html" target="_blank">DELETE Object</a>
+                        <a href="./AmazonS3/latest/API/RESTObjectGET.html">GET Object</a>
+                        operation, <a href="./AmazonS3/latest/API/RESTObjectHEAD.html">HEAD Object</a>
+                        operation, and the <a href="./AmazonS3/latest/API/RESTObjectDELETE.html">DELETE Object</a>
                         operation through the API methods of <code class="literal">PUT /{folder}/{item}</code>, <code class="literal">GET
                            /{folder}/{item}</code>, <code class="literal">HEAD /{folder}/{item}</code> and <code class="literal">DELETE
                            /{folder}/{item}</code>, respectively.
@@ -919,6 +929,10 @@
                            </p>
                         </li>
                      </ol>
+                     
+                     <p>The payload size limit is 10 MB. See <a href="limits.html#api-gateway-execution-service-limits-table">API Gateway Limits for Configuring
+                           and Running a REST API</a>.
+                     </p>
                      
                      <p>Make sure that files on Amazon S3 have the correct content types added as the files&apos;
                         metadata. For streamable media content, <code class="code">Content-Disposition:inline</code> may also need to be added to the metadata.
@@ -1072,15 +1086,19 @@ Postman-Token: 9c43020a-966f-61e1-81af-4c49ad8d1392
                         <p>To upload or download an image, you need to set content handling to CONVERT_TO_BINARY.</p>
                      </div>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -1090,7 +1108,9 @@ Postman-Token: 9c43020a-966f-61e1-81af-4c49ad8d1392
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="api-as-lambda-proxy-export-swagger-with-extensions.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="api-as-s3-proxy-export-swagger-with-extensions.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -1112,6 +1132,10 @@ Postman-Token: 9c43020a-966f-61e1-81af-4c49ad8d1392
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

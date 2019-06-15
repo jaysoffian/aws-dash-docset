@@ -4,7 +4,8 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="ObjectOperations.html" title="Operations on Objects">
-      <link rel="prev" href="DeletingMultipleObjectsUsingREST.html" title="Deleting Multiple Objects Using the REST API">
+      <link rel="prev" href="DeletingMultipleObjectsUsingREST.html" title="Deleting Multiple Objects Using the
+                REST API">
       <link rel="next" href="SelectObjectContentUsingJava.html" title="Selecting Content from Objects Using the
                 SDK for Java">
       <meta name="description" content="Run a specified SQL expression against an object in Amazon S3, and return query results in response.">
@@ -12,6 +13,8 @@
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/selecting-content-from-objects.html">
@@ -21,7 +24,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +36,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="UsingObjects.html">Working with Amazon S3 Objects</a> &#xBB; <a href="ObjectOperations.html">Operations on Objects</a> &#xBB; <span class="breadcrumb">Selecting Content from Objects</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="UsingObjects.html">Working with Amazon S3 Objects</a> &#xBB; <a href="ObjectOperations.html">Operations on Objects</a> &#xBB; <span class="breadcrumb">Selecting Content from Objects</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="selecting-content-from-objects">Selecting Content from Objects</h1>
                      <p>With Amazon S3 Select, you can use simple structured query language (SQL) statements
@@ -47,24 +53,24 @@
                         S3 transfers,
                         which reduces the cost and latency to retrieve this data.
                      </p>
-                     <p>Amazon S3 Select works on objects stored in CSV or JSON format. It also works with
-                        objects that
-                        are compressed with GZIP, and server-side encrypted objects. You can specify the format
-                        of
-                        the results as either CSV or JSON, and you can determine how the records in the result
-                        are
-                        delimited.
+                     <p>Amazon S3 Select works on objects stored in CSV, JSON, or Apache Parquet format. It
+                        also works
+                        with objects that are compressed with GZIP or BZIP2 (for CSV and JSON objects only),
+                        and
+                        server-side encrypted objects. You can specify the format of the results as either
+                        CSV or
+                        JSON, and you can determine how the records in the result are delimited.
                      </p>
                      <p>You pass SQL expressions to Amazon S3 in the request. Amazon S3 Select supports a
                         subset of SQL. For
                         more information about the SQL elements that are supported by Amazon S3 Select, see
-                        <a href="s3-glacier-select-sql-reference.html">SQL Reference for Amazon S3 Select and Amazon Glacier
+                        <a href="s3-glacier-select-sql-reference.html">SQL Reference for Amazon S3 Select and Glacier
                            			Select</a>.
                      </p>
                      <p>You can perform SQL queries using AWS SDKs, the SELECT Object Content REST API, the
                         AWS Command Line Interface (AWS CLI), or the Amazon S3 console. The Amazon S3 console
                         limits the amount of data returned
-                        to 40 MB. To retrieve more data, use the AWS Command Line Interface or the API.
+                        to 40 MB. To retrieve more data, use the AWS CLI or the API.
                      </p>
                      
                      <h2 id="selecting-content-from-objects-requirements-and-limits">Requirements
@@ -116,6 +122,54 @@
                         </ul>
                      </div>
                      
+                     <p>Additional limitations apply when using Amazon S3 Select with Parquet objects:</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Amazon S3 Select supports only columnar compression using GZIP or Snappy. Amazon S3
+                                 Select doesn&apos;t support whole-object compression for Parquet objects.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Amazon S3 Select doesn&apos;t support Parquet output. You must specify the output format
+                                 as CSV or JSON.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The maximum uncompressed block size is 256 MB.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The maximum number of columns is 100.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>You must use the data types specified in the object&apos;s schema.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Selecting on a repeated field returns only the last value.</p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
                      
                      <h2 id="selecting-content-from-objects-contructing-request">Constructing a
                         Request
@@ -127,7 +181,7 @@
                         the SQL expression that Amazon S3 uses to filter the request.
                      </p>
                      
-                     <p>For more information about constructing an Amazon S3 Select request, see <a href="./AmazonS3/latest/API/RESTObjectSELECTContent.html" target="_blank"> SELECT Object Content</a> in the
+                     <p>For more information about constructing an Amazon S3 Select request, see <a href="./AmazonS3/latest/API/RESTObjectSELECTContent.html"> SELECT Object Content</a> in the
                         <em>Amazon Simple Storage Service API Reference</em>. You can also see one of the SDK code examples
                         in the following sections.
                      </p>
@@ -138,7 +192,7 @@
                      <p>Amazon S3 Select returns an error code and associated error message when an issue
                         is
                         encountered while attempting to execute a query. For a list of error codes and
-                        descriptions, see the <a href="./AmazonS3/latest/API/RESTObjectSELECTContent.html#RESTObjectSELECTContent-responses-special-errors" target="_blank">Special Errors</a> section of the <em>SELECT Object Content</em>
+                        descriptions, see the <a href="./AmazonS3/latest/API/RESTObjectSELECTContent.html#RESTObjectSELECTContent-responses-special-errors">Special Errors</a> section of the <em>SELECT Object Content</em>
                         page in the <em>Amazon Simple Storage Service API Reference</em>.
                      </p>
                      
@@ -160,7 +214,6 @@
                      <div class="itemizedlist">
                         
                         
-                        
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
@@ -170,15 +223,19 @@
                         </ul>
                      </div>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -188,7 +245,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="DeletingMultipleObjectsUsingREST.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="SelectObjectContentUsingJava.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -210,6 +269,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

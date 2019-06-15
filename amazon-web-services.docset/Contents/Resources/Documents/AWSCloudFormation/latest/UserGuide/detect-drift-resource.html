@@ -1,0 +1,280 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Detect Drift on Individual Stack Resources - AWS CloudFormation</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="using-cfn-stack-drift.html" title="Detecting Unmanaged Configuration Changes to Stacks and
+            Resources">
+      <link rel="prev" href="detect-drift-stack.html" title="Detect Drift on an Entire CloudFormation Stack Detect Drift on Individual Stack Resources">
+      <link rel="next" href="using-cfn-stack-drift-resource-list.html" title="Resources that Support Drift Detection">
+      <meta name="description" content="You can detect drift on specific resources within a stack, rather than the entire stack. This is especially useful when you only need to determine if specific resources now match their expected template configurations again.">
+      <meta name="keywords" content="CloudFormation,AWSCloudFormation,resource provisioning,resource configuration,infrastructure management,CloudFormer,CloudFormation Designer,CloudFormation stack,CloudFormation stackset,CloudFormation template,change set">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="AWS CloudFormation">
+      <meta name="guide" content="User Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/detect-drift-resource.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudformation/index.html">AWS CloudFormation</a> &#xBB; <a href="index.html">User Guide</a> &#xBB; <a href="stacks.html">Working with Stacks</a> &#xBB; <a href="using-cfn-stack-drift.html">Detecting Unmanaged Configuration Changes to Stacks and
+                                    Resources</a> &#xBB; <span class="breadcrumb">Detect Drift on Individual Stack Resources</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="detect-drift-resource">Detect Drift on Individual Stack Resources</h1>
+                     <p>You can detect drift on specific resources within a stack, rather than the entire
+                        stack. This is especially useful when you only need to determine if specific resources
+                        now match their expected template configurations again. 
+                     </p>
+                     <p>When performing drift detection on a resource, CloudFormation also updates the overall
+                        stack drift status and the <b>Last drift check time</b>, if
+                        applicable. For example, suppose a stack has a drift status of
+                        <b>IN_SYNC</b>. You have CloudFormation perform drift detection on one
+                        or more resources contained in that stack, and CloudFormation detects that one or
+                        more
+                        of those resources has drifted. CloudFormation updates the stack drift status to
+                        <b>DRIFTED</b>. Conversely, suppose you have a stack with a drift
+                        status of <b>DRIFTED</b> because of a single drifted resource. If you set
+                        that resource back to its expected property values, and then detect drift on the
+                        resource again, CloudFormation will update both resource drift status and stack drift
+                        status to <b>IN_SYNC</b> without requiring you to detect drift on the
+                        entire stack again.
+                     </p>
+                     <p class="title"><b>To detect drift on an individual resource using the AWS Management Console</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the AWS CloudFormation console at
+                              <a href="https://console.aws.amazon.com/cloudformation/" target="_blank">https://console.aws.amazon.com/cloudformation</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>From the list of stacks, select the stack that contains the resource.
+                              CloudFormation displays the stack details for that stack.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           <p>In the left navigation pane, under <b>Stacks</b>, choose
+                              <b>Drifts</b>.
+                           </p>
+                        </li>
+                        <li>
+                           <p>Under <b>Resource drift status</b>, choose the resource and then select
+                              <b>Detect drift for resource</b>.
+                           </p>
+                           
+                           <div class="mediaobject">
+                              
+                              <img src="../../..//img/console-stacks-drifts-resource-drift-status-detect.png" alt="
+                        The Resource drift status section of the Drift Details page, with a resource selected and the Detect drift for resource button highlighted.
+                    " style="max-width:100%">
+                              
+                              
+                              
+                           </div>
+                           
+                           
+                           <p>CloudFormation performs drift detection on the selected resource. If
+                              successful, CloudFormation updates the resource&apos;s drift status, and the overall
+                              stack drift status, if necessary. CloudFormation also updates time stamp for
+                              when drift detection was last performed on the resource, and the stack as a
+                              whole. If the resource has been modified, CloudFormation displays detailed drift
+                              information about the expected and current property values of the
+                              resource.
+                           </p>               
+                           
+                        </li>
+                        <li>
+                           <p>Review the drift detection results for the resource.</p>
+                           
+                           <ol>
+                              <li>
+                                 <p>To view the details on a modified resource.</p>
+                                 
+                                 <ol>
+                                    <li>
+                                       
+                                       <p>With the modified resource selected, select <b>View drift details</b>.
+                                       </p>
+                                       
+                                       <p>CloudFormation displays the drift details for that resource,
+                                          including the resource&apos;s expected and current property values,
+                                          and any differences between the two. 
+                                       </p>
+                                       
+                                       <p>To highlight a difference, in the <b>Differences</b>
+                                          section select the property name.
+                                       </p>
+                                       
+                                       <div class="itemizedlist">
+                                          
+                                          
+                                          
+                                          
+                                          <ul class="itemizedlist" type="disc">
+                                             <li class="listitem">
+                                                <p>Added properties are highlighted in green in the <b>Current</b> column of the
+                                                   <b>Details</b> section.
+                                                </p>
+                                             </li>
+                                             <li class="listitem">
+                                                <p>Deleted properties are highlighted in red in the <b>Expected</b> column of the
+                                                   <b>Details</b> section.
+                                                </p>
+                                             </li>
+                                             <li class="listitem">
+                                                <p>Properties whose value have been changed are highlighted in yellow in the both
+                                                   <b>Expected</b> and
+                                                   <b>Current</b> columns.
+                                                </p>
+                                             </li>
+                                          </ul>
+                                       </div>
+                                       
+                                    </li>
+                                 </ol>
+                              </li>
+                           </ol>
+                           
+                           <div class="mediaobject">
+                              
+                              <img src="../../..//img/console-stacks-drifts-drift-details-differences-1.png" alt="
+                        The Resource drift status section of the Drift Details page, which
+                            contains drift information for each resource in the stack that supports
+                            drift detection. Details include drift status and expected and current
+                            property values.
+                    " style="max-width:100%">
+                              
+                              
+                              
+                           </div>
+                           
+                        </li>
+                     </ol>
+                     <p class="title"><b>To detect drift on an individual resource using the AWS CLI</b></p>
+                     <ul>
+                        <li>            
+                           
+                           <p>To detect drift on an individual resource using the AWS CLI, use the <code class="code">aws
+                                 cloudformation detect-stack-resource-drift</code> command. Specify the logical ID of the
+                              resource, as well as the stack in which it is contained.
+                           </p>
+                           
+                           <p>The following example runs a drift detection operation on a specific stack
+                              resources, <em>my-drifted-resource</em>. The response returns
+                              information that confirms the resource has been modified, including details
+                              about two of its properties whose values have been changed. 
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">PROMPT&gt; aws cloudformation detect-stack-resource-drift --stack-name <em class="replaceable"><code>my-stack-with-resource-drift</code></em> --logical-resource-id <em class="replaceable"><code>my-drifted-resource</code></em>
+{
+    &quot;StackResourceDrift&quot;: {
+        &quot;StackId&quot;: &quot;arn:aws:cloudformation:us-east-1:099908667365:stack/my-stack-with-resource-drift/489e5570-df85-11e7-a7d9-50example&quot;, 
+        &quot;ActualProperties&quot;: &quot;{\&quot;ReceiveMessageWaitTimeSeconds\&quot;:0,\&quot;DelaySeconds\&quot;:120,\&quot;RedrivePolicy\&quot;:{\&quot;deadLetterTargetArn\&quot;:\&quot;arn:aws:sqs:us-east-1:099908667365:my-stack-with-resource-drift-DLQ-1BCY7HHD5QIM3\&quot;,\&quot;maxReceiveCount\&quot;:12},\&quot;MessageRetentionPeriod\&quot;:345600,\&quot;MaximumMessageSize\&quot;:262144,\&quot;VisibilityTimeout\&quot;:60,\&quot;QueueName\&quot;:\&quot;my-stack-with-resource-drift-Queue-494PBHCO76H4\&quot;}&quot;, 
+        &quot;ResourceType&quot;: &quot;AWS::SQS::Queue&quot;, 
+        &quot;Timestamp&quot;: &quot;2018-03-26T18:54:28.462Z&quot;, 
+        &quot;PhysicalResourceId&quot;: &quot;https://sqs.us-east-1.amazonaws.com/099908667365/my-stack-with-resource-drift-Queue-494PBHCO76H4&quot;, 
+        &quot;StackResourceDriftStatus&quot;: &quot;MODIFIED&quot;, 
+        &quot;ExpectedProperties&quot;: &quot;{\&quot;ReceiveMessageWaitTimeSeconds\&quot;:0,\&quot;DelaySeconds\&quot;:20,\&quot;RedrivePolicy\&quot;:{\&quot;deadLetterTargetArn\&quot;:\&quot;arn:aws:sqs:us-east-1:099908667365:my-stack-with-resource-drift-DLQ-1BCY7HHD5QIM3\&quot;,\&quot;maxReceiveCount\&quot;:10},\&quot;MessageRetentionPeriod\&quot;:345600,\&quot;MaximumMessageSize\&quot;:262144,\&quot;VisibilityTimeout\&quot;:60,\&quot;QueueName\&quot;:\&quot;my-stack-with-resource-drift-Queue-494PBHCO76H4\&quot;}&quot;, 
+        &quot;PropertyDifferences&quot;: [
+            {
+                &quot;PropertyPath&quot;: &quot;/DelaySeconds&quot;, 
+                &quot;ActualValue&quot;: &quot;120&quot;, 
+                &quot;ExpectedValue&quot;: &quot;20&quot;, 
+                &quot;DifferenceType&quot;: &quot;NOT_EQUAL&quot;
+            }, 
+            {
+                &quot;PropertyPath&quot;: &quot;/RedrivePolicy/maxReceiveCount&quot;, 
+                &quot;ActualValue&quot;: &quot;12&quot;, 
+                &quot;ExpectedValue&quot;: &quot;10&quot;, 
+                &quot;DifferenceType&quot;: &quot;NOT_EQUAL&quot;
+            }
+        ], 
+        &quot;LogicalResourceId&quot;: &quot;my-drifted-resource&quot;
+    }
+}</code></pre>
+                           </li>
+                     </ul>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="detect-drift-stack.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="using-cfn-stack-drift-resource-list.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper"></div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='AWS CloudFormation';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

@@ -4,13 +4,15 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="Introduction.html" title="What Is Amazon CloudFront?">
-      <link rel="next" href="HowCloudFrontWorks.html" title="How CloudFront Delivers Content">
+      <link rel="next" href="IntroductionUseCases.html" title="CloudFront Use Cases">
       <meta name="description" content="Speed up distribution of your static and dynamic web content to end user with the Amazon CloudFront web service.">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html">
@@ -20,7 +22,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,10 +34,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">What Is Amazon CloudFront?</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">What Is Amazon CloudFront?</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="Introduction">What Is Amazon CloudFront?</h1>
                      <p>Amazon CloudFront is a web service that speeds up distribution of your static and
@@ -60,17 +65,16 @@
                               </p>
                            </li>
                            <li class="listitem">
-                              <p>If the content is not in that edge location, CloudFront retrieves it from an Amazon
-                                 S3 bucket or an HTTP 
-                                 			server (for example, a web server) that you have identified as the source for the
-                                 definitive 
-                                 			version of your content.
+                              <p>If the content is not in that edge location, CloudFront retrieves it from an origin
+                                 that you&apos;ve
+                                 			defined&#x2014;such as an Amazon S3 bucket, a MediaPackage channel, or an HTTP server
+                                 (for example, a web server) 
+                                 			that you have identified as the source for the definitive version of your content.
                               </p>
                            </li>
                         </ul>
                      </div>
-                     <p>This concept is best illustrated by an example. Suppose you&apos;re serving an image from
-                        a 
+                     <p>As an example, suppose that you&apos;re serving an image from a 
                         		traditional web server, not from CloudFront. For example, you might serve an image,
                         sunsetphoto.png,
                         		using the URL <code class="code">http://example.com/sunsetphoto.png</code>.
@@ -81,72 +85,166 @@
                         of 
                         		interconnected networks that comprise the internet&#x2014;until the image was found. 
                      </p>
-                     <p>Now let&apos;s say that the web server that you&apos;re serving the image from is in Seattle,
-                        
-                        		Washington, USA, and that a user in Austin, Texas, USA requests the image. The following
-                        
-                        		traceroute list (courtesy of www.WatchMouse.com) shows one way that this request
-                        could be 
-                        		routed. 
-                     </p>
-                     <div class="mediaobject"> 
-                        			 
-                        			 
-                        				<img src="../../..//img/GSG_0001_RouteText.png" alt=" 
-				WatchMouse 
-			"> 
-                        			 
-                        			 
-                        		
-                     </div>
-                     <div class="mediaobject"> 
-                        			 
-                        			 
-                        				<img src="../../..//img/GSG_0001_USMapWithRoute.png" alt=" 
-				U.S. map 
-			"> 
-                        			 
-                        			 
-                        		
-                     </div>
-                     <p>In this example, the request was routed 10 times within the United States before the
-                        image 
-                        		was retrieved, which is not an unusually large number of &quot;hops&quot; (the individual
-                        network paths between the 
-                        		person viewing the content and the server the file is served from). If your user
-                        were in Europe, the request 
-                        		would be routed through even more networks to reach your server in Seattle. The
-                        number of networks and the 
-                        		distance that the request and the image must travel have a significant impact on
-                        the 
-                        		performance, reliability, and availability of the image. 
-                     </p>
                      <p>CloudFront speeds up the distribution of your content by routing each user request
-                        to the edge 
-                        		location that can best serve your content. Typically, this is a CloudFront edge
+                        through the
+                        			AWS backbone network to the edge 
+                        			location that can best serve your content. Typically, this is a CloudFront edge
                         server that 
-                        		provides the fastest delivery to the viewer. This dramatically reduces the number
-                        of 
-                        		networks that your users&apos; requests must pass through, which improves performance.
+                        			provides the fastest delivery to the viewer. Using the AWS network dramatically
+                        reduces the number of 
+                        			networks that your users&apos; requests must pass through, which improves performance.
                         Users get lower 
-                        		latency&#x2014;the time it takes to load the first byte of the file&#x2014;and higher data transfer
+                        			latency&#x2014;the time it takes to load the first byte of the file&#x2014;and higher data transfer
                         rates.
                      </p>
                      <p>You also get increased reliability and availability because copies of your files (also
                         known as 
                         		<em>objects)</em> are now held (or cached) in multiple edge locations around the world. 
                      </p>
-                     <p>For a list of the locations of CloudFront edge servers, see the <a href="https://aws.amazon.com/cloudfront/details" target="_blank">Amazon CloudFront Product Details page</a>.
-                     </p>
                      <div class="highlights">
                         <p><strong>Topics</strong></p>
                         <ul>
+                           <li><a href="#HowCloudFrontWorksOverview">How You Set Up CloudFront to Deliver Content</a></li>
+                           <li><a href="IntroductionUseCases.html">CloudFront Use Cases</a></li>
                            <li><a href="HowCloudFrontWorks.html">How CloudFront Delivers Content</a></li>
                            <li><a href="LocationsOfEdgeServers.html">Locations and IP Address Ranges of CloudFront Edge Servers</a></li>
                            <li><a href="introduction-accessing-cloudfront.html">Accessing CloudFront</a></li>
+                           <li><a href="welcome-how-to-get-started.html">How to Get Started with Amazon CloudFront</a></li>
+                           <li><a href="IAMCloudFront.html">AWS Identity and Access Management</a></li>
                            <li><a href="CloudFrontPricing.html">CloudFront Pricing</a></li>
-                           <li><a href="compliance.html">CloudFront Compliance</a></li>
                         </ul>
+                     </div> 
+                     		
+                     <h2 id="HowCloudFrontWorksOverview">How You Set Up CloudFront to Deliver Content</h2>
+                     		
+                     		
+                     <p>You create a CloudFront distribution to tell CloudFront where you want content to
+                        be delivered from, and the details 
+                        			about how to track and manage content delivery. Then CloudFront uses computers&#x2014;edge
+                        servers&#x2014;that are 
+                        			close to your viewers to deliver that content quickly when someone wants to see
+                        it or use it.
+                     </p>
+                     
+                     		
+                     <div class="mediaobject"> 
+                        			 
+                        			 
+                        				<img src="../../..//img/how-you-configure-cf.png" alt=" 
+				How CloudFront works 
+			"> 
+                        			 
+                        			 
+                        		
+                     </div> 
+                     
+                     		<a id="HowCloudFrontWorksConfiguration"></a><p class="title"><b>How You Configure CloudFront to Deliver Your 
+                           				Content</b></p>
+                     <ol>
+                        <li> 
+                           				
+                           <p>You specify <em>origin servers</em>, like an Amazon S3 bucket or your own
+                              					HTTP server, from which CloudFront gets your files which will then be distributed
+                              from CloudFront edge 
+                              					locations all over the world. 
+                           </p> 
+                           				
+                           <p>An origin server stores the original, definitive version of your objects. If you&apos;re
+                              
+                              					serving content over HTTP, your origin server is either an Amazon S3 bucket or
+                              an HTTP server, 
+                              					such as a web server. Your HTTP server can run on an Amazon Elastic Compute Cloud
+                              (Amazon EC2) instance or on a 
+                              					server that you manage; these servers are also known as <em>custom 
+                                 						origins.</em></p> 
+                           				
+                           <p>If you use the Adobe Media Server RTMP protocol to distribute media files on demand,
+                              
+                              					your origin server is always an Amazon S3 bucket.
+                           </p> 
+                           			
+                        </li>
+                        <li> 
+                           				
+                           <p>You upload your files to your origin servers. Your files, also known as 
+                              					<em>objects</em>, typically include web pages, images, and media files, but 
+                              					can be anything that can be served over HTTP or a supported version of Adobe
+                              RTMP, the 
+                              					protocol used by Adobe Flash Media Server.
+                           </p> 
+                           				
+                           <p>If you&apos;re using an Amazon S3 bucket as an origin server, you can make the objects
+                              in your 
+                              					bucket publicly readable, so that anyone who knows the CloudFront URLs for your
+                              objects can 
+                              					access them. You also have the option of keeping objects private and controlling
+                              who 
+                              					accesses them. See <a href="PrivateContent.html">Serving Private Content with Signed URLs and Signed Cookies</a>. 
+                              				
+                           </p> 
+                           			
+                        </li>
+                        <li> 
+                           				
+                           <p>You create a CloudFront <em>distribution</em>, which tells CloudFront which origin 
+                              					servers to get your files from when users request the files through your web
+                              site or 
+                              					application. At the same time, you specify details such as whether you want CloudFront
+                              to log 
+                              					all requests and whether you want the distribution to be enabled as soon as it&apos;s
+                              
+                              					created.
+                           </p> 
+                           			
+                        </li>
+                        <li> 
+                           				
+                           <p>CloudFront assigns a domain name to your new distribution that you can see in the
+                              CloudFront 
+                              					console, or that is returned in the response to a programmatic request, for example,
+                              an API 
+                              					request.
+                           </p> 
+                           			
+                        </li>
+                        <li> 
+                           				
+                           <p>CloudFront sends your distribution&apos;s configuration (but not your content) to all of
+                              its 
+                              					<b>edge locations</b>&#x2014;collections of servers in 
+                              					geographically dispersed data centers where CloudFront caches copies of your
+                              objects.
+                           </p> 
+                           			
+                        </li>
+                     </ol> 
+                     
+                     		
+                     <p>As you develop your website or application, you use the domain name that CloudFront
+                        provides for 
+                        			your URLs. For example, if CloudFront returns <code class="code">d111111abcdef8.cloudfront.net</code> as the domain name 
+                        			for your distribution, the URL for logo.jpg in your Amazon S3 bucket (or in the
+                        root directory on 
+                        			an HTTP server) will be <code class="code">http://d111111abcdef8.cloudfront.net/logo.jpg</code>.
+                     </p> 
+                     		
+                     <p>Or you can configure your CloudFront distribution so you can use your own domain name.
+                        In that 
+                        			case, the URL might be <code class="code">http://www.example.com/logo.jpg</code>.
+                     </p> 
+                     		
+                     <p>Optionally, you can configure your origin server to add headers to the files, to 
+                        			indicate how long you want the files to stay in the cache in CloudFront edge locations.
+                        By default, 
+                        			each object stays in an edge location for 24 hours before it expires. The minimum
+                        expiration 
+                        			time is 0 seconds; there isn&apos;t a maximum expiration time limit. For more information,
+                        see 
+                        			<a href="Expiration.html">Managing How Long Content Stays in an Edge Cache (Expiration)</a>.
+                     </p> 
+                     	
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
                   </div>
                   <noscript>
@@ -154,9 +252,10 @@
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -165,15 +264,28 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="n" href="HowCloudFrontWorks.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="n" href="IntroductionUseCases.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
             <div id="right-expanded">
-               <div id="right-content-wrapper"></div>
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="How You Set Up CloudFront to Deliver Content"><a class="pagetoc" href="#HowCloudFrontWorksOverview">How You Set Up CloudFront to Deliver Content</a></li>
+                     </ul>
+                  </div>
+               </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

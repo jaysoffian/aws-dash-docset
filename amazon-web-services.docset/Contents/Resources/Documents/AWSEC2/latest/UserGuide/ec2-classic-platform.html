@@ -1,0 +1,1326 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>EC2-Classic - Amazon Elastic Compute Cloud</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="EC2_Network_and_Security.html" title="Network and Security">
+      <link rel="prev" href="using-vpc.html" title="Virtual Private Clouds">
+      <link rel="next" href="vpc-classiclink.html" title="ClassicLink">
+      <meta name="description" content="With EC2-Classic, your instances run in a single, flat network that you share with other customers. With Amazon VPC, your instances run in a virtual private cloud (VPC) that&apos;s logically isolated to your AWS account.">
+      <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Elastic Compute Cloud">
+      <meta name="guide" content="User Guide for Linux Instances">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-classic-platform.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="EC2_Network_and_Security.html">Network and Security</a> &#xBB; <span class="breadcrumb">EC2-Classic</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="ec2-classic-platform">EC2-Classic</h1>
+                     <p>With EC2-Classic, your instances run in a single, flat network that you share
+                        with other customers. With Amazon VPC, your instances run in a virtual private cloud
+                        (VPC)
+                        that&apos;s logically isolated to your AWS account.
+                     </p>
+                     <p>The EC2-Classic platform was introduced in the original release of Amazon EC2. If
+                        you created
+                        your AWS account after 2013-12-04, it does not support EC2-Classic, so you must launch
+                        your
+                        Amazon EC2 instances in a VPC.
+                     </p>
+                     <p>If your account does not support EC2-Classic, we create a default VPC for you. 
+                        By default, when you launch an instance, we launch it into your default VPC.  
+                        Alternatively, you can create a nondefault VPC and specify it when you launch an 
+                        instance.
+                     </p>
+                     
+                     <h2 id="ec2-supported-platforms">Detecting Supported Platforms</h2>
+                     
+                     <p>The Amazon EC2 console indicates which platforms you can launch instances into for
+                        the
+                        selected region, and whether you have a default VPC in that region.
+                     </p>
+                     
+                     <p>Verify that the region you&apos;ll use is selected in the navigation bar. 
+                        On the Amazon EC2 console dashboard, look for <b>Supported Platforms</b> 
+                        under <b>Account Attributes</b>.
+                     </p>
+                     
+                     
+                     
+                     <h3 id="both-platforms">Accounts that Support EC2-Classic</h3>
+                     
+                     
+                     <p>The dashboard displays the following under <b>Account Attributes</b> to
+                        indicate that the account supports both the EC2-Classic platform and VPCs in this
+                        region, 
+                        but the region does not have a default VPC.
+                     </p>
+                     
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/classic_indicator.png" alt="
+                    The Supported Platforms indicator
+                ">
+                        
+                        
+                        
+                     </div>
+                     
+                     
+                     <p>The output of the <a href="./cli/latest/reference/ec2/describe-account-attributes.html">describe-account-attributes</a> command includes both the <code class="code">EC2</code> and
+                        <code class="code">VPC</code> values for the <code class="code">supported-platforms</code> attribute.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 describe-account-attributes --attribute-names supported-platforms</code></strong><code class="computeroutput" copy="false">
+{
+    &quot;AccountAttributes&quot;: [
+        {
+            &quot;AttributeName&quot;: &quot;supported-platforms&quot;,
+            &quot;AttributeValues&quot;: [
+                {
+                    &quot;AttributeValue&quot;: &quot;EC2&quot;
+                },
+                {
+                    &quot;AttributeValue&quot;: &quot;VPC&quot;
+                }
+            ]
+        }
+    ]
+}</code></code></pre>
+                     
+                     
+                     
+                     <h3 id="vpc-only">Accounts that Require a VPC</h3>
+                     
+                     
+                     <p>The dashboard displays the following under <b>Account Attributes</b> 
+                        to indicate that the account requires a VPC to launch instances in this region, does
+                        
+                        not support the EC2-Classic platform in this region, and the region has a default
+                        VPC 
+                        with the identifier <code class="code">vpc-1a2b3c4d</code>.
+                     </p>
+                     
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/vpc_indicator.png" alt="
+                    The Supported Platforms indicator
+                ">
+                        
+                        
+                        
+                     </div>
+                     
+                     
+                     <p>The output of the <a href="./cli/latest/reference/ec2/describe-account-attributes.html">describe-account-attributes</a> command includes only the <code class="code">VPC</code>
+                        value for the <code class="code">supported-platforms</code> attribute.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 describe-account-attributes --attribute-names supported-platforms</code></strong><code class="computeroutput" copy="false">
+{
+    &quot;AccountAttributes&quot;: [
+        {
+            &quot;AttributeValues&quot;: [
+                {
+                    &quot;AttributeValue&quot;: &quot;VPC&quot;
+                }
+            ]
+            &quot;AttributeName&quot;: &quot;supported-platforms&quot;,
+        }
+    ]
+}</code></code></pre>
+                     
+                     
+                     <h2 id="ec2-classic-instance-types">Instance Types Available in EC2-Classic</h2>
+                     
+                     
+                     <p>Most of the newer instance types require a VPC. The following are the only instance
+                        types 
+                        supported in EC2-Classic:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>General purpose: M1, M3, and T1</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Compute optimized: C1, C3, and CC2</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Memory optimized: CR1, M2, and R3</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Storage optimized: D2, HS1, and I2</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Accelerated computing: G2</p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <p>If your account supports EC2-Classic but you have not created a nondefault VPC, you
+                        can do one
+                        of the following to launch instances that require a VPC:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Create a nondefault VPC and launch your VPC-only instance into it by specifying a
+                                 subnet
+                                 ID or a network interface ID in the request. Note that you must create a
+                                 nondefault VPC if you do not have a default VPC and you are using the AWS CLI,
+                                 Amazon EC2 API, or AWS SDK to launch a VPC-only instance. For more information, see
+                                 <a href="get-set-up-for-amazon-ec2.html#create-a-vpc">Create a Virtual Private Cloud (VPC)</a>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Launch your VPC-only instance using the Amazon EC2 console. The Amazon EC2 console
+                                 creates a
+                                 nondefault VPC in your account and launches the instance into the subnet in the
+                                 first Availability Zone. The console creates the VPC with the following
+                                 attributes:
+                              </p>
+                              
+                              <div class="itemizedlist">
+                                 
+                                 
+                                 
+                                 
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       
+                                       <p>One subnet in each Availability Zone, with the public IPv4 addressing attribute set
+                                          to
+                                          <code class="code">true</code> so that instances receive a public IPv4 address.
+                                          For more information, see <a href="./vpc/latest/userguide/vpc-ip-addressing.html">IP Addressing in Your
+                                             VPC</a> in the <em>Amazon VPC User Guide</em>.
+                                       </p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p>An Internet gateway, and a main route table that routes traffic in the VPC
+                                          to the Internet gateway. This enables the instances you launch in the VPC
+                                          to communicate over the Internet. For more information, see
+                                          <a href="./vpc/latest/userguide/VPC_Internet_Gateway.html">Internet Gateways</a> 
+                                          in the <em>Amazon VPC User Guide</em>.
+                                       </p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p>A default security group for the VPC and a default network ACL that is associated
+                                          
+                                          with each subnet. For more information, see <a href="./vpc/latest/userguide/VPC_Security.html">Security in Your VPC</a> in the
+                                          <em>Amazon VPC User Guide</em>.
+                                       </p>
+                                       
+                                    </li>
+                                 </ul>
+                              </div>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>If you have other resources in EC2-Classic, you can take steps to migrate them to
+                        a VPC. 
+                        For more information, see <a href="vpc-migrate.html">Migrating from a Linux Instance in EC2-Classic to a Linux Instance in a VPC</a>.
+                     </p>
+                     
+                     
+                     <h2 id="differences-ec2-classic-vpc">Differences Between Instances in EC2-Classic and a
+                        VPC
+                     </h2>
+                     
+                     
+                     <p>The following table summarizes the differences between instances launched in
+                        EC2-Classic, instances launched in a default VPC, and instances launched in 
+                        a nondefault VPC.
+                     </p>
+                     
+                     
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w306aac27c31c13b5">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Characteristic</th>
+                                 
+                                 <th>EC2-Classic</th>
+                                 
+                                 <th>Default VPC</th>
+                                 
+                                 <th>Nondefault VPC</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>Public IPv4 address (from Amazon&apos;s public IP address pool)</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Your instance receives a public IPv4 address from the EC2-Classic 
+                                       public IPv4 address pool.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Your instance launched in a default subnet receives a public IPv4
+                                       address by default, unless you specify otherwise during launch, or
+                                       you modify the subnet&apos;s public IPv4 address attribute. 
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Your instance doesn&apos;t receive a public IPv4 address by default,
+                                       unless you specify otherwise during launch, or you modify the
+                                       subnet&apos;s public IPv4 address attribute.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>Private IPv4 address</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Your instance receives a private IPv4 address from the
+                                       EC2-Classic range each time it&apos;s started.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Your instance receives a static private IPv4 address from the
+                                       address range of your default VPC.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Your instance receives a static private IPv4 address from the
+                                       address range of your VPC.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>Multiple private IPv4 addresses</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>We select a single private IP address for your instance; multiple
+                                       IP addresses are not supported.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>You can assign multiple private IPv4 addresses to your
+                                       instance.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>You can assign multiple private IPv4 addresses to your
+                                       instance.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>Elastic IP address (IPv4)</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>An Elastic IP is disassociated from your instance when you stop
+                                       it.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>An Elastic IP remains associated with your instance when you stop
+                                       it.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>An Elastic IP remains associated with your instance when you stop
+                                       it.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>Associating an Elastic IP address</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>You associate an Elastic IP address with an instance.</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>An Elastic IP address is a property of a network interface. You  
+                                       associate an Elastic IP address with an instance by updating the 
+                                       network interface attached to the instance.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>An Elastic IP address is a property of a network interface. You  
+                                       associate an Elastic IP address with an instance by updating the 
+                                       network interface attached to the instance.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>Reassociating an Elastic IP address</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>If the Elastic IP address is already associated with another instance,
+                                       the address is automatically associated with the new instance.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>If the Elastic IP address is already associated with another instance, 
+                                       the address is automatically associated with the new instance.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>If the Elastic IP address is already associated with another instance, 
+                                       it succeeds only if you allowed reassociation.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>Tagging Elastic IP addresses</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>You cannot apply tags to an Elastic IP address.</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>You can apply tags to an Elastic IP address.</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>You can apply tags to an Elastic IP address.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>DNS hostnames</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>DNS hostnames are enabled by default.</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>DNS hostnames are enabled by default.</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>DNS hostnames are disabled by default.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>Security group</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>A security group can reference security groups that belong to
+                                       other AWS accounts.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>A security group can reference security groups for your VPC only.</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>A security group can reference security groups for your VPC only.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>Security group association</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>You can assign an unlimited number of security groups to an
+                                       instance when you launch it.
+                                    </p>
+                                    
+                                    <p>You can&apos;t change the security groups of your running instance. You
+                                       can either modify the rules of the assigned security groups, or
+                                       replace the instance with a new one (create an AMI from the
+                                       instance, launch a new instance from this AMI with the security
+                                       groups that you need, disassociate any Elastic IP address from the
+                                       original instance and associate it with the new instance, and then
+                                       terminate the original instance).
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>You can assign up to 5 security groups to an instance.</p>
+                                    
+                                    <p>You can assign security groups to your instance when you launch it
+                                       and while it&apos;s running.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>You can assign up to 5 security groups to an instance.</p>
+                                    
+                                    <p>You can assign security groups to your instance when you launch it
+                                       and while it&apos;s running.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>Security group rules</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>You can add rules for inbound traffic only.</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>You can add rules for inbound and outbound traffic.</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>You can add rules for inbound and outbound traffic.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>Tenancy</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Your instance runs on shared hardware.</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>You can run your instance on shared hardware or single-tenant
+                                       hardware.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>You can run your instance on shared hardware or single-tenant
+                                       hardware.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Accessing the Internet</td>
+                                 
+                                 <td>Your instance can access the Internet. Your instance automatically
+                                    receives a public IP address, and can access the Internet directly
+                                    through the AWS network edge.
+                                 </td>
+                                 
+                                 <td>By default, your instance can access the Internet. Your instance
+                                    receives a public IP address by default. An Internet gateway is attached
+                                    to your default VPC, and your default subnet has a route to the Internet
+                                    gateway.
+                                 </td>
+                                 
+                                 <td>By default, your instance cannot access the Internet. Your instance
+                                    doesn&apos;t receive a public IP address by default. Your VPC may have an
+                                    Internet gateway, depending on how it was created. 
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>IPv6 addressing</td>
+                                 
+                                 <td>IPv6 addressing is not supported. You cannot assign IPv6 addresses to
+                                    your instances.
+                                 </td>
+                                 
+                                 <td>You can optionally associate an IPv6 CIDR block with your VPC, and
+                                    assign IPv6 addresses to instances in your VPC.
+                                 </td>
+                                 
+                                 <td>You can optionally associate an IPv6 CIDR block with your VPC, and
+                                    assign IPv6 addresses to instances in your VPC.
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     
+                     <h3 id="ec2-classic-security-groups">Security Groups for EC2-Classic</h3>
+                     
+                     
+                     <p>If you&apos;re using EC2-Classic, you must use security groups created specifically for
+                        EC2-Classic. When you launch an instance in EC2-Classic, you must specify a security
+                        group in the same region as the instance. You can&apos;t specify a security group that
+                        you
+                        created for a VPC when you launch an instance in EC2-Classic.
+                     </p>
+                     
+                     
+                     <p>After you launch an instance in EC2-Classic, you can&apos;t change its security groups.
+                        However,
+                        you can add rules to or remove rules from a security group, and those changes are
+                        automatically applied to all instances that are associated with the security group
+                        after
+                        a short period.
+                     </p>
+                     
+                     
+                     <p>Your AWS account automatically has a default security group per region for EC2-Classic.
+                        If you try to delete the default security group, you&apos;ll get the following error: 
+                        Client.InvalidGroup.Reserved: The security group &apos;default&apos; is reserved.
+                     </p>
+                     
+                     
+                     <p>You can create custom security groups. The security group name must be unique within
+                        your 
+                        account for the region. To create a security group for use in EC2-Classic, choose
+                        <b>No VPC</b> for the VPC.
+                     </p>
+                     
+                     <p>You can add inbound rules to your default and custom security groups.
+                        You can&apos;t change the outbound rules for an EC2-Classic security group.
+                        When you create a security group rule, you can use a different security group for
+                        EC2-Classic 
+                        in the same region as the source or destination. To specify a security group for another
+                        
+                        AWS account, add the AWS account ID as a prefix; for example, <code class="code">111122223333/sg-edcd9784</code>.
+                     </p>
+                     
+                     
+                     <p>In EC2-Classic, you can have up to 500 security groups in each region for each
+                        account. You can associate an instance with up to 500 security groups and add up to
+                        100
+                        rules to a security group.
+                     </p>
+                     
+                     
+                     
+                     
+                     
+                     <h3 id="ip-addressing-differences">IP Addressing and DNS</h3>
+                     
+                     <p>Amazon provides a DNS server that resolves Amazon-provided IPv4 DNS hostnames to IPv4
+                        addresses. In EC2-Classic, the Amazon DNS server is located at
+                        <code class="code">172.16.0.23</code>.
+                     </p>
+                     
+                     <p>If you create a custom firewall configuration in EC2-Classic, you must create a rule
+                        in
+                        your firewall that allows inbound traffic from port 53 (DNS)&#x2014;with a destination
+                        port from the ephemeral range&#x2014;from the address of the Amazon DNS server;
+                        otherwise, internal DNS resolution from your instances fails. If your firewall doesn&apos;t
+                        automatically allow DNS query responses, then you need to allow traffic from the IP
+                        address of the Amazon DNS server. To get the IP address of the Amazon DNS server,
+                        use
+                        the following command from within your instance:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">grep nameserver /etc/resolv.conf</code></pre>
+                     
+                     
+                     
+                     
+                     <h3 id="VPC_EIP_EC2_Differences">Elastic IP Addresses</h3>
+                     
+                     
+                     <p>If your account supports EC2-Classic, there&apos;s one pool of Elastic IP addresses for
+                        use with
+                        the EC2-Classic platform and another for use with your VPCs. You can&apos;t
+                        associate an Elastic IP address that you allocated for use with a VPC with an instance
+                        in EC2-Classic, and vice- versa. However, you can migrate an Elastic IP address you&apos;ve
+                        allocated for use in the EC2-Classic platform for use with a VPC. You cannot
+                        migrate an Elastic IP address to another region.
+                     </p>
+                     
+                     
+                     <p class="title"><b>To allocate an Elastic IP address for use in EC2-Classic using the console</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>In the navigation pane, choose <b>Elastic IPs</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Allocate new address</b>. 
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Select <b>Classic</b>, and then choose <b>Allocate</b>. Close
+                              the confirmation screen.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     
+                     <h4 id="migrating-eip">Migrating an Elastic IP Address from EC2-Classic</h4>
+                     
+                     
+                     <p>If your account supports EC2-Classic, you can migrate Elastic IP addresses that you&apos;ve
+                        allocated for use with EC2-Classic platform to be used with a VPC, within the same
+                        region. This can assist you to migrate your resources from EC2-Classic to a VPC; for
+                        example,
+                        you can launch new web servers in your VPC, and then use the same Elastic IP addresses
+                        that
+                        you used for your web servers in EC2-Classic for your new VPC web servers.
+                     </p>
+                     
+                     <p>After you&apos;ve migrated an Elastic IP address to a VPC, you cannot use it with EC2-Classic.
+                        However, if required, you can restore it to EC2-Classic. You cannot migrate an Elastic
+                        IP 
+                        address that was originally allocated for use with a VPC to EC2-Classic.
+                     </p>
+                     
+                     <p>To migrate an Elastic IP address, it must not be associated with an instance. For
+                        more
+                        information about disassociating an Elastic IP address from an instance, see 
+                        <a href="elastic-ip-addresses-eip.html#using-instance-addressing-eips-associating-different">Disassociating an Elastic IP
+                           					Address and Reassociating with a Different Instance</a>.
+                     </p>
+                     
+                     <p>You can migrate as many EC2-Classic Elastic IP addresses as you can have in your account.
+                        However, when you migrate an Elastic IP address, it counts against your
+                        Elastic IP address limit for VPCs. You cannot migrate an Elastic IP address if
+                        it will result in your exceeding your limit. Similarly, when you restore an Elastic
+                        IP address to EC2-Classic, it counts against your Elastic IP address limit for
+                        EC2-Classic. For more information, see <a href="elastic-ip-addresses-eip.html#using-instance-addressing-limit">Elastic IP Address Limit</a>. 
+                     </p>
+                     
+                     <p>You cannot migrate an Elastic IP address that has been allocated to your account for
+                        less
+                        than 24 hours.
+                     </p>
+                     
+                     
+                     <p>You can migrate an Elastic IP address from EC2-Classic using the Amazon EC2 console
+                        or
+                        the Amazon VPC console. This option is only available if your account supports EC2-Classic.
+                     </p>
+                     
+                     <p class="title"><b>To move an Elastic IP address using the Amazon EC2 console</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           <p>In the navigation pane, choose <b>Elastic IPs</b>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>Select the Elastic IP address, and choose <b>Actions</b>,
+                              <b>Move to VPC scope</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the confirmation dialog box, choose <b>Move Elastic IP</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>You can restore an Elastic IP address to EC2-Classic using the Amazon EC2 console
+                        or the Amazon VPC
+                        console.
+                     </p>
+                     
+                     <p class="title"><b>To restore an Elastic IP address to EC2-Classic using the Amazon EC2 console</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           <p>In the navigation pane, choose <b>Elastic IPs</b>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>Select the Elastic IP address, choose <b>Actions</b>, <b>Restore to
+                                 EC2 scope</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the confirmation dialog box, choose <b>Restore</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>After you&apos;ve performed the command to move or restore your Elastic IP address, the
+                        process
+                        of migrating the Elastic IP address can take a few minutes. Use the <a href="./cli/latest/reference/ec2/describe-moving-addresses.html">describe-moving-addresses</a>
+                        command to check whether your Elastic IP address is still moving, or has completed
+                        moving.
+                     </p>
+                     
+                     <p>After you&apos;ve moved your Elastic IP address, you can view its
+                        allocation ID on the <b>Elastic IPs</b> page in the
+                        <b>Allocation ID</b> field.
+                     </p>
+                     
+                     <p>If the Elastic IP address is in a moving state for longer than 5 minutes, contact
+                        <a href="https://aws.amazon.com/premiumsupport/" target="_blank">Premium Support</a>.
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        <p class="title"><b>To move an Elastic IP address using the command line</b></p>
+                        
+                        <p>You can use one of the following commands. For more information about these command
+                           line
+                           interfaces, see <a href="concepts.html#access-ec2">Accessing Amazon EC2</a>.
+                        </p>
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p><a href="./cli/latest/reference/ec2/move-address-to-vpc.html">move-address-to-vpc</a> (AWS CLI)
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p><a href="./powershell/latest/reference/items/Move-EC2AddressToVpc.html">Move-EC2AddressToVpc</a> (AWS Tools for Windows PowerShell)
+                              </p>
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <div class="itemizedlist">
+                        
+                        <p class="title"><b>To restore an Elastic IP address to EC2-Classic using the command line</b></p>
+                        
+                        <p>You can use one of the following commands. For more information about these command
+                           line
+                           interfaces, see <a href="concepts.html#access-ec2">Accessing Amazon EC2</a>.
+                        </p>
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p><a href="./cli/latest/reference/ec2/restore-address-to-classic.html">restore-address-to-classic</a> (AWS CLI)
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p><a href="./powershell/latest/reference/items/Restore-EC2AddressToClassic.html">Restore-EC2AddressToClassic</a> (AWS Tools for Windows PowerShell)
+                              </p>
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <div class="itemizedlist">
+                        
+                        <p class="title"><b>To describe the status of your moving addresses using the command line</b></p>
+                        
+                        <p>You can use one of the following commands. For more information about these command
+                           line
+                           interfaces, see <a href="concepts.html#access-ec2">Accessing Amazon EC2</a>.
+                        </p>
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p><a href="./cli/latest/reference/ec2/describe-moving-addresses.html">describe-moving-addresses</a> (AWS CLI)
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p><a href="./powershell/latest/reference/items/Get-EC2Address.html">Get-EC2Address</a> (AWS Tools for Windows PowerShell)
+                              </p>
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     
+                     
+                     
+                     
+                     <h2 id="vpc-classic-shared-resources">Sharing and Accessing Resources Between EC2-Classic and a VPC</h2>
+                     
+                     
+                     <p>Some resources and features in your AWS account can be shared or accessed between
+                        
+                        EC2-Classic and a VPC, for example, through ClassicLink. For more information, see
+                        
+                        <a href="vpc-classiclink.html">ClassicLink</a>.
+                     </p>
+                     
+                     <p>If your account supports EC2-Classic, you might have set up resources for use
+                        in EC2-Classic. If you want to migrate from EC2-Classic to a VPC, you must recreate
+                        those
+                        resources in your VPC. For more information about migrating from EC2-Classic to
+                        a VPC, see <a href="vpc-migrate.html">Migrating from a Linux Instance in EC2-Classic to a Linux Instance in a VPC</a>.
+                     </p>
+                     
+                     <p>The following resources can be shared or accessed between EC2-Classic and a VPC.</p>
+                     
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w306aac27c31c15b9">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Resource</th>
+                                 
+                                 <th>Notes</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>AMI</td>
+                                 
+                                 <td></td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Bundle task</td>
+                                 
+                                 <td></td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>EBS volume</td>
+                                 
+                                 <td></td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Elastic IP address (IPv4)</td>
+                                 
+                                 <td>
+                                    
+                                    <p>You can migrate an Elastic IP address from EC2-Classic to a VPC. You can&apos;t
+                                       migrate an Elastic IP address that was originally allocated for use in a
+                                       VPC to EC2-Classic. For more information, see <a href="ec2-classic-platform.html#migrating-eip">Migrating an Elastic IP Address from EC2-Classic</a>.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Instance</td>
+                                 
+                                 <td>
+                                    
+                                    <p>An EC2-Classic instance can communicate with instances in a VPC using public IPv4
+                                       addresses, or you can use ClassicLink to enable communication over
+                                       private IPv4 addresses.
+                                    </p>
+                                    
+                                    <p>You can&apos;t migrate an instance from EC2-Classic to a VPC.
+                                       However, you can migrate your application from an instance in
+                                       EC2-Classic to an instance in a VPC. For more information, see 
+                                       <a href="vpc-migrate.html">Migrating from a Linux Instance in EC2-Classic to a Linux Instance in a VPC</a>.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Key pair</td>
+                                 
+                                 <td></td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Load balancer</td>
+                                 
+                                 <td>
+                                    
+                                    <p>If you&apos;re using ClassicLink, you can register a linked EC2-Classic instance with a
+                                       load balancer in a VPC, provided that the VPC has a subnet in the same Availability
+                                       Zone as the instance.
+                                    </p>
+                                    
+                                    <p>You can&apos;t migrate a load balancer from EC2-Classic to a VPC. 
+                                       You can&apos;t register an instance in a VPC with a load balancer in EC2-Classic.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Placement group</td>
+                                 
+                                 <td></td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Reserved Instance</td>
+                                 
+                                 <td>
+                                    
+                                    <p>You can change the network platform for your Reserved Instances from EC2-Classic to
+                                       a VPC. 
+                                       For more information, see <a href="ri-modifying.html">Modifying Reserved Instances</a>.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Security group</td>
+                                 
+                                 <td>
+                                    
+                                    <p>A linked EC2-Classic instance can use a VPC security groups through ClassicLink to
+                                       
+                                       control traffic to and from the VPC. VPC instances can&apos;t use EC2-Classic security
+                                       groups.
+                                    </p>
+                                    
+                                    <p>You can&apos;t migrate a security group from EC2-Classic to a VPC. You can copy rules from
+                                       a security group for EC2-Classic to a security group for a VPC. For more information,
+                                       see <a href="using-network-security.html#creating-security-group">Creating a Security Group</a>.
+                                    </p>
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Snapshot</td>
+                                 
+                                 <td></td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <p>The following resources can&apos;t be shared or moved between EC2-Classic and a VPC:</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Spot Instances</p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="using-vpc.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="vpc-classiclink.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Detecting Supported Platforms"><a class="pagetoc" href="#ec2-supported-platforms">Detecting Supported Platforms</a></li>
+                        <li class="pagetoc" name="Instance Types Available in EC2-Classic"><a class="pagetoc" href="#ec2-classic-instance-types">Instance Types Available in EC2-Classic</a></li>
+                        <li class="pagetoc" name="Differences Between Instances in EC2-Classic and a
+                VPC"><a class="pagetoc" href="#differences-ec2-classic-vpc">Differences Between Instances in EC2-Classic and a
+                              VPC</a></li>
+                        <li class="pagetoc" name="Sharing and Accessing Resources Between EC2-Classic and a VPC"><a class="pagetoc" href="#vpc-classic-shared-resources">Sharing and Accessing Resources Between EC2-Classic and a VPC</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Elastic Compute Cloud';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide for Linux Instances';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

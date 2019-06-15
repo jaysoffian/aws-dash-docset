@@ -1,17 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Step 4: Deploy With AWS SAM and AWS CloudFormation - AWS Lambda</title>
+      <title>AWS SAM Template for a Kinesis Application - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="with-kinesis-example.html" title="Tutorial: Using AWS Lambda with Kinesis">
-      <link rel="prev" href="with-kinesis-example-configure-event-source.html" title="Step 3: Add an Event Source
-				(Create a Kinesis Stream and Associate It with Your Lambda Function)">
-      <link rel="next" href="with-ddb.html" title="Using AWS Lambda with Amazon DynamoDB">
-      <meta name="description" content="In the previous section, you used AWS Lambda APIs to create and update a Lambda function by providing a deployment package as a ZIP file. However, this mechanism may not be convenient for automating deployment steps for functions, or coordinating deployments and updates to other elements of a serverless application, like event sources and downstream resources.">
+      <link rel="up" href="with-kinesis.html" title="Using AWS Lambda with Amazon Kinesis">
+      <link rel="prev" href="with-kinesis-create-package.html" title="Sample Function Code">
+      <link rel="next" href="services-kinesisfirehose.html" title="Using AWS Lambda with Amazon Kinesis Data Firehose">
+      <meta name="description" content="You can build this application using AWS SAM . To learn more about creating AWS SAM templates, see AWS SAM Template Basics in the AWS Serverless Application Model Developer Guide .">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis-example-use-app-spec.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,81 +35,119 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="use-cases.html">Examples of How to Use AWS Lambda</a> &#xBB; <a href="with-kinesis.html">Using AWS Lambda with Kinesis</a> &#xBB; <a href="with-kinesis-example.html">Tutorial: Using AWS Lambda with Kinesis</a> &#xBB; <span class="breadcrumb">Step 4: Deploy With AWS SAM and AWS CloudFormation</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-services.html">Using AWS Lambda with Other Services</a> &#xBB; <a href="with-kinesis.html">Using AWS Lambda with Amazon Kinesis</a> &#xBB; <span class="breadcrumb">AWS SAM Template for a Kinesis Application</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="with-kinesis-example-use-app-spec">Step 4: Deploy With AWS SAM and AWS CloudFormation</h1>
-                     <p>In the previous section, you used AWS Lambda APIs to create and update a Lambda function
-                        by providing a deployment package as a ZIP file. 
-                        				However, this mechanism may not be convenient for automating deployment steps
-                        for functions, or coordinating deployments and updates
-                        				to other elements of a serverless application, like event sources and downstream
-                        resources.
+                     <h1 class="topictitle" id="with-kinesis-example-use-app-spec">AWS SAM Template for a Kinesis Application</h1>
+                     <p>You can build this application using <a href="./serverless-application-model/latest/developerguide/">AWS SAM</a>. To learn more about
+                        creating AWS SAM templates, see <a href="./serverless-application-model/latest/developerguide/serverless-sam-template-basics.html">AWS SAM
+                           Template Basics</a> in the <em>AWS Serverless Application Model Developer Guide</em>.
                      </p>
-                     <p>You can use AWS CloudFormation to easily specify, deploy, and configure serverless
-                        applications. AWS CloudFormation is a service that helps you model 
-                        				and set up your Amazon Web Services resources so that you can spend less time
-                        managing those resources and more time 
-                        				focusing on your applications that run in AWS. You create a template that describes
-                        all the AWS
-                        				resources that you want (like Lambda functions and DynamoDB tables), and AWS CloudFormation
-                        takes care of provisioning and configuring those resources for you.
+                     <p>Below is a sample AWS SAM template for the Lambda application from the <a href="with-kinesis-example.html">tutorial</a>. The function and handler in the template are for the Node.js code. If you use a
+                        different code
+                        sample, update the values accordingly.
                      </p>
-                     <p>In addition, you can use the AWS Serverless Application Model to express resources
-                        that comprise the serverless application. These resource types,
-                        				such as Lambda functions and APIs, are fully supported by AWS CloudFormation and
-                        make it easier for you to define and deploy your serverless application.
-                     </p>
-                     <p>For more information, see <a href="deploying-lambda-apps.html">Deploying Lambda-based Applications</a>.
-                     </p>
-                     <h2 id="kinesis-tutorial-spec">Specification for Kinesis Application</h2>
-                     				
-                     <p>The following contains the SAM template for this application. Copy the text below
-                        to a .yaml file and save it next to the ZIP package
-                        					you created previously. Note that the <code class="code">Handler</code> 
-                        					and <code class="code">Runtime</code> parameter values should match the ones you used when you created the function in
-                        the previous section.
-                        				
-                     </p>
-                     				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">AWSTemplateFormatVersion: &apos;2010-09-09&apos;
+                     <div class="example">
+                        <p class="title"><b>Example template.yaml - Kinesis Stream</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">AWSTemplateFormatVersion: &apos;2010-09-09&apos;
 Transform: AWS::Serverless-2016-10-31
 Resources:
-  ProcessKinesisRecords:
+  LambdaFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: <em class="replaceable"><code>handler</code></em>
-      Runtime: <em class="replaceable"><code>runtime</code></em>
-      Policies: AWSLambdaKinesisExecutionRole
+      Handler: <em class="replaceable"><code>index.handler</code></em>
+      Runtime: <em class="replaceable"><code>nodejs8.10</code></em>
+      Timeout: 10
+      Tracing: Active
       Events:
         Stream:
           Type: Kinesis
           Properties:
-            Stream: !GetAtt ExampleStream.Arn
+            Stream: !GetAtt KinesisStream.Arn
             BatchSize: 100
-            StartingPosition: TRIM_HORIZON
-
-  ExampleStream:
+            StartingPosition: LATEST
+  KinesisStream:
     Type: AWS::Kinesis::Stream
     Properties:
-      ShardCount: 1</code></pre>
-                     			<h2 id="with-kinesis-example-use-app-spec-deploy">Deploying the Serverless Application	</h2>
-                     				
-                     				
-                     <p>For information on how to package and deploy your serverless application using the
-                        package and deploy commands, see <a href="serverless-deploy-wt.html#serverless-deploy">Packaging and Deployment</a>.
+      ShardCount: 1
+Outputs:
+  FunctionName:
+    Description: &quot;Function name&quot;
+    Value: !Ref LambdaFunction
+  StreamARN:
+    Description: &quot;Stream ARN&quot;
+    Value: !GetAtt KinesisStream.Arn</code></pre></div>
+                     </div>
+                     <p>The template creates a Lambda function, a Kinesis stream, and an event source mapping.
+                        The event source mapping
+                        reads from the stream and invokes the function.
                      </p>
-                     			
+                     <p>To use an <a href="with-kinesis.html#services-kinesis-configure">HTTP/2 stream consumer</a>, create the consumer in the
+                        template and configure the event source mapping to read from the consumer instead
+                        of from the stream.
+                     </p>
+                     <div class="example">
+                        <p class="title"><b>Example template.yaml - Kinesis Stream Consumer</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">AWSTemplateFormatVersion: &apos;2010-09-09&apos;
+Transform: AWS::Serverless-2016-10-31
+Description: A function that processes data from a Kinesis stream.
+Resources:
+  kinesisprocessrecordpython:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: <em class="replaceable"><code>index.handler</code></em>
+      Runtime: <em class="replaceable"><code>nodejs8.10</code></em>
+      Timeout: 10
+      Tracing: Active
+      Events:
+        Stream:
+          Type: Kinesis
+          Properties:
+            Stream: <strong class="userinput"><code>!GetAtt StreamConsumer.ConsumerARN</code></strong>
+            StartingPosition: LATEST
+            BatchSize: 100
+  KinesisStream:
+    Type: &quot;AWS::Kinesis::Stream&quot;
+    Properties:
+      ShardCount: 1
+  <strong class="userinput"><code>StreamConsumer:
+    Type: &quot;AWS::Kinesis::StreamConsumer&quot;
+    Properties:
+      StreamARN: !GetAtt KinesisStream.Arn
+      ConsumerName: &quot;TestConsumer&quot;</code></strong>
+Outputs:
+  FunctionName:
+    Description: &quot;Function name&quot;
+    Value: !Ref LambdaFunction
+  StreamARN:
+    Description: &quot;Stream ARN&quot;
+    Value: !GetAtt KinesisStream.Arn
+  ConsumerARN:
+    Description: &quot;Stream consumer ARN&quot;
+    Value: !GetAtt StreamConsumer.ConsumerARN</code></pre></div>
+                     </div>
+                     <p>For information on how to package and deploy your serverless application using the
+                        package and deploy commands,
+                        see <a href="./serverless-application-model/latest/developerguide/serverless-deploying.html">Deploying Serverless Applications</a> in the <em>AWS Serverless Application Model Developer Guide</em>.
+                     </p>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -116,23 +156,21 @@ Resources:
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="with-kinesis-example-configure-event-source.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="with-ddb.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="with-kinesis-create-package.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="services-kinesisfirehose.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
             <div id="right-expanded">
-               <div id="right-content-wrapper">
-                  <div id="pagetoc">
-                     <p>On this page:</p>
-                     <ul class="pagetoc">
-                        <li class="pagetoc" name="Specification for Kinesis Application"><a class="pagetoc" href="#kinesis-tutorial-spec">Specification for Kinesis Application</a></li>
-                        <li class="pagetoc" name="Deploying the Serverless Application	"><a class="pagetoc" href="#with-kinesis-example-use-app-spec-deploy">Deploying the Serverless Application	</a></li>
-                     </ul>
-                  </div>
-               </div>
+               <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

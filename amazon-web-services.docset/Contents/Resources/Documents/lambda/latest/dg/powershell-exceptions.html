@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>AWS Lambda Function Errors in PowerShell - AWS Lambda</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="powershell-programming-model.html" title="Building Lambda Functions with PowerShell">
+      <link rel="prev" href="powershell-logging.html" title="AWS Lambda Function Logging in PowerShell">
+      <link rel="next" href="API_Reference.html" title="API Reference">
+      <meta name="description" content="If your Lambda function has a terminating error, AWS Lambda recognizes the failure, serializes the error information into JSON, and returns it.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="AWS Lambda">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/powershell-exceptions.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="powershell-programming-model.html">Building Lambda Functions with PowerShell</a> &#xBB; <span class="breadcrumb">AWS Lambda Function Errors in PowerShell</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="powershell-exceptions">AWS Lambda Function Errors in PowerShell</h1>
+                     <p>If your Lambda function has a terminating error, AWS Lambda recognizes the failure,
+                        serializes the error
+                        information into JSON, and returns it.
+                     </p>
+                     <p>Consider the following PowerShell script example statement:</p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">throw &apos;The Account is not found&apos;</code></pre><p>When you invoke this Lambda function, it throws a terminating error, and AWS Lambda
+                        returns the following error
+                        message:
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+  &quot;errorMessage&quot;: &quot;The Account is not found&quot;,
+  &quot;errorType&quot;: &quot;RuntimeException&quot;
+}</code></pre><p>Note the <code class="code">errorType</code> is <code class="code">RuntimeException</code>, which is the default exception thrown by
+                        PowerShell. You can use custom error types by throwing the error like this:
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">throw @{&apos;Exception&apos;=&apos;AccountNotFound&apos;;&apos;Message&apos;=&apos;The Account is not found&apos;}</code></pre><p>The error message is serialized with <code class="code">errorType</code> set to <code class="code">AccountNotFound</code>:
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+  &quot;errorMessage&quot;: &quot;The Account is not found&quot;,
+  &quot;errorType&quot;: &quot;AccountNotFound&quot;
+}</code></pre><p>If you don&apos;t need an error message, you can throw a string in the format of an error
+                        code. The error code format
+                        requires that the string starts with a character and only contain letters and digits
+                        afterwards, with no spaces or
+                        symbols.
+                     </p>
+                     <p>For example, if your Lambda function contains the following:</p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">throw &apos;AccountNotFound&apos;</code></pre><p>The error is serialized like this:</p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+  &quot;errorMessage&quot;: &quot;AccountNotFound&quot;,
+  &quot;errorType&quot;: &quot;AccountNotFound&quot;
+}</code></pre>
+                     <h2 id="powershell-custom-errors">Function Error Handling </h2>
+                     
+                     <p>You can use a custom errorType in your Lambda function and handle function errors
+                        directly (Retry or Catch)
+                        within an AWS Step Functions State Machine. For more information, see <a href="./step-functions/latest/dg/tutorial-handling-error-conditions.html">Handling Error Conditions Using a State
+                           Machine</a>. 
+                     </p>
+                     
+                     <p>Custom error handling makes it easier to create <a href="https://aws.amazon.com/serverless" target="_blank">serverless</a> applications. This feature integrates with all the languages that are supported by
+                        the Lambda
+                        <a href="programming-model-v2.html">Programming Model</a>. This allows you to design your
+                        application in the programming languages of your choice, mixing and matching as you
+                        go.
+                     </p>
+                     
+                     <p>To learn more about creating your own serverless applications using AWS Step Functions
+                        and AWS Lambda, see <a href="https://aws.amazon.com/step-functions/" target="_blank">AWS Step Functions</a>.
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="powershell-logging.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="API_Reference.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Function Error Handling "><a class="pagetoc" href="#powershell-custom-errors">Function Error Handling </a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='AWS Lambda';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

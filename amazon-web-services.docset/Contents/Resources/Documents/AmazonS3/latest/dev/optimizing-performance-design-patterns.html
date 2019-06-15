@@ -1,0 +1,377 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Performance Design Patterns for
+         Amazon S3 - Amazon Simple Storage Service
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="optimizing-performance.html" title="Best Practices Design Patterns: Optimizing Amazon S3
+      Performance">
+      <link rel="prev" href="optimizing-performance-guidelines.html" title="Performance Guidelines for Amazon S3">
+      <link rel="next" href="monitoring-overview.html" title="Monitoring Amazon S3">
+      <meta name="description" content="Describes high performance design patterns for Amazon S3.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Simple Storage Service">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/optimizing-performance-design-patterns.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="optimizing-performance.html">Best Practices Design Patterns: Optimizing Amazon S3
+                                    Performance</a> &#xBB; <span class="breadcrumb">Performance Design Patterns for
+                                    Amazon S3</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="optimizing-performance-design-patterns">Performance Design Patterns for
+                        Amazon S3
+                     </h1>
+                     <p>When designing applications to upload and retrieve storage from Amazon S3, use our
+                        best
+                        practices design patterns for achieving the best performance for your application.
+                        We also
+                        offer <a href="optimizing-performance-guidelines.html">Performance
+                           Guidelines</a> for you to consider when planning
+                        your application architecture.
+                     </p>
+                     <p>To optimize performance, you can use the following design patterns.</p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#optimizing-performance-caching">Using Caching for Frequently Accessed
+                                 Content</a></li>
+                           <li><a href="#optimizing-performance-timeouts-retries">Timeouts and Retries for
+                                 Latency-Sensitive Applications</a></li>
+                           <li><a href="#optimizing-performance-parallelization">Horizontal Scaling and Request
+                                 Parallelization for High Throughput</a></li>
+                           <li><a href="#optimizing-performance-acceleration">Using Amazon S3 Transfer Acceleration to
+                                 Accelerate Geographically Disparate Data Transfers</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="optimizing-performance-caching">Using Caching for Frequently Accessed
+                        Content
+                     </h2>
+                     
+                     <p>Many applications that store data in Amazon S3 serve a &#x201C;working set&#x201D; of data that
+                        is
+                        repeatedly requested by users. If a workload is sending repeated GET requests for
+                        a common
+                        set of objects, you can use a cache such as <a href="./cloudfront/index.html">Amazon CloudFront</a>, <a href="./elasticache/index.html">Amazon ElastiCache</a>, or <a href="./mediastore/index.html">AWS Elemental MediaStore</a> to optimize performance.
+                        Successful cache adoption can result in low latency and high data transfer rates.
+                        Applications that use caching also send fewer direct requests to Amazon S3, which
+                        can help reduce
+                        request costs.
+                     </p>
+                     
+                     <p>Amazon CloudFront is a fast content delivery network (CDN) that transparently caches
+                        data from
+                        Amazon S3 in a large set of geographically distributed points of presence (PoPs).
+                        When objects
+                        might be accessed from multiple Regions, or over the internet, CloudFront allows data
+                        to be cached
+                        close to the users that are accessing the objects. This can result in high performance
+                        delivery of popular Amazon S3 content. For information about CloudFront, see the <a href="./AmazonCloudFront/latest/DeveloperGuide/">Amazon CloudFront Developer Guide</a>.
+                     </p>
+                     
+                     <p>Amazon ElastiCache is a managed, in-memory cache. With ElastiCache, you can provision
+                        Amazon EC2 instances
+                        that cache objects in memory. This caching results in orders of magnitude reduction
+                        in GET
+                        latency and substantial increases in download throughput. To use ElastiCache, you
+                        modify
+                        application logic to both populate the cache with hot objects and check the cache
+                        for hot
+                        objects before requesting them from Amazon S3. For examples of using ElastiCache to
+                        improve Amazon S3 GET
+                        performance, see the blog post <a href="https://aws.amazon.com/blogs/storage/turbocharge-amazon-s3-with-amazon-elasticache-for-redis/" target="_blank">Turbocharge Amazon S3 with Amazon ElastiCache for Redis</a>.
+                     </p>
+                     
+                     <p>AWS Elemental MediaStore is a caching and content distribution system specifically
+                        built for video
+                        workflows and media delivery from Amazon S3. MediaStore provides end-to-end storage
+                        APIs specifically
+                        for video, and is recommended for performance-sensitive video workloads. For information
+                        about MediaStore, see the <a href="./mediastore/latest/ug/">AWS Elemental MediaStore User Guide</a>.
+                        
+                     </p>
+                     
+                     
+                     <h2 id="optimizing-performance-timeouts-retries">Timeouts and Retries for
+                        Latency-Sensitive Applications
+                     </h2>
+                     
+                     <p>There are certain situations where an application receives a response from Amazon
+                        S3
+                        indicating that a retry is necessary. Amazon S3 maps bucket and object names to the
+                        object data
+                        associated with them. If an application generates high request rates (typically sustained
+                        rates of over 5,000 requests per second to a small number of objects), it might receive
+                        HTTP
+                        503 <em>slowdown</em> responses. If these errors occur, each AWS
+                        SDK implements automatic retry logic using exponential backoff. If you are not using
+                        an AWS
+                        SDK, you should implement retry logic when receiving the HTTP 503 error. For information
+                        about back-off techniques, see <a href="./general/latest/gr/api-retries.html">Error Retries and
+                           Exponential Backoff in AWS</a> in the <em>Amazon Web Services General Reference</em>.
+                     </p>
+                     
+                     <p>Amazon S3 automatically scales in response to sustained new request rates, dynamically
+                        optimizing performance. While Amazon S3 is internally optimizing for a new request
+                        rate, you
+                        will receive HTTP 503 request responses temporarily until the optimization completes.
+                        After
+                        Amazon S3 internally optimizes performance for the new request rate, all requests
+                        are generally
+                        served without retries. 
+                     </p>
+                     
+                     <p>For latency-sensitive applications, Amazon S3 advises tracking and aggressively retrying
+                        slower operations. When you retry a request, we recommend using a new connection to
+                        Amazon S3 and
+                        performing a fresh DNS lookup. 
+                     </p>
+                     
+                     <p>When you make large variably sized requests (for example, more than 128 MB), we advise
+                        tracking the throughput being achieved and retrying the slowest 5 percent of the requests.
+                        When you make smaller requests (for example, less than 512 KB), where median latencies
+                        are
+                        often in the tens of milliseconds range, a good guideline is to retry a GET or PUT
+                        operation
+                        after 2 seconds. If additional retries are needed, the best practice is to back off.
+                        For
+                        example, we recommend issuing one retry after 2 seconds and a second retry after an
+                        additional 4 seconds.
+                     </p>
+                     
+                     <p>If your application makes fixed-size requests to Amazon S3, you should expect more
+                        consistent
+                        response times for each of these requests. In this case, a simple strategy is to identify
+                        the slowest 1 percent of requests and to retry them. Even a single retry is frequently
+                        effective at reducing latency.
+                     </p>
+                     
+                     <p>If you are using AWS Key Management Service (AWS KMS) for server-side encryption,
+                        see <a href="./kms/latest/developerguide/limits.html">Limits</a> in the <em>AWS Key Management Service Developer Guide</em>
+                        for information about the request rates that are supported for your use case.
+                     </p>
+                     
+                     
+                     <h2 id="optimizing-performance-parallelization">Horizontal Scaling and Request
+                        Parallelization for High Throughput
+                     </h2>
+                     
+                     <p>Amazon S3 is a very large distributed system. To help you take advantage of its scale,
+                        we
+                        encourage you to horizontally scale parallel requests to the Amazon S3 service endpoints.
+                        In
+                        addition to distributing the requests within Amazon S3, this type of scaling approach
+                        helps
+                        distribute the load over multiple paths through the network.
+                     </p>
+                     
+                     <p>For high-throughput transfers, Amazon S3 advises using applications that use multiple
+                        connections to GET or PUT data in parallel. For example, this is supported by <a href="./sdk-for-java/v1/developer-guide/examples-s3-transfermanager.html">Amazon S3 Transfer Manager</a> in the
+                        AWS Java SDK, and most of the other AWS SDKs provide similar constructs. For some
+                        applications, you can achieve parallel connections by launching multiple requests
+                        concurrently in different application threads, or in different application instances.
+                        The
+                        best approach to take depends on your application and the structure of the objects
+                        that you
+                        are accessing.
+                     </p>
+                     
+                     <p>You can use the AWS SDKs to issue GET and PUT requests directly rather than employing
+                        the management of transfers in the AWS SDK. This approach lets you tune your workload
+                        more
+                        directly, while still benefiting from the SDK&#x2019;s support for retries and its handling
+                        of any
+                        HTTP 503 responses that might occur. As a general rule, when you download large objects
+                        within a Region from Amazon S3 to <a href="./ec2/index.html">Amazon EC2</a>, 
+                        we suggest making concurrent requests for byte ranges of
+                        an object at the granularity of 8&#x2013;16 MB. Make one concurrent request for each
+                        85&#x2013;90 MB/s of desired network throughput. To saturate a 10 Gb/s network interface
+                        card (NIC), you might use about 15 concurrent requests over separate connections.
+                        You can
+                        scale up the concurrent requests over more connections to saturate faster NICs, such
+                        as 25
+                        Gb/s or 100 Gb/s NICs. 
+                     </p>
+                     
+                     <p>Measuring performance is important when you tune the number of requests to issue
+                        concurrently. We recommend starting with a single request at a time. Measure the network
+                        bandwidth being achieved and the use of other resources that your application uses
+                        in
+                        processing the data. You can then identify the bottleneck resource (that is, the resource
+                        with the highest usage), and hence the number of requests that are likely to be useful.
+                        For
+                        example, if processing one request at a time leads to a CPU usage of 25 percent, it
+                        suggests
+                        that up to four concurrent requests can be accommodated. Measurement is essential,
+                        and it is
+                        worth confirming resource use as the request rate is increased. 
+                     </p>
+                     
+                     <p>If your application issues requests directly to Amazon S3 using the REST API, we recommend
+                        using a pool of HTTP connections and re-using each connection for a series of requests.
+                        Avoiding per-request connection setup removes the need to perform TCP slow-start and
+                        Secure
+                        Sockets Layer (SSL) handshakes on each request. For information about using the REST
+                        API,
+                        see the <a href="./AmazonS3/latest/API/">Amazon Simple Storage Service API Reference</a>.
+                     </p>
+                     
+                     <p>Finally, it&#x2019;s worth paying attention to DNS and double-checking that requests are
+                        being
+                        spread over a wide pool of Amazon S3 IP addresses. DNS queries for Amazon S3 cycle
+                        through a large
+                        list of IP endpoints. But caching resolvers or application code that reuses a single
+                        IP
+                        address do not benefit from address diversity and the load balancing that follows
+                        from it.
+                        Network utility tools such as the <code class="code">netstat</code> command line tool can show the IP
+                        addresses being used for communication with Amazon S3, and we provide guidelines for
+                        DNS
+                        configurations to use. For more information about these guidelines, see <a href="DNSConsiderations.html">DNS Considerations</a>.
+                     </p>
+                     
+                     
+                     <h2 id="optimizing-performance-acceleration">Using Amazon S3 Transfer Acceleration to
+                        Accelerate Geographically Disparate Data Transfers
+                     </h2>
+                     
+                     <p><a href="transfer-acceleration.html">Amazon S3 Transfer Acceleration</a> is
+                        effective at minimizing or eliminating the latency caused by geographic distance between
+                        globally dispersed clients and a regional application using Amazon S3. Transfer Acceleration
+                        uses
+                        the globally distributed edge locations in CloudFront for data transport. The AWS
+                        edge network has
+                        points of presence in more than 50 locations. Today, it is used to distribute content
+                        through CloudFront and to provide rapid responses to DNS queries made to <a href="./route53/index.html">Amazon Route&#xA0;53</a>. 
+                     </p>
+                     
+                     <p>The edge network also helps to accelerate data transfers into and out of Amazon S3.
+                        It is
+                        ideal for applications that transfer data across or between continents, have a fast
+                        internet
+                        connection, use large objects, or have a lot of content to upload. As the data arrives
+                        at an
+                        edge location, data is routed to Amazon S3 over an optimized network path. In general,
+                        the
+                        farther away you are from an Amazon S3 Region, the higher the speed improvement you
+                        can expect
+                        from using Transfer Acceleration. 
+                     </p>
+                     
+                     <p>You can set up Transfer Acceleration on new or existing buckets. You can use a separate
+                        Amazon S3 Transfer Acceleration endpoint to use the AWS edge locations. The best way
+                        to test
+                        whether Transfer Acceleration helps client request performance is to use the <a href="http://s3-accelerate-speedtest.s3-accelerate.amazonaws.com/en/accelerate-speed-comparsion.html" target="_blank">Amazon S3 Transfer Acceleration Speed Comparison tool</a>. Network configurations and conditions
+                        vary from time to time and from location to location. So you are charged only for
+                        transfers
+                        where Amazon S3 Transfer Acceleration can potentially improve your upload performance.
+                        For
+                        information about using Transfer Acceleration with different AWS SDKs, see <a href="transfer-acceleration-examples.html">Amazon S3 Transfer Acceleration Examples</a>. 
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="optimizing-performance-guidelines.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="monitoring-overview.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Using Caching for Frequently Accessed
+          Content"><a class="pagetoc" href="#optimizing-performance-caching">Caching Frequently Accessed
+                              Content</a></li>
+                        <li class="pagetoc" name="Timeouts and Retries for
+          Latency-Sensitive Applications"><a class="pagetoc" href="#optimizing-performance-timeouts-retries">Timeouts and Retries
+                              for Latency-Sensitive Apps</a></li>
+                        <li class="pagetoc" name="Horizontal Scaling and Request
+          Parallelization for High Throughput"><a class="pagetoc" href="#optimizing-performance-parallelization">Horizontal Scaling and
+                              Request Parallelization</a></li>
+                        <li class="pagetoc" name="Using Amazon S3 Transfer Acceleration to
+          Accelerate Geographically Disparate Data Transfers"><a class="pagetoc" href="#optimizing-performance-acceleration"> Accelerating
+                              Geographically Disparate Data Transfers</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Simple Storage Service';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

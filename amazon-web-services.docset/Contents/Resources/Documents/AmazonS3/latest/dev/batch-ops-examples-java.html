@@ -1,0 +1,393 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Java Examples for Amazon S3 Batch Operations  - Amazon Simple Storage Service</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="batch-ops-examples.html" title="Amazon S3 Batch Operations Examples">
+      <link rel="prev" href="batch-ops-examples-cli.html" title="AWS CLI Examples for Amazon S3 Batch Operations ">
+      <link rel="next" href="WebsiteHosting.html" title="Hosting a Static Website on Amazon S3">
+      <meta name="description" content="Java Examples.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Simple Storage Service">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/batch-ops-examples-java.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="batch-ops.html">Performing Batch Operations</a> &#xBB; <a href="batch-ops-examples.html">Amazon S3 Batch Operations Examples</a> &#xBB; <span class="breadcrumb">Java Examples for Amazon S3 Batch Operations </span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="batch-ops-examples-java">Java Examples for Amazon S3 Batch Operations </h1>
+                     <p>This section provides examples of how to create and manage Amazon S3 batch operations
+                        jobs using the
+                        		AWS SDK for Java. For instructions on creating and testing a working
+                        		sample, see <a href="UsingTheMPJavaAPI.html#TestingJavaSamples">Testing the Amazon S3 Java Code Examples</a>.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#batch-ops-examples-java-create-job">Creating an Amazon S3 batch operations Job Using the
+                                 				AWS SDK for Java</a></li>
+                           <li><a href="#batch-ops-examples-java-cancel-job">Canceling an Amazon S3 batch operations Job Using the
+                                 				AWS SDK for Java</a></li>
+                           <li><a href="#batch-ops-examples-java-update-job-status">Updating the Status of a
+                                 				Amazon S3 batch operations Job Using the AWS SDK for Java</a></li>
+                           <li><a href="#batch-ops-examples-java-update-job-priority.">Updating the Priority of
+                                 				a Amazon S3 batch operations Job Using the AWS SDK for Java</a></li>
+                        </ul>
+                     </div>
+                     		
+                     <h2 id="batch-ops-examples-java-create-job">Creating an Amazon S3 batch operations Job Using the
+                        				AWS SDK for Java
+                     </h2>
+                     		
+                     <p>The following example shows how to create an Amazon S3 batch operations job. For information
+                        about
+                        			creating a job, see <a href="batch-ops-create-job.html">Creating a Batch Operations Job</a>.
+                     </p>
+                     		
+                     <p>For information about setting up the permissions you need to create a job, see <a href="batch-ops-iam-role-policies.html">Granting Permissions for Batch
+                           Operations</a>. 
+                     </p>
+                     		
+                     <div class="example">
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="java ">
+package aws.example.s3control;
+
+
+
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.services.s3control.AWSS3Control;
+import com.amazonaws.services.s3control.AWSS3ControlClient;
+import com.amazonaws.services.s3control.model.*;
+
+import java.util.UUID;
+import java.util.ArrayList;
+
+import static com.amazonaws.regions.Regions.US_WEST_2;
+
+public class CreateJob {
+    public static void main(String[] args) {
+        String accountId = &quot;Account ID&quot;;
+        String iamRoleArn = &quot;IAM Role ARN&quot;;
+        String reportBucketName = &quot;bucket-where-completion-report-goes&quot;;
+        String uuid = UUID.randomUUID().toString();
+
+        ArrayList tagSet = new ArrayList&lt;S3Tag&gt;();
+        tagSet.add(new S3Tag().withKey(&quot;keyOne&quot;).withValue(&quot;ValueOne&quot;));
+
+
+        try {
+            JobOperation jobOperation = new JobOperation()
+                    .withS3PutObjectTagging(new S3SetObjectTaggingOperation()
+                            .withTagSet(tagSet)
+                    );
+
+            JobManifest manifest = new JobManifest()
+                    .withSpec(new JobManifestSpec()
+                            .withFormat(&quot;S3BatchOperations_CSV_20180820&quot;)
+                            .withFields(new String[]{
+                                    &quot;Bucket&quot;, &quot;Key&quot;
+                            }))
+                    .withLocation(new JobManifestLocation()
+                            .withObjectArn(&quot;arn:aws:s3:::my_manifests/manifest.csv&quot;)
+                            .withETag(&quot;60e460c9d1046e73f7dde5043ac3ae85&quot;));
+            JobReport jobReport = new JobReport()
+                    .withBucket(reportBucketName)
+                    .withPrefix(&quot;reports&quot;)
+                    .withFormat(&quot;Report_CSV_20180820&quot;)
+                    .withEnabled(true)
+                    .withReportScope(&quot;AllTasks&quot;);
+
+            AWSS3Control s3ControlClient = AWSS3ControlClient.builder()
+                    .withCredentials(new ProfileCredentialsProvider())
+                    .withRegion(US_WEST_2)
+                    .build();
+
+            s3ControlClient.createJob(new CreateJobRequest()
+                    .withAccountId(accountId)
+                    .withOperation(jobOperation)
+                    .withManifest(manifest)
+                    .withReport(jobReport)
+                    .withPriority(42)
+                    .withRoleArn(iamRoleArn)
+                    .withClientRequestToken(uuid)
+                    .withDescription(&quot;job description&quot;)
+                    .withConfirmationRequired(false)
+            );
+
+        } catch (AmazonServiceException e) {
+            // The call was transmitted successfully, but Amazon S3 couldn&apos;t process
+            // it and returned an error response.
+            e.printStackTrace();
+        } catch (SdkClientException e) {
+            // Amazon S3 couldn&apos;t be contacted for a response, or the client
+            // couldn&apos;t parse the response from Amazon S3.
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre></div>
+                     </div>
+                     	
+                     		
+                     <h2 id="batch-ops-examples-java-cancel-job">Canceling an Amazon S3 batch operations Job Using the
+                        				AWS SDK for Java
+                     </h2>
+                     		
+                     <p>The following example shows how to cancel an Amazon S3 batch operations job.</p>
+                     		
+                     <div class="example">
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="java ">
+package aws.example.s3control;
+
+
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.services.s3control.AWSS3Control;
+import com.amazonaws.services.s3control.AWSS3ControlClient;
+import com.amazonaws.services.s3control.model.UpdateJobStatusRequest;
+
+import static com.amazonaws.regions.Regions.US_WEST_2;
+
+public class CancelJob {
+    public static void main(String[] args) {
+        String accountId = &quot;Account ID&quot;;
+        String jobId = &quot;00e123a4-c0d8-41f4-a0eb-b46f9ba5b07c&quot;;
+
+        try {
+            AWSS3Control s3ControlClient = AWSS3ControlClient.builder()
+                    .withCredentials(new ProfileCredentialsProvider())
+                    .withRegion(US_WEST_2)
+                    .build();
+
+            s3ControlClient.updateJobStatus(new UpdateJobStatusRequest()
+                    .withAccountId(accountId)
+                    .withJobId(jobId)
+                    .withStatusUpdateReason(&quot;No longer needed&quot;)
+                    .withRequestedJobStatus(&quot;Cancelled&quot;));
+
+        } catch (AmazonServiceException e) {
+            // The call was transmitted successfully, but Amazon S3 couldn&apos;t process
+            // it and returned an error response.
+            e.printStackTrace();
+        } catch (SdkClientException e) {
+            // Amazon S3 couldn&apos;t be contacted for a response, or the client
+            // couldn&apos;t parse the response from Amazon S3.
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre></div>
+                     </div>
+                     	
+                     		
+                     <h2 id="batch-ops-examples-java-update-job-status">Updating the Status of a
+                        				Amazon S3 batch operations Job Using the AWS SDK for Java
+                     </h2>
+                     		
+                     <p>The following example shows how to update the status of an Amazon S3 batch operations
+                        job. For more information about job status. see
+                        			<a href="batch-ops-managing-jobs.html#batch-ops-job-status">Job Status</a>.
+                     </p>
+                     		
+                     <div class="example">
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="java ">
+package aws.example.s3control;
+
+
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.services.s3control.AWSS3Control;
+import com.amazonaws.services.s3control.AWSS3ControlClient;
+import com.amazonaws.services.s3control.model.UpdateJobStatusRequest;
+
+import static com.amazonaws.regions.Regions.US_WEST_2;
+
+public class UpdateJobStatus {
+    public static void main(String[] args) {
+        String accountId = &quot;Account ID&quot;;
+        String jobId = &quot;00e123a4-c0d8-41f4-a0eb-b46f9ba5b07c&quot;;
+
+        try {
+            AWSS3Control s3ControlClient = AWSS3ControlClient.builder()
+                    .withCredentials(new ProfileCredentialsProvider())
+                    .withRegion(US_WEST_2)
+                    .build();
+
+            s3ControlClient.updateJobStatus(new UpdateJobStatusRequest()
+                    .withAccountId(accountId)
+                    .withJobId(jobId)
+                    .withRequestedJobStatus(&quot;Ready&quot;));
+
+        } catch (AmazonServiceException e) {
+            // The call was transmitted successfully, but Amazon S3 couldn&apos;t process
+            // it and returned an error response.
+            e.printStackTrace();
+        } catch (SdkClientException e) {
+            // Amazon S3 couldn&apos;t be contacted for a response, or the client
+            // couldn&apos;t parse the response from Amazon S3.
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre></div>
+                     </div>
+                     	
+                     		
+                     <h2 id="batch-ops-examples-java-update-job-priority.">Updating the Priority of
+                        				a Amazon S3 batch operations Job Using the AWS SDK for Java
+                     </h2>
+                     		
+                     <p>The following example shows how to update the priority of an Amazon S3 batch operations
+                        			job. For more information about job priority, see
+                        			<a href="batch-ops-managing-jobs.html#batch-ops-job-priority">Assigning Job Priority</a>.
+                     </p>
+                     		
+                     <div class="example">
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="java ">
+package aws.example.s3control;
+
+
+
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.services.s3control.AWSS3Control;
+import com.amazonaws.services.s3control.AWSS3ControlClient;
+import com.amazonaws.services.s3control.model.UpdateJobPriorityRequest;
+
+import static com.amazonaws.regions.Regions.US_WEST_2;
+
+public class UpdateJobPriority {
+    public static void main(String[] args) {
+        String accountId = &quot;Account ID&quot;;
+        String jobId = &quot;00e123a4-c0d8-41f4-a0eb-b46f9ba5b07c&quot;;
+
+        try {
+            AWSS3Control s3ControlClient = AWSS3ControlClient.builder()
+                    .withCredentials(new ProfileCredentialsProvider())
+                    .withRegion(US_WEST_2)
+                    .build();
+
+            s3ControlClient.updateJobPriority(new UpdateJobPriorityRequest()
+                    .withAccountId(accountId)
+                    .withJobId(jobId)
+                    .withPriority(98));
+
+        } catch (AmazonServiceException e) {
+            // The call was transmitted successfully, but Amazon S3 couldn&apos;t process
+            // it and returned an error response.
+            e.printStackTrace();
+        } catch (SdkClientException e) {
+            // Amazon S3 couldn&apos;t be contacted for a response, or the client
+            // couldn&apos;t parse the response from Amazon S3.
+            e.printStackTrace();
+        }
+    }
+}
+</code></pre></div>
+                     </div>
+                     	
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="batch-ops-examples-cli.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="WebsiteHosting.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Creating an Amazon S3 batch operations Job Using the
+				AWS SDK for Java"><a class="pagetoc" href="#batch-ops-examples-java-create-job">Creating a Job</a></li>
+                        <li class="pagetoc" name="Canceling an Amazon S3 batch operations Job Using the
+				AWS SDK for Java"><a class="pagetoc" href="#batch-ops-examples-java-cancel-job">Canceling a Job</a></li>
+                        <li class="pagetoc" name="Updating the Status of a
+				Amazon S3 batch operations Job Using the AWS SDK for Java"><a class="pagetoc" href="#batch-ops-examples-java-update-job-status">Updating the Status of a Job</a></li>
+                        <li class="pagetoc" name="Updating the Priority of
+				a Amazon S3 batch operations Job Using the AWS SDK for Java"><a class="pagetoc" href="#batch-ops-examples-java-update-job-priority.">Updating the Priority of a Job </a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Simple Storage Service';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

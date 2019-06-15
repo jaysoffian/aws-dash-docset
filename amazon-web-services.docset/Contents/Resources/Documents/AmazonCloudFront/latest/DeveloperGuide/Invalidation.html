@@ -1,17 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Invalidating Objects (Web Distributions Only) - Amazon CloudFront</title>
+      <title>Invalidating Files - Amazon CloudFront</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="AddRemoveReplaceObjects.html" title="Adding, Removing, or Replacing Objects in a Distribution">
-      <link rel="prev" href="Expiration.html" title="Specifying How Long Objects Stay in a CloudFront Edge Cache (Expiration)">
-      <link rel="next" href="custom-error-pages.html" title="Customizing Error Responses">
-      <meta name="description" content="Remove objects from CloudFront edge caches before the objects expire by invalidating them.">
+      <link rel="up" href="AddRemoveReplaceObjects.html" title="Adding, Removing, or Replacing Content That CloudFront Distributes">
+      <link rel="prev" href="LinkFormat.html" title="Customizing the URL Format for Files in CloudFront">
+      <link rel="next" href="ServingCompressedFiles.html" title="Serving Compressed Files">
+      <meta name="description" content="Remove objects (files) from CloudFront edge caches before the content expires by invalidating the files.">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Invalidation.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,32 +35,35 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="WorkingWithObjects.html">Working with Objects</a> &#xBB; <a href="AddRemoveReplaceObjects.html">Adding, Removing, or Replacing Objects in a Distribution</a> &#xBB; <span class="breadcrumb">Invalidating Objects (Web Distributions Only)</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="AddRemoveReplaceObjects.html">Adding, Removing, or Replacing Content That CloudFront Distributes</a> &#xBB; <span class="breadcrumb">Invalidating Files</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="Invalidation">Invalidating Objects (Web Distributions Only)</h1>
-                     <p>If you need to remove an object from CloudFront edge caches before it expires, you
-                        can do one
+                     <h1 class="topictitle" id="Invalidation">Invalidating Files</h1>
+                     <p>If you need to remove a file from CloudFront edge caches before it expires, you can
+                        do one
                         				of the following:
                      </p>
                      <div class="itemizedlist">
                         				
                         				
-                        			
+                        		
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
-                              <p>Invalidate the object from edge caches. The next time a viewer requests the object,
-                                 						CloudFront returns to the origin to fetch the latest version of the object.
+                              <p>Invalidate the file from edge caches. The next time a viewer requests the file,
+                                 						CloudFront returns to the origin to fetch the latest version of the file.
                               </p>
                               				
                            </li>
                            <li class="listitem">
                               					
-                              <p>Use object versioning to serve a different version of the object that has a
-                                 						different name. For more information, see <a href="ReplacingObjects.html">Updating Existing Objects Using Versioned Object Names</a>.
+                              <p>Use file versioning to serve a different version of the file that has a
+                                 						different name. For more information, see <a href="UpdatingExistingObjects.html#ReplacingObjects">Updating Existing Files Using Versioned File Names</a>.
                               </p>
                               				
                            </li>
@@ -66,17 +71,10 @@
                      </div>
                      <div class="aws-note">
                         <p class="aws-note">Important</p>
-                        <p>You can invalidate most types of objects that are served by a web distribution, but
-                           					you cannot invalidate media files in the Microsoft Smooth Streaming format when
-                           you have
-                           					enabled Smooth Streaming for the corresponding cache behavior. In addition, you
-                           cannot
-                           					invalidate objects that are served by an RTMP distribution.
-                        </p>
+                        <p>You cannot invalidate objects that are served by an RTMP distribution.</p>
                      </div>
-                     <p>To invalidate objects, you can specify either the path for individual objects or a
-                        path
-                        				that ends with the <code class="code">*</code> wildcard, which might apply to one object or to many, as
+                     <p>To invalidate files, you can specify either the path for individual files or a path
+                        				that ends with the <code class="code">*</code> wildcard, which might apply to one file or to many, as
                         				shown in the following examples:
                      </p>
                      <div class="itemizedlist">
@@ -104,7 +102,7 @@
                      </div>
                      <div class="aws-note">
                         <p class="aws-note">Note</p>
-                        <p>If you use the AWS command line interface (CLI) for invalidating objects and you specify
+                        <p>If you use the AWS command line interface (CLI) for invalidating files and you specify
                            a path that includes 
                            				the <code class="code">*</code> wildcard, you must use quotes (<code class="code">&quot;</code>) around the path. 
                         </p>
@@ -116,34 +114,33 @@
                         a fee for
                         				each invalidation path that you submit. For more information about the charges
                         for
-                        				invalidation, see <a href="Invalidation.html#PayingForInvalidation">Paying for Object Invalidation</a>. 
+                        				invalidation, see <a href="Invalidation.html#PayingForInvalidation">Paying for File Invalidation</a>. 
                      </p>
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Topics</strong></p>
                         <ul>
-                           <li><a href="#Invalidation_Expiration">Choosing Between Invalidating Objects and Using
-                                 					Versioned Object Names</a></li>
-                           <li><a href="#invalidation-access-logs">Determining Which Objects to Invalidate</a></li>
-                           <li><a href="#invalidation-specifying-objects">Specifying the Objects to
+                           <li><a href="#Invalidation_Expiration">Choosing Between Invalidating Files and Using
+                                 					Versioned File Names</a></li>
+                           <li><a href="#invalidation-access-logs">Determining Which Files to Invalidate</a></li>
+                           <li><a href="#invalidation-specifying-objects">Specifying the Files to
                                  					Invalidate</a></li>
-                           <li><a href="#Invalidation_Requests">Invalidating Objects and Displaying Information
-                                 					about Invalidations</a></li>
-                           <li><a href="#InvalidationTools">Third-Party Tools for Invalidating Objects</a></li>
-                           <li><a href="#InvalidationLimits">Invalidation Limits</a></li>
-                           <li><a href="#PayingForInvalidation">Paying for Object Invalidation</a></li>
+                           <li><a href="#Invalidation_Requests">Invalidating Files Using the Console</a></li>
+                           <li><a href="#invalidating-objects-api">Invalidating Files Using the CloudFront API</a></li>
+                           <li><a href="#InvalidationTools">Third-Party Tools for Invalidating Files</a></li>
+                           <li><a href="#InvalidationLimits">Concurrent Invalidation Request Limits</a></li>
+                           <li><a href="#PayingForInvalidation">Paying for File Invalidation</a></li>
                         </ul>
                      </div>
-                     <h2 id="Invalidation_Expiration">Choosing Between Invalidating Objects and Using
-                        					Versioned Object Names
+                     <h2 id="Invalidation_Expiration">Choosing Between Invalidating Files and Using
+                        					Versioned File Names
                      </h2>
                      				
                      
                      				
-                     <p>To control the versions of objects that are served from your distribution, you can
-                        					either invalidate objects or give them versioned file names. If you&apos;ll want to
+                     <p>To control the versions of files that are served from your distribution, you can
+                        					either invalidate files or give them versioned file names. If you&apos;ll want to
                         update your
-                        					objects frequently, we recommend that you primarily use object versioning for
-                        the
+                        					files frequently, we recommend that you primarily use file versioning for the
                         					following reasons:
                      </p>
                      				
@@ -157,39 +154,39 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               						
-                              <p>Versioning enables you to control which object a request returns even when the
+                              <p>Versioning enables you to control which file a request returns even when the
                                  							user has a version cached either locally or behind a corporate caching proxy.
                                  If you
-                                 							invalidate the object, the user might continue to see the old version until
-                                 it expires
+                                 							invalidate the file, the user might continue to see the old version until it
+                                 expires
                                  							from those caches.
                               </p>
                               					
                            </li>
                            <li class="listitem">
                               						
-                              <p>CloudFront access logs include the names of your objects, so versioning makes it easier
-                                 							to analyze the results of object changes.
+                              <p>CloudFront access logs include the names of your files, so versioning makes it easier
+                                 							to analyze the results of file changes.
                               </p>
                               					
                            </li>
                            <li class="listitem">
                               						
-                              <p>Versioning provides a way to serve different versions of objects to different
+                              <p>Versioning provides a way to serve different versions of files to different
                                  							users.
                               </p>
                               					
                            </li>
                            <li class="listitem">
                               						
-                              <p>Versioning simplifies rolling forward and back between object revisions.</p>
+                              <p>Versioning simplifies rolling forward and back between file revisions.</p>
                               					
                            </li>
                            <li class="listitem">
                               						
                               <p>Versioning is less expensive. You still have to pay for CloudFront to transfer new
-                                 							versions of your objects to edge locations, but you don&apos;t have to pay for invalidating
-                                 							objects. 
+                                 							versions of your files to edge locations, but you don&apos;t have to pay for invalidating
+                                 							files. 
                               </p>
                               					
                            </li>
@@ -197,38 +194,37 @@
                      </div>
                      
                      				
-                     <p>For more information about object versioning, see <a href="ReplacingObjects.html">Updating Existing Objects Using Versioned Object Names</a>.
+                     <p>For more information about file versioning, see <a href="UpdatingExistingObjects.html#ReplacingObjects">Updating Existing Files Using Versioned File Names</a>.
                      </p>
                      			
-                     <h2 id="invalidation-access-logs">Determining Which Objects to Invalidate</h2>
+                     <h2 id="invalidation-access-logs">Determining Which Files to Invalidate</h2>
                      				
                      				
-                     <p>If you want to invalidate multiple objects such as all of the objects in a directory
-                        					or all of the objects whose names begin with the same characters, you can include
-                        the
+                     <p>If you want to invalidate multiple files such as all of the files in a directory
+                        					or all files that begin with the same characters, you can include the
                         						<code class="code">*</code> wildcard at the end of the invalidation path. For more information about
                         					using the <code class="code">*</code> wildcard, see <a href="Invalidation.html#invalidation-specifying-objects-paths">Invalidation paths</a>.
                      </p>
                      				
-                     <p>If you want to invalidate selected objects but your users don&apos;t necessarily access
-                        					every object on your origin, you can determine which objects viewers have requested
+                     <p>If you want to invalidate selected files but your users don&apos;t necessarily access
+                        					every file on your origin, you can determine which files viewers have requested
                         from
-                        					CloudFront and invalidate only those objects. To determine which objects viewers
+                        					CloudFront and invalidate only those files. To determine which files viewers
                         have requested,
                         					enable CloudFront access logging. For more information about access logs, see
-                        <a href="AccessLogs.html">Access Logs</a>.
+                        <a href="AccessLogs.html">Configuring and Using Access Logs</a>.
                      </p>
                      			
-                     <h2 id="invalidation-specifying-objects">Specifying the Objects to
+                     <h2 id="invalidation-specifying-objects">Specifying the Files to
                         					Invalidate
                      </h2>
                      				
                      				
-                     <p>Whether you invalidate objects by using the CloudFront console or the CloudFront API,
+                     <p>Whether you invalidate files by using the CloudFront console or the CloudFront API,
                         the
-                        					requirements and limitations for specifying objects are the same. Note the following
+                        					requirements and limitations for specifying files are the same. Note the following
                         about
-                        					specifying the objects that you want to invalidate.
+                        					specifying the files that you want to invalidate.
                      </p>
                      
                      				
@@ -264,7 +260,7 @@
                            <dd>
                               							
                               <p>Invalidation paths are case sensitive, so <code class="code">/images/image.jpg</code> and
-                                 									<code class="code">/images/Image.jpg</code> specify two different objects.
+                                 									<code class="code">/images/Image.jpg</code> specify two different files.
                               </p>
                               						
                            </dd>
@@ -277,8 +273,8 @@
                               							
                               <p>If your CloudFront distribution triggers a Lambda function on viewer request events,
                                  and if the function changes the URI 
-                                 								of the requested object, you must invalidate both URIs to remove the object
-                                 from CloudFront edge caches:
+                                 								of the requested file, you must invalidate both URIs to remove the file from
+                                 CloudFront edge caches:
                               </p>
                               								
                               <div class="itemizedlist">
@@ -296,7 +292,7 @@
                               </div>
                               
                               							
-                              <p>For example, suppose your Lambda function changes the URI for an object from this:</p>
+                              <p>For example, suppose your Lambda function changes the URI for a file from this:</p>
                               							
                               <p><code class="code">http://d111111abcdef8.cloudfront.net/index.html</code></p>
                               							
@@ -306,7 +302,7 @@
                               <p><code class="code">http://d111111abcdef8.cloudfront.net/<em class="replaceable"><code>en</code></em>/index.html</code></p>
                               							
                               							
-                              <p>To invalidate the object, you must specify the following paths:</p>
+                              <p>To invalidate the file, you must specify the following paths:</p>
                               								
                               <div class="itemizedlist">
                                  									
@@ -335,8 +331,8 @@
                            						
                            <dd>
                               							
-                              <p>To invalidate the default root object, specify the path the same way that you
-                                 								specify the path for any other object.
+                              <p>To invalidate the default root object (file), specify the path the same way that you
+                                 								specify the path for any other file.
                               </p>
                               						
                            </dd>
@@ -347,7 +343,7 @@
                            						
                            <dd>
                               							
-                              <p>You can invalidate only objects that are associated with a web
+                              <p>You can invalidate only files that are associated with a web
                                  								distribution.
                               </p>
                               						
@@ -361,11 +357,11 @@
                               							
                               <p>If you configured CloudFront to forward cookies to your origin, CloudFront edge caches
                                  might
-                                 								contain several versions of the object. When you invalidate an object, CloudFront
-                                 								invalidates every cached version of the object regardless of its associated
+                                 								contain several versions of the file. When you invalidate a file, CloudFront
+                                 								invalidates every cached version of the file regardless of its associated
                                  cookies.
                                  								You can&apos;t selectively invalidate some versions and not others based on the
-                                 								associated cookies. For more information, see <a href="Cookies.html">Configuring CloudFront to Cache Objects Based on Cookies</a>.
+                                 								associated cookies. For more information, see <a href="Cookies.html">Caching Content Based on Cookies</a>.
                               </p>
                               						
                            </dd>
@@ -380,13 +376,13 @@
                                  to
                                  								cache based on the values of the headers, CloudFront edge caches might contain
                                  several
-                                 								versions of the object. When you invalidate an object, CloudFront invalidates
-                                 every cached
-                                 								version of the object regardless of the header values. You can&apos;t selectively
+                                 								versions of the file. When you invalidate a file, CloudFront invalidates every
+                                 cached
+                                 								version of the file regardless of the header values. You can&apos;t selectively
                                  								invalidate some versions and not others based on header values. (If you configure
                                  								CloudFront to forward all headers to your origin, CloudFront doesn&apos;t cache
-                                 your objects.) For
-                                 								more information, see <a href="header-caching.html">Configuring CloudFront to Cache Objects Based on Request Headers</a>.
+                                 your files.) For
+                                 								more information, see <a href="header-caching.html">Caching Content Based on Request Headers</a>.
                               </p>
                               						
                            </dd>
@@ -398,7 +394,7 @@
                            <dd>
                               							
                               <p>If you configured CloudFront to forward query strings to your origin, you must include
-                                 								the query strings when invalidating objects, as shown in the following
+                                 								the query strings when invalidating files, as shown in the following
                                  								examples:
                               </p>
                               							
@@ -420,8 +416,8 @@
                                  </ul>
                               </div>
                               							
-                              <p>If client requests include five different query strings for the same object, you
-                                 								can either invalidate the object five times, once for each query string, or
+                              <p>If client requests include five different query strings for the same file, you
+                                 								can either invalidate the file five times, once for each query string, or
                                  you can
                                  								use the * wildcard in the invalidation path, as shown in the following
                                  								example:
@@ -434,10 +430,10 @@
                               <p>For more information about using wildcards in the invalidation path, see 
                                  								<a href="Invalidation.html#invalidation-specifying-objects-paths">Invalidation paths</a>. 
                                  								For more information about query strings, see 
-                                 								<a href="QueryStringParameters.html">Configuring CloudFront to Cache Based on Query String Parameters</a>. 
+                                 								<a href="QueryStringParameters.html">Caching Content Based on Query String Parameters</a>. 
                                  								To determine which query strings are in use, you can enable CloudFront logging.
                                  For more information, see 
-                                 								<a href="AccessLogs.html">Access Logs</a>.
+                                 								<a href="AccessLogs.html">Configuring and Using Access Logs</a>.
                               </p>
                               						
                            </dd>
@@ -447,7 +443,7 @@
                            						
                            <dd>
                               							
-                              <p>For information about limits on invalidations, see <a href="Invalidation.html#InvalidationLimits">Invalidation Limits</a>.
+                              <p>For information about limits on invalidations, see <a href="Invalidation.html#InvalidationLimits">Concurrent Invalidation Request Limits</a>.
                               </p>
                               						
                            </dd>
@@ -474,7 +470,7 @@
                                  								1783 (<a href="http://www.ietf.org/rfc/rfc1738.txt" target="_blank">http://www.ietf.org/rfc/rfc1738.txt</a>), URL-encode those characters. Do not
                                  								URL-encode any other characters in the path, or CloudFront will not invalidate
                                  the old
-                                 								version of the updated object.
+                                 								version of the updated file.
                               </p>
                               						
                            </dd>
@@ -487,7 +483,7 @@
                            <dd>
                               							
                               <p>The path is relative to the distribution. A leading / is optional. For example, to
-                                 invalidate the object at 
+                                 invalidate the file at 
                                  								<code class="code">http://d111111abcdef8.cloudfront.net/images/image2.jpg</code>, you would specify the following:
                               </p>
                               							
@@ -497,11 +493,11 @@
                               							
                               <p><code class="code">images/image2.jpg</code></p>
                               							
-                              <p>You can also invalidate multiple objects simultaneously by using the <code class="code">*</code> wildcard. The <code class="code">*</code>, 
+                              <p>You can also invalidate multiple files simultaneously by using the <code class="code">*</code> wildcard. The <code class="code">*</code>, 
                                  								which replaces 0 or more characters, must be the last character in the invalidation
                                  path. Also, if you use the AWS command 
-                                 								line interface (CLI) for invalidating objects and you specify a path that
-                                 includes 
+                                 								line interface (CLI) for invalidating files and you specify a path that includes
+                                 
                                  								the <code class="code">*</code> wildcard, you must use quotes (<code class="code">&quot;</code>) around the path (like <code class="code">&quot;/*&quot;</code>).
                               </p>
                               							
@@ -518,14 +514,14 @@
                                  <ul class="itemizedlist" type="disc">
                                     <li class="listitem">
                                        									
-                                       <p>To invalidate all of the objects in a directory:</p>
+                                       <p>To invalidate all of the files in a directory:</p>
                                        									
                                        <p><code class="code">/</code><em class="replaceable"><code>directory-path</code></em><code class="code">/*</code></p>
                                        								
                                     </li>
                                     <li class="listitem">
                                        									
-                                       <p>To invalidate a directory, all of its subdirectories, and all of the objects
+                                       <p>To invalidate a directory, all of its subdirectories, and all of the files
                                           										in the directory and subdirectories:
                                        </p>
                                        									
@@ -554,7 +550,7 @@
                                     <li class="listitem">
                                        									
                                        <p>When you configure CloudFront to cache based on query string parameters and you
-                                          										want to invalidate every version of an object:
+                                          										want to invalidate every version of a file:
                                        </p>
                                        									
                                        <p><code class="code">/</code><em class="replaceable"><code>directory-path</code></em><code class="code">/</code><em class="replaceable"><code>file-name</code></em><code class="code">.</code><em class="replaceable"><code>file-name-extension</code></em><code class="code">*</code></p>
@@ -562,7 +558,7 @@
                                     </li>
                                     <li class="listitem">
                                        									
-                                       <p>To invalidate all of the objects in a distribution:</p>
+                                       <p>To invalidate all of the files in a distribution:</p>
                                        									
                                        <p><code class="code">/*</code></p>
                                        								
@@ -576,16 +572,16 @@
                               </p>
                               							
                               							
-                              <p>For information about invalidating objects if you use a Lambda function to change
-                                 the URI, see 
+                              <p>For information about invalidating files if you use a Lambda function to change the
+                                 URI, see 
                                  								<a href="Invalidation.html#invalidation-lambda-at-edge">Changing the URI Using a Lambda Function</a>.
                               </p>
                               
                               							
                               <p>The charge to submit an invalidation path is the same regardless of the number of
-                                 objects you&apos;re invalidating: 
-                                 								a single object (<code class="code">/images/logo.jpg</code>) or all of the objects that are associated with a distribution (<code class="code">/*</code>). 
-                                 								For more information, see <a href="http://aws.amazon.com/cloudfront/pricing/" target="_blank">Amazon CloudFront Pricing</a>.
+                                 files you&apos;re invalidating: 
+                                 								a single file (<code class="code">/images/logo.jpg</code>) or all of the files that are associated with a distribution (<code class="code">/*</code>). 
+                                 								For more information, see <a href="https://aws.amazon.com/cloudfront/pricing/" target="_blank">Amazon CloudFront Pricing</a>.
                               </p>
                               
                               							
@@ -603,7 +599,7 @@
                            						
                            <dd>
                               							
-                              <p>If you are using signed URLs, invalidate an object by including only the portion
+                              <p>If you are using signed URLs, invalidate a file by including only the portion
                                  								of the URL before the question mark (?). 
                               </p>
                               						
@@ -611,26 +607,19 @@
                            					
                         </dl>
                      </div>
-                     
                      			
-                     <h2 id="Invalidation_Requests">Invalidating Objects and Displaying Information
-                        					about Invalidations
-                     </h2>
+                     <h2 id="Invalidation_Requests">Invalidating Files Using the Console</h2>
                      				
                      				
-                     <p>You can use the CloudFront console or CloudFront API actions to create and run an
-                        invalidation,
+                     <p>You can use the CloudFront console to create and run an invalidation,
                         					display a list of the invalidations that you submitted previously, and display
                         detailed
                         					information about an individual invalidation. You can also copy an existing invalidation,
-                        					edit the list of object paths, and run the edited invalidation.
+                        					edit the list of file paths, and run the edited invalidation.
                      </p>
-                     
                      				
-                     <p>See the applicable topic:</p>
                      				
                      <div class="itemizedlist">
-                        					
                         					
                         					
                         					
@@ -639,35 +628,31 @@
                         				
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
-                              <p><a href="Invalidation.html#invalidating-objects-console">Invalidating Objects Using the CloudFront Console</a></p>
+                              <p><a href="Invalidation.html#invalidating-objects-console">Invalidating Files</a></p>
                            </li>
                            <li class="listitem">
                               <p><a href="Invalidation.html#invalidating-objects-copy-console">Copying, Editing, and Rerunning an
-                                    						Existing Invalidation Using the CloudFront Console</a></p>
+                                    						Existing Invalidation</a></p>
                            </li>
                            <li class="listitem">
                               <p><a href="Invalidation.html#canceling-invalidations">Canceling Invalidations</a></p>
                            </li>
                            <li class="listitem">
-                              <p><a href="Invalidation.html#listing-invalidations-console">Listing Invalidations Using the CloudFront Console</a></p>
+                              <p><a href="Invalidation.html#listing-invalidations-console">Listing Invalidations</a></p>
                            </li>
                            <li class="listitem">
-                              <p><a href="Invalidation.html#invalidation-details-console">Displaying Information about an Invalidation Using the CloudFront Console</a></p>
-                           </li>
-                           <li class="listitem">
-                              <p><a href="Invalidation.html#invalidating-objects-api">Invalidating Objects and Displaying Information about Invalidations Using the CloudFront
-                                    API</a></p>
+                              <p><a href="Invalidation.html#invalidation-details-console">Displaying Information about an Invalidation</a></p>
                            </li>
                         </ul>
                      </div>
                      
                      				
-                     <h3 id="invalidating-objects-console">Invalidating Objects Using the CloudFront Console</h3>
+                     <h3 id="invalidating-objects-console">Invalidating Files</h3>
                      					
                      					
-                     <p>To invalidate objects using the CloudFront console, do the following procedure.</p>
+                     <p>To invalidate files using the CloudFront console, do the following.</p>
                      
-                     					<a id="invalidating-objects-console-procedure"></a><p class="title"><b>To invalidate objects using the CloudFront console</b></p>
+                     					<a id="invalidating-objects-console-procedure"></a><p class="title"><b>To invalidate files</b></p>
                      <ol>
                         <li>
                            <p>Sign in to the AWS Management Console and open the CloudFront console at
@@ -676,7 +661,7 @@
                         </li>
                         <li>
                            							
-                           <p>Choose the distribution for which you want to invalidate objects.</p>
+                           <p>Choose the distribution for which you want to invalidate files.</p>
                            						
                         </li>
                         <li>
@@ -699,16 +684,16 @@
                         </li>
                         <li>
                            							
-                           <p>For the objects that you want to invalidate, enter one invalidation path per line.
-                              For information about specifying 
-                              								invalidation paths, see <a href="Invalidation.html#invalidation-specifying-objects">Specifying the Objects to
+                           <p>For the files that you want to invalidate, enter one invalidation path per line. For
+                              information about specifying 
+                              								invalidation paths, see <a href="Invalidation.html#invalidation-specifying-objects">Specifying the Files to
                                  					Invalidate</a>. 
                            </p>
                            							
                            <div class="aws-note">
                               <p class="aws-note">Important</p>
-                              <p>Specify object paths carefully. You can&apos;t cancel an invalidation request after you
-                                 start it.
+                              <p>Specify file paths carefully. You can&apos;t cancel an invalidation request after you start
+                                 it.
                               </p>
                            </div>
                            						
@@ -724,13 +709,13 @@
                      
                      				
                      <h3 id="invalidating-objects-copy-console">Copying, Editing, and Rerunning an
-                        						Existing Invalidation Using the CloudFront Console
+                        						Existing Invalidation
                      </h3>
                      					
                      					
                      <p>You can copy an invalidation that you created previously, update the list of
                         						invalidation paths, and run the updated invalidation. You cannot copy an existing
-                        						invalidation, update the invalidation paths, and save the updated invalidation
+                        						invalidation, update the invalidation paths, and then save the updated invalidation
                         without
                         						running it.
                      </p>
@@ -738,20 +723,20 @@
                      <div class="aws-note">
                         <p class="aws-note">Important</p>
                         <p>If you copy an invalidation that is still in progress, update the list of
-                           							invalidation paths, and run the updated invalidation, CloudFront will not stop
-                           or delete the
+                           							invalidation paths, and then run the updated invalidation, CloudFront will
+                           not stop or delete the
                            							invalidation that you copied. If any invalidation paths appear in the original
                            and in
-                           							the copy, CloudFront will try to invalidate the objects twice, and both invalidations
+                           							the copy, CloudFront will try to invalidate the files twice, and both invalidations
                            will
                            							count against your maximum number of free invalidations for the month. If you&apos;ve
                            							already reached the maximum number of free invalidations, you&apos;ll be charged
                            for both
-                           							invalidations of each object. For more information, see <a href="Invalidation.html#InvalidationLimits">Invalidation Limits</a>.
+                           							invalidations of each file. For more information, see <a href="Invalidation.html#InvalidationLimits">Concurrent Invalidation Request Limits</a>.
                         </p>
                      </div>
                      					<a id="invalidating-objects-copy-console-procedure"></a><p class="title"><b>To copy, edit, and rerun
-                           							an existing invalidation using the CloudFront console</b></p>
+                           							an existing invalidation</b></p>
                      <ol>
                         <li>
                            <p>Sign in to the AWS Management Console and open the CloudFront console at
@@ -760,9 +745,7 @@
                         </li>
                         <li>
                            							
-                           <p>Choose the distribution that contains the invalidation that you want to
-                              								copy.
-                           </p>
+                           <p>Choose the distribution that contains the invalidation that you want to copy.</p>
                            						
                         </li>
                         <li>
@@ -820,17 +803,17 @@
                      				
                      
                      				
-                     <h3 id="listing-invalidations-console">Listing Invalidations Using the CloudFront Console</h3>
+                     <h3 id="listing-invalidations-console">Listing Invalidations</h3>
                      					
                      					
-                     <p>Using the console, you can display a list of the last 100 invalidations that you&apos;ve
-                        created and run for a distribution. 
-                        						If you want to get a list of more than 100 invalidations, use the GET Invalidation
+                     <p>You can display a list of the last 100 invalidations that you&apos;ve created and run for
+                        a distribution by using the CloudFront console. 
+                        						If you want to get a list of more than 100 invalidations, use the Invalidation
                         List API action. For more information, see 
-                        						<a href="./cloudfront/latest/APIReference/ListInvalidations.html" target="_blank">GET Invalidation List</a> in the <em>Amazon CloudFront API Reference</em>.
+                        						<a href="./cloudfront/latest/APIReference/ListInvalidations.html">Invalidation List</a> in the <em>Amazon CloudFront API Reference</em>.
                      </p>
                      					
-                     					<a id="listing-invalidations-console-procedure"></a><p class="title"><b>To list invalidations using the CloudFront console</b></p>
+                     					<a id="listing-invalidations-console-procedure"></a><p class="title"><b>To list invalidations</b></p>
                      <ol>
                         <li>
                            <p>Sign in to the AWS Management Console and open the CloudFront console at
@@ -855,10 +838,15 @@
                            						
                         </li>
                      </ol>
+                     					
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>You can&apos;t remove invalidations from the list.</p>
+                     </div>
                      				
                      
                      				
-                     <h3 id="invalidation-details-console">Displaying Information about an Invalidation Using the CloudFront Console</h3>
+                     <h3 id="invalidation-details-console">Displaying Information about an Invalidation</h3>
                      					
                      					
                      <p>You can display detailed information about an invalidation, including distribution
@@ -866,7 +854,7 @@
                         						invalidation, the date and time that the invalidation was created, and a complete
                         list of the invalidation paths. 
                      </p>
-                     					<a id="invalidation-details-console-procedure"></a><p class="title"><b>To display information about an invalidation using the CloudFront console</b></p>
+                     					<a id="invalidation-details-console-procedure"></a><p class="title"><b>To display information about an invalidation</b></p>
                      <ol>
                         <li>
                            <p>Sign in to the AWS Management Console and open the CloudFront console at
@@ -905,65 +893,59 @@
                         </li>
                      </ol>
                      				
-                     
-                     				
-                     <h3 id="invalidating-objects-api">Invalidating Objects and Displaying Information about Invalidations Using the CloudFront
-                        API
-                     </h3>
-                     					
-                     					
+                     			
+                     <h2 id="invalidating-objects-api">Invalidating Files Using the CloudFront API</h2>
+                     			
+                     			
                      <p>For information about invalidating objects and about displaying information about
                         invalidations using the CloudFront API, 
-                        						see the applicable topic in the <em>Amazon CloudFront API Reference</em>:
+                        				see the following topics in the <em>Amazon CloudFront API Reference</em>:
                      </p>
-                     						
+                     			
                      <div class="itemizedlist">
-                        							
-                        							
-                        							
-                        						
+                        				
+                        				
+                        				
+                        			
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
-                              								
-                              <p>Invalidating objects: <a href="./cloudfront/latest/APIReference/API_CreateInvalidation.html" target="_blank">POST Invalidation</a>
-                                 								
+                              					
+                              <p>Invalidating files: <a href="./cloudfront/latest/APIReference/API_CreateInvalidation.html">Invalidation</a>
+                                 					
                               </p>
-                              							
+                              				
                            </li>
                            <li class="listitem">
-                              								
-                              <p>Getting a list of your invalidations: <a href="./cloudfront/latest/APIReference/API_ListInvalidations.html" target="_blank">GET Invalidation List</a></p>
-                              							
+                              					
+                              <p>Getting a list of your invalidations: <a href="./cloudfront/latest/APIReference/API_ListInvalidations.html">Invalidation List</a></p>
+                              				
                            </li>
                            <li class="listitem">
-                              								
-                              <p>Getting information about a specific invalidation: <a href="./cloudfront/latest/APIReference/API_GetInvalidation.html" target="_blank">GET Invalidation</a></p>
-                              							
+                              					
+                              <p>Getting information about a specific invalidation: <a href="./cloudfront/latest/APIReference/API_GetInvalidation.html">Invalidation</a></p>
+                              				
                            </li>
                         </ul>
                      </div>
-                     				
-                     			
-                     <h2 id="InvalidationTools">Third-Party Tools for Invalidating Objects</h2>
+                     		
+                     <h2 id="InvalidationTools">Third-Party Tools for Invalidating Files</h2>
                      				
                      				
                      <p>In addition to the invalidation methods provided by CloudFront, several third-party
-                        tools provide ways to invalidate objects. 
+                        tools provide ways to invalidate files. 
                         					For a list of tools, see <a href="Resources.html#resources-invalidation-tools">Invalidating Objects</a>.
                      </p>
                      			
-                     <h2 id="InvalidationLimits">Invalidation Limits</h2>
+                     <h2 id="InvalidationLimits">Concurrent Invalidation Request Limits</h2>
                      				
                      				
-                     				
-                     <p>If you&apos;re invalidating objects individually, you can have invalidation requests for
+                     <p>If you&apos;re invalidating files individually, you can have invalidation requests for
                         up
-                        					to 3,000 objects per distribution in progress at one time. This can be one invalidation
-                        					request for up to 3,000 objects, up to 3,000 requests for one object each, or
-                        any other
-                        					combination that doesn&apos;t exceed 3,000 objects. For example, you can submit 30
-                        invalidation
-                        					requests that invalidate 100 objects each. As long as all 30 invalidation requests
+                        					to 3,000 files per distribution in progress at one time. This can be one invalidation
+                        					request for up to 3,000 files, up to 3,000 requests for one file each, or any
+                        other
+                        					combination that doesn&apos;t exceed 3,000 files. For example, you can submit 30 invalidation
+                        					requests that invalidate 100 files each. As long as all 30 invalidation requests
                         are
                         					still in progress, you can&apos;t submit any more invalidation requests. If you exceed
                         the
@@ -972,21 +954,21 @@
                      				
                      <p>If you&apos;re using the * wildcard, you can have requests for up to 15 invalidation paths
                         					in progress at one time. You can also have invalidation requests for up to 3,000
-                        					individual objects per distribution in progress at the same time; the limit on
+                        					individual files per distribution in progress at the same time; the limit on
                         wildcard
-                        					invalidation requests is independent of the limit on invalidating objects
+                        					invalidation requests is independent of the limit on invalidating files
                         					individually.
                      </p>
                      			
-                     <h2 id="PayingForInvalidation">Paying for Object Invalidation</h2>
+                     <h2 id="PayingForInvalidation">Paying for File Invalidation</h2>
                      				
                      				
                      <p>The first 1,000 invalidation paths that you submit per month are free; you pay for
                         					each invalidation path over 1,000 in a month. An invalidation path can be for
                         a single
-                        					object (such as <code class="code">/images/logo.jpg</code>) or for multiple objects (such as
+                        					file (such as <code class="code">/images/logo.jpg</code>) or for multiple files (such as
                         						<code class="code">/images/*</code>). A path that includes the <code class="code">*</code> wildcard counts as one
-                        					path even if it causes CloudFront to invalidate thousands of objects.
+                        					path even if it causes CloudFront to invalidate thousands of files.
                      </p>
                      				
                      <p>This limit of 1000 invalidation paths per month applies to the total number of
@@ -1004,15 +986,19 @@
                         					<a href="Invalidation.html#invalidation-specifying-objects-paths">Invalidation paths</a>.
                      </p>
                      			
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -1021,8 +1007,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="Expiration.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="custom-error-pages.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="LinkFormat.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="ServingCompressedFiles.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -1031,24 +1019,27 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Choosing Between Invalidating Objects and Using
-					Versioned Object Names"><a class="pagetoc" href="#Invalidation_Expiration">Choosing Between Invalidating Objects and Using
-                              					Versioned Object Names</a></li>
-                        <li class="pagetoc" name="Determining Which Objects to Invalidate"><a class="pagetoc" href="#invalidation-access-logs">Determining Which Objects to Invalidate</a></li>
-                        <li class="pagetoc" name="Specifying the Objects to
-					Invalidate"><a class="pagetoc" href="#invalidation-specifying-objects">Specifying the Objects to
+                        <li class="pagetoc" name="Choosing Between Invalidating Files and Using
+					Versioned File Names"><a class="pagetoc" href="#Invalidation_Expiration">Choosing Between Invalidating Files and Using
+                              					Versioned File Names</a></li>
+                        <li class="pagetoc" name="Determining Which Files to Invalidate"><a class="pagetoc" href="#invalidation-access-logs">Determining Which Files to Invalidate</a></li>
+                        <li class="pagetoc" name="Specifying the Files to
+					Invalidate"><a class="pagetoc" href="#invalidation-specifying-objects">Specifying the Files to
                               					Invalidate</a></li>
-                        <li class="pagetoc" name="Invalidating Objects and Displaying Information
-					about Invalidations"><a class="pagetoc" href="#Invalidation_Requests">Invalidating Objects and Displaying Information
-                              					about Invalidations</a></li>
-                        <li class="pagetoc" name="Third-Party Tools for Invalidating Objects"><a class="pagetoc" href="#InvalidationTools">Third-Party Tools for Invalidating Objects</a></li>
-                        <li class="pagetoc" name="Invalidation Limits"><a class="pagetoc" href="#InvalidationLimits">Invalidation Limits</a></li>
-                        <li class="pagetoc" name="Paying for Object Invalidation"><a class="pagetoc" href="#PayingForInvalidation">Paying for Object Invalidation</a></li>
+                        <li class="pagetoc" name="Invalidating Files Using the Console"><a class="pagetoc" href="#Invalidation_Requests">Invalidating Files Using the Console</a></li>
+                        <li class="pagetoc" name="Invalidating Files Using the CloudFront API"><a class="pagetoc" href="#invalidating-objects-api">Invalidating Files Using the CloudFront API</a></li>
+                        <li class="pagetoc" name="Third-Party Tools for Invalidating Files"><a class="pagetoc" href="#InvalidationTools">Third-Party Tools for Invalidating Files</a></li>
+                        <li class="pagetoc" name="Concurrent Invalidation Request Limits"><a class="pagetoc" href="#InvalidationLimits">Concurrent Invalidation Request Limits</a></li>
+                        <li class="pagetoc" name="Paying for File Invalidation"><a class="pagetoc" href="#PayingForInvalidation">Paying for File Invalidation</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

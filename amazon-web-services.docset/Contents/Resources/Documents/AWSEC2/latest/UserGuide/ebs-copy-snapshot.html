@@ -6,12 +6,14 @@
       <link rel="up" href="EBSSnapshots.html" title="Amazon EBS Snapshots">
       <link rel="prev" href="ebs-deleting-snapshot.html" title="Deleting an Amazon EBS Snapshot">
       <link rel="next" href="ebs-describing-snapshots.html" title="Viewing Amazon EBS Snapshot Information">
-      <meta name="description" content="Copy snapshots across AWS regions, making it easier to leverage multiple regions for geographical expansion, data center migration, and disaster recovery.">
+      <meta name="description" content="Copy snapshots across AWS Regions, making it easier to leverage multiple Regions for geographical expansion, data center migration, and disaster recovery.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-copy-snapshot.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,56 +35,59 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <a href="EBSSnapshots.html">Amazon EBS Snapshots</a> &#xBB; <span class="breadcrumb">Copying an Amazon EBS Snapshot</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <a href="EBSSnapshots.html">Amazon EBS Snapshots</a> &#xBB; <span class="breadcrumb">Copying an Amazon EBS Snapshot</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="ebs-copy-snapshot">Copying an Amazon EBS Snapshot</h1>
                      <p>With Amazon EBS, you can create point-in-time snapshots of volumes, which we store
                         for you in
-                        Amazon S3. After you&apos;ve created a snapshot and it has finished copying to Amazon S3
-                        (when the snapshot
-                        status is <code class="code">completed</code>), you can copy it from one AWS region to another, or within
-                        the same region. Amazon S3 server-side encryption (256-bit AES) protects a snapshot&apos;s
-                        data
-                        in-transit during a copy operation. The snapshot copy receives an ID that is different
-                        than
-                        the ID of the original snapshot.
+                        Amazon S3. After you create a snapshot and it has finished copying to Amazon S3 (when
+                        the snapshot
+                        status is <code class="code">completed</code>), you can copy it from one AWS Region to another, or within
+                        the same Region. Amazon S3 server-side encryption (256-bit AES) protects a snapshot&apos;s
+                        data in
+                        transit during a copy operation. The snapshot copy receives an ID that is different
+                        from the
+                        ID of the original snapshot.
                      </p>
-                     <p>For information about copying an Amazon RDS snapshot, see <a href="./AmazonRDS/latest/UserGuide/USER_CopySnapshot.html" target="_blank">Copying a DB Snapshot</a> in the
-                        <em>Amazon Relational Database Service User Guide</em>.
+                     <p>To copy multi-volume snapshots to another AWS Region, retrieve the snapshots using
+                        the tag
+                        you applied to the multi-volume snapshots group when you created it. Then individually
+                        copy
+                        the snapshots to another Region.
+                     </p>
+                     <p>For information about copying an Amazon RDS snapshot, see <a href="./AmazonRDS/latest/UserGuide/USER_CopySnapshot.html">Copying a DB Snapshot</a> in the
+                        <em>Amazon RDS User Guide</em>.
                      </p>
                      <p>If you would like another account to be able to copy your snapshot, you must either
                         modify
                         the snapshot permissions to allow access to that account or make the snapshot public
                         so that
-                        all AWS accounts may copy it. For more information, see <a href="ebs-modifying-snapshot-permissions.html">Sharing an Amazon EBS Snapshot</a>.
+                        all AWS accounts can copy it. For more information, see <a href="ebs-modifying-snapshot-permissions.html">Sharing an Amazon EBS Snapshot</a>.
                      </p>
-                     <p>For pricing information about copying snapshots across regions and accounts, see <a href="https://aws.amazon.com/ebs/pricing/" target="_blank">Amazon EBS Pricing</a>. Note that snapshot copy operations
-                        within a single account and region do not copy any actual data and therefore are cost-free
-                        as
-                        long as the following conditions apply:
+                     <p>For pricing information about copying snapshots across AWS Regions and accounts, see
+                        <a href="https://aws.amazon.com/ebs/pricing/" target="_blank">Amazon EBS Pricing</a>. Note that snapshot copy
+                        operations within a single account and Region do not copy any actual data and therefore
+                        are
+                        cost-free as long as the encryption status of the snapshot copy does not change.
                      </p>
-                     <div class="itemizedlist">
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              
-                              <p>The encryption status of the snapshot copy does not change.</p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p>For encrypted snapshots, both the source snapshot and the copy are encrypted with
-                                 the
-                                 default EBS CMK.
-                              </p>
-                              
-                           </li>
-                        </ul>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>If you copy a snapshot to a new Region, a complete (non-incremental) copy is always
+                           created, resulting in additional delay and storage costs.
+                        </p>
+                     </div>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>If you copy a snapshot and encrypt it to a new CMK, a complete
+                           (non-incremental) copy is always created, resulting in additional delay and
+                           storage costs.
+                        </p>
                      </div>
                      <div class="itemizedlist">
                         
@@ -96,12 +101,12 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p>Geographic expansion: Launch your applications in a new region.</p>
+                              <p>Geographic expansion: Launch your applications in a new AWS Region.</p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>Migration: Move an application to a new region, to enable better availability and
+                              <p>Migration: Move an application to a new Region, to enable better availability and
                                  to
                                  minimize cost.
                               </p>
@@ -111,7 +116,7 @@
                               
                               <p>Disaster recovery: Back up your data and logs across different geographical locations
                                  at regular intervals. In case of disaster, you can restore your applications using
-                                 point-in-time backups stored in the secondary region. This minimizes data loss and
+                                 point-in-time backups stored in the secondary Region. This minimizes data loss and
                                  recovery time.
                               </p>
                               
@@ -147,7 +152,7 @@
                            <li class="listitem">
                               
                               <p>You can copy any accessible snapshots that have a <code class="code">completed</code> status,
-                                 including shared snapshots and snapshots that you&apos;ve created.
+                                 including shared snapshots and snapshots that you have created.
                               </p>
                               
                            </li>
@@ -155,7 +160,7 @@
                               
                               <p>You can copy AWS Marketplace, VM Import/Export, and AWS Storage Gateway snapshots,
                                  but you must
-                                 verify that the snapshot is supported in the destination region.
+                                 verify that the snapshot is supported in the destination Region.
                               </p>
                               
                            </li>
@@ -171,8 +176,8 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p>Each account can have up to 5 concurrent snapshot copy requests to a single
-                                 destination region.
+                              <p>Each account can have up to five concurrent snapshot copy requests to a single
+                                 destination Region.
                               </p>
                               
                            </li>
@@ -187,59 +192,371 @@
                            </li>
                            <li class="listitem">
                               
-                              <p>Snapshots created by the CopySnapshot action have an arbitrary volume ID that should
-                                 not be used for any purpose.
+                              <p>Snapshots created by the <code class="code">CopySnapshot</code> action have an arbitrary volume ID
+                                 that should not be used for any purpose.
                               </p>
                               
                            </li>
                         </ul>
                      </div>
                      
-                     <h2 id="ebs-incremental-copy">Incremental Copy</h2>      
+                     <h2 id="ebs-incremental-copy">Incremental Copying Across Regions</h2>
                      
-                     <p>The first snapshot copy to another region is always a full copy. Each subsequent
-                        snapshot copy is incremental (which makes the copy process faster), meaning that only
-                        the
-                        blocks in the snapshot that have changed after your last snapshot copy to the same
-                        destination are transferred. Support for incremental snapshots is specific to a cross-region
-                        pair where a previous complete snapshot copy of the source volume is already available,
-                        and
-                        pair where a previous complete snapshot copy of the source volume is already available
-                        in
-                        the destination region, and it is limited to the default EBS CMK for encrypted snapshots.
-                        For example, if you copy an unencrypted snapshot from the US East (N. Virginia) region
-                        to the
-                        US West (Oregon) region, the first snapshot copy of the volume is a full copy and
-                        subsequent snapshot copies of the same volume transferred between the same regions
-                        are
-                        incremental.
-                     </p>    
+                     <p>The first snapshot copy to another Region is always a full copy. For unencrypted
+                        snapshots, each subsequent snapshot copy of the same volume is incremental, meaning
+                        that AWS
+                        copies only the data that changed since your last snapshot copy to the same destination
+                        Region. This allows for faster copying and lower storage costs.
+                     </p>
                      
+                     <p>In the case of encrypted snapshots, you must encrypt to the same CMK that was used
+                        for
+                        previous copies to get incremental copies. The following examples illustrate how this
+                        works: 
+                     </p>
                      
-                     <h2 id="ebs-encrypt-snapshot-copy">Encrypted Snapshots</h2>
-                     
-                     <p>When you copy a snapshot, you can choose to encrypt the copy (if the original snapshot
-                        was not encrypted) or you can specify a CMK different from the original one, and the
-                        resulting copied snapshot uses the new CMK. However, changing the encryption status
-                        of a
-                        snapshot or using a non-default EBS CMK during a copy operation always results in
-                        a full
-                        (not incremental) copy, which may incur greater data transfer and storage charges.
+                     <div class="itemizedlist">
                         
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>If you copy an unencrypted snapshot from the US East (N. Virginia) Region to the
+                                 US West (Oregon) Region, the first snapshot copy is a full copy and subsequent
+                                 snapshot copies of the same volume transferred between the same Regions are
+                                 incremental.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>If you copy an encrypted snapshot from the US East (N. Virginia) Region to the
+                                 US West (Oregon) Region, the first snapshot copy of the volume is a full copy.
+                              </p>
+                              
+                              <div class="itemizedlist">
+                                 
+                                 
+                                 
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       
+                                       <p>If you encrypt to the same CMK in a subsequent snapshot copy for the same volume
+                                          between the same Regions, the copy is incremental.
+                                       </p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p>If you encrypt to a different CMK in a subsequent snapshot copy for the same
+                                          volume between the same Regions, the copy is a new full copy of the snapshot.
+                                       </p>
+                                       
+                                    </li>
+                                 </ul>
+                              </div>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>For more information, see <a href="./AWSEC2/latest/UserGuide/EBSEncryption.html#re-encrypt_snapshot">Encrypt a Snapshot to a New
+                           CMK</a>.
                      </p>
                      
-                     <p>To copy an encrypted snapshot from another account, you must have permissions to use
-                        the
-                        snapshot and you must have permissions to use the customer master key (CMK) that was
-                        used to
-                        encrypt the original snapshot. For more information, see <a href="ebs-modifying-snapshot-permissions.html">Sharing an Amazon EBS Snapshot</a>.
+                     
+                     <h2 id="creating-encrypted-snapshots">Encryption and Snapshot Copying</h2>
+                     
+                     <p>When you copy a snapshot, you can encrypt the copy or you can specify a CMK different
+                        from the original one, and the resulting copied snapshot uses the new CMK. However,
+                        changing
+                        the encryption status of a snapshot during a copy operation results in a full (not
+                        incremental) copy, which might incur greater data transfer and storage charges. 
                      </p>
                      
-                     <p>When copying an encrypted snapshot that was shared with you, you should consider
-                        re-encrypting the snapshot during the copy process with a different key that you control.
-                        This protects you if the original key is compromised, or if the owner revokes the
-                        key for
-                        any reason, which could cause you to lose access to the volume you created.
+                     <p>To copy an encrypted snapshot shared from another AWS account, you must have permissions
+                        to use the snapshot and the customer master key (CMK) that was used to encrypt the
+                        snapshot.
+                        When using an encrypted snapshot that was shared with you, we recommend that you re-encrypt
+                        the snapshot by copying it using a CMK that you own. This protects you if the original
+                        CMK
+                        is compromised, or if the owner revokes it, which could cause you to lose access to
+                        any
+                        encrypted volumes that you created using the snapshot. For more information, see <a href="ebs-modifying-snapshot-permissions.html">Sharing an Amazon EBS Snapshot</a>.
+                     </p>
+                     
+                     
+                     
+                     
+                     <p>You apply encryption to EBS snapshot copies 
+                        by setting the <code class="code">Encrypted</code>
+                        parameter to <code class="code">true</code>. (The <code class="code">Encrypted</code> parameter is optional if <a href="./AWSEC2/latest/UserGuide/EBSEncryption.html#encryption-by-default">encryption by
+                           default</a> is enabled).
+                     </p>
+                     
+                     <p>Optionally, you can use <code class="code">KmsKeyId</code> to specify a custom key to use to
+                        encrypt the snapshot copy. (The <code class="code">Encrypted</code> parameter must also be set to
+                        <code class="code">true</code>, even if encryption by default is enabled.) If <code class="code">KmsKeyId</code> 
+                        is not specified, the key that is used for encryption depends on the encryption state
+                        
+                        of the source snapshot and its ownership. The following table describes the encryption
+                        
+                        outcome for each possible combination of settings.
+                     </p>  
+                     
+                     
+                     
+                     <div class="table">
+                        <p class="title"><b>Encryption outcomes: Copying a snapshot</b></p>
+                        <div class="table-contents">
+                           <table id="w306aac29c29c19c27c25c11">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Is <code class="code">Encrypted</code> parameter set?
+                                 </th>
+                                 
+                                 <th>Is encryption by default set?</th>
+                                 
+                                 <th>Source snapshot</th>
+                                 
+                                 <th>Default (no KmsKeyId specified)</th>
+                                 
+                                 <th>Custom (KmsKeyId specified)</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Unencrypted snapshot that you own</td>
+                                 
+                                 <td>Unencrypted</td>
+                                 
+                                 <td rowspan="4">N/A</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Encrypted snapshot that you own</td>
+                                 
+                                 <td>Encrypted by same key</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Unencrypted snapshot that is shared with you</td>
+                                 
+                                 <td>Unencrypted</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>
+                                    
+                                    <p>Encrypted snapshot that is shared with you</p>
+                                    
+                                 </td>
+                                 
+                                 <td>Encrypted by default CMK*</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Unencrypted snapshot that you own</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                                 <td rowspan="4">Encrypted by a specified CMK**</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Encrypted snapshot that you own</td>
+                                 
+                                 <td>Encrypted by same key</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Unencrypted snapshot that is shared with you</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>
+                                    
+                                    <p>Encrypted snapshot that is shared with you</p>
+                                    
+                                 </td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Unencrypted snapshot that you own</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                                 <td rowspan="4">N/A</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Encrypted snapshot that you own</td>
+                                 
+                                 <td>Encrypted by same key</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Unencrypted snapshot that is shared with you</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>No</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>
+                                    
+                                    <p>Encrypted snapshot that is shared with you</p>
+                                    
+                                 </td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Unencrypted snapshot that you own</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                                 <td rowspan="4">Encrypted by a specified CMK</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Encrypted snapshot that you own</td>
+                                 
+                                 <td>Encrypted by same key</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Unencrypted snapshot that is shared with you</td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>Yes</td>
+                                 
+                                 <td>
+                                    
+                                    <p>Encrypted snapshot that is shared with you</p>
+                                    
+                                 </td>
+                                 
+                                 <td>Encrypted by default CMK</td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     <p>* This is the default CMK used for EBS encryption for the AWS account and Region.
+                        
+                        By default this is a unique AWS managed CMK for EBS, or you can specify a customer
+                        
+                        managed CMK. For more information, see <a href="EBSEncryption.html#EBSEncryption_key_mgmt">Encryption Key Management</a>.
+                     </p>
+                     
+                     <p>** This is a customer managed CMK specified for the copy action. This CMK 
+                        is used instead of the default CMK for the AWS account and Region.
                      </p>
                      
                      
@@ -282,7 +599,7 @@
                               <ul class="itemizedlist" type="disc">
                                  <li class="listitem">
                                     
-                                    <p><b>Destination region</b>: Select the region where you want to
+                                    <p><b>Destination region</b>: Select the Region where you want to
                                        write the copy of the snapshot.
                                     </p>
                                     
@@ -298,17 +615,31 @@
                                  <li class="listitem">
                                     
                                     <p><b>Encryption</b>: If the source snapshot is not encrypted, you
-                                       can choose to encrypt the copy. <em>You cannot decrypt an
-                                          encrypted snapshot</em>.
+                                       can choose to encrypt the copy. If you have enabled <a href="./AWSEC2/latest/UserGuide/encryption-by-default.html">encryption by default</a>, the <b>Encryption</b> option is set and cannot be
+                                       unset from the snapshot console. If the <b>Encryption</b> option is
+                                       set, you can choose to encrypt it to a customer managed CMK by selecting one in the
+                                       field, described below.
                                     </p>
+                                    
+                                    <p>You cannot strip encryption from an encrypted snapshot.</p>
+                                    
+                                    
+                                    <div class="aws-note">
+                                       <p class="aws-note">Note</p>
+                                       <p>If you copy a snapshot and encrypt it to a new CMK, a complete
+                                          (non-incremental) copy is always created, resulting in additional delay and
+                                          storage costs.
+                                       </p>
+                                    </div>
                                     
                                  </li>
                                  <li class="listitem">
                                     
-                                    <p><b>Master Key</b>: The customer master key (CMK) that to be used
-                                       to encrypt this snapshot. You can select from master keys in your account or
-                                       type/paste the ARN of a key from a different account. You can create a new master
-                                       encryption key in the IAM console. 
+                                    <p><b>Master Key</b>: The customer master key (CMK) to be used to
+                                       encrypt this snapshot. The default key for your account is displayed initially, but
+                                       you can optionally select from the master keys in your account or type/paste the ARN
+                                       of a key from a different account. You can create new master encryption keys in the
+                                       IAM console <a href="https://console.aws.amazon.com/iam/" target="_blank">https://console.aws.amazon.com/iam/</a>. 
                                     </p>
                                     
                                  </li>
@@ -326,10 +657,10 @@
                            
                            <p>In the <b>Copy Snapshot</b> confirmation dialog box, choose
                               <b>Snapshots</b> to go to the <b>Snapshots</b> page in the
-                              region specified, or choose <b>Close</b>.
+                              Region specified, or choose <b>Close</b>.
                            </p>
                            
-                           <p>To view the progress of the copy process, switch to the destination region, and then
+                           <p>To view the progress of the copy process, switch to the destination Region, and then
                               refresh the <b>Snapshots</b> page. Copies in progress are listed at the
                               top of the page.
                            </p>
@@ -345,7 +676,7 @@
                         the
                         console until you refresh the page. You can also check the state of the snapshot from
                         the
-                        command line. For example:
+                        command line, as in the following example.
                      </p>
                      
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 describe-snapshots --snapshot-id snap-0123abcd</code></strong></code></pre>
@@ -356,7 +687,7 @@
                      <p>When copying an encrypted snapshot, you must have <code class="code">DescribeKey</code> permissions
                         on the default CMK. Explicitly denying these permissions results in copy failure.
                         For
-                        information about managing CMK keys, see <a href="./kms/latest/developerguide/control-access.html" target="_blank">Controlling Access to Customer Master Keys</a>.
+                        information about managing CMK keys, see <a href="./kms/latest/developerguide/control-access.html">Controlling Access to Customer Master Keys</a>.
                      </p>
                      
                      <div class="itemizedlist">
@@ -372,14 +703,14 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p><a href="./cli/latest/reference/ec2/copy-snapshot.html" target="_blank">copy-snapshot</a>
+                              <p><a href="./cli/latest/reference/ec2/copy-snapshot.html">copy-snapshot</a>
                                  (AWS CLI)
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><a href="./powershell/latest/reference/items/Copy-EC2Snapshot.html" target="_blank">Copy-EC2Snapshot</a>
+                              <p><a href="./powershell/latest/reference/items/Copy-EC2Snapshot.html">Copy-EC2Snapshot</a>
                                  (AWS Tools for Windows PowerShell)
                               </p>
                               
@@ -387,15 +718,19 @@
                         </ul>
                      </div>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -405,7 +740,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="ebs-deleting-snapshot.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="ebs-describing-snapshots.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -414,14 +751,18 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Incremental Copy"><a class="pagetoc" href="#ebs-incremental-copy">Incremental Copy</a></li>
-                        <li class="pagetoc" name="Encrypted Snapshots"><a class="pagetoc" href="#ebs-encrypt-snapshot-copy">Encrypted Snapshots</a></li>
+                        <li class="pagetoc" name="Incremental Copying Across Regions"><a class="pagetoc" href="#ebs-incremental-copy">Incremental Copying Across Regions</a></li>
+                        <li class="pagetoc" name="Encryption and Snapshot Copying"><a class="pagetoc" href="#creating-encrypted-snapshots">Encryption and Snapshot Copying</a></li>
                         <li class="pagetoc" name="Copy a Snapshot"><a class="pagetoc" href="#ebs-snapshot-copy">Copy a Snapshot</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

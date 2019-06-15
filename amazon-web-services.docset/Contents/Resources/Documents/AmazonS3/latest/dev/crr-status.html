@@ -1,16 +1,18 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Finding the Cross-Region Replication Status  - Amazon Simple Storage Service</title>
+      <title>Cross-Region Replication Status Information - Amazon Simple Storage Service</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="crr.html" title="Cross-Region Replication (CRR)">
-      <link rel="prev" href="crr-using-dotnet.html" title="Setting Up Cross-Region Replication Using the AWS SDK for .NET">
-      <link rel="next" href="crr-troubleshoot.html" title="Troubleshooting Cross-Region Replication in Amazon S3">
+      <link rel="up" href="crr.html" title="Cross-Region Replication">
+      <link rel="prev" href="crr-walkthrough-4.html" title="Example 4: Replicating Encrypted Objects">
+      <link rel="next" href="crr-troubleshoot.html" title="Troubleshooting Cross-Region Replication">
       <meta name="description" content="How to find the cross-region replication status of an Amazon S3 object.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/crr-status.html">
@@ -20,7 +22,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,23 +34,27 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="crr.html">Cross-Region Replication (CRR)</a> &#xBB; <span class="breadcrumb">Finding the Cross-Region Replication Status </span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="crr.html">Cross-Region Replication</a> &#xBB; <span class="breadcrumb">Cross-Region Replication Status Information</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="crr-status">Finding the Cross-Region Replication Status </h1>
-                     <p>You can use the Amazon S3 inventory feature to get replication status of all objects
-                        in a
-                        bucket. Amazon S3 then delivers a .csv file to the configured destination bucket.
-                        For more
-                        information about Amazon S3 inventory, see <a href="storage-inventory.html"> Amazon S3 Inventory</a>.
+                     <h1 class="topictitle" id="crr-status">Cross-Region Replication Status Information</h1>
+                     <p>To get the cross-region replication (CRR) status of the objects in a bucket, use the
+                        Amazon S3
+                        inventory tool. Amazon S3 sends a .csv file to the destination bucket that you specify
+                        in the
+                        inventory configuration. You can also use Amazon Athena to query replication status
+                        in the
+                        inventory report. For more information about Amazon S3 inventory, see <a href="storage-inventory.html"> Amazon S3 Inventory</a>.
                      </p>
-                     <p>If you want to get CRR status of a single object, read the following:</p>
-                     <p>In cross-region replication, you have a source bucket on which you configure replication
-                        and a destination bucket where Amazon S3 replicates objects. When you request an object
-                        (<code class="code">GET</code> object) or object metadata (<code class="code">HEAD</code> object) from these buckets,
-                        Amazon S3 returns the <code class="code">x-amz-replication-status</code> header in the response as follows: 
+                     <p>In CRR, you have a source bucket on which you configure replication and a destination
+                        bucket where Amazon S3 replicates objects. When you request an object (using <code class="code">GET</code>
+                        object) or object metadata (using <code class="code">HEAD</code> object) from these buckets, Amazon S3 returns
+                        the <code class="code">x-amz-replication-status</code> header in the response: 
                      </p>
                      <div class="itemizedlist">
                         
@@ -57,34 +63,44 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p>If requesting an object from the source bucket &#x2013; Amazon S3 returns the
+                              <p>When you request an object from the source bucket, Amazon S3 returns the
                                  <code class="code">x-amz-replication-status</code> header if the object in your request is eligible
                                  for replication. 
                               </p>
                               
-                              <p>For example, suppose that in your replication configuration, you specify the object
-                                 prefix <code class="code">TaxDocs</code> requesting Amazon S3 to replicate objects with the key name prefix
-                                 <code class="code">TaxDocs</code>. Then, any objects you upload with this key name prefix&#x2014;for
-                                 example, <code class="code">TaxDocs/document1.pdf</code>&#x2014;are eligible for replication. For any
-                                 object request with this key name prefix, Amazon S3 returns the
+                              <p>For example, suppose that you specify the object prefix <code class="code">TaxDocs</code> in your
+                                 replication configuration to tell Amazon S3 to replicate only objects with the key
+                                 name prefix
+                                 <code class="code">TaxDocs</code>. Any objects that you upload that have this key name
+                                 prefix&#x2014;for example, <code class="code">TaxDocs/document1.pdf</code>&#x2014;will be replicated. For
+                                 object requests with this key name prefix, Amazon S3 returns the
                                  <code class="code">x-amz-replication-status</code> header with one of the following values for the
                                  object&apos;s replication status: <code class="code">PENDING</code>, <code class="code">COMPLETED</code>, or
                                  <code class="code">FAILED</code>.
                               </p>
                               
+                              
+                              <div class="aws-note">
+                                 <p class="aws-note">Note</p>
+                                 <p>If object replication fails after you upload an object, you can&apos;t retry replication.
+                                    You must upload the object again. 
+                                 </p>
+                              </div>
+                              
                            </li>
                            <li class="listitem">
                               
-                              <p>If requesting an object from the destination bucket &#x2013; Amazon S3 returns the
-                                 <code class="code">x-amz-replication-status</code> header with value <code class="code">REPLICA</code> if the
-                                 object in your request is a replica that Amazon S3 created.
+                              <p>When you request an object from the destination bucket, if the object in your request
+                                 is a replica that Amazon S3 created, Amazon S3 returns the <code class="code">x-amz-replication-status</code>
+                                 header with the value <code class="code">REPLICA</code>.
                               </p>
                               
                            </li>
                         </ul>
                      </div>
-                     <p>You can find the object replication state in the console using the AWS CLI, or
-                        programmatically using the AWS SDK. 
+                     <p>You can find the object replication status in the console, with the AWS Command Line
+                        Interface (AWS CLI), or
+                        with the AWS SDK. 
                      </p>
                      <div class="itemizedlist">
                         
@@ -94,20 +110,19 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p>In the console, you choose the object and choose <b>Properties</b> to
-                                 view object properties, including the replication status. 
+                              <p>Console: Choose the object,then choose <b>Properties</b> to view object
+                                 properties, including replication status. 
                               </p>
-                              
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>You can use the <code class="code">head-object</code> AWS CLI command as shown to retrieve object
-                                 metadata information:
+                              <p>AWS CLI: Use the <code class="code">head-object</code> AWS CLI command to retrieve object
+                                 metadata:
                               </p>
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws s3api head-object --bucket <em class="replaceable"><code>source-bucket</code></em> --key <em class="replaceable"><code>object-key</code></em> --version-id <em class="replaceable"><code>object-version-id</code></em>       &#xA0;   </code></pre>
-                              <p>The command returns object metadata information including the
-                                 <code class="code">ReplicationStatus</code> as shown in the following example response:
+                              <p>The command returns object metadata, including the <code class="code">ReplicationStatus</code> as
+                                 shown in the following example response:
                               </p>
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
    &quot;AcceptRanges&quot;:&quot;bytes&quot;,
@@ -124,9 +139,9 @@
                               </li>
                            <li class="listitem">
                               
-                              <p>You can use the AWS SDKs to retrieve the replication state of an object. Following
-                                 are
-                                 code fragments using AWS SDK for Java and AWS SDK for .NET. 
+                              <p>AWS SDKs: The following code fragments get replication status with the AWS SDK for
+                                 Java and
+                                 AWS SDK for .NET, respectively. 
                               </p>
                               
                               <div class="itemizedlist">
@@ -137,8 +152,7 @@
                                     <li class="listitem">
                                        
                                        <p>AWS SDK for Java</p>
-                                       <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="java ">GetObjectMetadataRequest metadataRequest = new GetObjectMetadataRequest(bucketName, bucketName);
-metadataRequest.setKey(key);
+                                       <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="java ">GetObjectMetadataRequest metadataRequest = new GetObjectMetadataRequest(bucketName, key);
 ObjectMetadata metadata = s3Client.getObjectMetadata(metadataRequest);
 
 System.out.println(&quot;Replication Status : &quot; + metadata.getRawMetadataValue(Headers.OBJECT_REPLICATION_STATUS));</code></pre>
@@ -163,32 +177,34 @@ Console.WriteLine(&quot;Object replication status: {0}&quot;, getmetadataRespons
                      </div>
                      <div class="aws-note">
                         <p class="aws-note">Note</p>
-                        <p>If you decide to delete an object from a source bucket that has replication enabled,
-                           you
-                           should check the replication status of the object before deletion to ensure that the
-                           object
-                           has been replicated. 
+                        <p>Before deleting an object from a source bucket that has replication enabled, check
+                           the
+                           object&apos;s replication status to ensure that the object has been replicated. 
                         </p>
-                        <p>If lifecycle configuration is enabled on the source bucket, Amazon S3 puts
-                           any lifecycle actions on hold until it marks the objects status as either
-                           <code class="code">COMPLETED</code> or <code class="code">FAILED</code>.
+                        <p>If lifecycle configuration is enabled on the source bucket, Amazon S3 puts suspends
+                           lifecycle
+                           actions until it marks the objects status as either <code class="code">COMPLETED</code> or
+                           <code class="code">FAILED</code>.
                         </p>
                      </div>
                      
                      <h2 id="crr-status-related-topics">Related Topics</h2>
                      
-                     <p><a href="crr.html">Cross-Region Replication (CRR)</a></p>
+                     <p><a href="crr.html">Cross-Region Replication</a></p>
                      
-                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -197,8 +213,10 @@ Console.WriteLine(&quot;Object replication status: {0}&quot;, getmetadataRespons
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="crr-using-dotnet.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="crr-troubleshoot.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="crr-walkthrough-4.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="crr-troubleshoot.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -213,6 +231,10 @@ Console.WriteLine(&quot;Object replication status: {0}&quot;, getmetadataRespons
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

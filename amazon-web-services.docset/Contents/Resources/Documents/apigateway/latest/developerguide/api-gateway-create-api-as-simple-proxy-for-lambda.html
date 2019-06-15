@@ -1,20 +1,23 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>
-         Build an API Gateway API with Lambda Proxy Integration 
-          - Amazon API Gateway
+      <title>TUTORIAL: Build a Hello
+         World API with Lambda Proxy Integration - Amazon API Gateway
       </title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="getting-started-with-lambda-integration.html" title="Build an API Gateway API with Lambda Integration">
-      <link rel="prev" href="getting-started-with-lambda-integration.html" title="Build an API Gateway API with Lambda Integration">
-      <link rel="next" href="apigateway-cross-account-lambda-integrations.html" title="Build an API Gateway API with
-            Cross-Account Lambda Proxy Integration">
+      <link rel="up" href="getting-started-with-lambda-integration.html" title="Build an API Gateway API with Lambda
+            Integration">
+      <link rel="prev" href="getting-started-with-lambda-integration.html" title="Build an API Gateway API with Lambda
+            Integration">
+      <link rel="next" href="apigateway-cross-account-lambda-integrations.html" title="TUTORIAL: Build an API Gateway API
+            with Cross-Account Lambda Proxy Integration">
       <meta name="description" content="Learn how to build and test an API with Lambda proxy integration using the API Gateway console.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-as-simple-proxy-for-lambda.html">
@@ -24,7 +27,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -36,393 +39,71 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="getting-started.html">Getting Started with Amazon API Gateway</a> &#xBB; <a href="getting-started-with-lambda-integration.html">Build an API Gateway API with Lambda Integration</a> &#xBB; <span class="breadcrumb">
-                                    Build an API Gateway API with Lambda Proxy Integration 
-                                    </span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="api-gateway-tutorials.html">Amazon API Gateway Tutorials</a> &#xBB; <a href="getting-started-with-lambda-integration.html">Build an API Gateway API with Lambda
+                                    Integration</a> &#xBB; <span class="breadcrumb">TUTORIAL: Build a Hello
+                                    World API with Lambda Proxy Integration</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="api-gateway-create-api-as-simple-proxy-for-lambda">
-                        Build an API Gateway API with Lambda Proxy Integration 
-                        
+                     <h1 class="topictitle" id="api-gateway-create-api-as-simple-proxy-for-lambda">TUTORIAL: Build a Hello
+                        World API with Lambda Proxy Integration
                      </h1>
-                     <p>In this section, we show how to create and test an API with Lambda integration
-                        using the API Gateway console. We demonstrate how a Lambda backend parses the raw
-                        request and
-                        implements app logic that depends on the incoming request data. For more information
-                        on
-                        API Gateway proxy integration, see <a href="api-gateway-set-up-simple-proxy.html">Set up a Proxy Integration with a Proxy Resource</a>.
+                     <p><a href="set-up-lambda-proxy-integrations.html">Lambda proxy integration</a> is a
+                        lightweight, flexible API Gateway API integration type that allows you to integrate
+                        an API method
+                        &#x2013; or an entire API &#x2013; with a Lambda function. The Lambda function can be written
+                        in <a href="./lambda/latest/dg/lambda-runtimes.html">any language that Lambda supports</a>.
+                        Because it&apos;s a proxy integration, you can change the Lambda function implementation
+                        at any
+                        time without needing to redeploy your API.
                      </p>
-                     <p> First, we create the following Node.js function, named
-                        <code class="code">GetStartedLambdaProxyIntegration</code>, using the AWS Lambda console, as the
-                        backend. We then create an API with the Lambda proxy integration by using the
-                        <code class="code">GetStartedLambdaProxyIntegration</code> function through a proxy resource by using the
-                        API Gateway console. Finally, we demonstrate how to test the API. 
-                     </p>
+                     <p>In this tutorial, you do the following:</p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Create a &quot;Hello, World!&quot; Lambda function to be the backend for the API.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Create and test a &quot;Hello, World!&quot; API with Lambda proxy integration.</p>
+                              
+                           </li>
+                        </ul>
+                     </div>
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Topics</strong></p>
                         <ul>
-                           <li><a href="#api-gateway-proxy-integration-create-lambda-backend"> Create Lambda
-                                 Functions for an API with Lambda Proxy Integration </a></li>
-                           <li><a href="#api-gateway-create-api-as-simple-proxy-for-lambda-create-function">Create a Backend for an API with Lambda Proxy Integration</a></li>
-                           <li><a href="#api-gateway-create-api-as-simple-proxy-for-lambda-build">Create an
-                                 API with Lambda Proxy Integration</a></li>
-                           <li><a href="#api-gateway-create-api-as-simple-proxy-for-lambda-test">Test an API
-                                 with Lambda Proxy Integration</a></li>
+                           <li><a href="#api-gateway-proxy-integration-create-lambda-backend">Create a &quot;Hello,
+                                 World!&quot; Lambda Function</a></li>
+                           <li><a href="#api-gateway-create-api-as-simple-proxy-for-lambda-build">Create a
+                                 &quot;Hello, World!&quot; API</a></li>
+                           <li><a href="#api-gateway-create-api-as-simple-proxy-for-lambda-test">Deploy and Test
+                                 the API</a></li>
                         </ul>
                      </div>
                      
-                     <h2 id="api-gateway-proxy-integration-create-lambda-backend"> Create Lambda
-                        Functions for an API with Lambda Proxy Integration 
+                     <h2 id="api-gateway-proxy-integration-create-lambda-backend">Create a &quot;Hello,
+                        World!&quot; Lambda Function
                      </h2>
                      
-                     <p> We create a Lambda function that returns a greeting to the caller as a JSON object
-                        of the following format:
+                     
+                     <p>This function returns a greeting to the caller as a JSON object in the following
+                        format:
                      </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
-    &quot;greeting&quot;: &quot;Good {time}, {name} of {city}.[ Happy {day}]&quot;
-}</code></pre>
-                     <p>In this example, <code class="code">{time}</code> can be <code class="code">morning</code>,
-                        <code class="code">afternoon</code>, or <code class="code">day</code>; <code class="code">{name}</code> can be
-                        <code class="code">you</code> or a user-specified user name; <code class="code">{city}</code> can be
-                        <code class="code">World</code> or a user-supplied city name; and <code class="code">{day}</code> can be null,
-                        empty, or one of the week days. If <code class="code">{day}</code> is null or empty, the <code class="code">Happy
-                           {day}</code> portion is not displayed. The Lambda function is very flexible and the
-                        client can specify the input in any combination of request headers, path variables,
-                        query string parameters, and body. 
-                     </p>
-                     
-                     <p> To show what API Gateway passes through to the backend, we include the <code class="code">event</code>
-                        object to the Lambda function in its output as well. Finally, we create a
-                        <code class="code">response</code> object to illustrate the basic output format required of the
-                        Lambda proxy integration. 
-                     </p>
-                     
-                     <p> A Lambda function can be written in Node.js, Python, Java, and C#. In this tutorial,
-                        we show snippets in Node.js and Java. You can extend the Node.js implementation to
-                        the
-                        Python function or extend the Java implementation to the C# function. There are
-                        instructions for doing so in the following topics. 
-                     </p>
-                     
-                     <div class="highlights" id="inline-topiclist">
-                        <p><strong>Topics</strong></p>
-                        <ul>
-                           <li><a href="#api-gateway-proxy-integration-lambda-function-nodejs">Node.js
-                                 Function for an API with Lambda Proxy Integration</a></li>
-                           <li><a href="#api-gateway-proxy-integration-lambda-function-python">Python
-                                 Function for an API with Lambda Proxy Integration</a></li>
-                           <li><a href="#api-gateway-proxy-integration-lambda-function-csharp">C# Function
-                                 for an API with Lambda Proxy Integration</a></li>
-                           <li><a href="#api-gateway-proxy-integration-lambda-function-java">Java Function
-                                 for an API with Lambda Proxy Integration</a></li>
-                        </ul>
-                     </div>
-                     
-                     
-                     <h3 id="api-gateway-proxy-integration-lambda-function-nodejs">Node.js
-                        Function for an API with Lambda Proxy Integration
-                     </h3>
-                     
-                     <p>The following Lambda function in Node.js is a &quot;Hello, World!&quot; application. The
-                        function shows how to parse the input <code class="code">event</code> parameter that contains a
-                        request made by a client to an API Gateway proxy resource. This resource is integrated
-                        with the function using the Lambda proxy integration. The function also demonstrates
-                        how to format the output of the Lambda function for API Gateway to return the results
-                        as an
-                        HTTP response. For more information about the input and output formats that this
-                        type of Lambda function must follow, see <a href="set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format">Input Format of a Lambda
-                           Function for Proxy Integration
-                           </a> and <a href="set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-output-format">Output Format of a Lambda
-                           Function for Proxy Integration</a>. 
-                     </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&apos;use strict&apos;;
-console.log(&apos;Loading hello world function&apos;);
- 
-exports.handler = function(event, context, callback) {
-    let name = &quot;you&quot;;
-    let city = &apos;World&apos;;
-    let time = &apos;day&apos;;
-    let day = &apos;&apos;;
-    let responseCode = 200;
-    console.log(&quot;request: &quot; + JSON.stringify(event));
-    
-    // This is a simple illustration of app-specific logic to return the response. 
-    // Although only &apos;event.queryStringParameters&apos; are used here, other request data, 
-    // such as &apos;event.headers&apos;, &apos;event.pathParameters&apos;, &apos;event.body&apos;, &apos;event.stageVariables&apos;, 
-    // and &apos;event.requestContext&apos; can be used to determine what response to return. 
-    //
-    if (event.queryStringParameters !== null &amp;&amp; event.queryStringParameters !== undefined) {
-        if (event.queryStringParameters.name !== undefined &amp;&amp; 
-            event.queryStringParameters.name !== null &amp;&amp; 
-            event.queryStringParameters.name !== &quot;&quot;) {
-            console.log(&quot;Received name: &quot; + event.queryStringParameters.name);
-            name = event.queryStringParameters.name;
-        }
-    }
-    
-    if (event.pathParameters !== null &amp;&amp; event.pathParameters !== undefined) {
-        if (event.pathParameters.proxy !== undefined &amp;&amp; 
-            event.pathParameters.proxy !== null &amp;&amp; 
-            event.pathParameters.proxy !== &quot;&quot;) {
-            console.log(&quot;Received proxy: &quot; + event.pathParameters.proxy);
-            city = event.pathParameters.proxy;
-        }
-    }
-    
-    if (event.headers !== null &amp;&amp; event.headers !== undefined) {
-        if (event.headers[&apos;day&apos;] !== undefined &amp;&amp; event.headers[&apos;day&apos;] !== null &amp;&amp; event.headers[&apos;day&apos;] !== &quot;&quot;) {
-            console.log(&quot;Received day: &quot; + event.headers.day);
-            day = event.headers.day;
-        }
-    }
-    
-    if (event.body !== null &amp;&amp; event.body !== undefined) {
-        let body = JSON.parse(event.body)
-        if (body.time) 
-            time = body.time;
-    }
- 
-    let greeting = &apos;Good &apos; + time + &apos;, &apos; + name + &apos; of &apos; + city + &apos;. &apos;;
-    if (day) greeting += &apos;Happy &apos; + day + &apos;!&apos;;
-
-    var responseBody = {
-        message: greeting,
-        input: event
-    };
-    
-    // The output from a Lambda proxy integration must be 
-    // of the following JSON object. The &apos;headers&apos; property 
-    // is for custom response headers in addition to standard 
-    // ones. The &apos;body&apos; property  must be a JSON string. For 
-    // base64-encoded payload, you must also set the &apos;isBase64Encoded&apos;
-    // property to &apos;true&apos;.
-    var response = {
-        statusCode: responseCode,
-        headers: {
-            &quot;x-custom-header&quot; : &quot;my custom header value&quot;
-        },
-        body: JSON.stringify(responseBody)
-    };
-    console.log(&quot;response: &quot; + JSON.stringify(response))
-    callback(null, response);
-};</code></pre>
-                     <p> For the API Gateway proxy integrations, the input parameter of <code class="code">event</code>
-                        contains an API request marshalled as a JSON object by API Gateway. This input can
-                        include
-                        the request&apos;s HTTP method (<code class="code">httpMethod</code>), path (<code class="code">path</code> and
-                        <code class="code">pathParameters</code>), query parameters
-                        (<code class="code">queryStringParameters</code>), headers (<code class="code">headers</code>), and
-                        applicable payload (<code class="code">body</code>). The input can also include the context
-                        (<code class="code">requestContext</code>) and stage variables (<code class="code">stageVariables</code>). 
-                     </p>
-                     
-                     <p>This example Lambda function parses the <code class="code">event</code> parameter to retrieve
-                        the query string parameter of <code class="code">name</code>, the <code class="code">proxy</code> path
-                        parameter, the <code class="code">day</code> header value, and the  <code class="code">time</code> property of
-                        the payload.  
-                     </p>
-                     
-                     <p>The function then returns a greeting to the named user in the <code class="code">message</code>
-                        property of the <code class="code">responseBody</code> object. To show the details of the
-                        incoming request as marshalled by API Gateway, the function also returns the incoming
-                        <code class="code">event</code> object as the <code class="code">input</code> property of the response
-                        body. 
-                     </p>
-                     
-                     <p> Finally, upon exiting, the function returns a JSON object, containing the
-                        required <code class="code">statusCode</code> and any applicable <code class="code">headers</code> and
-                        <code class="code">body</code>, for API Gateway to return it as an HTTP response to the client.
-                        
-                     </p>
-                     
-                     
-                     
-                     <h3 id="api-gateway-proxy-integration-lambda-function-python">Python
-                        Function for an API with Lambda Proxy Integration
-                     </h3>
-                     
-                     <p> Follow the discussion in <a href="./lambda/latest/dg/python-programming-model.html" target="_blank">Authoring Lambda Functions in Python</a> to create the Python Lambda function
-                        handler, while extending the programming flow shown in the preceding Node.js Lambda
-                        function. 
-                     </p>
-                     
-                     
-                     
-                     <h3 id="api-gateway-proxy-integration-lambda-function-csharp">C# Function
-                        for an API with Lambda Proxy Integration
-                     </h3>
-                     
-                     <p> Follow the discussion in <a href="./lambda/latest/dg/dotnet-programming-model.html" target="_blank">Authoring Lambda Functions in C#</a> to create the C# Lambda function
-                        handler, while extending the programming flow shown in the following Java Lambda
-                        function. 
-                     </p>
-                     
-                     
-                     
-                     <h3 id="api-gateway-proxy-integration-lambda-function-java">Java Function
-                        for an API with Lambda Proxy Integration
-                     </h3>
-                     
-                     <p>The following Lambda function in Java is a &quot;Hello, World!&quot; application, similar to
-                        its Node.js <a href="api-gateway-create-api-as-simple-proxy-for-lambda.html#api-gateway-proxy-integration-lambda-function-nodejs">counterpart</a>. The function shows how to parse the input event that is
-                        passed through as an <a href="./lambda/latest/dg/java-programming-model-req-resp.html" target="_blank">InputStream</a> object and that contains a request made by a client to an
-                        API Gateway proxy resource. This resource is integrated with the function using the
-                        Lambda
-                        proxy integration. It also shows how to parse the <code class="code">context</code> object to get
-                        the <code class="code">LambdaLogger</code>. The example also demonstrates how to format the
-                        output of the Lambda function for API Gateway in Java to return the results in an
-                        <a href="./lambda/latest/dg/java-programming-model-req-resp.html" target="_blank">OutputStream</a>
-                        object as an HTTP response. For more information about the Lambda proxy integration
-                        input and output formats, see <a href="set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format">Input Format of a Lambda
-                           Function for Proxy Integration
-                           </a> and <a href="set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-output-format">Output Format of a Lambda
-                           Function for Proxy Integration</a>. 
-                     </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">package examples;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.BufferedReader;
-import java.io.Writer;
-
-import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
-import com.amazonaws.services.lambda.runtime.Context; 
-import com.amazonaws.services.lambda.runtime.LambdaLogger;
-
-
-import org.json.simple.JSONObject;
-import org.json.simple.JSONArray;
-import org.json.simple.parser.ParseException;
-import org.json.simple.parser.JSONParser;
-
-
-
-public class ProxyWithStream implements RequestStreamHandler {
-    JSONParser parser = new JSONParser();
-
-
-    public void handleRequest(InputStream inputStream, OutputStream outputStream, Context context) throws IOException {
-
-        LambdaLogger logger = context.getLogger();
-        logger.log(&quot;Loading Java Lambda handler of ProxyWithStream&quot;);
-
-
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        JSONObject responseJson = new JSONObject();
-        String name = &quot;you&quot;;
-        String city = &quot;World&quot;;
-        String time = &quot;day&quot;;
-        String day = null;
-        String responseCode = &quot;200&quot;;
-
-        try {
-            JSONObject event = (JSONObject)parser.parse(reader);
-            if (event.get(&quot;queryStringParameters&quot;) != null) {
-                JSONObject qps = (JSONObject)event.get(&quot;queryStringParameters&quot;);
-                if ( qps.get(&quot;name&quot;) != null) {
-                    name = (String)qps.get(&quot;name&quot;);
-                }
-            }
-
-            if (event.get(&quot;pathParameters&quot;) != null) {
-                JSONObject pps = (JSONObject)event.get(&quot;pathParameters&quot;);
-                if ( pps.get(&quot;proxy&quot;) != null) {
-                    city = (String)pps.get(&quot;proxy&quot;);
-                }
-            }
-
-            if (event.get(&quot;headers&quot;) != null) {
-                JSONObject hps = (JSONObject)event.get(&quot;headers&quot;);
-                if ( hps.get(&quot;day&quot;) != null) {
-                    day = (String)hps.get(&quot;day&quot;);
-                }
-            }
-            
-            if (event.get(&quot;body&quot;) != null) {
-                JSONObject body = (JSONObject)parser.parse((String)event.get(&quot;body&quot;));
-                if ( body.get(&quot;time&quot;) != null) {
-                    time = (String)body.get(&quot;time&quot;);
-                }
-            }
-
-            String greeting = &quot;Good &quot; + time + &quot;, &quot; + name + &quot; of &quot; + city + &quot;. &quot;;
-            if (day!=null &amp;&amp; day != &quot;&quot;) greeting += &quot;Happy &quot; + day + &quot;!&quot;;
-
-
-            JSONObject responseBody = new JSONObject();
-            responseBody.put(&quot;input&quot;, event.toJSONString());
-            responseBody.put(&quot;message&quot;, greeting);
-
-            JSONObject headerJson = new JSONObject();
-            headerJson.put(&quot;x-custom-header&quot;, &quot;my custom header value&quot;);
-
-            responseJson.put(&quot;isBase64Encoded&quot;, false);
-            responseJson.put(&quot;statusCode&quot;, responseCode);
-            responseJson.put(&quot;headers&quot;, headerJson);
-            responseJson.put(&quot;body&quot;, responseBody.toString());  
-
-        } catch(ParseException pex) {
-            responseJson.put(&quot;statusCode&quot;, &quot;400&quot;);
-            responseJson.put(&quot;exception&quot;, pex);
-        }
-
-        logger.log(responseJson.toJSONString());
-        OutputStreamWriter writer = new OutputStreamWriter(outputStream, &quot;UTF-8&quot;);
-        writer.write(responseJson.toJSONString());  
-        writer.close();
-    }
+    &quot;greeting&quot;: &quot;Good <em class="replaceable"><code>{time}</code></em>, <em class="replaceable"><code>{name}</code></em> of <em class="replaceable"><code>{city}</code></em>.[ Happy <em class="replaceable"><code>{day}</code></em>!]&quot;
 }</code></pre>
                      
-                     <p>For proxy integrations in API Gateway, the input stream contains an API request
-                        serialized as a JSON string by API Gateway. The input data can include the request&apos;s
-                        HTTP
-                        method (<code class="code">httpMethod</code>), path (<code class="code">path</code> and
-                        <code class="code">pathParameters</code>), query parameters
-                        (<code class="code">queryStringParameters</code>), headers (<code class="code">headers</code>), applicable
-                        payload (<code class="code">body</code>), the context (<code class="code">requestContext</code>), and stage
-                        variables (<code class="code">stageVariables</code>). 
-                     </p>
-                     
-                     <p> This example Lambda function parses the <code class="code">inputStream</code> parameter to
-                        retrieve the query string parameter of <code class="code">name</code>, the <code class="code">proxy</code>
-                        path parameter, the <code class="code">day</code> header value and the  <code class="code">time</code>
-                        property of the payload. For logging, it retrieves the <code class="code">LambdaLogger</code>
-                        object from the incoming <code class="code">context</code> object. 
-                     </p>
-                     
-                     <p>The function then returns a greeting to the named user in the <code class="code">message</code>
-                        property of the <code class="code">responseBody</code> object. To show the details of the
-                        incoming request as marshalled by API Gateway, the function also returns the input
-                        data
-                        (<code class="code">event</code>) in the response body. 
-                     </p>
-                     
-                     <p> Finally, upon exiting, the function returns a JSON string, containing the
-                        required <code class="code">statusCode</code> and any applicable <code class="code">headers</code> and
-                        <code class="code">body</code>, for API Gateway to return it as an HTTP response to the client. 
-                     </p>
-                     
-                     <p> To create this function in the Lambda console, you must create a deployment
-                        package before uploading the package into Lambda. For more information, see <a href="./lambda/latest/dg/lambda-java-how-to-create-deployment-package.html" target="_blank">creating a
-                           deployment package in the <em>AWS Lambda Developer
-                              Guide</em></a>. 
-                     </p>
-                     
-                     
-                     
-                     <h2 id="api-gateway-create-api-as-simple-proxy-for-lambda-create-function">Create a Backend for an API with Lambda Proxy Integration</h2>
-                     
-                     <p>The following procedure describes how to create the Lambda function in API Gateway
-                        using
-                        the Lambda console.
-                     </p>
-                     
-                     <p class="title"><b>Create a Lambda function for an API with a proxy resource in the Lambda console</b></p>
+                     <p class="title"><b>Create a &quot;Hello, World!&quot; Lambda function in the Lambda console</b></p>
                      <ol>
                         <li>
                            <p>Sign in to the Lambda console at <a href="https://console.aws.amazon.com/lambda" target="_blank">https://console.aws.amazon.com/lambda</a>.
@@ -430,66 +111,81 @@ public class ProxyWithStream implements RequestStreamHandler {
                         </li>
                         <li>
                            
-                           <p>From the upper-right corner, choose an available region for the Lambda
-                              function.
+                           <p>On the AWS navigation bar, choose a <a href="./general/latest/gr/rande.htmlrande.html#apigateway_region">region</a> (for
+                              example, US East (N. Virginia)).
+                           </p>
+                           
+                           <div class="aws-note">
+                              <p class="aws-note">Note</p>
+                              <p>Note the region where you create the Lambda function. You&apos;ll need it when
+                                 you create the API.
+                              </p>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Functions</b> in the navigation pane.
                            </p>
                            
                         </li>
                         <li>
                            
-                           <p>From the main navigation pane, choose <b>Functions</b>. You may
-                              need to choose the navigation menu on the top-left corner if the navigation pane
-                              is not displayed.
+                           <p>Choose <b>Create function</b>.
                            </p>
                            
                         </li>
                         <li>
                            
-                           <p> Choose <b>Create function</b>. And then choose <b>Author
-                                 from scratch</b> or <b>Blueprints</b>. For this
-                              example, we create a function from scratch.
+                           <p>Choose <b>Author from scratch</b>.
                            </p>
                            
                         </li>
                         <li>
                            
-                           <p> Under <b>Author from scratch</b>, do the following:
+                           <p>Under <b>Basic information</b>, do the following:
                            </p>
                            
                            <ol>
                               <li>
                                  
-                                 <p> In the <b>Name</b> input field, type a function
-                                    name.
+                                 <p>In <b>Function name</b>, enter
+                                    <strong class="userinput"><code>GetStartedLambdaProxyIntegration</code></strong>.
                                  </p>
                                  
                               </li>
                               <li>
                                  
-                                 <p> From the <b>Runtime</b> drop-down list, choose a
-                                    supported runtime. In this example, we use <b>Node.js
-                                       4.3</b>.
+                                 <p>From the <b>Runtime</b> dropdown list, choose
+                                    <b>Node.js 8.10</b>.
                                  </p>
                                  
                               </li>
                               <li>
                                  
-                                 <p> From the <b>Role</b> drop-down list, choose
-                                    <b>Choose an existing role</b>, <b>Create new
-                                       role from template(s)</b> or <b>Create a custom
-                                       role</b>. Then, follow the ensuing instructions for the
-                                    choice.
+                                 <p>Under <b>Permissions</b>, expand <b>Choose or
+                                       create an execution role</b>. From the <b>Execution
+                                       role</b> dropdown list, choose <b>Create new role from
+                                       AWS policy templates</b>.
                                  </p>
                                  
                               </li>
                               <li>
                                  
-                                 <p>Choose <b>Create function</b> to continue.
+                                 <p>In <b>Role name</b>, enter
+                                    <strong class="userinput"><code>GetStartedLambdaBasicExecutionRole</code></strong>.
                                  </p>
                                  
-                                 <p>For this example, we will skip the <b>Designer</b>
-                                    section and move to the <b>Function code</b> section
-                                    next.
+                              </li>
+                              <li>
+                                 
+                                 <p>Leave the <b>Policy templates</b> field blank.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Choose <b>Create function</b>.
                                  </p>
                                  
                               </li>
@@ -498,50 +194,85 @@ public class ProxyWithStream implements RequestStreamHandler {
                         </li>
                         <li>
                            
-                           <p> For a Node or Python runtime, you can use the inline code editor to create or
-                              edit the lambda function, in addition to uploading a zipped code file from a
-                              local drive or from Amazon S3. For a Java or C# runtime, you must upload the zipped
-                              code file from a local drive or from Amazon S3. In any case, use the code example
-                              of
-                              the specified runtime as specified in <a href="api-gateway-create-api-as-simple-proxy-for-lambda.html#api-gateway-proxy-integration-create-lambda-backend"> Create Lambda
-                                 Functions for an API with Lambda Proxy Integration </a> here.
-                              
+                           <p>Under <b>Function code</b>, in the inline code editor,
+                              copy/paste the following code:
                            </p>
-                           
-                        </li>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&apos;use strict&apos;;
+console.log(&apos;Loading hello world function&apos;);
+ 
+exports.handler = async (event) =&gt; {
+    let name = &quot;you&quot;;
+    let city = &apos;World&apos;;
+    let time = &apos;day&apos;;
+    let day = &apos;&apos;;
+    let responseCode = 200;
+    console.log(&quot;request: &quot; + JSON.stringify(event));
+    
+    if (event.queryStringParameters &amp;&amp; event.queryStringParameters.name) {
+        console.log(&quot;Received name: &quot; + event.queryStringParameters.name);
+        name = event.queryStringParameters.name;
+    }
+    
+    if (event.queryStringParameters &amp;&amp; event.queryStringParameters.city) {
+        console.log(&quot;Received city: &quot; + event.queryStringParameters.city);
+        city = event.queryStringParameters.city;
+    }
+    
+    if (event.headers &amp;&amp; event.headers[&apos;day&apos;]) {
+        console.log(&quot;Received day: &quot; + event.headers.day);
+        day = event.headers.day;
+    }
+    
+    if (event.body) {
+        let body = JSON.parse(event.body)
+        if (body.time) 
+            time = body.time;
+    }
+ 
+    let greeting = `Good ${time}, ${name} of ${city}.`;
+    if (day) greeting += ` Happy ${day}!`;
+
+    let responseBody = {
+        message: greeting,
+        input: event
+    };
+    
+    // The output from a Lambda proxy integration must be 
+    // in the following JSON object. The &apos;headers&apos; property 
+    // is for custom response headers in addition to standard 
+    // ones. The &apos;body&apos; property  must be a JSON string. For 
+    // base64-encoded payload, you must also set the &apos;isBase64Encoded&apos;
+    // property to &apos;true&apos;.
+    let response = {
+        statusCode: responseCode,
+        headers: {
+            &quot;x-custom-header&quot; : &quot;my custom header value&quot;
+        },
+        body: JSON.stringify(responseBody)
+    };
+    console.log(&quot;response: &quot; + JSON.stringify(response))
+    return response;
+};</code></pre>
+                           </li>
                         <li>
                            
-                           <p>Choose <b>Save</b> to finish creating the Lambda function.
-                           </p>
-                           
-                        </li>
-                        <li>
-                           
-                           <p> Optionally, but highly recommended, choose <b>Test</b> and
-                              configure the test event to take the required <a href="set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format">Lambda proxy
-                                 integration request input</a>.
+                           <p>Choose <b>Save</b>.
                            </p>
                            
                         </li>
                      </ol>
                      
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p>Note the region where you created the Lambda function. You need it when
-                           creating the API for the function.
-                        </p>
-                     </div>
                      
                      
-                     <h2 id="api-gateway-create-api-as-simple-proxy-for-lambda-build">Create an
-                        API with Lambda Proxy Integration
+                     <h2 id="api-gateway-create-api-as-simple-proxy-for-lambda-build">Create a
+                        &quot;Hello, World!&quot; API
                      </h2>
                      
-                     <p>Now create an API with a proxy resource for a Lambda function by using the API Gateway
+                     <p>Now create an API for your &quot;Hello, World!&quot; Lambda function by using the API Gateway
                         console.
                      </p>
                      
-                     <p class="title"><b>Build an API with a proxy resource for a Lambda function</b></p>
+                     <p class="title"><b>Build a &quot;Hello, World!&quot; API</b></p>
                      <ol>
                         <li>
                            <p>Sign in to the API Gateway console at <a href="https://console.aws.amazon.com/apigateway" target="_blank">https://console.aws.amazon.com/apigateway</a>.
@@ -549,276 +280,428 @@ public class ProxyWithStream implements RequestStreamHandler {
                         </li>
                         <li>
                            
-                           <p>To create an API, choose <b>Create new API</b> (for creating the first API) or <b>Create API</b> (for creating any subsequent API). Next, do the following:
+                           <p>If this is your first time using API Gateway, you see a page that introduces you to
+                              the features of the service. Choose <b>Get Started</b>. When the
+                              <b>Create Example API</b> popup appears, choose
+                              <b>OK</b>.
                            </p>
+                           
+                           <p>If this is not your first time using API Gateway, choose <b>Create
+                                 API</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Create an empty API as follows:</p>
                            
                            <ol>
                               <li>
-                                 <p>Choose <b>New API</b>.
+                                 
+                                 <p>Under <b>Choose the protocol</b>, choose
+                                    <b>REST</b>.
                                  </p>
+                                 
                               </li>
                               <li>
-                                 <p>Type a name in <b>API Name</b>.
+                                 
+                                 <p>Under <b>Create new API</b>, choose <b>New
+                                       API</b>.
                                  </p>
+                                 
                               </li>
                               <li>
-                                 <p>Optionally, add a brief description in <b>Description</b>.
+                                 
+                                 <p>Under <b>Settings</b>:
                                  </p>
+                                 
+                                 <div class="itemizedlist">
+                                    
+                                    
+                                    
+                                    
+                                    <ul class="itemizedlist" type="disc">
+                                       <li class="listitem">
+                                          
+                                          <p>For <b>API name</b>, enter
+                                             <strong class="userinput"><code>LambdaSimpleProxy</code></strong>.
+                                          </p>
+                                          
+                                       </li>
+                                       <li class="listitem">
+                                          
+                                          <p>If desired, enter a description in the
+                                             <b>Description</b> field; otherwise, leave it
+                                             empty.
+                                          </p>
+                                          
+                                       </li>
+                                       <li class="listitem">
+                                          
+                                          <p>Leave <b>Endpoint Type</b> set to
+                                             <b>Regional</b>.
+                                          </p>
+                                          
+                                       </li>
+                                    </ul>
+                                 </div>
+                                 
                               </li>
                               <li>
+                                 
                                  <p>Choose <b>Create API</b>.
                                  </p>
+                                 
                               </li>
                            </ol>
-                           
-                           <p>For this tutorial, use <code class="code">LambdaSimpleProxy</code> as the API name.
-                           </p>
                            
                         </li>
                         <li>
                            
-                           <p>To create a child resource, choose a parent resource item under the <b>Resources</b> tree and then choose <b>Create Resource</b> from the <b>Actions</b> drop-down menu. Then, do the following in the <b>New Child Resource</b> pane.
+                           <p>Create the <code class="code">helloworld</code> resource as follows:
                            </p>
                            
                            <ol>
                               <li>
-                                 <p>Select the <b>Configure as proxy resource</b> option to create a proxy resource. Otherwise, leave it de-selected.
+                                 
+                                 <p>Choose the root resource (<b>/</b>) in the
+                                    <b>Resources</b> tree.
                                  </p>
+                                 
                               </li>
                               <li>
-                                 <p>Type a name in the <b>Resource Name*</b> input text field.
+                                 
+                                 <p>Choose <b>Create Resource</b> from the
+                                    <b>Actions</b> dropdown menu.
                                  </p>
+                                 
                               </li>
                               <li>
-                                 <p>Type a new name or use the default name in the <b>Resource Path*</b> input text field.
+                                 
+                                 <p>Leave <b>Configure as proxy resource</b>
+                                    unchecked.
                                  </p>
+                                 
                               </li>
                               <li>
+                                 
+                                 <p>For <b>Resource Name</b>, enter
+                                    <strong class="userinput"><code>helloworld</code></strong>.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Leave <b>Resource Path</b> set to
+                                    <b>/helloworld</b>.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Leave <b>Enable API Gateway CORS</b> unchecked.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
                                  <p>Choose <b>Create Resource</b>.
                                  </p>
-                              </li>
-                              <li>
-                                 <p>Select <b>Enable API Gateway CORS</b>, if required.
-                                 </p>
+                                 
                               </li>
                            </ol>
                            
-                           <p>For this tutorial, use the root resource (<code class="code">/</code>) as the parent
-                              resource. Select <b>Configure as proxy resource</b>. For
-                              <b>Resource Name</b>, use the default, <code class="code">proxy</code>. For
-                              <b>Resource Path</b>, use <code class="code">/{proxy+}</code>. De-select
-                              <b>Enable API Gateway CORS</b>.
+                        </li>
+                        <li>
+                           
+                           <p>In a proxy integration, the entire request is sent to the backend Lambda
+                              function as-is, via a catch-all <code class="code">ANY</code> method that represents any HTTP
+                              method. The actual HTTP method is specified by the client at run time. The
+                              <code class="code">ANY</code> method allows you to use a single API method setup for all
+                              of the supported HTTP methods: <code class="code">DELETE</code>, <code class="code">GET</code>,
+                              <code class="code">HEAD</code>, <code class="code">OPTIONS</code>, <code class="code">PATCH</code>,
+                              <code class="code">POST</code>, and <code class="code">PUT</code>.
+                           </p>
+                           
+                           <p>To set up the <code class="code">ANY</code> method, do the following:
+                           </p>
+                           
+                           <ol>
+                              <li>
+                                 
+                                 <p>In the <b>Resources</b> list, choose
+                                    <b>/helloworld</b>.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>In the <b>Actions</b> menu, choose <b>Create
+                                       method</b>.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Choose <b>ANY</b> from the dropdown menu, and
+                                    choose the checkmark icon
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Leave the <b>Integration type</b> set to <b>Lambda
+                                       Function</b>.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Choose <b>Use Lambda Proxy integration</b>.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>From the <b>Lambda Region</b> dropdown menu, choose the
+                                    region where you created the
+                                    <code class="code">GetStartedLambdaProxyIntegration</code> Lambda function.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>In the <b>Lambda Function</b> field, type any character
+                                    and choose <code class="code">GetStartedLambdaProxyIntegration</code> from the
+                                    dropdown menu.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Leave <b>Use Default Timeout</b> checked.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Choose <b>Save</b>.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Choose <b>OK</b> when prompted with <b>Add
+                                       Permission to Lambda Function</b>.
+                                 </p>
+                                 
+                              </li>
+                           </ol>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <h2 id="api-gateway-create-api-as-simple-proxy-for-lambda-test">Deploy and Test
+                        the API
+                     </h2>
+                     
+                     <p class="title"><b>Deploy the API in the API Gateway console</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Choose <b>Deploy API</b> from the <b>Actions</b>
+                              dropdown menu.
                            </p>
                            
                         </li>
                         <li>
                            
-                           <p>To set up the <code class="code">ANY</code> method for integration with the Lambda back end, do the following:
+                           <p>For <b>Deployment stage</b>, choose <b>[new
+                                 stage]</b>.
                            </p>
                            
-                           <ol>
-                              <li>
-                                 <p>Choose the resource just created and then choose <b>Create Method</b> from the <b>Actions</b> drop-down menu.
-                                 </p>
-                              </li>
-                              <li>
-                                 <p>Choose <code class="code">ANY</code> from the HTTP method drop-down list and then choose the check mark icon to save the
-                                    choice.
-                                 </p>
-                              </li>
-                              <li>
-                                 <p>Choose <b>Lambda Function Proxy</b> for <b>Integration type</b>. 
-                                 </p>
-                              </li>
-                              <li>
-                                 <p>Choose a region from <b>Lambda Region</b>.
-                                 </p>
-                              </li>
-                              <li>
-                                 <p>Type the name of your Lambda function in <b>Lambda Function</b>.
-                                 </p>
-                              </li>
-                              <li>
-                                 <p>Choose <b>Save</b>.
-                                 </p>
-                              </li>
-                              <li>
-                                 <p>Choose <b>OK</b> when prompted with <b>Add Permission to Lambda Function</b>.
-                                 </p>
-                              </li>
-                           </ol>
+                        </li>
+                        <li>
                            
-                           <p>For this tutorial, use the previously created <a href="api-gateway-create-api-as-simple-proxy-for-lambda.html#api-gateway-proxy-integration-lambda-function-nodejs">GetStartedLambdaProxyIntegration</a> for the <b>Lambda
-                                 Function</b>.
+                           <p>For <b>Stage name</b>, enter <strong class="userinput"><code>test</code></strong>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>If desired, enter a <b>Stage description</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>If desired, enter a <b>Deployment description</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Deploy</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Note the API&apos;s <b>Invoke URL</b>.
                            </p>
                            
                         </li>
                      </ol>
                      
-                     <p>For the proxy resource API that Lambda just created, API Gateway forwards the raw
-                        request from the
-                        client to the backend for the Lambda function to process. The request includes the
-                        request method, its path, query string and headers parameters, any payload, plus
-                        context and stage variables. The next procedure describes how to test this. 
+                     
+                     <h3 id="api-gateway-create-api-as-simple-proxy-for-lambda-test-curl">Use
+                        Browser and cURL to Test an API with Lambda Proxy Integration
+                     </h3>
+                     
+                     <p>You can use a browser or <a href="https://curl.haxx.se/" target="_blank">cURL</a> to test
+                        your API.
+                     </p>
+                     
+                     <p>To test <code class="code">GET</code> requests using only query string parameters, you can type
+                        the URL for the API&apos;s <code class="code">helloworld</code> resource into a browser address bar.
+                        For example:
+                        <b>https://<em class="replaceable"><code>r275xc9bmd</code></em>.execute-api.<em class="replaceable"><code>us-east-1</code></em>.amazonaws.com/test/helloworld?name=John&amp;city=Seattle</b></p>
+                     
+                     <p>For other methods, you must use more advanced REST API testing utilities, such as
+                        <a href="https://www.getpostman.com/" target="_blank">POSTMAN</a> or <a href="https://curl.haxx.se/" target="_blank">cURL</a>. This tutorial uses cURL. The cURL
+                        command examples below assume that cURL is installed on your computer.
+                     </p>
+                     
+                     <p class="title"><b>To test the deployed API using cURL:</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Open a terminal window.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Copy the following cURL command and paste it into the terminal window,
+                              replacing <code class="code"><em class="replaceable"><code>r275xc9bmd</code></em></code> with your API&apos;s
+                              API ID and <code class="code"><em class="replaceable"><code>us-east-1</code></em></code> with the region
+                              where your API is deployed.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">curl -v -X POST \
+  &apos;https://<em class="replaceable"><code>r275xc9bmd</code></em>.execute-api.<em class="replaceable"><code>us-east-1</code></em>.amazonaws.com/test/helloworld?name=John&amp;city=Seattle&apos; \
+  -H &apos;content-type: application/json&apos; \
+  -H &apos;day: Thursday&apos; \
+  -d &apos;{ &quot;time&quot;: &quot;evening&quot; }&apos;</code></pre>
+                           <div class="aws-note">
+                              <p class="aws-note">Note</p>
+                              <p>If you&apos;re running the command on Windows, use this syntax
+                                 instead:
+                              </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">curl -v -X POST &quot;https://<em class="replaceable"><code>r275xc9bmd</code></em>.execute-api.<em class="replaceable"><code>us-east-1</code></em>.amazonaws.com/test/helloworld?name=John&amp;city=Seattle&quot; -H &quot;content-type: application/json&quot; -H &quot;day: Thursday&quot; -d &quot;{ \&quot;time\&quot;: \&quot;evening\&quot; }&quot;</code></pre></div>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>You should get a successful response with a payload similar to the
+                        following:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+  &quot;message&quot;:&quot;Good evening, John of Seattle. Happy Thursday!&quot;, 
+  &quot;input&quot;:{
+    &quot;resource&quot;:&quot;/helloworld&quot;,
+    &quot;path&quot;:&quot;/helloworld&quot;,
+    &quot;httpMethod&quot;:&quot;POST&quot;,
+    &quot;headers&quot;:{&quot;Accept&quot;:&quot;*/*&quot;,
+    &quot;content-type&quot;:&quot;application/json&quot;,
+    &quot;day&quot;:&quot;Thursday&quot;,
+    &quot;Host&quot;:&quot;r275xc9bmd.execute-api.us-east-1.amazonaws.com&quot;,
+    &quot;User-Agent&quot;:&quot;curl/7.64.0&quot;,
+    &quot;X-Amzn-Trace-Id&quot;:&quot;Root=1-1a2b3c4d-a1b2c3d4e5f6a1b2c3d4e5f6&quot;,
+    &quot;X-Forwarded-For&quot;:&quot;72.21.198.64&quot;,
+    &quot;X-Forwarded-Port&quot;:&quot;443&quot;,
+    &quot;X-Forwarded-Proto&quot;:&quot;https&quot;},
+    &quot;multiValueHeaders&quot;:{&quot;Accept&quot;:[&quot;*/*&quot;],
+    &quot;content-type&quot;:[&quot;application/json&quot;],
+    &quot;day&quot;:[&quot;Thursday&quot;],
+    &quot;Host&quot;:[&quot;r275xc9bmd.execute-api.us-east-1.amazonaws.com&quot;],
+    &quot;User-Agent&quot;:[&quot;curl/0.0.0&quot;],
+    &quot;X-Amzn-Trace-Id&quot;:[&quot;Root=1-1a2b3c4d-a1b2c3d4e5f6a1b2c3d4e5f6&quot;],
+    &quot;X-Forwarded-For&quot;:[&quot;11.22.333.44&quot;],
+    &quot;X-Forwarded-Port&quot;:[&quot;443&quot;],
+    &quot;X-Forwarded-Proto&quot;:[&quot;https&quot;]},
+    &quot;queryStringParameters&quot;:{&quot;city&quot;:&quot;Seattle&quot;,
+    &quot;name&quot;:&quot;John&quot;
+  },
+  &quot;multiValueQueryStringParameters&quot;:{
+    &quot;city&quot;:[&quot;Seattle&quot;],
+    &quot;name&quot;:[&quot;John&quot;]
+  },
+  &quot;pathParameters&quot;:null,
+  &quot;stageVariables&quot;:null,
+  &quot;requestContext&quot;:{
+    &quot;resourceId&quot;:&quot;3htbry&quot;,
+    &quot;resourcePath&quot;:&quot;/helloworld&quot;,
+    &quot;htt* Connection #0 to host r275xc9bmd.execute-api.us-east-1.amazonaws.com left intact pMethod&quot;:&quot;POST&quot;,
+    &quot;extendedRequestId&quot;:&quot;a1b2c3d4e5f6g7h=&quot;,
+    &quot;requestTime&quot;:&quot;20/Mar/2019:20:38:30 +0000&quot;,
+    &quot;path&quot;:&quot;/test/helloworld&quot;,
+    &quot;accountId&quot;:&quot;123456789012&quot;,
+    &quot;protocol&quot;:&quot;HTTP/1.1&quot;,
+    &quot;stage&quot;:&quot;test&quot;,
+    &quot;domainPrefix&quot;:&quot;r275xc9bmd&quot;,
+    &quot;requestTimeEpoch&quot;:1553114310423,
+    &quot;requestId&quot;:&quot;test-invoke-request&quot;,
+    &quot;identity&quot;:{&quot;cognitoIdentityPoolId&quot;:null,
+      &quot;accountId&quot;:null,
+      &quot;cognitoIdentityId&quot;:null,
+      &quot;caller&quot;:null,
+      &quot;sourceIp&quot;:&quot;test-invoke-source-ip&quot;,
+      &quot;accessKey&quot;:null,
+      &quot;cognitoAuthenticationType&quot;:null,
+      &quot;cognitoAuthenticationProvider&quot;:null,
+      &quot;userArn&quot;:null,
+      &quot;userAgent&quot;:&quot;curl/0.0.0&quot;,&quot;user&quot;:null
+    },
+    &quot;domainName&quot;:&quot;r275xc9bmd.execute-api.us-east-1.amazonaws.com&quot;,
+    &quot;apiId&quot;:&quot;r275xc9bmd&quot;
+  },
+  &quot;body&quot;:&quot;{ \&quot;time\&quot;: \&quot;evening\&quot; }&quot;,
+  &quot;isBase64Encoded&quot;:false
+  }
+}</code></pre>
+                     <p>If you change <code class="code">POST</code> to <code class="code">PUT</code> in the preceding method
+                        request, you should get the same response.
+                     </p>
+                     
+                     <p>To test the <code class="code">GET</code> method, copy the following <code class="code">cURL</code> command and paste it
+                        into the terminal window, replacing
+                        <code class="code"><em class="replaceable"><code>r275xc9bmd</code></em></code> with your API&apos;s API ID and
+                        <code class="code"><em class="replaceable"><code>us-east-1</code></em></code> with the region where your
+                        API is deployed.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">curl -X GET \
+  &apos;https://<em class="replaceable"><code>r275xc9bmd</code></em>.execute-api.<em class="replaceable"><code>us-east-1</code></em>.amazonaws.com/test/helloworld?Seattle?name=John&apos; \
+  -H &apos;content-type: application/json&apos; \
+  -H &apos;day: Thursday&apos;</code></pre>
+                     <p>You should get a response similar to the result from the preceding
+                        <code class="code">POST</code> request, except that the <code class="code">GET</code> request does not
+                        have any payload. So the <code class="code">body</code> parameter will be <code class="code">null</code>. 
                      </p>
                      
                      
-                     <h2 id="api-gateway-create-api-as-simple-proxy-for-lambda-test">Test an API
-                        with Lambda Proxy Integration
-                     </h2>
                      
-                     <p>The following procedure describes how to test the proxy integration.</p>
-                     
-                     <p class="title"><b>Call the <a href="api-gateway-create-api-as-simple-proxy-for-lambda.html#api-gateway-proxy-integration-lambda-function-nodejs">GetStartedLambdaProxyIntegration</a> Lambda function through the proxy resource</b></p>
-                     <ul>
-                        <li>
-                           
-                           <p>To use a browser to call a GET method on a specific resource of the API, do the following.</p>
-                           
-                           <ol>
-                              <li>
-                                 <p>If you have not done so, choose <b>Deploy API</b> from the <b>Actions</b> drop-down menu for the API you created. Follow the instructions to deploy the API
-                                    to a specific stage. Note the <b>Invoke URL</b> that displays on the resulting <b>Stage Editor</b> page. This is the base URL of the API.
-                                 </p>
-                              </li>
-                              <li>
-                                 <p>To submit a GET request on a specific resource, append the resource path, including
-                                    possible query string expressions to the <b>Invoke URL</b> value obtained in the previous step, copy the complete URL into the address bar of
-                                    a browser, and choose Enter.
-                                 </p>
-                              </li>
-                           </ol>
-                           
-                           <p>For this tutorial, deploy the API to a <code class="code">test</code> stage and note of
-                              the API&apos;s base URL; for example,
-                              <code class="code">https://<em class="replaceable"><code>wt6mne2s9k</code></em>.execute-api.<em class="replaceable"><code>us-west-2</code></em>.amazonaws.com/<em class="replaceable"><code>test</code></em></code>.
-                           </p>
-                           
-                           
-                           <p>There are several ways you can test a deployed API. For GET requests using
-                              only URL path variables or a query string parameter, you can type the API
-                              resource URL in a browser. For other methods, you must use more advanced
-                              REST API testing utilities, such as <a href="https://www.getpostman.com/" target="_blank">POSTMAN</a> or <a href="https://curl.haxx.se/" target="_blank">cURL</a>.
-                           </p>
-                           
-                           <p class="title"><b>To test the deployed API using cURL</b></p>
-                           <ol>
-                              <li>
-                                 
-                                 <p>Open a terminal window on your local computer connected to the
-                                    internet.
-                                 </p>
-                                 
-                              </li>
-                              <li>
-                                 
-                                 <p>To test <code class="code">POST /Seattle?time=evening</code>:
-                                 </p>
-                                 
-                                 <p>Copy the following cURL command and paste it into the terminal window.</p>
-                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">curl -v -X POST \
-  &apos;https://r275xc9bmd.execute-api.us-west-2.amazonaws.com/test/Seattle?time=evening&apos; \
-  -H &apos;content-type: application/json&apos; \
-  -H &apos;day: Thursday&apos; \
-  -H &apos;x-amz-docs-region: us-west-2&apos; \
-  -d &apos;{
-	&quot;callerName&quot;: &quot;John&quot;
-}&apos;</code></pre>
-                                 <p>You should get a successful response with the following payload:</p>
-                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
-  &quot;message&quot;: &quot;Good day, John of Seattle. Happy Friday!&quot;,
-  &quot;input&quot;: {
-    &quot;resource&quot;: &quot;/{proxy+}&quot;,
-    &quot;path&quot;: &quot;/Seattle&quot;,
-    &quot;httpMethod&quot;: &quot;POST&quot;,
-    &quot;headers&quot;: {
-      &quot;day&quot;: &quot;Friday&quot;
-    },
-    &quot;queryStringParameters&quot;: {
-      &quot;time&quot;: &quot;morning&quot;
-    },
-    &quot;pathParameters&quot;: {
-      &quot;proxy&quot;: &quot;Seattle&quot;
-    },
-    &quot;stageVariables&quot;: null,
-    &quot;requestContext&quot;: {
-      &quot;path&quot;: &quot;/{proxy+}&quot;,
-      &quot;accountId&quot;: &quot;123456789012&quot;,
-      &quot;resourceId&quot;: &quot;nl9h80&quot;,
-      &quot;stage&quot;: &quot;test-invoke-stage&quot;,
-      &quot;requestId&quot;: &quot;test-invoke-request&quot;,
-      &quot;identity&quot;: {
-        &quot;cognitoIdentityPoolId&quot;: null,
-        &quot;accountId&quot;: &quot;123456789012&quot;,
-        &quot;cognitoIdentityId&quot;: null,
-        &quot;caller&quot;: &quot;AIDXXX...XXVJZG&quot;,
-        &quot;apiKey&quot;: &quot;test-invoke-api-key&quot;,
-        &quot;sourceIp&quot;: &quot;test-invoke-source-ip&quot;,
-        &quot;accessKey&quot;: &quot;ASIXXX...XXDQ5A&quot;,
-        &quot;cognitoAuthenticationType&quot;: null,
-        &quot;cognitoAuthenticationProvider&quot;: null,
-        &quot;userArn&quot;: &quot;arn:aws:iam::123456789012:user/kdeding&quot;,
-        &quot;userAgent&quot;: &quot;Apache-HttpClient/4.5.x (Java/1.8.0_131)&quot;,
-        &quot;user&quot;: &quot;AIDXXX...XXVJZG&quot;
-      },
-      &quot;resourcePath&quot;: &quot;/{proxy+}&quot;,
-      &quot;httpMethod&quot;: &quot;POST&quot;,
-      &quot;apiId&quot;: &quot;r275xc9bmd&quot;
-    },
-    &quot;body&quot;: &quot;{ \&quot;callerName\&quot;: \&quot;John\&quot; }&quot;,
-    &quot;isBase64Encoded&quot;: false
-  }
-}</code></pre>
-                                 <p>If you change <code class="code">POST</code> to <code class="code">PUT</code> in the
-                                    preceding method request, you get the same response.
-                                 </p>
-                                 
-                              </li>
-                              <li>
-                                 
-                                 <p>To test <code class="code">GET /Boston?time=morning</code>:
-                                 </p>
-                                 
-                                 <p>Copy the following cURL command and paste it into the terminal window.</p>
-                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">curl -X GET \
-  &apos;https://r275xc9bmd.execute-api.us-west-2.amazonaws.com/test/Seattle?time=evening&apos; \
-  -H &apos;content-type: application/json&apos; \
-  -H &apos;day: Thursday&apos; \
-  -H &apos;x-amz-docs-region: us-west-2&apos;</code></pre>
-                                 <p>You get a <code class="code">200 OK Request</code> response similar to the
-                                    result from the preceding <code class="code">POST</code> request, with the
-                                    exception that the <code class="code">GET</code> request does not have any
-                                    payload. So the <code class="code">body</code> parameter will be
-                                    <code class="code">null</code>. 
-                                 </p>
-                                 
-                                 
-                              </li>
-                           </ol>
-                           
-                           
-                           <div class="aws-note">
-                              <p class="aws-note">Note</p>
-                              <p>The <code class="code">requestContext</code> is a map of key-value pairs and
-                                 corresponds to the <a href="api-gateway-mapping-template-reference.html#context-variable-reference">$context</a> variable. Its outcome is API-dependent. API Gateway may
-                                 add new keys to the map. For more information, see <a href="set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format">Input Format of a Lambda
-                                    Function for Proxy Integration
-                                    </a>.
-                              </p>
-                           </div>
-                           
-                        </li>
-                     </ul>
-                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -828,7 +711,9 @@ public class ProxyWithStream implements RequestStreamHandler {
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="getting-started-with-lambda-integration.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="apigateway-cross-account-lambda-integrations.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -837,21 +722,23 @@ public class ProxyWithStream implements RequestStreamHandler {
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name=" Create Lambda
-                Functions for an API with Lambda Proxy Integration "><a class="pagetoc" href="#api-gateway-proxy-integration-create-lambda-backend"> Create Lambda
-                              Functions for an API with Lambda Proxy Integration </a></li>
-                        <li class="pagetoc" name="Create a Backend for an API with Lambda Proxy Integration"><a class="pagetoc" href="#api-gateway-create-api-as-simple-proxy-for-lambda-create-function">Create a Backend for an API with Lambda Proxy Integration</a></li>
-                        <li class="pagetoc" name="Create an
-                    API with Lambda Proxy Integration"><a class="pagetoc" href="#api-gateway-create-api-as-simple-proxy-for-lambda-build">Create an
-                              API with Lambda Proxy Integration</a></li>
-                        <li class="pagetoc" name="Test an API
-                    with Lambda Proxy Integration"><a class="pagetoc" href="#api-gateway-create-api-as-simple-proxy-for-lambda-test">Test an API
-                              with Lambda Proxy Integration</a></li>
+                        <li class="pagetoc" name="Create a &quot;Hello,
+                World!&quot; Lambda Function"><a class="pagetoc" href="#api-gateway-proxy-integration-create-lambda-backend">Create a &quot;Hello,
+                              World!&quot; Lambda Function</a></li>
+                        <li class="pagetoc" name="Create a
+                &quot;Hello, World!&quot; API"><a class="pagetoc" href="#api-gateway-create-api-as-simple-proxy-for-lambda-build">Create the &quot;Hello, World!&quot; API</a></li>
+                        <li class="pagetoc" name="Deploy and Test
+                the API"><a class="pagetoc" href="#api-gateway-create-api-as-simple-proxy-for-lambda-test">Deploy and Test
+                              the API</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

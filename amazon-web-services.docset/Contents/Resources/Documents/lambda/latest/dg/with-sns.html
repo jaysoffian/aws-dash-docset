@@ -1,16 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Using AWS Lambda with Amazon SNS from Different Accounts - AWS Lambda</title>
+      <title>Using AWS Lambda with Amazon SNS - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="use-cases.html" title="Examples of How to Use AWS Lambda">
-      <link rel="prev" href="with-ct-example-use-app-spec.html" title="Step 4: Deploy With AWS SAM and AWS CloudFormation">
-      <link rel="next" href="with-sns-example.html" title="Tutorial: Using AWS Lambda with Amazon SNS">
+      <link rel="up" href="lambda-services.html" title="Using AWS Lambda with Other Services">
+      <link rel="prev" href="services-ses.html" title="Using AWS Lambda with Amazon SES">
+      <link rel="next" href="with-sns-example.html" title="Tutorial: Using AWS Lambda with Amazon Simple Notification Service">
       <meta name="description" content="How to set up and start using the AWS Lambda service.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/with-sns.html">
@@ -20,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,42 +35,102 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="use-cases.html">Examples of How to Use AWS Lambda</a> &#xBB; <span class="breadcrumb">Using AWS Lambda with Amazon SNS from Different Accounts</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-services.html">Using AWS Lambda with Other Services</a> &#xBB; <span class="breadcrumb">Using AWS Lambda with Amazon SNS</span></div>
                            </td>
                         </tr>
                      </tbody></table>
-                     <div></div>
-                     <div id="language-filter" class="page-header" style="display:none">
-                        <form> Filter View: 
-                           <select name="filter-select" id="filter-select">
-                              <option selected="1">All</option>
-                              <option value="Node.js" selected>Node.js</option>
-                              <option value="Java" selected>Java</option>
-                              <option value="Go" selected>Go</option>
-                              <option value="Python" selected>Python</option></select></form>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
                      </div>
-                     <h1 class="topictitle" id="with-sns">Using AWS Lambda with Amazon SNS from Different Accounts</h1>
+                     <div></div>
+                     <h1 class="topictitle" id="with-sns">Using AWS Lambda with Amazon SNS</h1>
+                     <p>You can write Lambda functions to process Amazon Simple Notification Service notifications.
+                        When a message is published to an Amazon SNS topic,
+                        the service can invoke your Lambda function by passing the message payload as a parameter.
+                        Your Lambda function code
+                        can then process the event, for example publish the message to other Amazon SNS topics,
+                        or send the message to other AWS
+                        services.
+                     </p>
+                     <p>When a user calls the SNS Publish API on a topic that your Lambda function is subscribed
+                        to, Amazon SNS will call
+                        Lambda to invoke your function asynchronously. Lambda will then return a delivery
+                        status. If there was an error
+                        calling Lambda, Amazon SNS will retry invoking the Lambda function up to three times.
+                        After three tries, if Amazon SNS still
+                        could not successfully invoke the Lambda function, then Amazon SNS will send a delivery
+                        status failure message to
+                        CloudWatch.
+                     </p>
                      <p>In order to perform cross account Amazon SNS deliveries to Lambda, you need to authorize
-                        your Lambda function to be invoked
-                        from Amazon SNS. In turn, Amazon SNS needs to allow the Lambda account to subscribe
-                        to the Amazon SNS topic. 
-                        For example, if the Amazon SNS topic is in account A and the Lambda function is in
-                        account B, both accounts must grant permissions
-                        to the other to access their respective resources. 
-                        Since not all the options for setting up cross-account permissions are available from
-                        the AWS console, you use the AWS CLI to set up the entire process. 
+                        your Lambda function to be
+                        invoked from Amazon SNS. In turn, Amazon SNS needs to allow the Lambda account to
+                        subscribe to the Amazon SNS topic. For example, if
+                        the Amazon SNS topic is in account A and the Lambda function is in account B, both
+                        accounts must grant permissions to the
+                        other to access their respective resources. Since not all the options for setting
+                        up cross-account permissions are
+                        available from the AWS console, you use the AWS CLI to set up the entire process.
                      </p>
-                     <p>For a tutorial that walks you through an example setup, see <a href="with-sns-example.html">Tutorial: Using AWS Lambda with Amazon SNS</a>.
+                     <div class="example">
+                        <p class="title"><b>Example Amazon SNS Message Event</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
+  &quot;Records&quot;: [
+    {
+      &quot;EventVersion&quot;: &quot;1.0&quot;,
+      &quot;EventSubscriptionArn&quot;: &quot;arn:aws:sns:us-east-2:123456789012:test-lambda:21be56ed-a058-49f5-8c98-aedd2564c486&quot;,
+      &quot;EventSource&quot;: &quot;aws:sns&quot;,
+      &quot;Sns&quot;: {
+        &quot;SignatureVersion&quot;: &quot;1&quot;,
+        &quot;Timestamp&quot;: &quot;1970-01-01T00:00:00.000Z&quot;,
+        &quot;Signature&quot;: &quot;tcc6faL2yUC6dgZdmrwh1Y4cGa/ebXEkAi6RibDsvpi+tE/1+82j...65r==&quot;,
+        &quot;SigningCertUrl&quot;: &quot;https://sns.us-east-2.amazonaws.com/SimpleNotificationService-ac565b8b1a6c5d002d285f9598aa1d9b.pem&quot;,
+        &quot;MessageId&quot;: &quot;95df01b4-ee98-5cb9-9903-4c221d41eb5e&quot;,
+        &quot;Message&quot;: &quot;Hello from SNS!&quot;,
+        &quot;MessageAttributes&quot;: {
+          &quot;Test&quot;: {
+            &quot;Type&quot;: &quot;String&quot;,
+            &quot;Value&quot;: &quot;TestString&quot;
+          },
+          &quot;TestBinary&quot;: {
+            &quot;Type&quot;: &quot;Binary&quot;,
+            &quot;Value&quot;: &quot;TestBinary&quot;
+          }
+        },
+        &quot;Type&quot;: &quot;Notification&quot;,
+        &quot;UnsubscribeUrl&quot;: &quot;https://sns.us-east-2.amazonaws.com/?Action=Unsubscribe&amp;amp;SubscriptionArn=arn:aws:sns:us-east-2:123456789012:test-lambda:21be56ed-a058-49f5-8c98-aedd2564c486&quot;,
+        &quot;TopicArn&quot;: topicarn,
+        &quot;Subject&quot;: &quot;TestInvoke&quot;
+      }
+    }
+  ]
+}</code></pre></div>
+                     </div>
+                     <p>You configure the event source mapping in Amazon SNS via topic subscription configuration.
+                        For more information, see
+                        <a href="./sns/latest/dg/sns-lambda.html">Invoking Lambda functions using Amazon SNS notifications</a> in the
+                        <em>Amazon Simple Notification Service Developer Guide</em>. 
                      </p>
+                     <div class="highlights">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="with-sns-example.html">Tutorial: Using AWS Lambda with Amazon Simple Notification Service</a></li>
+                           <li><a href="with-sns-create-package.html">Sample Function Code</a></li>
+                        </ul>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -76,8 +139,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="with-ct-example-use-app-spec.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="with-sns-example.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="services-ses.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="with-sns-example.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -85,6 +150,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

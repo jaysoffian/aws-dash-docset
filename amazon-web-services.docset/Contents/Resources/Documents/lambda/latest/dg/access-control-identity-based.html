@@ -1,21 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Using Identity-Based Policies (IAM Policies)
-         for AWS Lambda - AWS Lambda
-      </title>
+      <title>Identity-based IAM Policies for AWS Lambda - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="lambda-auth-and-access-control.html" title="Authentication and Access Control for
-    AWS Lambda">
-      <link rel="prev" href="access-control-overview.html" title="Overview of Managing Access Permissions to Your AWS Lambda
-      Resources">
-      <link rel="next" href="console-specific-permissions.html" title="Permissions Required to Use the AWS Lambda
-        Console">
-      <meta name="description" content="This topic provides examples of identity-based policies in which an account administrator can attach permissions policies to IAM identities (that is, users, groups, and roles).">
+      <link rel="up" href="lambda-permissions.html" title="AWS Lambda Permissions">
+      <link rel="prev" href="access-control-resource-based.html" title="Using Resource-based Policies for AWS Lambda">
+      <link rel="next" href="lambda-api-permissions-ref.html" title="Resources and Conditions for Lambda Actions">
+      <meta name="description" content="You can use identity-based policies in AWS Identity and Access Management (IAM) to grant users in your account access to Lambda. Identity-based policies can apply to users directly, or to groups and roles that are associated with a user. You can also grant users in another account permission to assume a role in your account and access your Lambda resources.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/access-control-identity-based.html">
@@ -25,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -37,31 +35,29 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="admin-lambda-apps.html">Administering Lambda-based Applications</a> &#xBB; <a href="lambda-auth-and-access-control.html">Authentication and Access Control for
-                                    AWS Lambda</a> &#xBB; <span class="breadcrumb">Using Identity-Based Policies (IAM Policies)
-                                    for AWS Lambda</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-permissions.html">AWS Lambda Permissions</a> &#xBB; <span class="breadcrumb">Identity-based IAM Policies for AWS Lambda</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="access-control-identity-based">Using Identity-Based Policies (IAM Policies)
-                        for AWS Lambda
-                     </h1>
-                     <p>This topic provides examples of identity-based policies in which an account
-                        administrator can attach permissions policies to IAM identities (that is, users, groups,
-                        and
-                        roles). 
+                     <h1 class="topictitle" id="access-control-identity-based">Identity-based IAM Policies for AWS Lambda</h1>
+                     <p>You can use identity-based policies in AWS Identity and Access Management (IAM) to
+                        grant users in your account access to Lambda.
+                        Identity-based policies can apply to users directly, or to groups and roles that are
+                        associated with a user. You can
+                        also grant users in another account permission to assume a role in your account and
+                        access your Lambda
+                        resources.
                      </p>
-                     <div class="aws-note">
-                        <p class="aws-note">Important</p>
-                        <p> We recommend that you first review the introductory topics that explain the basic
-                           concepts
-                           and options available for you to manage access to your AWS Lambda resources. For more
-                           information, see <a href="access-control-overview.html">Overview of Managing Access Permissions to Your AWS Lambda
-                              Resources</a>.
-                        </p>
-                     </div>
-                     <p>The sections in this topic cover the following:</p>
+                     <p>Lambda provides managed policies that grant access to Lambda API actions and, in some
+                        cases, access to other
+                        services used to develop and manage Lambda resources. Lambda updates the managed policies
+                        as needed, to ensure that
+                        your users have access to new features when they&apos;re released.
+                     </p>
                      <div class="itemizedlist">
                         
                         
@@ -70,455 +66,355 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p><a href="access-control-identity-based.html#additional-console-required-permissions">Permissions Required to Use the
-                                    AWS Lambda Console</a> 
+                              <p><b>AWSLambdaFullAccess</b>&#xA0;&#x2013; Grants full access to AWS Lambda actions and
+                                 other services used to develop and maintain Lambda resources.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><a href="access-control-identity-based.html#access-policy-examples-aws-managed">AWS Managed (Predefined) Policies
-                                    for AWS Lambda</a> 
+                              <p><b>AWSLambdaReadOnlyAccess</b>&#xA0;&#x2013; Grants read-only access to AWS Lambda
+                                 resources.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><a href="access-control-identity-based.html#access-policy-examples-for-sdk-cli">Customer Managed Policy Examples</a> 
+                              <p><b>AWSLambdaRole</b> &#x2013; Grants permissions to invoke Lambda functions. 
                               </p>
                               
                            </li>
                         </ul>
                      </div>
-                     <p>The following shows an example of a permissions policy.</p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
-    &quot;Version&quot;: &quot;2012-10-17&quot;,
-    &quot;Statement&quot;: [
-        {
-            &quot;Sid&quot;: &quot;CreateFunctionPermissions&quot;,
-            &quot;Effect&quot;: &quot;Allow&quot;,
-            &quot;Action&quot;: [
-                &quot;lambda:CreateFunction&quot;
-            ],
-            &quot;Resource&quot;: &quot;*&quot;
-        },
-        {
-            &quot;Sid&quot;: &quot;PermissionToPassAnyRole&quot;,
-            &quot;Effect&quot;: &quot;Allow&quot;,
-            &quot;Action&quot;: [
-                &quot;iam:PassRole&quot;
-            ],
-            &quot;Resource&quot;: &quot;arn:aws:iam::<em class="replaceable"><code>account-id</code></em>:role/*&quot;
-        }
-    ]
-}</code></pre><p> The policy has two statements: </p>
-                     <div class="itemizedlist">
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              
-                              <p> The first statement grants permissions for the AWS Lambda action (<code class="code">lambda:CreateFunction</code>) 
-                                 on a resource by using the&#xA0;Amazon Resource Name (ARN) &#xA0;for the Lambda function. 
-                                 Currently, AWS Lambda doesn&apos;t support permissions for this particular action at the
-                                 resource-level.
-                                 Therefore, the policy specifies a wildcard character (*) as the <code class="code">Resource</code>
-                                 value. 
-                              </p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p>The second statement grants permissions for the IAM action
-                                 (<code class="code">iam:PassRole</code>) on IAM roles. The wildcard character (*) at the end of
-                                 the <code class="code">Resource</code> value means that the statement allows permission for the
-                                 <code class="code">iam:PassRole</code> action on any IAM role. To limit this permission to a
-                                 specific role, replace the wildcard character (*) in the resource ARN with the specific
-                                 role name. 
-                              </p>
-                              
-                           </li>
-                        </ul>
-                     </div>
-                     <p>The policy doesn&apos;t specify the <code class="code">Principal</code> element because  in an
-                        identity-based policy you don&apos;t specify the principal who gets the permission.
-                        When you attach policy to a user, the user is the implicit principal. When you attach
-                        a
-                        permission policy to an IAM role, the principal identified in the role&apos;s trust policy
-                        gets the
+                     <p>Managed policies grant permission to API actions without restricting the functions
+                        or layers that a user can
+                        modify. For finer-grained control, you can create your own policies that limit the
+                        scope of a user&apos;s
                         permissions.
                      </p>
-                     <p> For a table showing all of the AWS Lambda API actions and the resources and conditions
-                        that they
-                        apply to, see&#xA0;<a href="lambda-api-permissions-ref.html">Lambda API Permissions: Actions, Resources, and
-                           Conditions Reference</a>. 
-                     </p>
-                     <h2 id="additional-console-required-permissions">Permissions Required to Use the
-                        AWS Lambda Console
-                     </h2>
-                     
-                     
-                     <p>The AWS Lambda console provides an integrated environment for you to create and
-                        manage Lambda functions. The console provides many features and workflows that often
-                        require
-                        permissions to create a Lambda function in addition to the API-specific permissions
-                        documented in the 
-                        <a href="lambda-api-permissions-ref.html">Lambda API Permissions: Actions, Resources, and
-                           Conditions Reference</a>. For more information about these additional console permissions, 
-                        see <a href="console-specific-permissions.html">Permissions Required to Use the AWS Lambda
-                           Console</a>.
-                     </p>
-                     
-                     
-                     
-                     
-                     
-                     <h2 id="access-policy-examples-aws-managed">AWS Managed (Predefined) Policies
-                        for AWS Lambda
-                     </h2>
-                     
-                     
-                     
-                     <p>AWS addresses many common use cases by providing standalone IAM policies 
-                        that are created and administered by AWS. Managed policies grant necessary permissions
-                        for
-                        common use cases so you can avoid having to investigate what permissions are needed.
-                        For more
-                        information, see <a href="./IAM/latest/UserGuide/access_policies_managed-vs-inline.html#aws-managed-policies" target="_blank">AWS Managed Policies</a> in the <em>IAM User Guide</em>.
-                     </p>
-                     
-                     <p>The following AWS managed policies, which you can attach to users in your account,
-                        are specific 
-                        to AWS Lambda and are grouped by use case scenario:
-                     </p>
-                     
-                     <div class="itemizedlist">
-                        
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              
-                              <p><b>AWSLambdaReadOnlyAccess</b>&#xA0;&#x2013; Grants read-only access
-                                 to AWS Lambda resources. Note that this policy doesn&apos;t grant permission for the
-                                 <code class="code">lambda:InvokeFunction</code> action. If you want a user to invoke a Lambda function, you can
-                                 also attach the <code class="code">AWSLambdaRole</code> AWS managed policy.
-                              </p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p><b>AWSLambdaFullAccess</b>&#xA0;&#x2013; Grants full access to 
-                                 AWS Lambda resources.
-                              </p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p><b>AWSLambdaRole</b> &#x2013; Grants permissions to invoke
-                                 any Lambda function. 
-                              </p>
-                              
-                           </li>
-                        </ul>
-                     </div>
-                     
-                     
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p>You can review these permissions policies by signing in to the IAM console and
-                           searching for specific policies there.
-                        </p>
-                     </div>
-                     
-                     <p>In addition, there are other AWS-managed policies that are suitable for use with IAM
-                        role (execution role) you specify at the time of creating a Lambda function. For more
-                        information, see <a href="intro-permission-model.html">AWS Lambda Permissions Model</a>.
-                     </p>
-                     
-                     
-                     <p>You can also create your own custom IAM policies to allow permissions for AWS Lambda
-                        API actions and resources. You can attach these custom policies to the IAM users or
-                        groups that require
-                        those permissions or to custom execution roles (IAM roles) that you create for
-                        your Lambda functions. 
-                     </p>
-                     
-                     <h2 id="access-policy-examples-for-sdk-cli">Customer Managed Policy Examples</h2>
-                     
-                     
-                     
-                     <p>The examples in this section provide a group of sample policies that you can attach
-                        to a user. 
-                        If you are new to creating policies, we recommend that you first create an IAM user
-                        in your account 
-                        and attach the policies to the user in sequence, as outlined in the steps in this
-                        section.
-                     </p>
-                     
-                     <p>You can use the console to verify the effects of each policy as you attach the policy
-                        to the user. Initially, the user doesn&apos;t 
-                        have permissions and the user won&apos;t be able to do anything in the console. As you
-                        attach policies to the user, 
-                        you can verify that the user can perform various actions in the console.&#xA0;
-                     </p>
-                     
-                     <p>We recommend that you use two browser windows: one to create the user and grant permissions,
-                        and the other to sign in to the AWS Management Console using the user&apos;s credentials
-                        and verify permissions as you grant 
-                        them to the user.
-                     </p>
-                     
-                     
-                     <p> For examples that show how to create an IAM role that you can use as an execution
-                        role for your Lambda function, see 
-                        <a href="./IAM/latest/UserGuide/id_roles_create.html" target="_blank">Creating IAM Roles</a> in the 
-                        <em>IAM User Guide</em>.
-                     </p>
-                     
-                     
                      <div class="highlights" id="inline-topiclist">
-                        <p><strong>Example Steps</strong></p>
+                        <p><strong>Sections</strong></p>
                         <ul>
-                           <li><a href="#console-permissions-list-functions">Step 1: Create an IAM User</a></li>
-                           <li><a href="#console-permissions-list-functions1">Step 2: Allow a User to List
-                                 Lambda Functions</a></li>
-                           <li><a href="#console-permissions-view-details">Step 3: Allow a User to View
-                                 Details of a Lambda Function</a></li>
-                           <li><a href="#console-permissions-invoke">Step 4: Allow a User to Invoke a Lambda
-                                 Function</a></li>
-                           <li><a href="#console-permissions-cloudwatch-logs1">Step 5: Allow a User to
-                                 Monitor a Lambda Function and View CloudWatch Logs</a></li>
-                           <li><a href="#console-permissions-create">Step 6: Allow a User to Create a Lambda
-                                 Function</a></li>
+                           <li><a href="#permissions-user-function">Function Development</a></li>
+                           <li><a href="#permissions-user-layer">Layer Development and Use</a></li>
+                           <li><a href="#permissions-user-xaccount">Cross-Account Roles</a></li>
                         </ul>
                      </div>
                      
+                     <h2 id="permissions-user-function">Function Development</h2>
                      
-                     <h3 id="console-permissions-list-functions">Step 1: Create an IAM User</h3>
-                     
-                     
-                     <p>First, you need to create an IAM user, add the user to an IAM group with
-                        administrative permissions, and then grant administrative permissions to the IAM user
-                        that
-                        you created. You can then access AWS using a special URL and that IAM user&apos;s credentials.
-                        
+                     <p>The following shows an example of a permissions policy with limited scope. It allows
+                        a user to create and
+                        manage Lambda functions named with a designated prefix (<code class="code">intern-</code>), and configured with a designated
+                        execution role.
                      </p>
                      
-                     <p>For instructions, see <a href="./IAM/latest/UserGuide/getting-started_create-admin-group.html" target="_blank">Creating Your First IAM User and Administrators Group</a> in the <em>IAM User Guide</em>. 
-                     </p>
-                     
-                     
-                     
-                     
-                     
-                     <h3 id="console-permissions-list-functions1">Step 2: Allow a User to List
-                        Lambda Functions
-                     </h3>
-                     
-                     
-                     <p>An IAM user in your account must have permissions for the
-                        <code class="code">lambda:ListFunctions</code> action before the user can see anything in the console.
-                        When you grant these permissions, the console can show the list of Lambda functions
-                        in the
-                        AWS account created in the specific AWS Region the user belongs to.
-                     </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
+                     <div class="example">
+                        <p class="title"><b>Example Function Development Policy</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
     &quot;Version&quot;: &quot;2012-10-17&quot;,
     &quot;Statement&quot;: [
         {
-            &quot;Sid&quot;: &quot;ListExistingFunctions&quot;,
-            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Sid&quot;: &quot;ReadOnlyPermissions&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;, 
             &quot;Action&quot;: [
-                &quot;lambda:ListFunctions&quot;
-            ],
-            &quot;Resource&quot;: &quot;*&quot;
-        }
-    ]
-}</code></pre>
-                     
-                     <h3 id="console-permissions-view-details">Step 3: Allow a User to View
-                        Details of a Lambda Function
-                     </h3>
-                     
-                     
-                     <p>A user can select a Lambda function and view details of the function (such as aliases,
-                        versions, and
-                        other configuration information), provided that the user has permissions for the following
-                        
-                        AWS Lambda actions:
-                     </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">
-{
-    &quot;Version&quot;: &quot;2012-10-17&quot;,
-    &quot;Statement&quot;: [
-          {
-              &quot;Sid&quot;: &quot;DisplayFunctionDetailsPermissions&quot;,
-              &quot;Effect&quot;: &quot;Allow&quot;,
-              &quot;Action&quot;: [
-                  &quot;lambda:ListVersionsByFunction&quot;,
-                  &quot;lambda:ListAliases&quot;,
-                  &quot;lambda:GetFunction&quot;,
-                  &quot;lambda:GetFunctionConfiguration&quot;,
-                  &quot;lambda:ListEventSourceMapping&quot;,
-                  &quot;lambda:GetPolicy&quot;
-              ],
-              &quot;Resource&quot;: &quot;*&quot;
-          }
-    ]
-}</code></pre>
-                      
-                     <h3 id="console-permissions-invoke">Step 4: Allow a User to Invoke a Lambda
-                        Function
-                     </h3>        
-                     
-                     
-                     <p>If you want to allow a user permissions to manually invoke a function, 
-                        you need to grant permissions for the <code class="code">lambda:InvokeFunction</code> action, as shown following:
-                     </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
-    &quot;Version&quot;: &quot;2012-10-17&quot;,
-    &quot;Statement&quot;: [
-        {
-            &quot;Sid&quot;: &quot;InvokePermission&quot;,
-            &quot;Effect&quot;: &quot;Allow&quot;,
-            &quot;Action&quot;: [
-                &quot;lambda:InvokeFunction&quot;
-            ],
-            &quot;Resource&quot;: &quot;*&quot;
-        }
-    ]
-}  </code></pre>
-                     
-                     <h3 id="console-permissions-cloudwatch-logs1">Step 5: Allow a User to
-                        Monitor a Lambda Function and View CloudWatch Logs
-                     </h3>
-                     
-                     
-                     <p>When a user invokes a Lambda function, AWS Lambda executes it and
-                        returns results. The user needs additional permissions to monitor the
-                        Lambda function. 
-                     </p>
-                     
-                     <p>To enable the user to see the Lambda function&apos;s CloudWatch metrics on the console&apos;s
-                        
-                        <b>Monitoring</b> tab, or on the grid view on the console home page, 
-                        you must grant the following permissions:
-                     </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
-    &quot;Version&quot;: &quot;2012-10-17&quot;,
-    &quot;Statement&quot;: [
-        {
-            &quot;Sid&quot;: &quot;CloudWatchPermission&quot;,
-            &quot;Effect&quot;: &quot;Allow&quot;,
-            &quot;Action&quot;: [
-                &quot;cloudwatch:GetMetricStatistics&quot;
-            ],
-            &quot;Resource&quot;: &quot;*&quot;
-        }
-    ]
-}</code></pre>
-                     <p>To enable a user to click the links to CloudWatch Logs in the AWS Lambda console and
-                        view log output in CloudWatch Logs, you must grant the following permissions:
-                     </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
-    &quot;Version&quot;: &quot;2012-10-17&quot;,
-    &quot;Statement&quot;: [
-        {
-            &quot;Sid&quot;: &quot;CloudWatchLogsPerms&quot;,
-            &quot;Effect&quot;: &quot;Allow&quot;,
-            &quot;Action&quot;: [
-                &quot;cloudwatchlog:DescribeLogGroups&quot;,
-                &quot;cloudwatchlog:DescribeLogStreams&quot;,
-                &quot;cloudwatchlog:GetLogEvents&quot;
-
-              ],
-            &quot;Resource&quot;: &quot;arn:aws:logs:<em class="replaceable"><code>region</code></em>:<em class="replaceable"><code>account-id</code></em>:log-group:/aws/lambda/*&quot;
-        }
-    ]
-}</code></pre>
-                      
-                     <h3 id="console-permissions-create">Step 6: Allow a User to Create a Lambda
-                        Function
-                     </h3>
-                     
-                     
-                     <p>If you want a user to be able to create a Lambda function, you must grant the following
-                        
-                        permissions. The permissions for IAM-related actions are required because when a 
-                        user creates a Lambda function, the user needs to select an IAM execution role, which
-                        AWS Lambda 
-                        assumes to execute the Lambda function.
-                     </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
-    &quot;Version&quot;: &quot;2012-10-17&quot;,
-    &quot;Statement&quot;: [
-        {
-            &quot;Sid&quot;: &quot;ListExistingRolesAndPolicies&quot;,
-            &quot;Effect&quot;: &quot;Allow&quot;,
-            &quot;Action&quot;: [
-                &quot;iam:ListRolePolicies&quot;,
+                &quot;lambda:GetAccountSettings&quot;,
+                &quot;lambda:ListFunctions&quot;,
+                &quot;lambda:ListTags&quot;,
+                &quot;lambda:GetEventSourceMapping&quot;,
+                &quot;lambda:ListEventSourceMappings&quot;,
                 &quot;iam:ListRoles&quot;
             ],
             &quot;Resource&quot;: &quot;*&quot;
         },
         {
-            &quot;Sid&quot;: &quot;CreateFunctionPermissions&quot;,
-            &quot;Effect&quot;: &quot;Allow&quot;,
-            &quot;Action&quot;: [
-                &quot;lambda:CreateFunction&quot;
+            &quot;Sid&quot;: &quot;DevelopFunctions&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;, 
+            &quot;NotAction&quot;: [
+                &quot;lambda:AddPermission&quot;,
+                &quot;lambda:PutFunctionConcurrency&quot;
             ],
-            &quot;Resource&quot;: &quot;*&quot;
+            &quot;Resource&quot;: &quot;arn:aws:lambda:*:*:function:intern-*&quot;
         },
         {
-            &quot;Sid&quot;: &quot;PermissionToPassAnyRole&quot;,
-            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Sid&quot;: &quot;DevelopEventSourceMappings&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;, 
             &quot;Action&quot;: [
+                &quot;lambda:DeleteEventSourceMapping&quot;,
+                &quot;lambda:UpdateEventSourceMapping&quot;,
+                &quot;lambda:CreateEventSourceMapping&quot;
+            ],
+            &quot;Resource&quot;: &quot;*&quot;,
+            &quot;Condition&quot;: {
+                &quot;StringLike&quot;: {
+                    &quot;lambda:FunctionArn&quot;: &quot;arn:aws:lambda:*:*:function:intern-*&quot;
+                }
+            }
+        },
+        {
+            &quot;Sid&quot;: &quot;PassExecutionRole&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;, 
+            &quot;Action&quot;: [
+                &quot;iam:ListRolePolicies&quot;,
+                &quot;iam:ListAttachedRolePolicies&quot;,
+                &quot;iam:GetRole&quot;,
                 &quot;iam:PassRole&quot;
             ],
-            &quot;Resource&quot;: &quot;arn:aws:iam::<em class="replaceable"><code>account-id</code></em>:role/*&quot;
+            &quot;Resource&quot;: &quot;arn:aws:iam::*:role/intern-lambda-execution-role&quot;
+        },
+        {
+            &quot;Sid&quot;: &quot;ViewExecutionRolePolicies&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;, 
+            &quot;Action&quot;: [
+                &quot;iam:GetPolicy&quot;,
+                &quot;iam:GetPolicyVersion&quot;
+            ],
+            &quot;Resource&quot;: &quot;arn:aws:iam::aws:policy/*&quot;
+        },
+        {
+            &quot;Sid&quot;: &quot;ViewLogs&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;, 
+            &quot;Action&quot;: [
+                &quot;logs:*&quot;
+            ],
+            &quot;Resource&quot;: &quot;arn:aws:logs:*:*:log-group:/aws/lambda/intern-*&quot;
+        }
+    ]
+}</code></pre></div>
+                     </div>
+                     
+                     <p>The permissions in the policy are organized into statements based on the <a href="lambda-api-permissions-ref.html">resources and conditions</a> that they support.
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><code class="code">ReadOnlyPermissions</code> &#x2013; The Lambda console uses these permissions when you browse and
+                                 view functions. They don&apos;t support resource patterns or conditions.
+                              </p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">
+            &quot;Action&quot;: [
+                &quot;lambda:GetAccountSettings&quot;,
+                &quot;lambda:ListFunctions&quot;,
+                &quot;lambda:ListTags&quot;,
+                &quot;lambda:GetEventSourceMapping&quot;,
+                &quot;lambda:ListEventSourceMappings&quot;,
+                &quot;iam:ListRoles&quot;
+            ],
+            &quot;Resource&quot;: &quot;*&quot;</code></pre>
+                              </li>
+                           <li class="listitem">
+                              
+                              <p><code class="code">DevelopFunctions</code> &#x2013; Use any Lambda action that operates on functions prefixed with
+                                 <code class="code">intern-</code>, <em>except</em>
+                                 <code class="code">AddPermission</code> and <code class="code">PutFunctionConcurrency</code>. <code class="code">AddPermission</code> modifies the
+                                 <a href="access-control-resource-based.html">resource-based policy</a> on the function and can have
+                                 security implications. <code class="code">PutFunctionConcurrency</code> reserves scaling capacity for a function and can
+                                 take capacity away from other functions.
+                              </p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">
+            &quot;NotAction&quot;: [
+                &quot;lambda:AddPermission&quot;,
+                &quot;lambda:PutFunctionConcurrency&quot;
+            ],
+            &quot;Resource&quot;: &quot;arn:aws:lambda:*:*:function:intern-*&quot;</code></pre>
+                              </li>
+                           <li class="listitem">
+                              
+                              <p><code class="code">DevelopEventSourceMappings</code> &#x2013; Manage event source mappings on functions that are
+                                 prefixed with <code class="code">intern-</code>. These actions operate on event source mappings, but you can restrict them
+                                 by function with a <em>condition</em>.
+                              </p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">
+            &quot;Action&quot;: [
+                &quot;lambda:DeleteEventSourceMapping&quot;,
+                &quot;lambda:UpdateEventSourceMapping&quot;,
+                &quot;lambda:CreateEventSourceMapping&quot;
+            ],
+            &quot;Resource&quot;: &quot;*&quot;,
+            &quot;Condition&quot;: {
+                &quot;StringLike&quot;: {
+                    &quot;lambda:FunctionArn&quot;: &quot;arn:aws:lambda:*:*:function:intern-*&quot;
+                }
+            }</code></pre>
+                              </li>
+                           <li class="listitem">
+                              
+                              <p><code class="code">PassExecutionRole</code> &#x2013; View and pass only a role named
+                                 <code class="code">intern-lambda-execution-role</code>, which must be created and managed by a user with IAM
+                                 permissions. <code class="code">PassRole</code> is used when you assign an execution role to a function.
+                              </p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">
+            &quot;Action&quot;: [
+                &quot;iam:ListRolePolicies&quot;,
+                &quot;iam:ListAttachedRolePolicies&quot;,
+                &quot;iam:GetRole&quot;,
+                &quot;iam:PassRole&quot;
+            ],
+            &quot;Resource&quot;: &quot;arn:aws:iam::*:role/intern-lambda-execution-role&quot;</code></pre>
+                              </li>
+                           <li class="listitem">
+                              
+                              <p><code class="code">ViewExecutionRolePolicies</code> &#x2013; View the AWS-provided managed policies that are attached
+                                 to the execution role. This lets you view the function&apos;s permissions in the console,
+                                 but doesn&apos;t include
+                                 permission to view policies that were created by other users in the account.
+                              </p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">
+            &quot;Action&quot;: [
+                &quot;iam:GetPolicy&quot;,
+                &quot;iam:GetPolicyVersion&quot;
+            ],
+            &quot;Resource&quot;: &quot;arn:aws:iam::aws:policy/*&quot;</code></pre>
+                              </li>
+                           <li class="listitem">
+                              
+                              <p><code class="code">ViewLogs</code> &#x2013; Use CloudWatch Logs to view logs for functions that are prefixed with
+                                 <code class="code">intern-</code>.
+                              </p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">
+            &quot;Action&quot;: [
+                &quot;logs:*&quot;
+            ],
+            &quot;Resource&quot;: &quot;arn:aws:logs:*:*:log-group:/aws/lambda/intern-*&quot;</code></pre>
+                              </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <p>This policy allows a user to get started with Lambda, without putting other users&apos;
+                        resources at risk. It
+                        doesn&apos;t allow a user to configure a function to be triggered by or call other AWS
+                        services, which requires broader
+                        IAM permissions. It also doesn&apos;t include permission to services that don&apos;t support
+                        limited-scope policies, like
+                        CloudWatch and X-Ray. Use the read-only policies for these services to give the user
+                        access to metrics and trace
+                        data.
+                     </p>
+                     
+                     
+                     <p>When you configure triggers for your function, you need access to use the AWS service
+                        that invokes your
+                        function. For example, to configure an Amazon S3 trigger, you need permission to Amazon
+                        S3 actions to manage bucket
+                        notifications. Many of these permissions are included in the <b>AWSLambdaFullAccess</b>
+                        managed policy. Example policies are available in this guide&apos;s <a href="https://github.com/awsdocs/aws-lambda-developer-guide/tree/master/iam-policies" target="_blank">GitHub
+                           repository</a>.
+                     </p>
+                     
+                     
+                     <h2 id="permissions-user-layer">Layer Development and Use</h2>
+                     
+                     <p>The following policy grants a user permission to create layers and use them with functions.
+                        The resource
+                        patterns allow the user to work in any AWS Region and with any layer version, as long
+                        as the name of the layer
+                        starts with <code class="code">test-</code>.
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example Layer Development Policy</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
+    &quot;Version&quot;: &quot;2012-10-17&quot;,
+    &quot;Statement&quot;: [
+        {
+            &quot;Sid&quot;: &quot;PublishLayers&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Action&quot;: [
+                &quot;lambda:PublishLayerVersion&quot;
+            ],
+            &quot;Resource&quot;: &quot;arn:aws:lambda:*:*:layer:test-*&quot;
+        },
+        {
+            &quot;Sid&quot;: &quot;ManageLayerVersions&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Action&quot;: [
+                &quot;lambda:GetLayerVersion&quot;,
+                &quot;lambda:DeleteLayerVersion&quot;
+            ],
+            &quot;Resource&quot;: &quot;arn:aws:lambda:*:*:layer:test-*:*&quot;
+        }
+    ]
+}</code></pre></div>
+                     </div>
+                     
+                     <p>You can also enforce layer use during function creation and configuration with the
+                        <code class="code">lambda:Layer</code>
+                        condition. For example, you can prevent users from using layers published by other
+                        accounts. The following policy
+                        adds a condition to the <code class="code">CreateFunction</code> and <code class="code">UpdateFunctionConfiguration</code> actions to
+                        require that any layers specified come from account <code class="code">123456789012</code>.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;Version&quot;: &quot;2012-10-17&quot;,
+    &quot;Statement&quot;: [
+        {
+            &quot;Sid&quot;: &quot;ConfigureFunctions&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Action&quot;: [
+                &quot;lambda:CreateFunction&quot;,
+                &quot;lambda:UpdateFunctionConfiguration&quot;
+            ],
+            &quot;Resource&quot;: &quot;*&quot;,
+            <strong class="userinput"><code>&quot;Condition&quot;: {
+                &quot;ForAllValues:StringLike&quot;: {
+                    &quot;lambda:Layer&quot;: [
+                        &quot;arn:aws:lambda:*:<em class="replaceable"><code>123456789012</code></em>:layer:*:*&quot;
+                    ]
+                }
+            }</code></strong>
         }
     ]
 }</code></pre>
-                     
-                     <p>If you want a user to be able to create an IAM role when the user is   
-                        creating a Lambda function, the user needs permissions to perform the
-                        <code class="code">iam:PutRolePolicy</code> action, as shown following:
+                     <p>To ensure that the condition applies, verify that no other statements grant the user
+                        permission to these
+                        actions.
                      </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
-    &quot;Sid&quot;: &quot;CreateARole&quot;,
-    &quot;Effect&quot;: &quot;Allow&quot;,
-    &quot;Action&quot;: [
-        &quot;iam:CreateRole&quot;,
-        &quot;iam:CreatePolicy&quot;,
-        &quot;iam:PutRolePolicy
-        &quot;iam:AttachRolePolicy&quot;
-    ],
-    &quot;Resource&quot;: &quot;arn:aws:iam::<em class="replaceable"><code>account-id</code></em>:role/*&quot;
-}</code></pre>
-                     <div class="aws-note">
-                        <p class="aws-note">Important</p>
-                        <p>Each IAM role has a permissions policy attached to it, which grants specific
-                           permissions to the role. Regardless of whether the user creates a new role or uses
-                           an
-                           existing role, the user must have permissions for all of the actions granted in the
-                           permissions policy associated with the role. You must grant the user additional
-                           permissions accordingly.
-                        </p>
+                     
+                     
+                     <h2 id="permissions-user-xaccount">Cross-Account Roles</h2>
+                     
+                     
+                     <p>You can apply any of the preceding policies and statements to a role, which you can
+                        then share with another
+                        account to give it access to your Lambda resources. Unlike an IAM user, a role doesn&apos;t
+                        have credentials for
+                        authentication. Instead, it has a <em>trust policy</em> that specifies who can assume the role and use
+                        its permissions.
+                     </p>
+                     
+                     
+                     <p>You can use cross-account roles to give accounts that you trust access to Lambda actions
+                        and resources. If you
+                        just want to grant permission to invoke a function or use a layer, use <a href="access-control-resource-based.html">resource-based policies</a> instead.
+                     </p>
+                     
+                     <p>For more information, see <a href="./IAM/latest/UserGuide/id_roles.html">IAM Roles</a> in the
+                        <em>IAM User Guide</em>.
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
-                         
-                     
-                     
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -527,8 +423,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="access-control-overview.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="console-specific-permissions.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="access-control-resource-based.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="lambda-api-permissions-ref.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -537,18 +435,18 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Permissions Required to Use the
-            AWS Lambda Console"><a class="pagetoc" href="#additional-console-required-permissions">Permissions Required to Use the
-                              AWS Lambda Console</a></li>
-                        <li class="pagetoc" name="AWS Managed (Predefined) Policies
-        for AWS Lambda"><a class="pagetoc" href="#access-policy-examples-aws-managed">AWS Managed (Predefined) Policies
-                              for AWS Lambda</a></li>
-                        <li class="pagetoc" name="Customer Managed Policy Examples"><a class="pagetoc" href="#access-policy-examples-for-sdk-cli">Customer Managed Policy Examples</a></li>
+                        <li class="pagetoc" name="Function Development"><a class="pagetoc" href="#permissions-user-function">Function Development</a></li>
+                        <li class="pagetoc" name="Layer Development and Use"><a class="pagetoc" href="#permissions-user-layer">Layer Development and Use</a></li>
+                        <li class="pagetoc" name="Cross-Account Roles"><a class="pagetoc" href="#permissions-user-xaccount">Cross-Account Roles</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

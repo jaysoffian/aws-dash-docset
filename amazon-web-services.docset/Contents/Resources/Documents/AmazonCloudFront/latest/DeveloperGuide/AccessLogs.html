@@ -1,17 +1,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Access Logs - Amazon CloudFront</title>
+      <title>Configuring and Using Access Logs - Amazon CloudFront</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="Introduction.html" title="What Is Amazon CloudFront?">
-      <link rel="prev" href="cf-api-permissions-ref.html" title="CloudFront API Permissions: Actions, Resources, and Conditions Reference">
-      <link rel="next" href="monitoring-using-cloudwatch.html" title="Monitoring CloudFront Activity Using CloudWatch">
+      <link rel="up" href="reports-and-monitoring.html" title="Reports, Access Logs, and Monitoring">
+      <link rel="prev" href="tagging.html" title="Tagging Amazon CloudFront Distributions">
+      <link rel="next" href="logging_using_cloudtrail.html" title="Using AWS CloudTrail to 
+   Capture Requests Sent to the CloudFront API">
       <meta name="description" content="Use log files to get information about user requests for your objects.">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/AccessLogs.html">
@@ -21,7 +24,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,12 +36,15 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Access Logs</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="reports-and-monitoring.html">Reports, Access Logs, and Monitoring</a> &#xBB; <span class="breadcrumb">Configuring and Using Access Logs</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="AccessLogs">Access Logs</h1>
+                     <h1 class="topictitle" id="AccessLogs">Configuring and Using Access Logs</h1>
                      <p>You can configure CloudFront to create log files that contain detailed information
                         about every user request that CloudFront receives. These access logs 
                         		are available for both web and RTMP distributions. If you enable logging, you can
@@ -46,7 +52,7 @@
                      </p>
                      <p>You can enable logging as an option that you specify when you&apos;re creating a distribution.
                         For more information, see the 
-                        		<a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesLoggingOnOff" target="_blank">Logging</a> section of the 
+                        		<a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesLoggingOnOff">Logging</a> section of the 
                         		<b>Values That You Specify When You Create or Update a Web Distribution </b> topic.
                      </p>
                      <div class="highlights" id="inline-topiclist">
@@ -55,8 +61,11 @@
                            <li><a href="#AccessLogsOverview">How Logging Works</a></li>
                            <li><a href="#access-logs-choosing-s3-bucket">Choosing an Amazon S3 Bucket for Your Access Logs</a></li>
                            <li><a href="#AccessLogsBucketAndFileOwnership">Permissions Required to Configure Logging and to Access Your Log Files</a></li>
+                           <li><a href="#AccessLogsKMSPermissions">Required CMK Key Policy for Use with SSE-KMS Buckets</a></li>
                            <li><a href="#AccessLogsFileNaming">File Name Format</a></li>
                            <li><a href="#access-logs-timing">Timing of Log File Delivery</a></li>
+                           <li><a href="#access-logs-request-URL-size">How Requests Are Logged When the Request URL or
+                                 		Headers Exceed Size Limits</a></li>
                            <li><a href="#access-logs-analyzing">Analyzing Access Logs</a></li>
                            <li><a href="#ChangeSettings">Editing Your Logging Settings</a></li>
                            <li><a href="#DeletingLogFiles">Deleting Log Files from an Amazon S3 Bucket</a></li>
@@ -205,7 +214,7 @@
                            <dd>
                               <p>When you create or update a distribution and enable logging, CloudFront uses these
                                  permissions to update the ACL for the bucket to give the 
-                                 					awsdatafeeds account <code class="code">FULL_CONTROL</code> permission. The awsdatafeeds account writes log files to the bucket. If your account
+                                 					awslogsdelivery account <code class="code">FULL_CONTROL</code> permission. The awslogsdelivery account writes log files to the bucket. If your account
                                  doesn&apos;t 
                                  					have the required permissions, creating or updating the distribution will fail.
                               </p>
@@ -225,8 +234,8 @@
                            <dt><b><span class="term">Restoring the ACL for the bucket</span></b></dt>
                            				
                            <dd>
-                              <p>If you remove permissions for the awsdatafeeds account, CloudFront won&apos;t be able to
-                                 save logs to the
+                              <p>If you remove permissions for the awslogsdelivery account, CloudFront won&apos;t be able
+                                 to save logs to the
                                  						S3 bucket. To enable CloudFront to start again to save logs for your distribution,
                                  						restore the ACL permission by doing one of the following:
                               </p>
@@ -239,21 +248,23 @@
                                     <li>
                                        <p>Disable logging for your distribution in CloudFront, and then enable it again. For
                                           more information,
-                                          								see <a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesLoggingOnOff" target="_blank">Logging</a> in the <b>Values That You
+                                          								see <a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesLoggingOnOff">Logging</a> in the <b>Values That You
                                              									Specify When You Create or Update a Web Distribution </b>
                                           								topic.
                                        </p>
                                     </li>
                                     <li>
-                                       <p>Add the ACL permission for awsdatafeeds manually by navigating to the S3 bucket in
-                                          the Amazon S3 console and adding
-                                          						permission. To add the ACL for awsdatafeeds, you must provide the canonical
+                                       <p>Add the ACL permission for awslogsdelivery manually by navigating to the S3 bucket
+                                          in the Amazon S3 console and adding
+                                          						permission. To add the ACL for awslogsdelivery, you must provide the canonical
                                           name for the account, which is the following: 
                                        </p>
                                        						
-                                       <p><code class="code">c4c1ede66af53448b93c283ce9448c4ba468c9432aa01d700d3878632f77d2d0</code></p>
+                                       <p><span><code class="code">c4c1ede66af53448b93c283ce9448c4ba468c9432aa01d700d3878632f77d2d0</code></span></p>
                                        						
-                                       <p>For more information about adding ACLs to S3 buckets, see <a href="./AmazonS3/latest/user-guide/set-bucket-permissions.html" target="_blank">Setting ACL Bucket 
+                                       <p></p>
+                                       						
+                                       <p>For more information about adding ACLs to S3 buckets, see <a href="./AmazonS3/latest/user-guide/set-bucket-permissions.html">Setting ACL Bucket 
                                              							Permissions</a> in the <b>Amazon Simple Storage Service Console User Guide</b>.
                                        </p>
                                     </li>
@@ -268,7 +279,7 @@
                               <p>In addition to the ACL on the bucket, there&apos;s an ACL on each log file. The bucket
                                  owner has <code class="code">FULL_CONTROL</code> permission 
                                  					on each log file, the distribution owner (if different from the bucket owner)
-                                 has no permission, and the awsdatafeeds account has 
+                                 has no permission, and the awslogsdelivery account has 
                                  					read and write permissions. 
                               </p>
                            </dd>
@@ -286,7 +297,27 @@
                         </dl>
                      </div>
                      	
-                     <h2 id="AccessLogsFileNaming">File Name Format</h2>
+                     <h2 id="AccessLogsKMSPermissions">Required CMK Key Policy for Use with SSE-KMS Buckets</h2>
+                     		
+                     		
+                     <p>If you enabled server-side encryption for your Amazon S3 bucket using AWS KMS-managed
+                        keys (SSE-KMS) with a customer-managed Customer Master Key (CMK), 
+                        			you must add the following to the key policy for your CMK to enable writing log
+                        files to the bucket. You cannot use the default KMS because
+                        			CloudFront won&apos;t be able to upload the log files to the bucket.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
+    &quot;Sid&quot;: &quot;Allow CloudFront Flow Logs to use the key&quot;,
+    &quot;Effect&quot;: &quot;Allow&quot;,
+    &quot;Principal&quot;: {
+        &quot;Service&quot;: [
+            &quot;delivery.logs.amazonaws.com&quot;
+        ]
+    },
+    &quot;Action&quot;: &quot;kms:GenerateDataKey*&quot;,
+    &quot;Resource&quot;: &quot;*&quot;
+}</code></pre>
+                     	<h2 id="AccessLogsFileNaming">File Name Format</h2>
                      		
                      		
                      <p>The name of each log file that CloudFront saves in your Amazon S3 bucket uses the
@@ -295,7 +326,8 @@
                      </p>
                      		
                      <p>
-                        			<code class="code"><em class="replaceable"><code>bucket-name</code></em>.s3.amazonaws.com/<em class="replaceable"><code>optional-prefix</code></em>/<em class="replaceable"><code>distribution-ID</code></em>.<em class="replaceable"><code>YYYY</code></em>-<em class="replaceable"><code>MM</code></em>-<em class="replaceable"><code>DD</code></em>-<em class="replaceable"><code>HH</code></em>.<em class="replaceable"><code>unique-ID</code></em>.gz
+                        			<code class="code"><em class="replaceable"><code>bucket-name</code></em>.s3.amazonaws.com/<em class="replaceable"><code>optional-prefix</code></em>/<em class="replaceable"><code>distribution-ID</code></em>.
+                           				<em class="replaceable"><code>YYYY</code></em>-<em class="replaceable"><code>MM</code></em>-<em class="replaceable"><code>DD</code></em>-<em class="replaceable"><code>HH</code></em>.<em class="replaceable"><code>unique-ID</code></em>.gz
                            			</code>
                         		
                      </p>
@@ -356,6 +388,42 @@
                         </p>
                      </div>
                      	
+                     <h2 id="access-logs-request-URL-size">How Requests Are Logged When the Request URL or
+                        		Headers Exceed Size Limits
+                     </h2>
+                     		
+                     		
+                     <p>If a request URL that is too long or that includes headers, including cookies, that
+                        exceed size limits is sent to a CloudFront endpoint, 
+                        			the request might not be logged in the access logs. Depending on what causes the
+                        URL to be too long, CloudFront does one of the following:
+                     </p>
+                     		
+                     		
+                     <div class="itemizedlist">
+                        			
+                        			
+                        		
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p>If the total size of all request headers, including cookies, exceeds 20KB or if the
+                                 headers in a request cause the request URL to exceed the 
+                                 				8192 byte URL size limit,  CloudFront can&apos;t parse the URL completely and can&apos;t
+                                 log the request. Because the
+                                 				request isn&apos;t logged, you won&apos;t see in the log files the HTTP error status code
+                                 returned.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p>If the body size exceeds the size limit, the request is logged, including the HTTP
+                                 error
+                                 				status code.
+                              </p>
+                           </li>
+                        </ul>
+                     </div>
+                     		
+                     	
                      <h2 id="access-logs-analyzing">Analyzing Access Logs</h2>
                      		
                      		
@@ -366,7 +434,7 @@
                      		
                      <p>One way to analyze your access logs is to use Amazon Athena. Athena is an interactive
                         query service that can help you analyze data for AWS 
-                        			services, including CloudFront. To learn more, see <a href="./athena/latest/ug/cloudfront-logs.html" target="_blank">
+                        			services, including CloudFront. To learn more, see <a href="./athena/latest/ug/cloudfront-logs.html">
                            			Querying Amazon CloudFront Logs</a> in the Amazon Athena User Guide.
                      </p>
                      		
@@ -417,19 +485,19 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               				
-                              <p>Updating a web or an RTMP distribution using the CloudFront console: <a href="HowToUpdateDistribution.html">Viewing and Updating CloudFront Distributions</a>.
+                              <p>Updating a web or an RTMP distribution using the CloudFront console: <a href="HowToUpdateDistribution.html">Updating a Distribution</a>.
                               </p>
                               			
                            </li>
                            <li class="listitem">
                               				
-                              <p>Updating a web distribution using the CloudFront API: <a href="./cloudfront/latest/APIReference/PutConfig.html" target="_blank">PUT Distribution Config</a> in the <em>Amazon CloudFront API Reference</em>.
+                              <p>Updating a web distribution using the CloudFront API: <a href="./cloudfront/latest/APIReference/API_UpdateDistribution.html">UpdateDistribution</a> in the <em>Amazon CloudFront API Reference</em>.
                               </p>
                               			
                            </li>
                            <li class="listitem">
                               				
-                              <p>Updating an RTMP distribution using the CloudFront API: <a href="./cloudfront/latest/APIReference/PutStreamingDistConfig.html" target="_blank">PUT Streaming Distribution Config</a> in the <em>Amazon CloudFront API Reference</em>.
+                              <p>Updating an RTMP distribution using the CloudFront API: <a href="./cloudfront/latest/APIReference/API_UpdateStreamingDistribution.html">UpdateStreamingDistribution</a> in the <em>Amazon CloudFront API Reference</em>.
                               </p>
                               			
                            </li>
@@ -460,20 +528,20 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               				
-                              <p>Using the Amazon S3 console: <a href="./AmazonS3/latest/UG/DeletinganObject.html" target="_blank">Deleting an Object</a> 
+                              <p>Using the Amazon S3 console: <a href="./AmazonS3/latest/UG/DeletinganObject.html">Deleting an Object</a> 
                                  					in the <em>Amazon Simple Storage Service Console User Guide</em>.
                               </p>
                               			
                            </li>
                            <li class="listitem">
                               				
-                              <p>Using the REST API: <a href="./AmazonS3/latest/API/RESTObjectDELETE.html" target="_blank">DELETE Object</a> in the <em>Amazon Simple Storage Service API Reference</em>.
+                              <p>Using the REST API: <a href="./AmazonS3/latest/API/RESTObjectDELETE.html">DELETE Object</a> in the <em>Amazon Simple Storage Service API Reference</em>.
                               </p>
                               			
                            </li>
                            <li class="listitem">
                               				
-                              <p>Using the SOAP API: <a href="./AmazonS3/latest/API/SOAPDeleteObject.html" target="_blank">DeleteObject</a> in the <em>Amazon Simple Storage Service API Reference</em>.
+                              <p>Using the SOAP API: <a href="./AmazonS3/latest/API/SOAPDeleteObject.html">DeleteObject</a> in the <em>Amazon Simple Storage Service API Reference</em>.
                               </p>
                               			
                            </li>
@@ -549,7 +617,7 @@
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w313aac33c25b8">
+                           <table id="w521aac33c19c29b8">
                               					
                               <tbody><tr>
                                  						
@@ -769,7 +837,7 @@
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w313aac33c25c10b4">
+                           <table id="w521aac33c19c29c10b4">
                               						
                               <tbody><tr>
                                  							
@@ -790,7 +858,8 @@
                                  							
                                  <td>The date on which the event occurred in the format <code class="code">yyyy-mm-dd</code>, for 
                                     								example, <code class="code">2015-06-30</code>. The date and time are in Coordinated Universal 
-                                    								Time (UTC).
+                                    								Time (UTC). For WebSocket connections, this is the date when the connection
+                                    is closed.
                                  </td>
                                  						
                               </tr>
@@ -803,7 +872,7 @@
                                  							
                                  <td>The time when the CloudFront server finished responding to the request (in UTC), for
                                     
-                                    								example, <code class="code">01:42:39</code>.
+                                    								example, <code class="code">01:42:39</code>. For WebSocket connections, this is the time when the connection is closed.
                                  </td>
                                  						
                               </tr>
@@ -833,7 +902,9 @@
                                  							
                                  <td>The total number of bytes that CloudFront served to the viewer in response to the
                                     request, including headers, for example, 
-                                    								<code class="code">1045619</code>.
+                                    								<code class="code">1045619</code>. For WebSocket connections, this is the total number of bytes sent from the server
+                                    to the client 
+                                    								through the connection.
                                  </td>
                                  						
                               </tr>
@@ -970,7 +1041,7 @@
                                        								<code class="code">cs-uri-query</code> is a hyphen (-).
                                     </p> 
                                     								
-                                    <p>For more information, see <a href="QueryStringParameters.html">Configuring CloudFront to Cache Based on Query String Parameters</a>.
+                                    <p>For more information, see <a href="QueryStringParameters.html">Caching Content Based on Query String Parameters</a>.
                                     </p>
                                     							
                                  </td>
@@ -992,7 +1063,7 @@
                                        the value of <code class="code">cs(Cookie)</code> is a hyphen (-). 
                                     </p>
                                     								
-                                    <p>For more information about cookies, see <a href="Cookies.html">Configuring CloudFront to Cache Objects Based on Cookies</a>.
+                                    <p>For more information about cookies, see <a href="Cookies.html">Caching Content Based on Cookies</a>.
                                     </p>
                                     							
                                  </td>
@@ -1009,13 +1080,20 @@
                                     <p>How CloudFront classifies the response after the last byte left the edge location.
                                        In some cases, the result type can change 
                                        								between the time that CloudFront is ready to send the response and the time
-                                       that CloudFront has finished sending the response. For example, 
-                                       								in HTTP streaming, suppose CloudFront finds a segment in the edge cache. The
-                                       value of <code class="code">x-edge-response-result-type</code>, the result type 
-                                       									immediately before CloudFront begins to respond to the request, is <code class="code">Hit</code>. However, if the user closes the viewer before 
-                                       								CloudFront has delivered the entire segment, the final result type&#x2014;the value
-                                       of <code class="code">x-edge-result-type</code>&#x2014;changes to 
-                                       								<code class="code">Error</code>. 
+                                       that CloudFront has finished sending the response. 
+                                    </p>
+                                    								
+                                    <p>For example, in HTTP streaming, suppose CloudFront finds a segment in the edge cache.
+                                       The value of <code class="code">x-edge-response-result-type</code>, 
+                                       									the result type immediately before CloudFront begins to respond to the request,
+                                       is <code class="code">Hit</code>. However, if the user closes 
+                                       									the viewer before CloudFront has delivered the entire segment, the final
+                                       result type&#x2014;the value of 
+                                       									<code class="code">x-edge-result-type</code>&#x2014;changes to <code class="code">Error</code>. 
+                                    </p>
+                                    								
+                                    <p>As another example, WebSocket connections will appear as a <code class="code">Miss</code> since the content is not cacheable and 
+                                       									is proxied directly back to the origin server. 
                                     </p>
                                     								
                                     <p>Possible values include:</p>
@@ -1075,8 +1153,10 @@
                                           <li class="listitem">
                                              										
                                              <p><code class="code">Error</code> &#x2013; Typically, this means the request resulted in a client error (<code class="code">sc-status</code> is 
-                                                												<code class="code">4</code><em class="replaceable"><code>xx</code></em>) or a server error (<code class="code">sc-status</code> is 
-                                                											<code class="code">5</code><em class="replaceable"><code>xx</code></em>).
+                                                											<code class="code">4</code><em class="replaceable"><code>xx</code></em>) or a server error (<code class="code">sc-status</code> is 
+                                                											<code class="code">5</code><em class="replaceable"><code>xx</code></em>). If <code class="code">sc-status</code> is <code class="code">200</code>, the HTTP request was 
+                                                											successful but the client disconnected before they downloaded all of the
+                                                bytes.
                                              </p>
                                              									
                                           </li>
@@ -1089,8 +1169,7 @@
                                                 
                                                 											the request might have come from a restricted location. For more information
                                                 about geo restriction, 
-                                                											see <a href="georestrictions.html">Restricting the Geographic Distribution of Your 
-                                                   			Content</a>.
+                                                											see <a href="georestrictions.html">Restricting the Geographic Distribution of Your Content</a>.
                                              </p>
                                              										
                                              <p>If the value of <code class="code">x-edge-result-type</code> is <code class="code">Error</code> and the value of <code class="code">x-edge-response-result-type</code> 
@@ -1111,7 +1190,9 @@
                                  							
                                  <td><code class="code">x-edge-request-id</code></td>
                                  							
-                                 <td>An encrypted string that uniquely identifies a request.</td>
+                                 <td>An encrypted string that uniquely identifies a request. In the response header, this
+                                    is <code class="code">x-amz-cf-id</code>.
+                                 </td>
                                  						
                               </tr>
                               						
@@ -1143,7 +1224,7 @@
                                                 the 
                                                 											<code class="code">x-host-header</code> field contains the alternate domain name, such as <code class="code">example.com</code>. To use alternate 
                                                 											domain names, you must add them to your distribution. For more information,
-                                                see <a href="CNAMEs.html">Adding and Moving Alternate Domain Names (CNAMEs)</a>.
+                                                see <a href="CNAMEs.html">Using Custom URLs for Files by Adding Alternate Domain Names (CNAMEs)</a>.
                                              </p>
                                              										
                                              <p>If you&apos;re using alternate domain names, see <code class="code">cs(Host)</code> in field 7 for the domain name that is associated 
@@ -1164,7 +1245,8 @@
                                  							
                                  <td><code class="code">cs-protocol</code></td>
                                  							
-                                 <td>The protocol that the viewer specified in the request, either <code class="code">http</code> or <code class="code">https</code>.
+                                 <td>The protocol that the viewer specified in the request: <code class="code">http</code>, <code class="code">https</code>, <code class="code">ws</code>, or
+                                    								<code class="code">wss</code>.
                                  </td>
                                  						
                               </tr>
@@ -1176,7 +1258,9 @@
                                  <td><code class="code">cs-bytes</code></td>
                                  							
                                  <td>The number of bytes of data that the viewer included in the request (client to server
-                                    bytes), including headers.
+                                    bytes), including headers. For
+                                    							WebSocket connections, this is the total number of bytes sent from the client
+                                    to the server on the connection.
                                  </td>
                                  						
                               </tr>
@@ -1419,8 +1503,7 @@
                                              <p>If <code class="code">sc-status</code> is <code class="code">403</code> and you configured CloudFront to restrict the geographic distribution 
                                                 											of your content, the request might have come from a restricted location.
                                                 For more information about geo restriction, 
-                                                											see <a href="georestrictions.html">Restricting the Geographic Distribution of Your 
-                                                   			Content</a>.
+                                                											see <a href="georestrictions.html">Restricting the Geographic Distribution of Your Content</a>.
                                              </p> 
                                              										
                                              <p>If the value of <code class="code">x-edge-result-type</code> is <code class="code">Error</code> and the value of 
@@ -1455,7 +1538,7 @@
                                  <td><code class="code">fle-status</code></td>
                                  							
                                  <td>
-                                    <p>When <a href="./AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html" target="_blank">field-level encryption</a> is configured for a distribution, 
+                                    <p>When <a href="./AmazonCloudFront/latest/DeveloperGuide/field-level-encryption.html">field-level encryption</a> is configured for a distribution, 
                                        								a code that indicates whether the request body was successfully processed.
                                        If field-level encryption is not configured for the distribution, 
                                        								the value of <code class="code">fle-status</code> is a hyphen (<code class="code">-</code>).
@@ -1638,7 +1721,7 @@
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w313aac33c25c12b8">
+                           <table id="w521aac33c19c29c12b8">
                               						
                               <tbody><tr>
                                  							
@@ -1831,7 +1914,7 @@
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w313aac33c25c12c12">
+                           <table id="w521aac33c19c29c12c12">
                               						
                               <tbody><tr>
                                  							
@@ -1908,15 +1991,19 @@
                         				<a href="reports.html">CloudFront Reports</a>.
                      </p>
                      	
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -1925,8 +2012,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="cf-api-permissions-ref.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="monitoring-using-cloudwatch.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="tagging.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="logging_using_cloudtrail.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -1938,8 +2027,12 @@
                         <li class="pagetoc" name="How Logging Works"><a class="pagetoc" href="#AccessLogsOverview">How Logging Works</a></li>
                         <li class="pagetoc" name="Choosing an Amazon S3 Bucket for Your Access Logs"><a class="pagetoc" href="#access-logs-choosing-s3-bucket">Choosing an Amazon S3 Bucket for Your Access Logs</a></li>
                         <li class="pagetoc" name="Permissions Required to Configure Logging and to Access Your Log Files"><a class="pagetoc" href="#AccessLogsBucketAndFileOwnership">Permissions Required to Configure Logging and to Access Your Log Files</a></li>
+                        <li class="pagetoc" name="Required CMK Key Policy for Use with SSE-KMS Buckets"><a class="pagetoc" href="#AccessLogsKMSPermissions">Required CMK Key Policy for Use with SSE-KMS Buckets</a></li>
                         <li class="pagetoc" name="File Name Format"><a class="pagetoc" href="#AccessLogsFileNaming">File Name Format</a></li>
                         <li class="pagetoc" name="Timing of Log File Delivery"><a class="pagetoc" href="#access-logs-timing">Timing of Log File Delivery</a></li>
+                        <li class="pagetoc" name="How Requests Are Logged When the Request URL or
+		Headers Exceed Size Limits"><a class="pagetoc" href="#access-logs-request-URL-size">How Requests Are Logged When the Request URL or
+                              		Headers Exceed Size Limits</a></li>
                         <li class="pagetoc" name="Analyzing Access Logs"><a class="pagetoc" href="#access-logs-analyzing">Analyzing Access Logs</a></li>
                         <li class="pagetoc" name="Editing Your Logging Settings"><a class="pagetoc" href="#ChangeSettings">Editing Your Logging Settings</a></li>
                         <li class="pagetoc" name="Deleting Log Files from an Amazon S3 Bucket"><a class="pagetoc" href="#DeletingLogFiles">Deleting Log Files from an Amazon S3 Bucket</a></li>
@@ -1950,6 +2043,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

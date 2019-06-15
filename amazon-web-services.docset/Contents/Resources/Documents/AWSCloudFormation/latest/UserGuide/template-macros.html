@@ -1,0 +1,944 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Using AWS CloudFormation Macros to Perform Custom Processing on
+         Templates - AWS CloudFormation
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="template-guide.html" title="Working with AWS CloudFormation Templates">
+      <link rel="prev" href="crpg-ref-requesttypes-update.html" title="Update">
+      <link rel="next" href="macros-example.html" title="Macro Example: Creating and Using a Macro">
+      <meta name="description" content="Use macros to perform custom processing on templates, from simple actions like find-and-replace operations to extensive transformations of entire templates.">
+      <meta name="keywords" content="CloudFormation,AWSCloudFormation,resource provisioning,resource configuration,infrastructure management,CloudFormer,CloudFormation Designer,CloudFormation stack,CloudFormation stackset,CloudFormation template,change set">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="AWS CloudFormation">
+      <meta name="guide" content="User Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/template-macros.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudformation/index.html">AWS CloudFormation</a> &#xBB; <a href="index.html">User Guide</a> &#xBB; <a href="template-guide.html">Working with AWS CloudFormation Templates</a> &#xBB; <span class="breadcrumb">Using AWS CloudFormation Macros to Perform Custom Processing on
+                                    Templates</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="template-macros">Using AWS CloudFormation Macros to Perform Custom Processing on
+                        Templates
+                     </h1>
+                     <p>Macros enable you to perform custom processing on templates, from simple actions like
+                        find-and-replace operations to extensive transformations of entire templates. 
+                     </p>
+                     <p>To get an idea of the breadth of possibilities, consider the <code class="code">AWS::Include</code> and
+                        <code class="code">AWS::Serverless</code> transforms, which are macros hosted by AWS CloudFormation:
+                     </p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><code class="code"><a href="create-reusable-transform-function-snippets-and-add-to-your-template-with-aws-include-transform.html">AWS::Include Transform</a></code> enables you to insert boilerplate template snippets into your
+                                 templates.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><code class="code"><a href="transform-aws-serverless.html">AWS::Serverless Transform</a></code> takes an entire template
+                                 written in the AWS Serverless Application Model (AWS SAM) syntax and transforms and
+                                 expands it into a
+                                 compliant AWS CloudFormation template. (For more information about serverless applications
+                                 and
+                                 AWS SAM, see <a href="./lambda/latest/dg/deploying-lambda-apps.html">Deploying Lambda-based Applications</a> in the
+                                 <em>AWS Lambda Developer Guide</em>.)
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <h2 id="template-macros-overview">How AWS CloudFormation Macros Work</h2>
+                     <p>There are two major steps to processing templates using macros:
+                        <em>creating</em> the macro itself, and then <em>using</em> the
+                        macro to perform processing on your templates.
+                     </p>
+                     <p>To create a macro definition, you need to create the following:</p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>An AWS Lambda function to perform the template processing. This Lambda function
+                                 accepts either a snippet or an entire template, and any additional parameters that
+                                 you define. It returns the processed template snippet or the entire template as a
+                                 response.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>A resource of type <code class="code"><a href="./AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-macro.html">AWS::CloudFormation::Macro</a></code>, which enables
+                                 users to call the Lambda function from within AWS CloudFormation templates. This resource
+                                 specifies the ARN of the Lambda function to invoke for this macro, and additional
+                                 optional properties to assist with debugging. To create this resource within an
+                                 account, author a stack template that includes a <code class="code"><a href="./AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-macro.html">AWS::CloudFormation::Macro</a></code> resource, and
+                                 then create a stack from the template.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <p>To use a macro, reference the macro in your template:</p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>To process a section, or <em>snippet</em>, of a template, reference
+                                 the macro in a <code class="code"><a href="intrinsic-function-reference-transform.html">Fn::Transform</a></code> function
+                                 located relative to the template content you want to transform. When using
+                                 <code class="code">Fn::Transform</code>, you can also pass any specified parameters it
+                                 requires.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>To process an entire template, reference the macro in the <a href="transform-section-structure.html">Transform</a> section of the template.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <p>Next, you typically create a change set and then execute it. (Processing macros can
+                        add multiple resources that you
+                        might not be aware of. To ensure that you&apos;re aware of all of the changes introduced
+                        by
+                        macros, we strongly advise that you use change sets.) AWS CloudFormation passes the
+                        specified template content,
+                        along with any additional specified parameters, to the Lambda function specified in
+                        the macro
+                        resource. The Lambda function returns the processed template content, be it a snippet
+                        or an
+                        entire template. 
+                     </p>
+                     <p>After all macros in the template have been called, AWS CloudFormation generates a
+                        change set that
+                        includes the processed template content. After you review the change set, execute
+                        it to apply
+                        the changes. 
+                     </p>
+                     <div class="mediaobject">
+                        
+                        
+                        <img src="../../..//img/template-macro-use.png" alt="
+            Use the Fn::Transform intrinsic function or the
+                    Transform section of the template, to pass the template contents
+                and associated parameters to the macro&apos;s underlying Lamdba function, which returns
+                the processed template contents.
+        " style="max-width:100%">
+                        
+                        
+                        
+                     </div>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>If you are comfortable creating or updating a stack directly from a processed
+                           template, without first reviewing the proposed changes in a change set, you can do
+                           so by
+                           specifying the <code class="code">CAPABILITY_AUTO_EXPAND</code> capability during a
+                           <code class="code">CreateStack</code> or <code class="code">UpdateStack</code> request. You should only create
+                           stacks directly from a stack template that contains macros if you know what processing
+                           the macro performs. 
+                        </p>
+                        <p>In addition, change sets do not currently support nested stacks. If you want to create
+                           a stack from a stack template that contains macros and nested stacks, you must create
+                           the stack directly from the template using this capability. 
+                        </p>
+                        <p>For more information, see <a href="./AWSCloudFormation/latest/APIReference/API_CreateStack.html">CreateStack</a> or <a href="./AWSCloudFormation/latest/APIReference/API_UpdateStack.html">UpdateStack</a> in the <em>AWS CloudFormation API Reference</em>.
+                        </p>
+                     </div>
+                     <h2 id="template-macros-author">Creating an AWS CloudFormation Macro Definition</h2>
+                     
+                     <p>When you create a macro definition, the macro definition makes the underlying Lambda
+                        function available in the specified account so that AWS CloudFormation can invokes
+                        it to process the
+                        templates.
+                     </p>
+                     
+                     
+                     <h3 id="template-macros-lambda-interface">AWS CloudFormation Macro Function Interface</h3>
+                     
+                     <p>For macros, AWS CloudFormation invokes the underlying Lambda functions with the following
+                        event
+                        mapping. AWS CloudFormation sends its request in JSON format, and it expects the function
+                        response to be formatted as JSON too.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;region&quot; : &quot;<em class="replaceable"><code>us-east-1</code></em>&quot;, 
+    &quot;accountId&quot; : &quot;<em class="replaceable"><code>$ACCOUNT_ID</code></em>&quot;, 
+    &quot;fragment&quot; : { <em class="replaceable"><code>...</code></em> }, 
+    &quot;transformId&quot; : &quot;<em class="replaceable"><code>$TRANSFORM_ID</code></em>&quot;, 
+    &quot;params&quot; : { <em class="replaceable"><code>...</code></em> }, 
+    &quot;requestId&quot; : &quot;<em class="replaceable"><code>$REQUEST_ID</code></em>&quot;,
+    &quot;templateParameterValues&quot; : { <em class="replaceable"><code>...</code></em> } 
+}</code></pre>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p><b>region</b></p>
+                              
+                              <p>The region in which the macro resides.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              <p><b>accountId</b></p>
+                              
+                              <p>The account ID of the account from which the macro is invoking the Lambda function.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              <p><b>fragment</b></p>
+                              
+                              <p>The template content available for custom processing, in JSON
+                                 format.
+                              </p>
+                              
+                              <div class="itemizedlist">
+                                 
+                                 
+                                 
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       <p>For macros included in the <code class="code">Transform</code> template section, this is the entire
+                                          template except for the <code class="code">Transform</code> section.
+                                       </p>
+                                    </li>
+                                    <li class="listitem">
+                                       <p>For macros included in an <code class="code">Fn::Transform</code> intrinsic function call, this includes
+                                          all sibling nodes (and their children) based on the location of the
+                                          intrinsic function within the template except for the
+                                          <code class="code">Fn::Transform</code> function. For more information, see
+                                          <a href="template-macros.html#template-macros-scope">AWS CloudFormation  Macro Scope</a>. 
+                                       </p>
+                                    </li>
+                                 </ul>
+                              </div>
+                              
+                           </li>
+                           <li class="listitem">
+                              <p><b>transformId</b></p>
+                              
+                              <p>The name of the macro invoking this function.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              <p><b>params</b></p>
+                              
+                              <p>For <code class="code">Fn::Transform</code> function calls, any specified parameters for the
+                                 function. AWS CloudFormation does not evaluate these parameters before passing them
+                                 to the function.
+                              </p>
+                              
+                              <p>For macros included in the <code class="code">Transform</code> template section, this
+                                 section is empty.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              <p><b>requestId</b></p>
+                              
+                              <p>The ID of the request invoking this function.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              <p><b>templateParameterValues</b></p>
+                              
+                              <p>Any parameters specified in the <a href="parameters-section-structure.html">Parameters</a> section of the template.
+                                 AWS CloudFormation evaluates these parameters before passing them to the function.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>AWS CloudFormation expects the underlying function to return a response in the following
+                        JSON format:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;requestId&quot; : &quot;<em class="replaceable"><code>$REQUEST_ID</code></em>&quot;, 
+    &quot;status&quot; : &quot;<em class="replaceable"><code>$STATUS</code></em>&quot;, 
+    &quot;fragment&quot; : { <em class="replaceable"><code>...</code></em> } 
+}</code></pre>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p><b>requestId</b></p>
+                              
+                              <p>The ID of the request invoking this function. This must match the request
+                                 ID provided by AWS CloudFormation when invoking the function.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              <p><b>status</b></p>
+                              
+                              <p>The status of the request (case-insensitive). Should be set to &quot;success.&quot;
+                                 AWS CloudFormation treats any other response as a failure.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              <p><b>fragment</b></p>
+                              
+                              <p>The processed template content for AWS CloudFormation to include in the processed
+                                 template, including siblings. AWS CloudFormation replaces the template content that
+                                 is
+                                 passed to the Lambda function with the template fragment it receives in the
+                                 Lambda response. 
+                              </p>
+                              
+                              <p>The processed template content must be valid JSON, and its inclusion in the processed
+                                 template must result in a valid template.
+                              </p>
+                              
+                              <p>If your function doesn&apos;t actually change the template content that AWS CloudFormation
+                                 passes to it, but you still need to include that content in the processed
+                                 template, your function needs to return that template content to AWS CloudFormation
+                                 in
+                                 its response.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>For information about additional considerations when creating macros, see <a href="template-macros.html#template-macros-considerations">Considerations When Creating AWS CloudFormation Macro
+                           Definitions</a>.
+                     </p>
+                     
+                     
+                     
+                     <h3 id="template-macros-permissions">AWS CloudFormation Macro Account Scope and Permissions</h3>
+                     
+                     <p>You can use macros only in the account in which they were created as a resource.
+                        The name of the macro must be unique within a given account. However, you can make
+                        the same functionality available in multiple accounts by enabling cross-account
+                        access on the underlying Lambda function, and then creating macro definitions
+                        referencing that function in multiple accounts. In the example below, three accounts
+                        contain macro definitions that each point to the same Lambda function. 
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/template-macro-accounts.png" alt="
+                    By allowing cross-account access on the Lamdba function, AWS enables you
+                        to create macros in multiple accounts that reference that function.
+                " style="max-width:100%">
+                        
+                        
+                        
+                     </div>
+                     
+                     <p>For more
+                        information, see <a href="./lambda/latest/dg/access-control-overview.html">Overview of
+                           Managing Access Permissions to Your AWS Lambda Resources</a> in the
+                        <em>AWS Lambda Developer Guide</em>.
+                     </p>
+                     
+                     <p>In order to create a macro definition, the user must have permissions to create a
+                        stack within the specified account. 
+                     </p>
+                     
+                     <p>In order for AWS CloudFormation to successfully run a macro included in a template,
+                        the user
+                        must have <code class="code">Invoke</code> permissions for the underlying Lambda function. To prevent potential
+                        escalation of privileges, AWS CloudFormation impersonates the user while running the
+                        macro. For
+                        more information, see <a href="./lambda/latest/dg/intro-permission-model.html">Lambda
+                           Permissions Model</a> in the <em>AWS Lambda Developer Guide</em> and <a href="./IAM/latest/UserGuide/list_lambda.html">Actions and Condition Context Keys for
+                           AWS Lambda</a> in the <em>IAM User Guide</em>.
+                     </p>
+                     
+                     <p>The <a href="transform-aws-serverless.html">AWS::Serverless Transform</a> and <a href="create-reusable-transform-function-snippets-and-add-to-your-template-with-aws-include-transform.html">AWS::Include Transform</a> transforms are macros hosted by AWS CloudFormation. No special permissions are necessary
+                        to
+                        use them, and they are available from within any account in AWS CloudFormation.
+                     </p>
+                      
+                     
+                     <h3 id="template-macros-debug">Debugging AWS CloudFormation Macros</h3>
+                     
+                     <p>To aid in debugging, you can also specify the <code class="code">LogGroupName</code> and <code class="code">LogRoleArn</code> properties when creating the <a href="./AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-macro.html">AWS::CloudFormation::Macro</a> resource type for your macro. These properties enable you to specify the CloudWatch
+                        log group to which AWS CloudFormation sends error logging information when invoking
+                        the macro&apos;s underlying AWS Lambda function, and the role AWS CloudFormation should
+                        assume when sending log entries to those logs.
+                     </p>
+                      
+                     
+                     <h3 id="template-macros-billing">Billing</h3>
+                     
+                     <p>When a macro is run, the owner of the Lambda function is billed for any charges related
+                        to the execution of that function.
+                     </p>
+                     
+                     <p>The <a href="transform-aws-serverless.html">AWS::Serverless Transform</a> and <a href="create-reusable-transform-function-snippets-and-add-to-your-template-with-aws-include-transform.html">AWS::Include Transform</a> transforms are macros hosted by AWS CloudFormation. There is no charge for using
+                        them.
+                     </p>
+                     
+                     
+                     <h3 id="template-macros-considerations">Considerations When Creating AWS CloudFormation Macro
+                        Definitions
+                     </h3>
+                     
+                     <p>When creating macro definitions, keep the following in mind:</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p>Macros are supported only in regions where AWS Lambda is available. For
+                                 a list of regions where Lambda is available, see <a href="./general/latest/gr/rande.html#lambda_region">http://docs.aws.amazon.com/general/latest/gr/rande.html#lambda_region</a>.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p>Any processed template snippets must be valid JSON.</p>
+                           </li>
+                           <li class="listitem">
+                              <p>Any processed template snippets must pass validation checks for a create stack or
+                                 update stack
+                                 operation.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p>AWS CloudFormation resolves macros first, and then processes the template. The resulting
+                                 template must be
+                                 valid JSON and must not exceed the template size limit.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p>When using the update rollback feature, AWS CloudFormation uses a copy of the original
+                                 template. It rolls
+                                 back to the original template even if the included snippet was
+                                 changed.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p>Including macros within macros does not work because we do not process macros iteratively.</p>
+                           </li>
+                           <li class="listitem">
+                              <p>The <code class="code">Fn::ImportValue</code> intrinsic function isn&apos;t currently supported in macros.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p>Intrinsic functions included in the template are evaluated after any macros. Therefore,
+                                 the
+                                 processed template content your macro returns can include calls to intrinsic
+                                 functions, and they are evaluated as usual.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p>AWS CloudFormation macros are not supported in stack sets.</p>
+                           </li>
+                           <li class="listitem">
+                              
+                              
+                              <p>Change sets do not currently support nested stacks. If you want to create or update
+                                 a stack using a stack template that contains macros <em>and</em> nested stacks, you must create or update the stack directly. To do this, use the
+                                 <a href="./AWSCloudFormation/latest/APIReference/API_CreateStack.html.html">CreateStack</a> or <a href="./AWSCloudFormation/latest/APIReference/API_UpdateStack.html.html">UpdateStack</a> action and specify the <code class="code">CAPABILITY_AUTO_EXPAND</code> capability.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <p class="title"><b>To create a AWS CloudFormation macro definition</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p><a href="./lambda/latest/dg/lambda-app.html"> Build an AWS Lambda function</a>
+                              that processes AWS CloudFormation templates.
+                           </p>
+                           
+                           <p>The Lambda function you build performs the processing of the template contents.
+                              Your function can process any part of a template, up to the entire template. For
+                              information about the event mapping to which your function must adhere, see
+                              <a href="template-macros.html#template-macros-lambda-interface">AWS CloudFormation Macro Function Interface</a>. For information about
+                              additional considerations when creating macros, see <a href="template-macros.html#template-macros-considerations">Considerations When Creating AWS CloudFormation Macro
+                                 Definitions</a>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p><a href="template-guide.html">Create a template</a> containing a <a href="./AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-macro.html">AWS::CloudFormation::Macro</a> resource type.
+                           </p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    <p>You must specify the <code class="code">Name</code> and <code class="code">FunctionName</code> properties. The <code class="code">FunctionName</code> property specifies the ARN of the Lambda function to invoke when AWS CloudFormation
+                                       runs the macro.
+                                    </p>
+                                 </li>
+                                 <li class="listitem">
+                                    <p>To aid in debugging, you can also specify the <code class="code">LogGroupName</code> and <code class="code">LogRoleArn</code> properties. 
+                                    </p>
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p><a href="cfn-console-create-stack.html">Create a stack</a> from the template
+                              containing the macro in the desired account.
+                           </p>
+                           
+                           <p>After AWS CloudFormation has successfully created the stack that contains the macro
+                              definition, the macro is available for use within that account.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     
+                     <h2 id="template-macros-use">Using AWS CloudFormation Macros in Your Templates</h2>
+                     
+                     <p>After AWS CloudFormation has successfully created the stack which contains the macro
+                        definition,
+                        the macro is available for use within that account. You use a macro by referencing
+                        it in
+                        the stack template, at the appropriate location relevant to the template contents
+                        you
+                        want to process.
+                     </p>
+                     
+                     <h3 id="template-macros-order">AWS CloudFormation  Macro Evaluation Order</h3>
+                     
+                     <p> You can reference multiple macros in a given template, including transforms hosted
+                        by AWS CloudFormation,
+                        such as <a href="create-reusable-transform-function-snippets-and-add-to-your-template-with-aws-include-transform.html">AWS::Include Transform</a> and <a href="transform-aws-serverless.html">AWS::Serverless Transform</a>. 
+                     </p>
+                     
+                     <p>Macros are evaluated in order, based on their location in the template, from the
+                        most deeply nested outward to the most general. Macros at the same location in the
+                        template are evaluated serially based on the order in which they are listed. 
+                     </p>
+                     
+                     <p>Transforms such as <code class="code">AWS::Include</code> and <code class="code">AWS::Transform</code> are
+                        treated the same as any other macros in terms of action order and scope.
+                     </p>
+                     
+                     <p>For example, in the template sample below, AWS CloudFormation evaluates the
+                        <code class="code">PolicyAdder</code> macro first, because it is the most deeply-nested macro
+                        in the template. AWS CloudFormation then evaluates <code class="code">MyMacro</code> before evaluating
+                        <code class="code">AWS::Serverless</code> because it is listed before
+                        <code class="code">AWS::Serverless</code> in the <code class="code">Transform</code> section.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">
+AWSTemplateFormatVersion: 2010-09-09 
+ Transform: [MyMacro, AWS::Serverless]
+ Resources:
+    WaitCondition:
+      Type: AWS::CloudFormation::WaitCondition
+    MyBucket:
+      Type: &apos;AWS::S3::Bucket&apos;  
+      Properties:
+        BucketName: MyBucket 
+        Tags: [{&quot;key&quot;:&quot;value&quot;}] 
+        &apos;Fn::Transform&apos;:
+          - Name: PolicyAdder
+        CorsConfiguration:[]   
+    MyEc2Instance:
+      Type: &apos;AWS::EC2::Instance&apos; 
+      Properties:
+        ImageID: &quot;ami-123&quot;       </code></pre>
+                      
+                     
+                     <h3 id="template-macros-scope">AWS CloudFormation  Macro Scope</h3>
+                     
+                     <p>Macros referenced in the <code class="code">Transform</code> section of a template can process
+                        the entire contents of that template.
+                     </p>
+                     
+                     <p>Macros referenced in a <code class="code">Fn::Transform</code> function can process the
+                        contents of any of the sibling elements (including children) of that
+                        <code class="code">Fn::Transform</code> function in the template.
+                     </p>
+                     
+                     <p>For example, in the template sample below, <code class="code">AWS::Include</code> can process
+                        all of the <code class="code">MyBucket</code> properties, based on the location of the
+                        <code class="code">Fn::Transform</code> function that contains it. <code class="code">MyMacro</code> can
+                        process the contents of the entire template because of its inclusion in the
+                        <code class="code">Transform</code> section.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">
+// Start of processable content for MyMacro
+AWSTemplateFormatVersion: 2010-09-09 
+ Transform: [MyMacro]
+ Resources:
+    WaitCondition:
+      Type: AWS::CloudFormation::WaitCondition
+    MyBucket:
+      Type: &apos;AWS::S3::Bucket&apos;  //Start of processable content for AWS::Include
+      Properties:
+        BucketName: MyBucket 
+        Tags: [{&quot;key&quot;:&quot;value&quot;}] 
+        &apos;Fn::Transform&apos;:
+          - Name: &apos;AWS::Include&apos;
+              Parameters:
+                Location: s3://MyAmazonS3BucketName/MyFileName.yaml
+        CorsConfiguration:[]   //End of processable content for AWS::Include
+    MyEc2Instance:
+      Type: &apos;AWS::EC2::Instance&apos; 
+      Properties:
+        ImageID: &quot;ami-123&quot;
+// End of processable content for MyMacro         </code></pre>
+                      
+                     
+                     <h3 id="template-macros-change-sets">Change Sets and AWS CloudFormation Macros</h3>
+                     
+                     <p>To create or update a stack using a template that references macros, you typically
+                        create a change set and then execute it. A change set describes the actions CloudFormation
+                        will take based on the processed template. Processing macros can add multiple resources
+                        that you might not be aware of. To ensure that you&apos;re aware of all of the changes
+                        introduced by macros, we strongly recommend you use change sets. After you review
+                        the change set, you can execute it to actually apply the changes.
+                     </p>
+                     
+                     <p>A macro can add IAM resources to your template. For these resources, AWS CloudFormation
+                        requires you to <a href="using-iam-template.html#using-iam-capabilities">acknowledge their
+                           capabilities</a>. Because AWS CloudFormation can&apos;t know which resources are added
+                        before processing your template, you might need to acknowledge IAM
+                        capabilities when you create the change set, depending on whether the referenced
+                        macros contain IAM resources. That way, when you run the change set, AWS CloudFormation
+                        has
+                        the necessary capabilities to create IAM resources.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>If you are comfortable creating or updating a stack directly from a processed template,
+                           without first reviewing the proposed changes in a change set, you can do so by specifying
+                           the <code class="code">CAPABILITY_AUTO_EXPAND</code> capability during a <code class="code">CreateStack</code> or <code class="code">UpdateStack</code> request.  You should only create stacks directly from a stack template that contains
+                           macros if you know what processing the macro performs. 
+                        </p>
+                        <p>In addition, change sets do not currently support nested stacks. If you want to create
+                           a stack from a stack template that contains macros and nested stacks, you must create
+                           the stack directly from the template using this capability. 
+                        </p>
+                        <p>For more information, see <a href="./AWSCloudFormation/latest/APIReference/API_CreateStack.html">CreateStack</a> or <a href="./AWSCloudFormation/latest/APIReference/API_UpdateStack.html">UpdateStack</a> in the <em>AWS CloudFormation API Reference</em>.
+                        </p>
+                     </div>
+                     
+                     <p>If you use the AWS CLI, you can use the <code class="code">package</code> and
+                        <code class="code">deploy</code> commands to reduce the number of steps for launching
+                        stacks from templates that reference macros. For more information, see <a href="./lambda/latest/dg/deploying-lambda-apps.html">Deploying Lambda-based
+                           Applications</a> in the <em>AWS Lambda Developer Guide</em>.
+                     </p>
+                     
+                     
+                     
+                     <h3 id="template-macros-template-stage">Template Stage and CloudFormation Macros</h3>
+                     
+                     <p>A template&apos;s <em>stage</em> indicates whether the template is the
+                        original user-submitted template or one in which AWS CloudFormation has processed
+                        the
+                        macros.
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p><code class="code">Original</code>: The template that the user originally submitted to create or update the
+                                 stack. 
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p><code class="code">Processed</code>: The template AWS CloudFormation used to create or update the stack after processing
+                                 any referenced macros. The processed template is formatted as JSON, even if
+                                 the original template was formatted as YAML.
+                              </p>
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>Use the processed template for troubleshooting stack issues. If a template
+                        doesn&apos;t reference macros, the original and processed templates are
+                        identical.
+                     </p>
+                     
+                     <p>You can use the AWS CloudFormation <a href="cfn-console-view-stack-data-resources.html">console</a> or <a href="using-cfn-get-template.html">AWS CLI</a> to see the
+                        stage of a stack template.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>The maximum size for a processed stack template is 51,200 bytes when passed
+                           directly into a <code class="code">CreateStack</code>, <code class="code">UpdateStack</code>, or
+                           <code class="code">ValidateTemplate</code> request, or 460,800 bytes when passed as an S3
+                           object using an Amazon S3 template URL. However, during processing
+                           CloudFormation updates the temporary state of the template as it serially
+                           processes the macros contained in the template. Because of this, the size of the
+                           template <em>during processing</em> may temporarily exceed the
+                           allowed size of a fully-processed template. CloudFormation allows some
+                           buffer for these in-process templates. However, you should design your templates
+                           and macros keeping in mind the maximum allowed size for a processed stack
+                           template.
+                        </p>
+                        <p>If CloudFormation returns a <code class="code">Transformation data limit exceeded</code>
+                           error while processing your template, your template has exceeded the maximum
+                           template size CloudFormation allows during processing. 
+                        </p>
+                        <p>To resolve this issue, consider doing the following:</p>
+                        <div class="itemizedlist">
+                           
+                           
+                           
+                           <ul class="itemizedlist" type="disc">
+                              <li class="listitem">
+                                 <p>Restructure your template into multiple templates to
+                                    avoid exceeding the maximum size for in-process templates. For example:
+                                 </p>
+                                 
+                                 <div class="itemizedlist">
+                                    
+                                    
+                                    
+                                    <ul class="itemizedlist" type="disc">
+                                       <li class="listitem">
+                                          <p>Use nested stack templates to encapsulate parts of the template. For more information,
+                                             see <a href="using-cfn-nested-stacks.html">Working with Nested Stacks</a>.
+                                          </p>
+                                       </li>
+                                       <li class="listitem">
+                                          <p>Create multiple stacks and use cross-stack references to exchange information between
+                                             them. For more information, see <a href="walkthrough-crossstackref.html">Walkthrough: Refer to Resource Outputs in Another
+                                                AWS CloudFormation Stack</a>.
+                                          </p>
+                                       </li>
+                                    </ul>
+                                 </div>
+                                 
+                              </li>
+                              <li class="listitem">
+                                 <p>Reduce the size of template fragment returned by a given macro. CloudFormation does
+                                    not tamper
+                                    with the contents of fragments returned by macros.
+                                 </p>
+                              </li>
+                           </ul>
+                        </div>
+                     </div>
+                     
+                     
+                     
+                     <p class="title"><b>To use a AWS CloudFormation Macro in your template</b></p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>In order for AWS CloudFormation to successfully run a macro referenced in a template,
+                           the user must have
+                           <code class="code">Invoke</code> permissions for the underlying Lambda function. For more
+                           information, see <a href="./lambda/latest/dg/access-control-overview.html">Overview
+                              of Managing Access Permissions to Your AWS Lambda Resources</a> in the
+                           <em>AWS Lambda Developer Guide</em>.
+                        </p>
+                     </div>
+                     <ol>
+                        <li>
+                           
+                           <p>Include a reference to the macro in the template.</p>
+                           
+                           <div class="itemizedlist">
+                              
+                               
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p>To process a template snippet, reference the macro in a <code class="code"><a href="intrinsic-function-reference-transform.html">Fn::Transform</a></code>
+                                       function located relative to the template content you want to
+                                       process.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>To process the entire template, reference the macro in the <a href="transform-section-structure.html">Transform</a> section of the
+                                       template.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p><a href="using-cfn-updating-stacks-changesets-create.html">Create a change set</a> using the template.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Review and <a href="using-cfn-updating-stacks-changesets-execute.html">run the
+                                 change set</a>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     
+                     <h2 id="template-macros-examples-list">Macro Examples</h2>
+                     
+                     <p>In addition to the <a href="macros-example.html">Macro Example: Creating and Using a Macro</a> walkthrough in this guide, you can find example macros, including source code and
+                        templates, in the <a href="https://github.com/awslabs/aws-cloudformation-templates/tree/master/aws/services/CloudFormation/MacrosExamples/" target="_blank">Macros Examples</a> section of the <a href="https://github.com/awslabs" target="_blank">Amazon Web Services - Labs</a> repo on GitHub. These examples are provided &apos;as-is&apos; for instructional purposes. 
+                     </p>
+                     
+                     <h2 id="template-macros-seealso">See Also</h2>
+                     
+                     <p><a href="./AWSCloudFormation/latest/UserGuide/aws-resource-cloudformation-macro.html">AWS::CloudFormation::Macro</a></p>
+                     
+                     
+                     <p><a href="transform-section-structure.html">Transform</a></p>
+                     
+                     <p><a href="intrinsic-function-reference-transform.html">Fn::Transform</a></p>
+                     
+                     
+                     <p><a href="transform-aws-serverless.html">AWS::Serverless Transform</a></p>
+                     
+                     <p><a href="create-reusable-transform-function-snippets-and-add-to-your-template-with-aws-include-transform.html">AWS::Include Transform</a></p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="crpg-ref-requesttypes-update.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="macros-example.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="How AWS CloudFormation Macros Work"><a class="pagetoc" href="#template-macros-overview">How AWS CloudFormation Macros Work</a></li>
+                        <li class="pagetoc" name="Creating an AWS CloudFormation Macro Definition"><a class="pagetoc" href="#template-macros-author">Creating an AWS CloudFormation Macro Definition</a></li>
+                        <li class="pagetoc" name="Using AWS CloudFormation Macros in Your Templates"><a class="pagetoc" href="#template-macros-use">Using AWS CloudFormation Macros in Your Templates</a></li>
+                        <li class="pagetoc" name="Macro Examples"><a class="pagetoc" href="#template-macros-examples-list">Macro Examples</a></li>
+                        <li class="pagetoc" name="See Also"><a class="pagetoc" href="#template-macros-seealso">See Also</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='AWS CloudFormation';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

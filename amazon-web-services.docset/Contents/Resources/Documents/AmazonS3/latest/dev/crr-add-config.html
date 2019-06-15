@@ -1,0 +1,733 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Replication Configuration Overview - Amazon Simple Storage Service</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="crr-how-setup.html" title="Overview of Setting Up CRR
+        ">
+      <link rel="prev" href="crr-how-setup.html" title="Overview of Setting Up CRR
+        ">
+      <link rel="next" href="setting-repl-config-perm-overview.html" title="Setting Up Permissions for  Cross-Region
+          Replication ">
+      <meta name="description" content="Amazon S3 stores a replication configuration as XML. In the replication configuration XML file, you specify an AWS Identity and Access Management (IAM) role and one or more rules.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Simple Storage Service">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/crr-add-config.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="crr.html">Cross-Region Replication</a> &#xBB; <a href="crr-how-setup.html">Overview of Setting Up CRR
+                                    </a> &#xBB; <span class="breadcrumb">Replication Configuration Overview</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="crr-add-config">Replication Configuration Overview</h1>
+                     <p>Amazon S3 stores a replication configuration as XML. In the replication configuration
+                        XML
+                        file, you specify an AWS Identity and Access Management (IAM) role and one or more
+                        rules. 
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&lt;ReplicationConfiguration&gt;
+    &lt;Role&gt;<em class="replaceable"><code>IAM-role-ARN</code></em>&lt;/Role&gt;
+    &lt;Rule&gt;
+        ...
+    &lt;/Rule&gt;
+    &lt;Rule&gt;
+         ...
+    &lt;/Rule&gt;
+     ...
+&lt;/ReplicationConfiguration&gt;</code></pre><p>Amazon S3 can&apos;t replicate objects without your permission. You grant permissions with
+                        the IAM
+                        role that you specify in the replication configuration. Amazon S3 assumes the IAM
+                        role to
+                        replicate objects on your behalf. You must grant the required permissions to the IAM
+                        role
+                        first. For more information about managing permissions, see <a href="setting-repl-config-perm-overview.html">Setting Up Permissions for  Cross-Region
+                           Replication </a>.
+                     </p>
+                     <p>You add one rule in replication configuration in the following scenarios:</p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>You want to replicate all objects.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>You want to replicate a subset of objects. You identify the object subset by adding
+                                 a filter in the rule. In the filter, you specify an object key prefix, tags, or a
+                                 combination of both, to identify the subset of objects that the rule applies to. 
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <p>You add multiple rules in a replication configuration if you want to select a different
+                        subset of objects. In each rule, you specify a filter that selects a different subset
+                        of
+                        objects. For example, you might choose to replicates objects that have either
+                        <code class="code">tax/</code> or<code class="code"> document/</code> key prefixes. You would add two rules and
+                        specify the <code class="code">tax/</code> key prefix filter in one rule and the <code class="code">document/</code>
+                        key prefix in the other.
+                     </p>
+                     <p>The following sections provide additional information.</p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#crr-config-min-rule-config">The Basic Rule Configuration</a></li>
+                           <li><a href="#crr-config-optional-filter">Optional: Specifying a Filter</a></li>
+                           <li><a href="#crr-config-optional-dest-config">Additional Destination
+                                 Configurations</a></li>
+                           <li><a href="#crr-config-example-configs">Example Replication Configurations</a></li>
+                           <li><a href="#crr-backward-compat-considerations">Backward Compatibility </a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="crr-config-min-rule-config">The Basic Rule Configuration</h2>
+                     
+                     
+                     <p>Each rule must include the rule&apos;s status and priority, and indicate whether to
+                        replicate delete makers. 
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><code class="code">Status</code> indicates whether the rule is enabled or disabled. If a rule
+                                 is disabled, Amazon S3 doesn&apos;t perform the actions specified in the rule. 
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><code class="code">Priority</code> indicates which rule has priority when multiple rules
+                                 apply to an object. 
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Currently, delete markers aren&apos;t replicated, so you must set
+                                 <code class="code">DeleteMarkerReplication</code> to <code class="code">Disabled</code>.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>In the destination configuration, you must provide the name of the bucket where you
+                        want Amazon S3 to replicate objects. 
+                     </p>
+                     
+                     
+                     <p>The following code shows the minimum requirements for a rule.</p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">...
+    &lt;Rule&gt;
+        &lt;ID&gt;Rule-1&lt;/ID&gt;
+        &lt;Status&gt;<em class="replaceable"><code>rule-Enabled-or-Diasbled</code></em>&lt;/Status&gt;
+        &lt;Priority&gt;<em class="replaceable"><code>integer</code></em>&lt;/Priority&gt;
+        &lt;DeleteMarkerReplication&gt;
+           &lt;Status&gt;Disabled&lt;/Status&gt;
+        &lt;/DeleteMarkerReplication&gt;
+        &lt;Destination&gt;   &#xA0;&#xA0;&#xA0;&#xA0;&#xA0;
+           &lt;Bucket&gt;arn:aws:s3:::<em class="replaceable"><code>bucket-name</code></em>&lt;/Bucket&gt; 
+        &lt;/Destination&gt;    
+    &lt;/Rule&gt;
+    &lt;Rule&gt;
+         ...
+    &lt;/Rule&gt;
+     ...
+...</code></pre>
+                     <p>You can also specify other configuration options. For example, you might choose to
+                        use
+                        a storage class for object replicas that differs from the class for the source object.
+                        
+                     </p>
+                     
+                     
+                     <h2 id="crr-config-optional-filter">Optional: Specifying a Filter</h2>
+                     
+                     
+                     <p>To choose a subset of objects that the rule applies to, add an optional filter. You
+                        can filter by object key prefix, object tags, or combination of both. If you filter
+                        on
+                        both a key prefix and object tags, Amazon S3 combines the filters using a logical
+                        AND operator.
+                        In other words, the rule applies to a subset of objects with a specific key prefix
+                        and
+                        specific tags. 
+                     </p>
+                     
+                     <p>To specify a rule with a filter based on an object key prefix, use the following code.
+                        You can specify only one prefix.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&lt;Rule&gt;
+    ...
+    &lt;Filter&gt;
+        &lt;Prefix&gt;<em class="replaceable"><code>key-prefix</code></em>&lt;/Prefix&gt;   
+    &lt;/Filter&gt;
+    ...
+&lt;/Rule&gt;
+...</code></pre>
+                     <p>To specify a rule with a filter based on object tags, use the following code. You
+                        can
+                        specify one or more object tags.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&lt;Rule&gt;
+    ...
+    &lt;Filter&gt;
+        &lt;And&gt;
+            &lt;Tag&gt;
+                &lt;Key&gt;<em class="replaceable"><code>key1</code></em>&lt;/Key&gt;
+                &lt;Value&gt;<em class="replaceable"><code>value1</code></em>&lt;/Value&gt;
+            &lt;/Tag&gt;
+            &lt;Tag&gt;
+                &lt;Key&gt;<em class="replaceable"><code>key2</code></em>&lt;/Key&gt;
+                &lt;Value&gt;<em class="replaceable"><code>value2</code></em>&lt;/Value&gt;
+            &lt;/Tag&gt;
+             ...
+        &lt;/And&gt;
+    &lt;/Filter&gt;
+    ...
+&lt;/Rule&gt;
+...</code></pre>
+                     <p>To specify a rule filter with a combination of a key prefix and object tags, use this
+                        code. You warp these filters in a AND parent element. Amazon S3 performs logical AND
+                        operation
+                        to combine these filters. In other words, the rule applies to a subset of objects
+                        with a
+                        specific key prefix and specific tags. 
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&lt;Rule&gt;
+    ...
+    &lt;Filter&gt;
+        &lt;And&gt;
+            &lt;Prefix&gt;<em class="replaceable"><code>key-prefix</code></em>&lt;/Prefix&gt;
+            &lt;Tag&gt;
+                &lt;Key&gt;<em class="replaceable"><code>key1</code></em>&lt;/Key&gt;
+                &lt;Value&gt;<em class="replaceable"><code>value1</code></em>&lt;/Value&gt;
+            &lt;/Tag&gt;
+            &lt;Tag&gt;
+                &lt;Key&gt;<em class="replaceable"><code>key2</code></em>&lt;/Key&gt;
+                &lt;Value&gt;<em class="replaceable"><code>value2</code></em>&lt;/Value&gt;
+            &lt;/Tag&gt;
+             ...
+    &lt;/Filter&gt;
+    ...
+&lt;/Rule&gt;
+...</code></pre>
+                     
+                     <h2 id="crr-config-optional-dest-config">Additional Destination
+                        Configurations
+                     </h2>
+                     
+                     <p>In the destination configuration, you specify the bucket where you want Amazon S3
+                        to
+                        replicate objects. You can configure CRR to replicate objects from one source bucket
+                        to
+                        one destination bucket. If you add multiple rules in a replication configuration,
+                        all of
+                        the rules must identify the same destination bucket. 
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">...
+&lt;Destination&gt;        
+    &lt;Bucket&gt;arn:aws:s3:::<em class="replaceable"><code>destination-bucket</code></em>&lt;/Bucket&gt;
+&lt;/Destination&gt;
+...</code></pre>
+                     <p>You have the following options you can add in the &lt;Destination&gt; element:</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>You can specify the storage class for the object replicas. By default, Amazon S3 uses
+                                 the storage class of the source object to create object replicas, as in the following
+                                 example. 
+                              </p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">...
+&lt;Destination&gt;
+       &lt;Bucket&gt;arn:aws:s3:::destinationbucket&lt;/Bucket&gt;
+       &lt;StorageClass&gt;<em class="replaceable"><code>storage-class</code></em>&lt;/StorageClass&gt;
+&lt;/Destination&gt;
+...</code></pre>
+                              </li>
+                           <li class="listitem">
+                              
+                              <p>When source and destination buckets aren&apos;t owned by the same accounts, you can
+                                 change the ownership of the replica to the AWS account that owns the destination
+                                 bucket by adding the <code class="code">AccessControlTranslation</code> element.
+                              </p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">...
+&lt;Destination&gt;
+   &lt;Bucket&gt;arn:aws:s3:::destinationbucket&lt;/Bucket&gt;
+   &lt;Account&gt;<em class="replaceable"><code>destination-bucket-owner-account-id</code></em>&lt;/Account&gt;
+   &lt;AccessControlTranslation&gt;
+       &lt;Owner&gt;Destination&lt;/Owner&gt;
+   &lt;/AccessControlTranslation&gt;
+&lt;/Destination&gt;
+...</code></pre>
+                              <p>If you don&apos;t add this element to the replication configuration, the replicas are
+                                 owned by same AWS account that owns the source object. For more information, see <a href="crr-change-owner.html">CRR Additional Configuration: Changing the Replica
+                                    Owner</a>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Your source bucket might contain objects that were created with server-side
+                                 encryption using AWS KMS-managed keys. By default, Amazon S3 doesn&apos;t replicate these
+                                 objects. You can optionally direct Amazon S3 to replicate these objects by first explicitly
+                                 opting into this feature by adding the SourceSelectionCriteria element and then
+                                 providing the AWS KMS key (for the AWS Region of the destination bucket) to use for
+                                 encrypting object replicas. 
+                              </p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">...
+&lt;SourceSelectionCriteria&gt;
+  &lt;SseKmsEncryptedObjects&gt;
+    &lt;Status&gt;Enabled&lt;/Status&gt;
+  &lt;/SseKmsEncryptedObjects&gt;
+&lt;/SourceSelectionCriteria&gt;
+&lt;Destination&gt;
+  &lt;Bucket&gt;arn:aws:s3:::dest-bucket-name&lt;/Bucket&gt;
+  &lt;EncryptionConfiguration&gt;
+    &lt;ReplicaKmsKeyID&gt;AWS KMS key IDs to use for encrypting object replicas&lt;/ReplicaKmsKeyID&gt;
+  &lt;/EncryptionConfiguration&gt;
+&lt;/Destination&gt;
+...</code></pre>
+                              <p>For more information, see <a href="crr-replication-config-for-kms-objects.html">CRR Additional Configuration:
+                                    Replicating Objects Created with Server-Side Encryption (SSE) Using AWS KMS-Managed
+                                    Encryption Keys</a>.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <h2 id="crr-config-example-configs">Example Replication Configurations</h2>
+                     
+                     <p>To get started, you can add the following example replication configurations to your
+                        bucket, as appropriate.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>To add a replication configuration to a bucket, you must have the
+                           <code class="code">iam:PassRole</code> permission. This permission allows you to pass the IAM
+                           role that grants Amazon S3 replication permissions. You specify the IAM role by providing
+                           the Amazon Resource Name (ARN) that is used in the <code class="code">Role</code> element in the
+                           replication configuration XML. For more information, see <a href="./IAM/latest/UserGuide/id_roles_use_passrole.html">Granting a User Permissions to Pass a
+                              Role to an AWS Service</a> in the <em>IAM User Guide</em>.
+                        </p>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example 1: Replication Configuration with One Rule</b></p>
+                        <div class="example-contents">
+                           <p>The following basic replication configuration specifies one rule. The rule specifies
+                              an IAM role that Amazon S3 can assume and a destination bucket for object replicas.
+                              The
+                              rule <code class="code">Status</code> indicates that the rule is in effect.
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;ReplicationConfiguration xmlns=&quot;http://s3.amazonaws.com/doc/2006-03-01/&quot;&gt;
+  &lt;Role&gt;arn:aws:iam::<em class="replaceable"><code>AcctID</code></em>:role/<em class="replaceable"><code>role-name</code></em>&lt;/Role&gt;
+  &lt;Rule&gt;
+    &lt;Status&gt;Enabled&lt;/Status&gt;
+
+    &lt;Destination&gt;&lt;Bucket&gt;arn:aws:s3:::<em class="replaceable"><code>destinationbucket</code></em>&lt;/Bucket&gt;&lt;/Destination&gt;
+
+  &lt;/Rule&gt;
+&lt;/ReplicationConfiguration&gt;</code></pre><p>To choose a subset of objects to replicate, you can add a filter. In the following
+                              configuration, the filter specifies an object key prefix. This rule applies to objects
+                              that have the prefix <code class="code">Tax/</code> in their key names. 
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;ReplicationConfiguration xmlns=&quot;http://s3.amazonaws.com/doc/2006-03-01/&quot;&gt;
+  &lt;Role&gt;arn:aws:iam::<em class="replaceable"><code>AcctID</code></em>:role/<em class="replaceable"><code>role-name</code></em>&lt;/Role&gt;
+  &lt;Rule&gt;
+    &lt;Status&gt;Enabled&lt;/Status&gt;
+    &lt;Priority&gt;1&lt;/Priority&gt;
+    &lt;DeleteMarkerReplication&gt;
+       &lt;Status&gt;string&lt;/Status&gt;
+    &lt;/DeleteMarkerReplication&gt;
+
+    &lt;Filter&gt;
+       &lt;Prefix&gt;Tax/&lt;/Prefix&gt;
+    &lt;/Filter&gt;
+
+    &lt;Destination&gt;&lt;Bucket&gt;arn:aws:s3:::<em class="replaceable"><code>destinationbucket</code></em>&lt;/Bucket&gt;&lt;/Destination&gt;
+
+  &lt;/Rule&gt;
+&lt;/ReplicationConfiguration&gt;</code></pre><p>If you specify the <code class="code">Filter</code> element, you must also include the
+                              <code class="code">Priority</code> and <code class="code">DeleteMarkerReplication</code> elements. In this
+                              example, priority is irrelevant because there is only one rule.
+                           </p>
+                           <p>In the following configuration, the filter specifies one prefix and two tags. The
+                              rule applies to the subset of objects that have the specified key prefix and tags.
+                              Specifically, it applies to object that have the <code class="code">Tax/</code> prefix in their key
+                              names and the two specified object tags. Priority doesn&apos;t apply because there is only
+                              one rule.
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;ReplicationConfiguration xmlns=&quot;http://s3.amazonaws.com/doc/2006-03-01/&quot;&gt;
+  &lt;Role&gt;arn:aws:iam::<em class="replaceable"><code>AcctID</code></em>:role/<em class="replaceable"><code>role-name</code></em>&lt;/Role&gt;
+  &lt;Rule&gt;
+    &lt;Status&gt;Enabled&lt;/Status&gt;
+    &lt;Priority&gt;1&lt;/Priority&gt;
+    &lt;DeleteMarkerReplication&gt;
+       &lt;Status&gt;string&lt;/Status&gt;
+    &lt;/DeleteMarkerReplication&gt;
+
+    &lt;Filter&gt;
+        &lt;And&gt;
+          &lt;Prefix&gt;Tax/&lt;/Prefix&gt;
+          &lt;Tag&gt;
+             &lt;Tag&gt;
+                &lt;Key&gt;tagA&lt;/Key&gt;
+                &lt;Value&gt;valueA&lt;/Value&gt;
+             &lt;/Tag&gt;
+          &lt;/Tag&gt;
+          &lt;Tag&gt;
+             &lt;Tag&gt;
+                &lt;Key&gt;tagB&lt;/Key&gt;
+                &lt;Value&gt;valueB&lt;/Value&gt;
+             &lt;/Tag&gt;
+          &lt;/Tag&gt;
+       &lt;/And&gt;
+
+    &lt;/Filter&gt;
+
+    &lt;Destination&gt;&lt;Bucket&gt;arn:aws:s3:::<em class="replaceable"><code>destinationbucket</code></em>&lt;/Bucket&gt;&lt;/Destination&gt;
+
+  &lt;/Rule&gt;
+&lt;/ReplicationConfiguration&gt;</code></pre><p>You can specify a storage class for the object replicas as follows.</p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+&lt;ReplicationConfiguration xmlns=&quot;http://s3.amazonaws.com/doc/2006-03-01/&quot;&gt;
+  &lt;Role&gt;arn:aws:iam::<em class="replaceable"><code>account-id</code></em>:role/<em class="replaceable"><code>role-name</code></em>&lt;/Role&gt;
+  &lt;Rule&gt;
+    &lt;Status&gt;Enabled&lt;/Status&gt;
+    &lt;Destination&gt;
+       &lt;Bucket&gt;arn:aws:s3:::<em class="replaceable"><code>destinationbucket</code></em>&lt;/Bucket&gt;
+       &lt;StorageClass&gt;<em class="replaceable"><code>storage-class</code></em>&lt;/StorageClass&gt;
+    &lt;/Destination&gt;
+  &lt;/Rule&gt;
+&lt;/ReplicationConfiguration&gt;</code></pre><p>You can specify any storage class that Amazon S3 supports.</p>
+                        </div>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example 2: Replication Configuration with Two Rules </b></p>
+                        <div class="example-contents">
+                           <div class="example">
+                              <div class="example-contents">
+                                 <p>In the following replication configuration:</p>
+                                 <div class="itemizedlist">
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <ul class="itemizedlist" type="disc">
+                                       <li class="listitem">
+                                          
+                                          <p>Each rule filters on a different key prefix so that each rule applies to a
+                                             distinct subset of objects. Amazon S3 replicates objects with key names
+                                             <code class="code">Tax/doc1.pdf</code> and <code class="code">Project/project1.txt</code>, but it doesn&apos;t
+                                             replicate objects with the key name <code class="code">PersonalDoc/documentA</code>. 
+                                          </p>
+                                          
+                                       </li>
+                                       <li class="listitem">
+                                          
+                                          <p> Rule priority is irrelevant because the rules apply to two distinct sets of
+                                             objects. The next example shows what happens when rule priority is applied.
+                                             
+                                          </p>
+                                          
+                                       </li>
+                                       <li class="listitem">
+                                          
+                                          <p>The second rule specifies a storage class for object replicas. Amazon S3 uses the
+                                             specified storage class for those object replicas.
+                                          </p>
+                                          
+                                       </li>
+                                       <li class="listitem">
+                                          
+                                          <p>Both rules specify the same destination bucket. You can specify only one
+                                             destination bucket, regardless of how many rules you specify.
+                                          </p>
+                                          
+                                       </li>
+                                    </ul>
+                                 </div>
+                              </div>
+                           </div><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+
+&lt;ReplicationConfiguration xmlns=&quot;http://s3.amazonaws.com/doc/2006-03-01/&quot;&gt;
+  &lt;Role&gt;arn:aws:iam::<em class="replaceable"><code>account-id</code></em>:role/<em class="replaceable"><code>role-name</code></em>&lt;/Role&gt;
+  &lt;Rule&gt;
+    &lt;Status&gt;Enabled&lt;/Status&gt;
+    &lt;Priority&gt;1&lt;/Priority&gt;
+    &lt;DeleteMarkerReplication&gt;
+       &lt;Status&gt;string&lt;/Status&gt;
+    &lt;/DeleteMarkerReplication&gt;
+    <b>&lt;Filter&gt;
+        &lt;Prefix&gt;Tax&lt;/Prefix&gt;
+    &lt;/Filter&gt;</b>
+    &lt;Status&gt;Enabled&lt;/Status&gt;
+    &lt;Destination&gt;
+      &lt;Bucket&gt;arn:aws:s3:::<em class="replaceable"><code>destinationbucket</code></em>&lt;/Bucket&gt;
+    &lt;/Destination&gt;
+     ...
+  &lt;/Rule&gt;
+ &lt;Rule&gt;
+    &lt;Status&gt;Enabled&lt;/Status&gt;
+    &lt;Priority&gt;2&lt;/Priority&gt;
+    &lt;DeleteMarkerReplication&gt;
+       &lt;Status&gt;string&lt;/Status&gt;
+    &lt;/DeleteMarkerReplication&gt;
+    <b>&lt;Filter&gt;
+        &lt;Prefix&gt;Project&lt;/Prefix&gt;
+    &lt;/Filter&gt;</b>
+    &lt;Status&gt;Enabled&lt;/Status&gt;
+    &lt;Destination&gt;
+      &lt;Bucket&gt;arn:aws:s3:::<em class="replaceable"><code>destinationbucket</code></em>&lt;/Bucket&gt;
+     <b>&lt;StorageClass&gt;STANDARD_IA&lt;/StorageClass&gt;</b>
+    &lt;/Destination&gt;
+     ...
+  &lt;/Rule&gt;
+
+
+&lt;/ReplicationConfiguration&gt;</code></pre></div>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example 3: Replication Configuration with Two Rules with
+                              Overlapping Prefixes</b></p>
+                        <div class="example-contents">
+                           <p>In this configuration, the two rules specify filters with overlapping key prefixes,
+                              <code class="code">star/</code> and <code class="code">starship</code>. Both rules apply to objects with the key
+                              name <code class="code">starship-x</code>. In this case, Amazon S3 uses the rule priority to determine
+                              which rule to apply. 
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&lt;ReplicationConfiguration&gt;
+
+  &lt;Role&gt;arn:aws:iam::<em class="replaceable"><code>AcctID</code></em>:role/<em class="replaceable"><code>role-name</code></em>&lt;/Role&gt;
+
+  &lt;Rule&gt;
+    &lt;Status&gt;Enabled&lt;/Status&gt;
+    &lt;Priority&gt;1&lt;/Priority&gt;
+    &lt;DeleteMarkerReplication&gt;
+       &lt;Status&gt;string&lt;/Status&gt;
+    &lt;/DeleteMarkerReplication&gt;
+    <b>&lt;Filter&gt;
+        &lt;Prefix&gt;star&lt;/Prefix&gt;
+    &lt;/Filter&gt;</b>
+    &lt;Destination&gt;
+      &lt;Bucket&gt;arn:aws:s3:::<em class="replaceable"><code>destinationbucket</code></em>&lt;/Bucket&gt;
+    &lt;/Destination&gt;
+  &lt;/Rule&gt;
+  &lt;Rule&gt;
+    &lt;Status&gt;Enabled&lt;/Status&gt;
+    &lt;Priority&gt;1&lt;/Priority&gt;
+    &lt;DeleteMarkerReplication&gt;
+       &lt;Status&gt;string&lt;/Status&gt;
+    &lt;/DeleteMarkerReplication&gt;
+    <b>&lt;Filter&gt;
+        &lt;Prefix&gt;starship&lt;/Prefix&gt;
+    &lt;/Filter&gt;</b>    
+    &lt;Destination&gt;
+      &lt;Bucket&gt;arn:aws:s3:::<em class="replaceable"><code>destinationbucket</code></em>&lt;/Bucket&gt;
+    &lt;/Destination&gt;
+  &lt;/Rule&gt;
+&lt;/ReplicationConfiguration&gt;</code></pre></div>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example 4: Example Walkthroughs</b></p>
+                        <div class="example-contents">
+                           <p>For example walkthroughs, see <a href="crr-example-walkthroughs.html">Cross-Region Replication (CRR) Walkthroughs</a>.
+                           </p>
+                        </div>
+                     </div>
+                     
+                     <p>For more information about the XML structure of replication configuration, see <a href="./AmazonS3/latest/API/RESTBucketPUTreplication.html">PutBucketReplication</a> in the
+                        <em>Amazon Simple Storage Service API Reference</em>. 
+                     </p>
+                     
+                     
+                     <h2 id="crr-backward-compat-considerations">Backward Compatibility </h2>
+                     
+                     <p>The latest version of the replication configuration XML is V2. For backward
+                        compatibility, <code class="code">Amazon S3 </code> continues to support the V1 configuration. If you
+                        have used replication configuration XML V1, consider the following issues that affect
+                        backward compatibility:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Replication configuration XML V2 includes the <code class="code">Filter</code> element for
+                                 rules. With the <code class="code">Filter</code> element, you can specify object filters based on
+                                 the object key prefix, tags, or both to scope the objects that the rule applies to.
+                                 Replication configuration XML V1 supported filtering based only on the key prefix.
+                                 In
+                                 that case, you add the <code class="code">Prefix</code> directly as a child element of the
+                                 <code class="code">Rule</code> element, as in the following example.
+                              </p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;ReplicationConfiguration xmlns=&quot;http://s3.amazonaws.com/doc/2006-03-01/&quot;&gt;
+  &lt;Role&gt;arn:aws:iam::<em class="replaceable"><code>AcctID</code></em>:role/<em class="replaceable"><code>role-name</code></em>&lt;/Role&gt;
+  &lt;Rule&gt;
+    &lt;Status&gt;Enabled&lt;/Status&gt;
+    &lt;Prefix&gt;<em class="replaceable"><code>key-prefix</code></em>&lt;/Prefix&gt;
+    &lt;Destination&gt;&lt;Bucket&gt;arn:aws:s3:::<em class="replaceable"><code>destinationbucket</code></em>&lt;/Bucket&gt;&lt;/Destination&gt;
+
+  &lt;/Rule&gt;
+&lt;/ReplicationConfiguration&gt;</code></pre>
+                              <p>For backward compatibility, <code class="code">Amazon S3 </code> continues to support the V1
+                                 configuration. 
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>When you delete an object from your source bucket without specifying an object
+                                 version ID, Amazon S3 adds a delete marker. If you use V1 of the replication configuration
+                                 XML, Amazon S3 replicates delete markers that resulted from user actions. In other
+                                 words,
+                                 if the user deleted the object, and not if Amazon S3 deleted it because the object
+                                 expired
+                                 as part of lifecycle action. In V2, Amazon S3 doesn&apos;t replicate delete markers and
+                                 therefore you must set the <code class="code">DeleteMarkerReplication</code> element to
+                                 <code class="code">Disabled</code>. 
+                              </p>
+                              <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">...
+    &lt;Rule&gt;
+        &lt;ID&gt;Rule-1&lt;/ID&gt;
+        &lt;Status&gt;rule-Enabled-or-Diasbled&lt;/Priority&gt;
+        &lt;Priority&gt;integer&lt;/Status&gt;
+        <b>&lt;DeleteMarkerReplication&gt;
+           &lt;Status&gt;Disabled&lt;/Status&gt;
+        &lt;/DeleteMarkerReplication&gt;</b>        
+        &lt;Destination&gt;        
+           &lt;Bucket&gt;arn:aws:s3:::bucket-name&lt;/Bucket&gt; 
+        &lt;/Destination&gt;    
+    &lt;/Rule&gt;
+...</code></pre>
+                              </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="crr-how-setup.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="setting-repl-config-perm-overview.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="The Basic Rule Configuration"><a class="pagetoc" href="#crr-config-min-rule-config">The Basic Rule Configuration</a></li>
+                        <li class="pagetoc" name="Optional: Specifying a Filter"><a class="pagetoc" href="#crr-config-optional-filter">Optional: Specifying a Filter</a></li>
+                        <li class="pagetoc" name="Additional Destination
+            Configurations"><a class="pagetoc" href="#crr-config-optional-dest-config">Additional Destination
+                              Configurations</a></li>
+                        <li class="pagetoc" name="Example Replication Configurations"><a class="pagetoc" href="#crr-config-example-configs">Example Replication Configurations</a></li>
+                        <li class="pagetoc" name="Backward Compatibility "><a class="pagetoc" href="#crr-backward-compat-considerations">Backward Compatibility </a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Simple Storage Service';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

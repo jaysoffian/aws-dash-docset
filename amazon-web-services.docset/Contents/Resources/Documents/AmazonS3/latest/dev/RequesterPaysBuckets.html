@@ -5,13 +5,15 @@
       <link rel="home" href="#top">
       <link rel="up" href="UsingBucket.html" title="Working with Amazon S3 Buckets">
       <link rel="prev" href="transfer-acceleration-examples.html" title="Amazon S3 Transfer Acceleration Examples">
-      <link rel="next" href="configure-requester-pays-console.html" title="Configure Requester Pays by Using the
-				Amazon S3 Console">
+      <link rel="next" href="configure-requester-pays-console.html" title="Configure Requester Pays by Using
+					the Amazon S3 Console">
       <meta name="description" content="Configure a bucket to be a Requester Pays bucket where the requester pays the cost of the request instead of the bucket owner.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,19 +35,22 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="UsingBucket.html">Working with Amazon S3 Buckets</a> &#xBB; <span class="breadcrumb">Requester Pays Buckets</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="UsingBucket.html">Working with Amazon S3 Buckets</a> &#xBB; <span class="breadcrumb">Requester Pays Buckets</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="RequesterPaysBuckets">Requester Pays Buckets</h1>
                      <div class="highlights">
                         <p><strong>Topics</strong></p>
                         <ul>
-                           <li><a href="configure-requester-pays-console.html">Configure Requester Pays by Using the
-                                 				Amazon S3 Console</a></li>
-                           <li><a href="configure-requester-pays-rest.html">Configure Requester Pays with the REST
-                                 				API</a></li>
+                           <li><a href="configure-requester-pays-console.html">Configure Requester Pays by Using
+                                 					the Amazon S3 Console</a></li>
+                           <li><a href="configure-requester-pays-rest.html">Configure Requester Pays with the
+                                 					REST API</a></li>
                            <li><a href="#ChargeDetails">Charge Details</a></li>
                         </ul>
                      </div>
@@ -58,8 +63,8 @@
                         			pays the cost of storing data. 
                      </p>
                      <p>Typically, you configure buckets to be Requester Pays when you want to share data
-                        but not
-                        			incur charges associated with others accessing the data. You might, for example,
+                        but
+                        			not incur charges associated with others accessing the data. You might, for example,
                         use
                         			Requester Pays buckets when making available large datasets, such as zip code
                         			directories, reference data, geospatial information, or web crawling data. 
@@ -76,10 +81,10 @@
                         			Requester Pays bucket. 
                      </p>
                      <p>When the requester assumes an AWS Identity and Access Management (IAM) role prior
-                        to making their request, the account to
-                        			which the role belongs is charged for the request. For more information about IAM
-                        roles, see <a href="./IAM/latest/UserGuide/id_roles.html" target="_blank">IAM Roles</a>
-                        				in the <em>IAM User Guide</em>. 
+                        to making their request,
+                        			the account to which the role belongs is charged for the request. For more information
+                        			about IAM roles, see <a href="./IAM/latest/UserGuide/id_roles.html">IAM Roles</a> in
+                        			the <em>IAM User Guide</em>. 
                      </p>
                      <p>After you configure a bucket to be a Requester Pays bucket, requesters must include
                         				<code class="code">x-amz-request-payer</code> in their requests either in the header, for POST,
@@ -111,18 +116,17 @@
                            </li>
                            <li class="listitem">
                               				
-                              <p>You cannot use a Requester Pays bucket as the target bucket for end user logging,
-                                 or vice
-                                 					versa; however, you can turn on end user logging on a Requester Pays bucket
-                                 					where the target bucket is not a Requester Pays bucket. 
+                              <p>You cannot use a Requester Pays bucket as the target bucket for end user
+                                 					logging, or vice versa; however, you can turn on end user logging on a Requester
+                                 					Pays bucket where the target bucket is not a Requester Pays bucket. 
                               </p>
                               				
                               			
                            </li>
                         </ul>
                      </div>
+                     			
                      <h2 id="ChargeDetails">Charge Details</h2>
-                     		  
                      			
                      <p>The charge for successful Requester Pays requests is straightforward: the
                         				requester pays for the data transfer and the request; the bucket owner pays for
@@ -140,9 +144,9 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
-                              <p>The requester doesn&apos;t include the parameter <code class="code">x-amz-request-payer</code> in
-                                 						the header (GET, HEAD, or POST) or as a parameter (REST) in the request
-                                 						(HTTP code 403).
+                              <p>The requester doesn&apos;t include the parameter
+                                 							<code class="code">x-amz-request-payer</code> in the header (GET, HEAD, or POST) or
+                                 						as a parameter (REST) in the request (HTTP code 403).
                               </p>
                               				
                            </li>
@@ -164,15 +168,19 @@
                         </ul>
                      </div>
                      		
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -182,7 +190,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="transfer-acceleration-examples.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="configure-requester-pays-console.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -197,6 +207,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

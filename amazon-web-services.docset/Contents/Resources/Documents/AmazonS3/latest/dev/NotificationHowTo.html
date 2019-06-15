@@ -3,7 +3,7 @@
       <title> Configuring Amazon S3 Event Notifications - Amazon Simple Storage Service</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="Welcome.html" title="What Is Amazon S3?">
+      <link rel="up" href="Welcome.html" title="What is Amazon S3?">
       <link rel="prev" href="getting-started-cleanup.html" title="Clean Up Your Example Resources">
       <link rel="next" href="ways-to-add-notification-config-to-bucket.html" title="Example Walkthrough 1: Configure
             a Bucket for Notifications (Message Destination: SNS Topic and SQS Queue)">
@@ -12,6 +12,8 @@
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/NotificationHowTo.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb"> Configuring Amazon S3 Event Notifications</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb"> Configuring Amazon S3 Event Notifications</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="NotificationHowTo"> Configuring Amazon S3 Event Notifications</h1>
                      <p>The Amazon S3 notification feature enables you to receive notifications when certain
@@ -50,6 +55,23 @@
                         associated with a bucket. Amazon S3 provides an API for you to manage this subresource.
                         
                      </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>Amazon S3 event notifications typically deliver events in seconds but can sometimes
+                           take a
+                           minute or longer. On very rare occasions, events might be lost. 
+                        </p>
+                        <p>If your application requires particular semantics (for example, ensuring that no
+                           events are missed, or that operations run only once), we recommend that you account
+                           for
+                           missed and duplicate events when designing your application. You can audit for missed
+                           events by using the <a href="./AmazonS3/latest/API/v2-RESTBucketGET.html">LIST Objects</a>
+                           API or <a href="storage-inventory.html"> Amazon S3 Inventory</a> reports.
+                           The LIST Objects API and Amazon S3 inventory reports are subject to <a href="./AmazonS3/latest/dev/Introduction.html#ConsistencyModel">eventual consistency</a>
+                           and might
+                           not reflect recently added or deleted objects.
+                        </p>
+                     </div>
                      <div class="highlights">
                         <p><strong>Topics</strong></p>
                         <ul>
@@ -71,9 +93,10 @@
                      <h2 id="notification-how-to-overview">Overview</h2>        
                      
                      
-                     <p> Currently, Amazon S3 can publish the following events:</p>
+                     <p> Currently, Amazon S3 can publish notifications for the following events:</p>
                      
                      <div class="itemizedlist">
+                        
                         
                         
                         
@@ -81,12 +104,14 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p>A new object created event&#x2014;Amazon S3 supports multiple APIs to create objects.
-                                 You can request notification when only a specific API is used (e.g.,
+                              <p>A new object created event&#x2014;Amazon S3 supports multiple APIs to create
+                                 objects. You can request notification when only a specific API is used (e.g.,
                                  <code class="code">s3:ObjectCreated:Put</code>) or you can use a wildcard (e.g.,
                                  <code class="code">s3:ObjectCreated:*</code>) to request notification when an object is
                                  created regardless of the API used. 
                               </p>
+                              
+                              <p>&#xA0;</p>
                               
                            </li>
                            <li class="listitem">
@@ -104,12 +129,26 @@
                                  see <a href="DeletingObjectVersions.html">Deleting Object Versions</a>. 
                               </p>
                               
+                              <p>&#xA0;</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Restore object events&#x2014;Amazon S3 supports the restoration of objects archived
+                                 to the GLACIER storage class. You request to be notified of object restoration
+                                 completion by using <code class="code">s3:ObjectRestore:Completed</code>. You use
+                                 <code class="code">s3:ObjectRestore:Post</code> to request notification of the initiation
+                                 of a restore. 
+                              </p>
+                              
+                              <p>&#xA0;</p>
+                              
                            </li>
                            <li class="listitem">
                               
                               <p>A Reduced Redundancy Storage (RRS) object lost event&#x2014;Amazon S3 sends a
-                                 notification message when it detects that an object of the RRS storage class has been
-                                 lost. 
+                                 notification message when it detects that an object of the RRS storage class has
+                                 been lost. 
                               </p>
                               
                            </li>
@@ -138,18 +177,25 @@
                                  notifications. For more information about SNS, see the <a href="https://aws.amazon.com/sns/" target="_blank">Amazon SNS</a> product detail page.
                               </p>
                               
+                              <p>&#xA0;</p>
+                              
                            </li>
                            <li class="listitem">
                               
                               <p>Amazon Simple Queue Service (Amazon SQS) queue</p>
                               
                               <p>Amazon SQS is a scalable and fully managed message queuing service. You can use SQS
-                                 to
-                                 transmit any volume of data without requiring other services to be always available.
-                                 In your notification configuration you can request that Amazon S3 publish events to
-                                 an
-                                 SQS queue. For more information about SQS, see <a href="https://aws.amazon.com/sqs/" target="_blank">Amazon SQS</a> product detail page.
+                                 to transmit any volume of data without requiring other services to be always
+                                 available. In your notification configuration you can request that Amazon S3 publish
+                                 events to an SQS queue.
+                                 Currently,
+                                 Standard SQS queue is only allowed as an Amazon S3 event notification destination,
+                                 whereas FIFO SQS queue is not allowed. For more information
+                                 about SQS, see <a href="https://aws.amazon.com/sqs/" target="_blank">Amazon SQS</a> product detail
+                                 page.
                               </p>
+                              
+                              <p>&#xA0;</p>
                               
                            </li>
                            <li class="listitem">
@@ -174,6 +220,8 @@
                                  the event to AWS Lambda and invoke your function in Lambda. In response, AWS Lambda
                                  executes your function. For more information, see <a href="https://aws.amazon.com/lambda/" target="_blank">AWS Lambda</a> product detail page. 
                               </p>
+                              
+                              <p>&#xA0;</p>
                               
                            </li>
                         </ul>
@@ -228,7 +276,7 @@
                               <p>Using the Amazon S3 console</p>
                               
                               <p>The console UI enables you to set a notification configuration on a bucket
-                                 without having to write any code. For instruction, see <a href="./AmazonS3/latest/user-guide/enable-event-notifications.html" target="_blank">How Do I Enable and Configure Event Notifications for an S3 Bucket?</a>
+                                 without having to write any code. For instruction, see <a href="./AmazonS3/latest/user-guide/enable-event-notifications.html">How Do I Enable and Configure Event Notifications for an S3 Bucket?</a>
                                  in the <em>Amazon Simple Storage Service Console User Guide</em>.
                               </p>
                               
@@ -320,13 +368,12 @@
      &lt;Event&gt;<em class="replaceable"><code>event-type</code></em>&lt;/Event&gt; &#xA0;&#xA0;&#xA0;&#xA0;&#xA0;
      &lt;Event&gt;<em class="replaceable"><code>event-type</code></em>&lt;/Event&gt; &#xA0;&#xA0;&#xA0;&#xA0;&#xA0;
       ... &#xA0;
-  &lt;/CloudFunctionConfiguration&gt;  
+  &lt;/CloudFunctionConfiguration&gt;
    ...
 &lt;/NotificationConfiguration&gt;</code></pre>
                                        </li>
                                  </ul>
                               </div>
-                              
                               
                               <p>To remove all notifications configured on a bucket, you save an empty
                                  <code class="code">&lt;NotificationConfiguration/&gt;</code> element in the
@@ -359,7 +406,7 @@
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w70aac37c11b4b4">
+                           <table id="w203aac40c13b4b4">
                               
                               <tbody><tr>
                                  
@@ -441,6 +488,33 @@
                               
                               <tr>
                                  
+                                 <td>
+                                    
+                                    <p><em>s3:ObjectRestore:Post</em></p>
+                                    
+                                    <p><em>s3:ObjectRestore:Completed</em></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Using restore object event types you can receive notifications
+                                       for initiation and completion when restoring objects from the
+                                       GLACIER storage class.
+                                    </p>
+                                    
+                                    <p>You use <code class="code">s3:ObjectRestore:Post</code> to request
+                                       notification of object restoration initiation. You use
+                                       <code class="code">s3:ObjectRestore:Completed</code> to request
+                                       notification of restoration completion. 
+                                    </p>
+                                    
+                                 </td>   
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
                                  <td><em>s3:ReducedRedundancyLostObject</em></td>
                                  
                                  <td>You can use this event type to request Amazon S3 to send a
@@ -455,9 +529,7 @@
                      </div>
                      
                      
-                     
                      <h3 id="supported-notification-destinations">Supported Destinations </h3>
-                     
                      
                      
                      <p>Amazon S3 can send event notification messages to the following destinations. You
@@ -530,7 +602,7 @@
                         Amazon S3 console and by using Amazon S3 APIs through the AWS SDKs or the REST APIs
                         directly. For
                         information about using the console UI to set a notification configuration on a bucket,
-                        see <a href="./AmazonS3/latest/user-guide/enable-event-notifications.html" target="_blank">
+                        see <a href="./AmazonS3/latest/user-guide/enable-event-notifications.html">
                            How Do I Enable and Configure Event Notifications for an S3 Bucket?</a> 
                         in the <em>Amazon Simple Storage Service Console User Guide</em>. 
                      </p>
@@ -541,7 +613,7 @@
                         <code class="code">Filter</code> XML structure to define the rules for notifications to be
                         filtered by the prefix and/or suffix of an object key name. For information about
                         the
-                        details of the <code class="code">Filter</code> XML structure, see <a href="./AmazonS3/latest/API/RESTBucketPUTnotification.html" target="_blank">PUT Bucket notification</a> in
+                        details of the <code class="code">Filter</code> XML structure, see <a href="./AmazonS3/latest/API/RESTBucketPUTnotification.html">PUT Bucket notification</a> in
                         the <em>Amazon Simple Storage Service API Reference</em>. 
                      </p>
                      
@@ -583,7 +655,7 @@
      &lt;Queue&gt;arn:aws:sqs:us-west-2:444455556666:s3notificationqueue&lt;/Queue&gt;
      &lt;Event&gt;s3:ObjectCreated:Put&lt;/Event&gt;
   &lt;/QueueConfiguration&gt;
-  &lt;/NotificationConfiguration&gt;</code></pre>
+&lt;/NotificationConfiguration&gt;</code></pre>
                      <p>The following notification configuration has multiple non-overlapping prefixes.
                         The configuration defines that notifications for PUT requests in the
                         <code class="code">images/</code> folder will go to queue-A while notifications for PUT
@@ -616,7 +688,7 @@
      &lt;Queue&gt;arn:aws:sqs:us-west-2:444455556666:sqs-queue-B&lt;/Queue&gt;
      &lt;Event&gt;s3:ObjectCreated:Put&lt;/Event&gt;
   &lt;/QueueConfiguration&gt;
-  &lt;/NotificationConfiguration&gt;</code></pre>
+&lt;/NotificationConfiguration&gt;</code></pre>
                      <p>The following notification configuration has multiple non-overlapping suffixes.
                         The configuration defines that all .jpg images newly added to the bucket will be
                         processed by Lambda cloud-function-A and all newly added .png images will be
@@ -653,7 +725,7 @@
      &lt;Cloudcode&gt;arn:aws:lambda:us-west-2:444455556666:cloud-function-B&lt;/Cloudcode&gt;
      &lt;Event&gt;s3:ObjectCreated:Put&lt;/Event&gt;
   &lt;/CloudFunctionConfiguration&gt;
-  &lt;/NotificationConfiguration&gt;</code></pre>
+&lt;/NotificationConfiguration&gt;</code></pre>
                      
                      <p>Your notification configurations that use <code class="code">Filter</code> cannot define
                         filtering rules with overlapping prefixes for the same event types, unless the
@@ -752,7 +824,7 @@
             &lt;/S3Key&gt;
         &lt;/Filter&gt;
     &lt;/TopicConfiguration&gt;             
-    &lt;/NotificationConfiguration&gt;</code></pre>
+&lt;/NotificationConfiguration&gt;</code></pre>
                      <p>The following notification configuration is invalid because it has overlapping
                         suffixes. Two suffixes are considered overlapping if a given string can end with
                         both suffixes. A string can end with <code class="code">jpg</code> and <code class="code">pg</code> so the
@@ -849,14 +921,14 @@
                         the Amazon S3 console will set up the necessary permissions on the Lambda function
                         so that Amazon S3 has permissions 
                         to invoke the function from the bucket. For more information, see 
-                        <a href="./AmazonS3/latest/user-guide/enable-event-notifications.html" target="_blank">How Do I Enable and Configure Event Notifications for an S3 Bucket?</a>
+                        <a href="./AmazonS3/latest/user-guide/enable-event-notifications.html">How Do I Enable and Configure Event Notifications for an S3 Bucket?</a>
                         in the <em>Amazon Simple Storage Service Console User Guide</em>.
                         
                      </p>       
                      
                      <p>You can also grant Amazon S3 permissions from AWS Lambda to invoke your Lambda function.
                         For more information, see 
-                        <a href="./lambda/latest/dg/with-s3-example.html" target="_blank">Tutorial: Using AWS Lambda with Amazon S3</a> in the <em>AWS Lambda Developer Guide</em>.
+                        <a href="./lambda/latest/dg/with-s3-example.html">Tutorial: Using AWS Lambda with Amazon S3</a> in the <em>AWS Lambda Developer Guide</em>.
                      </p>
                      
                      
@@ -888,9 +960,7 @@
    ],
    &quot;Resource&quot;: &quot;<em class="replaceable"><code>SNS-ARN</code></em>&quot;,
    &quot;Condition&quot;: {
-      &quot;ArnLike&quot;: {   &#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;
-      &quot;aws:SourceArn&quot;: &quot;arn:aws:s3:*:*:<em class="replaceable"><code>bucket-name</code></em>&quot;    
-    }
+      &quot;ArnLike&quot;: { &quot;aws:SourceArn&quot;: &quot;arn:aws:s3:*:*:<em class="replaceable"><code>bucket-name</code></em>&quot; }
    }
   }
  ]
@@ -913,9 +983,7 @@
    ],
    &quot;Resource&quot;: &quot;<em class="replaceable"><code>SQS-ARN</code></em>&quot;,
    &quot;Condition&quot;: {
-      &quot;ArnLike&quot;: {   &#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;
-      &quot;aws:SourceArn&quot;: &quot;arn:aws:s3:*:*:<em class="replaceable"><code>bucket-name</code></em>&quot;    
-    }
+      &quot;ArnLike&quot;: { &quot;aws:SourceArn&quot;: &quot;arn:aws:s3:*:*:<em class="replaceable"><code>bucket-name</code></em>&quot; }
    }
   }
  ]
@@ -926,9 +994,7 @@
                         instead of the <code class="code">ArnLike</code> condition.
                      </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">&quot;Condition&quot;: {   &#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;
-  &quot;StringLike&quot;: {   &#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;
-      &quot;aws:SourceArn&quot;: &quot;arn:aws:s3:*:*:<em class="replaceable"><code>bucket-name</code></em>&quot;   &#xA0;&#xA0;&#xA0;&#xA0;&#xA0;&#xA0;
-  }
+  &quot;StringLike&quot;: { &quot;aws:SourceArn&quot;: &quot;arn:aws:s3:*:*:<em class="replaceable"><code>bucket-name</code></em>&quot; }
   }  </code></pre>
                      
                      <p>Example of a key policy that you attach to the associated KMS key if the SQS queue
@@ -973,13 +1039,13 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p><a href="./sns/latest/dg/AccessPolicyLanguage_UseCases_Sns.html" target="_blank">Example Cases for Amazon SNS Access Control</a> in
+                              <p><a href="./sns/latest/dg/AccessPolicyLanguage_UseCases_Sns.html">Example Cases for Amazon SNS Access Control</a> in
                                  the <em>Amazon Simple Notification Service Developer Guide</em></p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><a href="./AWSSimpleQueueService/latest/SQSDeveloperGuide/UsingIAM.html" target="_blank">Access Control Using AWS
+                              <p><a href="./AWSSimpleQueueService/latest/SQSDeveloperGuide/UsingIAM.html">Access Control Using AWS
                                     Identity and Access Management (IAM)</a> in the
                                  <em>Amazon Simple Queue Service Developer Guide</em></p>
                               
@@ -988,15 +1054,19 @@
                      </div>
                      
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -1006,7 +1076,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="getting-started-cleanup.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="ways-to-add-notification-config-to-bucket.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -1029,6 +1101,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

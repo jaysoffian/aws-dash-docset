@@ -12,6 +12,8 @@
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-metadata.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="Configure_Instance.html">Configuring Your Amazon Linux Instance</a> &#xBB; <span class="breadcrumb">Instance Metadata and User Data</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="Configure_Instance.html">Configuring Your Amazon Linux Instance</a> &#xBB; <span class="breadcrumb">Instance Metadata and User Data</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="ec2-instance-metadata">Instance Metadata and User Data</h1>
                      <p><em>Instance metadata</em> is data about your instance that you can use to
@@ -107,7 +112,13 @@
                      </p>
                      		<pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">http://169.254.169.254/latest/meta-data/</code></pre>
                      
-                     		<p>Note that you are not billed for HTTP requests used to retrieve instance metadata
+                     <p>The IP address <code class="code">169.254.169.254</code> is a link-local address and is valid only from the
+                        			instance. For more information, see <a href="https://en.wikipedia.org/wiki/Link-local_address" target="_blank">Link-local address</a> on
+                        			Wikipedia.
+                     </p>
+                     		
+                     		
+                     <p>Note that you are not billed for HTTP requests used to retrieve instance metadata
                         and
                         			user data.
                      </p>
@@ -175,14 +186,15 @@
 latest</code></code></pre>
                      			
                      
-                     			<p>This example gets the top-level metadata items. Some items are only available for
-                        				instances in a VPC. For more information about each of these items, see <a href="ec2-instance-metadata.html#instancedata-data-categories">Instance Metadata Categories</a>.
+                     			<p>This example gets the top-level metadata items. For more information, see 
+                        				<a href="ec2-instance-metadata.html#instancedata-data-categories">Instance Metadata Categories</a>.
                      </p>
                      			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>curl http://169.254.169.254/latest/meta-data/</code></strong>    
 <code class="computeroutput" copy="false">ami-id
 ami-launch-index
 ami-manifest-path
 block-device-mapping/
+events/
 hostname
 iam/
 instance-action
@@ -207,9 +219,9 @@ services/</code></code></pre>
                         				example.
                      </p>
                      			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>curl http://169.254.169.254/latest/meta-data/ami-id</code></strong>
-<code class="computeroutput" copy="false">ami-12345678</code></code></pre>
+<code class="computeroutput" copy="false">ami-0abcdef1234567890</code></code></pre>
                      			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>curl http://169.254.169.254/latest/meta-data/reservation-id</code></strong>
-<code class="computeroutput" copy="false">r-fea54097</code></code></pre>
+<code class="computeroutput" copy="false">r-0efghijk987654321</code></code></pre>
                      			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>curl http://169.254.169.254/latest/meta-data/local-hostname</code></strong>
 <code class="computeroutput" copy="false">ip-10-251-50-12.ec2.internal</code></code></pre>
                      			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>curl http://169.254.169.254/latest/meta-data/public-hostname</code></strong>
@@ -244,22 +256,8 @@ Ibb3OhjZnzcvQAaRHhdlQWIMm2nrAgMBAAEwDQYJKoZIhvcNAQEFBQADgYEAtCu4
 nUhVVxYUntneD9+h8Mg9q6q+auNKyExzyLwaxlAoo7TJHidbtS4J5iNmZgXL0Fkb
 FFBjvSfpJIlJ00zbhNYS5f6GuoEDmFJl0ZxBHjJnyp378OD8uTs7fLvjx79LjSTb
 NYiytVbZPQUQ5Yaxu2jXnimvw3rrszlaEXAMPLE my-public-key</code></code></pre>
-                     
-                     			<p>This example shows the information available for a specific network interface
-                        				(indicated by the MAC address) on an NAT instance in the EC2-Classic platform.
-                        
-                     </p>
-                     			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/02:29:96:8f:6a:2d/</code></strong>
-<code class="computeroutput" copy="false">device-number
-local-hostname
-local-ipv4s
-mac
-owner-id
-public-hostname
-public-ipv4s</code></code></pre>
                      			
-                     			
-                     			<p>This example gets the subnet ID for an instance launched into a VPC.</p>
+                     			<p>This example gets the subnet ID for an instance.</p>
                      			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>curl http://169.254.169.254/latest/meta-data/network/interfaces/macs/02:29:96:8f:6a:2d/subnet-id</code></strong>
 <code class="computeroutput" copy="false">subnet-be9b61d7</code></code></pre>
                      			
@@ -304,20 +302,6 @@ public-ipv4s</code></code></pre>
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               				
-                              <p>User data is treated as opaque data: what you give is what you get back. It is
-                                 					up to the instance to be able to interpret it.
-                              </p>
-                              			
-                           </li>
-                           <li class="listitem">
-                              				
-                              <p>User data is limited to 16 KB. This limit applies to the data in raw form, not
-                                 					base64-encoded form.
-                              </p>
-                              			
-                           </li>
-                           <li class="listitem">
-                              				
                               <p>User data must be base64-encoded. The Amazon EC2 console can perform the base64 encoding
                                  
                                  					for you or accept base64-encoded input.
@@ -326,8 +310,23 @@ public-ipv4s</code></code></pre>
                            </li>
                            <li class="listitem">
                               				
-                              <p>User data must be decoded when you retrieve it. The data is decoded when you 
-                                 					retrieve it using instance metadata and the console.
+                              <p>User data is limited to 16 KB, in raw form, before it is base64-encoded. The
+                                 					size of a string of length <em>n</em> after base64-encoding is 
+                                 					ceil(<em>n</em>/3)*4.
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>User data must be base64-decoded when you retrieve it. The data is decoded for you
+                                 					automatically if you retrieve it using instance metadata or the console.
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>User data is treated as opaque data: what you give is what you get back. It is
+                                 					up to the instance to be able to interpret it.
                               </p>
                               			
                            </li>
@@ -443,10 +442,10 @@ dsa2048</code></code></pre>
                         			pipe symbol (<code class="code">|</code>) delimiting the data for the separate instances.
                      </p>
                      		
-                     <p>Alice launches four instances using the <a href="./cli/latest/reference/ec2/run-instances.html" target="_blank">run-instances</a> command, specifying
+                     <p>Alice launches four instances using the <a href="./cli/latest/reference/ec2/run-instances.html">run-instances</a> command, specifying
                         			the user data: 
                      </p>
-                     		<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 run-instances --image-id <em class="replaceable"><code>ami-12345678</code></em> --count 4 --instance-type t2.micro --user-data &quot;replicate-every=1min | replicate-every=5min | replicate-every=10min&quot;</code></strong></code></pre>
+                     		<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 run-instances --image-id <em class="replaceable"><code>ami-0abcdef1234567890</code></em> --count 4 --instance-type t2.micro --user-data &quot;replicate-every=1min | replicate-every=5min | replicate-every=10min&quot;</code></strong></code></pre>
                      		<p>After they&apos;re launched, all instances have a copy of the user data and the common
                         			metadata shown here:
                      </p>
@@ -461,7 +460,7 @@ dsa2048</code></code></pre>
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               				
-                              <p>AMI id: ami-12345678</p>
+                              <p>AMI id: ami-0abcdef1234567890</p>
                               			
                            </li>
                            <li class="listitem">
@@ -492,7 +491,7 @@ dsa2048</code></code></pre>
                      <div class="table">
                         <p class="title"><b>Instance 1</b></p>
                         <div class="table-contents">
-                           <table id="w185aac17c17c23c19c22">
+                           <table id="w306aac20c17c25c19c22">
                               					
                               <tbody><tr>
                                  						
@@ -559,7 +558,7 @@ dsa2048</code></code></pre>
                      <div class="table">
                         <p class="title"><b>Instance 2</b></p>
                         <div class="table-contents">
-                           <table id="w185aac17c17c23c19c24">
+                           <table id="w306aac20c17c25c19c24">
                               					
                               <tbody><tr>
                                  						
@@ -626,7 +625,7 @@ dsa2048</code></code></pre>
                      <div class="table">
                         <p class="title"><b>Instance 3</b></p>
                         <div class="table-contents">
-                           <table id="w185aac17c17c23c19c26">
+                           <table id="w306aac20c17c25c19c26">
                               					
                               <tbody><tr>
                                  						
@@ -693,7 +692,7 @@ dsa2048</code></code></pre>
                      <div class="table">
                         <p class="title"><b>Instance 4</b></p>
                         <div class="table-contents">
-                           <table id="w185aac17c17c23c19c28">
+                           <table id="w306aac20c17c25c19c28">
                               					
                               <tbody><tr>
                                  						
@@ -815,7 +814,7 @@ dsa2048</code></code></pre>
                      		
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac17c17c23c21b6">
+                           <table id="w306aac20c17c25c21b6">
                               					
                               <tbody><tr>
                                  						
@@ -926,9 +925,9 @@ dsa2048</code></code></pre>
                                     						
                                  </td>
                                  						
-                                 <td>The virtual devices associated with ephemeral devices, if any are
-                                    							present. The <em>N</em> indicates the index of the ephemeral
-                                    							volume.
+                                 <td>The virtual devices associated with non-NVMe instance store volumes, 
+                                    							if any are present. The <em>N</em> indicates the index of 
+                                    							each ephemeral volume.
                                  </td>
                                  						
                                  <td>2007-12-15</td>
@@ -981,6 +980,31 @@ dsa2048</code></code></pre>
                               					
                               <tr>
                                  						
+                                 <td><code class="code">events/maintenance/history</code></td>
+                                 						
+                                 <td>If there are completed or canceled maintenance events for the instance,
+                                    						    contains a JSON string with information about the events. For more 
+                                    						    information, see <a href="monitoring-instances-status-check_sched.html#viewing-event-history">To view event history about completed or canceled events</a>.
+                                 </td>
+                                 						
+                                 <td>2018-08-17</td>
+                                 					
+                              </tr>
+                              					
+                              <tr>
+                                 						
+                                 <td><code class="code">events/maintenance/scheduled</code></td>
+                                 						
+                                 <td>If there are active maintenance events for the instance, contains a 
+                                    							JSON string with information about the events. For more information, see <a href="monitoring-instances-status-check_sched.html#viewing_scheduled_events">Viewing Scheduled Events</a>.
+                                 </td>
+                                 						
+                                 <td>2018-08-17</td>
+                                 					
+                              </tr>
+                              					
+                              <tr>
+                                 						
                                  <td><code class="code">hostname</code></td>
                                  						
                                  <td>The private IPv4 DNS hostname of the instance. In cases where multiple network
@@ -1027,6 +1051,30 @@ dsa2048</code></code></pre>
                                  </td>
                                  						
                                  <td>2012-01-12</td>
+                                 					
+                              </tr>
+                              					
+                              <tr>
+                                 						
+                                 <td><code class="code">identity-credentials/ec2/info</code></td>
+                                 						
+                                 <td>[Reserved for internal use only] Information about the credentials that AWS uses to
+                                    							identify an instance to the rest of the Amazon EC2 infrastructure.
+                                 </td>
+                                 						
+                                 <td>2018-05-23</td>
+                                 					
+                              </tr>
+                              					
+                              <tr>
+                                 						
+                                 <td><code class="code">identity-credentials/ec2/security-credentials/ec2-instance</code></td>
+                                 						
+                                 <td>[Reserved for internal use only] The credentials that AWS uses to identify an instance
+                                    							to the rest of the Amazon EC2 infrastructure.
+                                 </td>
+                                 						
+                                 <td>2018-05-23</td>
                                  					
                               </tr>
                               					
@@ -1139,6 +1187,17 @@ dsa2048</code></code></pre>
                               					
                               <tr>
                                  						
+                                 <td><code class="code">metrics/vhostmd</code></td>
+                                 						
+                                 <td>Deprecated.</td>
+                                 						
+                                 <td>2011-05-01</td>
+                                 						
+                                 					
+                              </tr>
+                              					
+                              <tr>
+                                 						
                                  <td>
                                     							<code class="code">network/interfaces/macs/<em class="replaceable"><code>mac</code></em>/device-number</code>
                                     						
@@ -1159,13 +1218,25 @@ dsa2048</code></code></pre>
                               <tr>
                                  						
                                  <td>
+                                    							<code class="code">network/interfaces/macs/<em class="replaceable"><code>mac</code></em>/interface-id</code>
+                                    						
+                                 </td>
+                                 						
+                                 <td>The ID of the network interface.</td>
+                                 						
+                                 <td>2011-01-01</td>
+                                 					
+                              </tr>
+                              					
+                              <tr>
+                                 						
+                                 <td>
                                     							<code class="code">network/interfaces/macs/<em class="replaceable"><code>mac</code></em>/ipv4-associations/<em class="replaceable"><code>public-ip</code></em></code>
                                     						
                                  </td>
                                  						
-                                 <td>The private IPv4 addresses that are associated with each
-                                    								<code class="code">public-ip</code> address and assigned to that
-                                    							interface.
+                                 <td>The private IPv4 addresses that are associated with each public IP address and assigned
+                                    to that interface.
                                  </td>
                                  						
                                  <td>2011-01-01</td>
@@ -1246,9 +1317,9 @@ dsa2048</code></code></pre>
                                     						
                                  </td>
                                  						
-                                 <td>The interface&apos;s public DNS (IPv4). If the instance is in a VPC, this category is only
+                                 <td>The interface&apos;s public DNS (IPv4). This category is only
                                     							returned if the <code class="code">enableDnsHostnames</code> attribute is set to
-                                    								<code class="code">true</code>. For more information, see <a href="./AmazonVPC/latest/UserGuide/vpc-dns.html" target="_blank">Using DNS with Your
+                                    								<code class="code">true</code>. For more information, see <a href="./vpc/latest/userguide/vpc-dns.html">Using DNS with Your
                                        							VPC</a>.
                                  </td>
                                  						
@@ -1263,8 +1334,9 @@ dsa2048</code></code></pre>
                                     						
                                  </td>
                                  						
-                                 <td>The Elastic IP addresses associated with the interface. There may be multiple IPv4
-                                    							addresses on an instance. 
+                                 <td>The Public IP address or Elastic IP addresses associated with the interface. There
+                                    may
+                                    							be multiple IPv4 addresses on an instance. 
                                  </td>
                                  						
                                  <td>2011-01-01</td>
@@ -1277,9 +1349,7 @@ dsa2048</code></code></pre>
                                     						
                                  </td>
                                  						
-                                 <td>Security groups to which the network interface belongs. Returned only
-                                    							for instances launched into a VPC. 
-                                 </td>
+                                 <td>Security groups to which the network interface belongs.</td>
                                  						
                                  <td>2011-01-01</td>
                                  					
@@ -1292,11 +1362,7 @@ dsa2048</code></code></pre>
                                     						
                                  </td>
                                  						
-                                 <td>The IDs of the security groups to which the network interface belongs. Returned only
-                                    							for instances launched into a VPC. For more information on security
-                                    							groups in the EC2-VPC platform, see <a href="./AmazonVPC/latest/UserGuide/VPC_SecurityGroups.html" target="_blank">Security Groups for Your
-                                       								VPC</a>.
-                                 </td>
+                                 <td>The IDs of the security groups to which the network interface belongs.</td>
                                  						
                                  <td>2011-01-01</td>
                                  					
@@ -1309,9 +1375,7 @@ dsa2048</code></code></pre>
                                     						
                                  </td>
                                  						
-                                 <td>The ID of the subnet in which the interface resides. Returned only
-                                    							for instances launched into a VPC. 
-                                 </td>
+                                 <td>The ID of the subnet in which the interface resides.</td>
                                  						
                                  <td>2011-01-01</td>
                                  					
@@ -1324,9 +1388,7 @@ dsa2048</code></code></pre>
                                     						
                                  </td>
                                  						
-                                 <td>The IPv4 CIDR block of the subnet in which the interface resides. Returned only for
-                                    							instances launched into a VPC. 
-                                 </td>
+                                 <td>The IPv4 CIDR block of the subnet in which the interface resides.</td>
                                  						
                                  <td>2011-01-01</td>
                                  					
@@ -1338,9 +1400,7 @@ dsa2048</code></code></pre>
                                     						
                                  </td>
                                  						
-                                 <td>The IPv6 CIDR block of the subnet in which the interface resides.
-                                    							Returned only for instances launched into a VPC.
-                                 </td>
+                                 <td>The IPv6 CIDR block of the subnet in which the interface resides.</td>
                                  						
                                  <td>2016-06-30 </td>
                                  					
@@ -1353,9 +1413,7 @@ dsa2048</code></code></pre>
                                     						
                                  </td>
                                  						
-                                 <td>The ID of the VPC in which the interface resides. Returned only for
-                                    							instances launched into a VPC. 
-                                 </td>
+                                 <td>The ID of the VPC in which the interface resides.</td>
                                  						
                                  <td>2011-01-01</td>
                                  					
@@ -1367,9 +1425,7 @@ dsa2048</code></code></pre>
                                     						
                                  </td>
                                  						
-                                 <td>The primary IPv4 CIDR block of the VPC. Returned
-                                    							only for instances launched into a VPC. 
-                                 </td>
+                                 <td>The primary IPv4 CIDR block of the VPC.</td>
                                  						
                                  <td>2011-01-01</td>
                                  					
@@ -1381,9 +1437,7 @@ dsa2048</code></code></pre>
                                     						
                                  </td>
                                  						
-                                 <td>The IPv4 CIDR blocks for the VPC. Returned only for instances launched into a VPC.
-                                    
-                                 </td>
+                                 <td>The IPv4 CIDR blocks for the VPC.</td>
                                  						
                                  <td>2016-06-30 </td>
                                  					
@@ -1395,9 +1449,7 @@ dsa2048</code></code></pre>
                                     						
                                  </td>
                                  						
-                                 <td>The IPv6 CIDR block of the VPC in which the interface resides.
-                                    							Returned only for instances launched into a VPC.
-                                 </td>
+                                 <td>The IPv6 CIDR block of the VPC in which the interface resides.</td>
                                  						
                                  <td>2016-06-30 </td>
                                  					
@@ -1438,10 +1490,10 @@ dsa2048</code></code></pre>
                                     						
                                  </td>
                                  						
-                                 <td>The instance&apos;s public DNS. If the instance is in a VPC, this category
+                                 <td>The instance&apos;s public DNS. This category
                                     							is only returned if the <code class="code">enableDnsHostnames</code> attribute is set
-                                    							to <code class="code">true</code>. For more information, see <a href="./AmazonVPC/latest/UserGuide/vpc-dns.html" target="_blank">Using DNS with Your
-                                       							VPC</a>.
+                                    							to <code class="code">true</code>. For more information, see <a href="./vpc/latest/userguide/vpc-dns.html">Using DNS with Your
+                                       							VPC</a> in the <em>Amazon VPC User Guide</em>.
                                  </td>
                                  						
                                  <td>2007-01-19</td>
@@ -1518,9 +1570,9 @@ dsa2048</code></code></pre>
                                     							
                                     <p>The names of the security groups applied to the instance.</p>
                                     							
-                                    <p>After launch, you can only change the security groups of
-                                       								instances running in a VPC. Such changes are reflected here and in
-                                       										network/interfaces/macs/<em><em class="replaceable"><code>mac</code></em></em>/security-groups.
+                                    <p>After launch, you can change the security groups of the instances.
+                                       								Such changes are reflected here and in
+                                       							    network/interfaces/macs/<em><em class="replaceable"><code>mac</code></em></em>/security-groups.
                                     </p>
                                     						
                                  </td>
@@ -1538,9 +1590,7 @@ dsa2048</code></code></pre>
                                  						
                                  <td>
                                     							
-                                    <p>The domain for AWS resources for the region; for example,
-                                       									<code class="code">amazonaws.com</code> for us-east-1.
-                                    </p>
+                                    <p>The domain for AWS resources for the region.</p>
                                     						
                                  </td>
                                  						
@@ -1557,10 +1607,9 @@ dsa2048</code></code></pre>
                                  						
                                  <td>
                                     							
-                                    <p>The partition that the resource is in. For standard AWS regions,
-                                       								the partition is <code class="code">aws</code>. If you have resources in other
-                                       								partitions, the partition is
-                                       										<code class="code">aws-<em class="replaceable"><code>partitionname</code></em></code>.
+                                    <p>The partition that the resource is in. For standard AWS regions, the
+                                       								partition is <code class="code">aws</code>. If you have resources in other partitions,
+                                       								the partition is <code class="code">aws-<em class="replaceable"><code>partitionname</code></em></code>.
                                        								For example, the partition for resources in the China (Beijing)
                                        								region is <code class="code">aws-cn</code>.
                                     </p>
@@ -1580,9 +1629,11 @@ dsa2048</code></code></pre>
                                  						
                                  <td>
                                     							
-                                    <p>The action (stop or terminate) and the approximate time, in UTC, 
-                                       								when the Spot service will stop or terminate the Spot instance.
-                                       								For more information, see <a href="spot-interruptions.html#instance-action-metadata">instance-action</a>.
+                                    <p>The action (hibernate, stop, or terminate) and the approximate time, in UTC, when
+                                       the
+                                       								action will occur. This item is present only if the Spot Instance
+                                       								has been marked for hibernate, stop, or terminate. For more
+                                       								information, see <a href="spot-interruptions.html#instance-action-metadata">instance-action</a>.
                                     </p>
                                     						
                                  </td>
@@ -1601,11 +1652,11 @@ dsa2048</code></code></pre>
                                  <td>
                                     							
                                     <p>The approximate time, in UTC, that the operating system for your
-                                       								Spot instance will receive the shutdown signal. This item is present
+                                       								Spot Instance will receive the shutdown signal. This item is present
                                        								and contains a time value (for example, 2015-01-05T18:02:00Z) only
-                                       								if the Spot instance has been marked for termination by Amazon EC2. The
+                                       								if the Spot Instance has been marked for termination by Amazon EC2. The
                                        								termination-time item is not set to a time if you terminated the
-                                       								Spot instance yourself. For more information, see <a href="spot-interruptions.html#termination-time-metadata">termination-time</a>.
+                                       								Spot Instance yourself. For more information, see <a href="spot-interruptions.html#termination-time-metadata">termination-time</a>.
                                     </p>
                                     						
                                  </td>
@@ -1626,7 +1677,7 @@ dsa2048</code></code></pre>
                      			
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac17c17c23c21b8b4">
+                           <table id="w306aac20c17c25c21b8b4">
                               						
                               <tbody><tr>
                                  							
@@ -1701,15 +1752,19 @@ dsa2048</code></code></pre>
                      </div>
                      		
                      	
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -1719,7 +1774,9 @@ dsa2048</code></code></pre>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="user-data.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="instance-identity-documents.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -1738,6 +1795,10 @@ dsa2048</code></code></pre>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

@@ -1,0 +1,168 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Best Practices Design Patterns: Optimizing Amazon S3
+         Performance - Amazon Simple Storage Service
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="Welcome.html" title="What is Amazon S3?">
+      <link rel="prev" href="DNSConsiderations.html" title="DNS Considerations">
+      <link rel="next" href="optimizing-performance-guidelines.html" title="Performance Guidelines for Amazon S3">
+      <meta name="description" content="Amazon S3 performance optimization guidelines.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Simple Storage Service">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/optimizing-performance.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Best Practices Design Patterns: Optimizing Amazon S3
+                                    Performance</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="optimizing-performance">Best Practices Design Patterns: Optimizing Amazon S3
+                        Performance
+                     </h1>
+                     <p>Your applications can easily achieve thousands of transactions per second in request
+                        performance when uploading and retrieving storage from Amazon S3. Amazon S3 automatically
+                        scales to high request rates. For example, your application can achieve at least 3,500
+                        PUT/COPY/POST/DELETE and 5,500 GET/HEAD requests per second per prefix in a bucket.
+                        There are no limits to the number of prefixes in a bucket. You can increase your read
+                        or write performance by parallelizing reads. For example, if you create 10 prefixes
+                        in an Amazon S3 bucket to parallelize reads, you could scale your read performance
+                        to 55,000 read requests per second.
+                     </p>
+                     <p>Some data lake applications on Amazon S3 scan millions or billions of objects for
+                        queries that run over petabytes of
+                        data. These data lake applications achieve single-instance transfer rates that maximize
+                        the
+                        network interface use for their <a href="./ec2/index.html">Amazon EC2</a>
+                        instance, which can be up to 100 Gb/s on a single instance. These applications then
+                        aggregate
+                        throughput across multiple instances to get multiple terabits per second.
+                        
+                     </p>
+                     <p>Other applications are sensitive to latency, such as social media messaging
+                        applications. These applications can achieve consistent small object latencies (and
+                        first-byte-out latencies for larger objects) of roughly 100&#x2013;200 milliseconds.
+                     </p>
+                     <p>Other AWS services can also help accelerate performance for different application
+                        architectures. For example, if you want higher transfer rates over a single HTTP connection
+                        or
+                        single-digit millisecond latencies, 
+                        use <a href="./cloudfront/index.html">Amazon CloudFront</a> 
+                        or <a href="./elasticache/index.html">Amazon ElastiCache</a> 
+                        for caching with Amazon S3.
+                     </p>
+                     <p>Additionally, if you want fast data transport over long distances between a client
+                        and an S3
+                        bucket, use <a href="transfer-acceleration.html">Amazon S3 Transfer Acceleration</a>.
+                        Transfer Acceleration uses the globally distributed edge locations in CloudFront to
+                        accelerate data
+                        transport over geographical distances. If your Amazon S3 workload uses server-side
+                        encryption with AWS Key Management Service (SSE-KMS), see <a href="./kms/latest/developerguide/limits.html">AWS KMS Limits</a> in the AWS Key Management Service Developer Guide for information about the request
+                        rates supported for your use case. 
+                     </p>
+                     <p>The following topics describe best practice guidelines and design patterns for optimizing
+                        performance for applications that use Amazon S3. This guidance supersedes any previous
+                        guidance on
+                        optimizing performance for Amazon S3. For example, previously Amazon S3 performance
+                        guidelines recommended randomizing prefix naming with hashed characters to optimize
+                        performance for frequent data retrievals. You no longer have to randomize prefix naming
+                        for performance, and can use sequential date-based naming for your prefixes. Refer
+                        to the <a href="optimizing-performance-guidelines.html">Performance Guidelines for Amazon S3</a> and <a href="optimizing-performance-design-patterns.html">Performance Design Patterns for
+                           Amazon S3</a> for the most current information about performance optimization for Amazon S3.  
+                     </p>
+                     <div class="highlights">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="optimizing-performance-guidelines.html">Performance
+                                 Guidelines</a></li>
+                           <li><a href="optimizing-performance-design-patterns.html">Performance Design
+                                 Patterns</a></li>
+                        </ul>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="DNSConsiderations.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="optimizing-performance-guidelines.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper"></div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Simple Storage Service';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

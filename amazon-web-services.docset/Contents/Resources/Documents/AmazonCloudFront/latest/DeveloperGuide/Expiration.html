@@ -1,17 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Specifying How Long Objects Stay in a CloudFront Edge Cache (Expiration) - Amazon CloudFront</title>
+      <title>Managing How Long Content Stays in an Edge Cache (Expiration) - Amazon CloudFront</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="AddRemoveReplaceObjects.html" title="Adding, Removing, or Replacing Objects in a Distribution">
-      <link rel="prev" href="ReplacingObjectsSameName.html" title="Updating Existing Objects Using the Same Object Names">
-      <link rel="next" href="Invalidation.html" title="Invalidating Objects (Web Distributions Only)">
-      <meta name="description" content="Control how long objects stay in the CloudFront cache and in browser caches.">
+      <link rel="up" href="ConfiguringCaching.html" title="Optimizing Content Caching and Availability">
+      <link rel="prev" href="header-caching.html" title="Caching Content Based on Request Headers">
+      <link rel="next" href="high_availability_origin_failover.html" title="Optimizing High Availability with CloudFront Origin Failover">
+      <meta name="description" content="Control how long files stay in the CloudFront cache and in browser caches.">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Expiration.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,30 +35,32 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="WorkingWithObjects.html">Working with Objects</a> &#xBB; <a href="AddRemoveReplaceObjects.html">Adding, Removing, or Replacing Objects in a Distribution</a> &#xBB; <span class="breadcrumb">Specifying How Long Objects Stay in a CloudFront Edge Cache (Expiration)</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="ConfiguringCaching.html">Optimizing Content Caching and Availability</a> &#xBB; <span class="breadcrumb">Managing How Long Content Stays in an Edge Cache (Expiration)</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="Expiration">Specifying How Long Objects Stay in a CloudFront Edge Cache (Expiration)</h1>
-                     <p>You can control how long your objects stay in a CloudFront cache before CloudFront
-                        forwards another
+                     <h1 class="topictitle" id="Expiration">Managing How Long Content Stays in an Edge Cache (Expiration)</h1>
+                     <p>You can control how long your files stay in a CloudFront cache before CloudFront forwards
+                        another
                         				request to your origin. Reducing the duration allows you to serve dynamic content.
-                        				Increasing the duration means your users get better performance because your objects
+                        				Increasing the duration means your users get better performance because your files
                         are
                         				more likely to be served directly from the edge cache. A longer duration also
                         reduces the
                         				load on your origin.
                      </p>
-                     <p>Typically, CloudFront serves an object from an edge location until the cache duration
+                     <p>Typically, CloudFront serves a file from an edge location until the cache duration
                         that you
-                        				specified passes&#x2014;that is, until the object expires. After it expires, the next
-                        time
-                        				the edge location gets a user request for the object, CloudFront forwards the
-                        request to the
-                        				origin server to verify that the cache contains the latest version of the object.
+                        				specified passes&#x2014;that is, until the file expires. After it expires, the next time
+                        				the edge location gets a user request for the file, CloudFront forwards the request
+                        to the
+                        				origin server to verify that the cache contains the latest version of the file.
                         The
-                        				response from the origin depends on whether the object has changed:
+                        				response from the origin depends on whether the file has changed:
                      </p>
                      <div class="itemizedlist">
                         				
@@ -74,19 +78,17 @@
                               					
                               <p>If the CloudFront cache does not have the latest version, the origin returns a 200
                                  status
-                                 						code (OK) and the latest version of the object.
+                                 						code (OK) and the latest version of the file.
                               </p>
                               				
                            </li>
                         </ul>
                      </div>
-                     <p>If an object in an edge location isn&apos;t frequently requested, CloudFront might evict
-                        the
-                        				object&#x2014;remove the object before its expiration date&#x2014;to make room for objects
+                     <p>If a file in an edge location isn&apos;t frequently requested, CloudFront might evict the
+                        				file&#x2014;remove the file before its expiration date&#x2014;to make room for files
                         				that have been requested more recently.
                      </p>
-                     <p>By default, each object automatically expires after 24 hours. For web distributions,
-                        you
+                     <p>By default, each file automatically expires after 24 hours, but you
                         				can change the default behavior in two ways:
                      </p>
                      <div class="itemizedlist">
@@ -96,19 +98,27 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
-                              <p>To change the cache duration for all objects that match the same path pattern, you
+                              <p>To change the cache duration for all files that match the same path pattern, you
                                  						can change the CloudFront settings for <b>Minimum TTL</b>, <b>Maximum
-                                    							TTL</b>, and <b>Default TTL</b> for a cache behavior. For
-                                 						information about the individual settings, see <a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesMinTTL" target="_blank">Minimum TTL</a>, <a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesMaxTTL" target="_blank">Maximum TTL</a>, and <a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesDefaultTTL" target="_blank">Default TTL</a>. To use these settings, you must choose the
-                                 							<b>Customize</b> option for the <a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesObjectCaching" target="_blank">Object Caching</a> setting. 
+                                    						TTL</b>, and <b>Default TTL</b> for a cache behavior. For
+                                 						information about the individual settings, see 
+                                 						<a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesMinTTL">Minimum TTL</a>, 
+                                 						<a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesMaxTTL">Maximum TTL</a>, and 
+                                 						<a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesDefaultTTL">Default TTL</a> in
+                                 						<a href="distribution-web-values-specify.html">Values That You Specify When You Create or Update a Distribution</a>. 
+                                 						To use these settings, you must choose the <b>Customize</b> option for the <b>Object Caching</b> 
+                                 						setting when you create or update your CloudFront distribution. For more information,
+                                 see 
+                                 						<a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesObjectCaching">Object Caching</a> in
+                                 						<a href="distribution-web-values-specify.html">Values That You Specify When You Create or Update a Distribution</a>. 
                               </p>
                               				
                            </li>
                            <li class="listitem">
                               					
-                              <p>To change the cache duration for an individual object, you can configure your origin
+                              <p>To change the cache duration for an individual file, you can configure your origin
                                  						to add a <code class="code">Cache-Control max-age</code> or <code class="code">Cache-Control s-maxage</code>
-                                 						directive, or an <code class="code">Expires</code> header field to the object. For more information,
+                                 						directive, or an <code class="code">Expires</code> header field to the file. For more information,
                                  						see <a href="Expiration.html#expiration-individual-objects">Using Headers to Control Cache Duration for
                                     					Individual Objects</a>.
                               </p>
@@ -250,7 +260,7 @@
                      
                      				
                      <p>For an example of how to add <code class="code">Cache-Control</code> and <code class="code">Expires</code>
-                        					header fields using the AWS SDK for PHP, see <a href="./AmazonS3/latest/dev/UploadObjSingleOpPHP.html" target="_blank">Upload an Object Using the AWS SDK for
+                        					header fields using the AWS SDK for PHP, see <a href="./AmazonS3/latest/dev/UploadObjSingleOpPHP.html">Upload an Object Using the AWS SDK for
                            						PHP</a> in the <em>Amazon Simple Storage Service Developer Guide</em>. Some third-party tools are also
                         					able to add these fields.
                      </p>
@@ -280,22 +290,22 @@
                            all requests for those
                            						objects to the origin. In that configuration, the value of minimum TTL must
                            be 0. For
-                           						more information, see <a href="header-caching.html">Configuring CloudFront to Cache Objects Based on Request Headers</a>.
+                           						more information, see <a href="header-caching.html">Caching Content Based on Request Headers</a>.
                         </p>
                      </div>
                      
                      				
-                     <p>To specify values for <a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesMinTTL" target="_blank">Minimum
-                           						TTL</a>, <a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesMaxTTL" target="_blank">Maximum
-                           						TTL</a>, and <a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesDefaultTTL" target="_blank">Default TTL</a>, you must choose the <b>Customize</b> option for the
-                        						<a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesObjectCaching" target="_blank">Object Caching</a> setting.
+                     <p>To specify values for <a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesMinTTL">Minimum
+                           						TTL</a>, <a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesMaxTTL">Maximum
+                           						TTL</a>, and <a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesDefaultTTL">Default TTL</a>, you must choose the <b>Customize</b> option for the
+                        						<a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesObjectCaching">Object Caching</a> setting.
                      </p>
                      
                      				
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w313aac23c35c15c23b8">
+                           <table id="w521aac17c31c23b8">
                               							
                               <tbody><tr>
                                  								
@@ -612,8 +622,8 @@
                      
                      				
                      <p>For information about how to change settings for web distributions using the CloudFront
-                        					console, see <a href="HowToUpdateDistribution.html">Viewing and Updating CloudFront Distributions</a>. For information about how to change settings
-                        					for web distributions using the CloudFront API, see <a href="./cloudfront/latest/APIReference/PutConfig.html" target="_blank">PUT
+                        					console, see <a href="HowToUpdateDistribution.html">Updating a Distribution</a>. For information about how to change settings
+                        					for web distributions using the CloudFront API, see <a href="./cloudfront/latest/APIReference/PutConfig.html">PUT
                            						Config</a>. 
                      </p>
                      
@@ -640,13 +650,12 @@
                      				
                      <div class="aws-note">
                         <p class="aws-note">Note</p>
-                        <p>Using the Amazon S3 console, you can only add headers to one object at a time, but
-                           with
+                        <p>On the Amazon S3 console, you can only add headers to one object at a time, but with
                            						some third-party tools, you can add headers to multiple Amazon S3 objects at
                            a time. For more
-                           						information about third-party tools that support Amazon S3, perform a web search
-                           on
-                           							<strong class="userinput"><code>AWS S3 third party tools</code></strong>.
+                           						information about third-party tools that support Amazon S3, search on the web
+                           for 
+                           						<strong class="userinput"><code>AWS S3 third party tools</code></strong>.
                         </p>
                      </div>
                      
@@ -660,28 +669,27 @@
                            					
                         </li>
                         <li>
-                           <p>In the Amazon S3 console, in the buckets list, choose the name of the bucket that
-                              contains the files.
+                           <p>In the Amazon S3 console, in the <b>Bucket name</b> list, choose the name of the bucket that contains the files.
                            </p>
                         </li>
                         <li>
-                           <p>In the list of objects, select the check box for one or more objects that you want
-                              to add a header to.
+                           <p>In the <b>Name</b> list, choose the name of the object that you want to add a header to.
                            </p>
                         </li>
                         <li>
-                           <p>Choose <b>More</b> and choose <b>Change metadata</b>.
+                           <p>Choose <b>Properties</b>, and then choose <b>Metadata</b>.
                            </p>
                         </li>
                         <li>
                            						
-                           <p>In the <b>Key</b> list, choose <b>Cache-Control</b> or <b>Expires</b>, as applicable. 
+                           <p>Choose <b>Add Metadata</b>, and then in the <b>Key</b> menu, choose <b>Cache-Control</b> 
+                              							or <b>Expires</b>. 
                            </p>
                            					
                         </li>
                         <li>
                            						
-                           <p>In the <b>Value</b> field, type the applicable value:
+                           <p>In the <b>Value</b> field, type one of the following:
                            </p>
                            						
                            <div class="itemizedlist">
@@ -712,16 +720,21 @@
                            </p>
                         </li>
                      </ol>
-                     			
+                     
+                     		
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -730,8 +743,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="ReplacingObjectsSameName.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="Invalidation.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="header-caching.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="high_availability_origin_failover.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -757,6 +772,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

@@ -1,17 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Build an API with API Gateway Private Integration - Amazon API Gateway</title>
+      <title>TUTORIAL: Build an API with API Gateway Private Integration - Amazon API Gateway</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="getting-started.html" title="Getting Started with Amazon API Gateway">
-      <link rel="prev" href="api-gateway-create-api-step-by-step.html" title="Build an API with HTTP Custom
+      <link rel="up" href="api-gateway-tutorials.html" title="Amazon API Gateway Tutorials">
+      <link rel="prev" href="api-gateway-create-api-step-by-step.html" title="TUTORIAL: Build an API with HTTP Non-Proxy
             Integration">
-      <link rel="next" href="getting-started-aws-proxy.html" title="Build an API Gateway API with AWS Integration">
-      <meta name="description" content="You can create an API Gateway API with private integration to provide your customers access to HTTP/HTTPS resources within your Amazon Virtual Private Cloud (Amazon VPC). Such VPC resources are HTTP/HTTPS endpoints on an EC2 instance behind a network load balancer">
+      <link rel="next" href="getting-started-aws-proxy.html" title="TUTORIAL: Build an API Gateway API with AWS Integration">
+      <meta name="description" content="You can create an API Gateway API with private integration to provide your customers access to HTTP/HTTPS resources within your Amazon Virtual Private Cloud (Amazon VPC). Such VPC resources are HTTP/HTTPS endpoints on an EC2 instance behind a network load balancer in the VPC. The network load balancer encapsulates the VPC resource and routes incoming requests to the targeted resource.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/getting-started-with-private-integration.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,38 +35,42 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="getting-started.html">Getting Started with Amazon API Gateway</a> &#xBB; <span class="breadcrumb">Build an API with API Gateway Private Integration</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="api-gateway-tutorials.html">Amazon API Gateway Tutorials</a> &#xBB; <span class="breadcrumb">TUTORIAL: Build an API with API Gateway Private Integration</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="getting-started-with-private-integration">Build an API with API Gateway Private Integration</h1>
+                     <h1 class="topictitle" id="getting-started-with-private-integration">TUTORIAL: Build an API with API Gateway Private Integration</h1>
                      <p> You can create an API Gateway API with private integration to provide your customers
                         access to
                         HTTP/HTTPS resources within your Amazon Virtual Private Cloud (Amazon VPC). Such VPC
                         resources are HTTP/HTTPS
-                        endpoints on an EC2 instance behind a network load balancer
-                        in
-                        the VPC. The network load balancer encapsulates the VPC resource and routes incoming
-                        requests to the targeted resource. 
+                        endpoints on an EC2 instance behind a network load balancer in the VPC. The network
+                        load
+                        balancer encapsulates the VPC resource and routes incoming requests to the targeted
+                        resource. 
                      </p>
                      <p>When a client calls the API, API Gateway connects to the network load balancer through
                         the
                         pre-configured VPC link. A VPC link is encapsulated by an API Gateway resource of
-                        <a href="./apigateway/api-reference/resource/vpc-link/" target="_blank">VpcLink</a>. It is responsible for forwarding
+                        <a href="./apigateway/api-reference/resource/vpc-link/">VpcLink</a>. It is responsible for forwarding
                         API method requests to the VPC resources and returns backend responses to the caller.
                         For an
                         API developer, a <code class="code">VpcLink</code> is functionally equivalent to an integration endpoint. 
                      </p>
-                     <p> To create an API with private integration, you must create a new or choose an existing
-                        <code class="code">VpcLink</code> connected to a network load balancer that targets the desired VPC
+                     <p> To create an API with private integration, you must create a new 
+                        <code class="code">VpcLink</code>, or choose an existing one, that is connected to a network load balancer that targets
+                        the desired VPC
                         resources. You must have <a href="grant-permissions-to-create-vpclink.html">appropriate
                            permissions</a> to create and manage a <code class="code">VpcLink</code>. You then set up an API
-                        <a href="./apigateway/api-reference/resource/method/" target="_blank">method</a> and integrate it with the
+                        <a href="./apigateway/api-reference/resource/method/">method</a> and integrate it with the
                         <code class="code">VpcLink</code> by setting either <code class="code">HTTP</code> or <code class="code">HTTP_PROXY</code> as
-                        the <a href="./apigateway/api-reference/resource/integration/#type" target="_blank">integration type</a>, setting
-                        <code class="code">VPC_LINK</code> as the integration <a href="./apigateway/api-reference/resource/integration/#connectionType" target="_blank">connection type</a>, and
-                        setting the <code class="code">VpcLink</code> identifier on the integration <a href="./apigateway/api-reference/resource/integration/#connectionId" target="_blank"><code class="code">connectionId</code></a>. 
+                        the <a href="./apigateway/api-reference/resource/integration/#type">integration type</a>, setting
+                        <code class="code">VPC_LINK</code> as the integration <a href="./apigateway/api-reference/resource/integration/#connectionType">connection type</a>, and
+                        setting the <code class="code">VpcLink</code> identifier on the integration <a href="./apigateway/api-reference/resource/integration/#connectionId"><code class="code">connectionId</code></a>. 
                      </p>
                      <p>To quickly get started creating an API to access VPC resources, we walk through the
                         essential steps for building an API with the private integration, using the API Gateway
@@ -96,8 +102,7 @@
                         </ol>
                      </div>
                      <p>After creating your VPC resource and your network load balancer with your VPC resource
-                        configured in its target groups, use the following instructions below to create an
-                        API and
+                        configured in its target groups, follow the instructions below to create an API and
                         integrate it with the VPC resource via a <code class="code">VpcLink</code> in a private integration. 
                      </p>
                      <p class="title"><b>To create an API with private integration using the API Gateway console</b></p>
@@ -195,9 +200,7 @@
                               </li>
                               <li>
                                  
-                                 <p> Choose
-                                    <b>Use
-                                       Proxy Integration</b>. 
+                                 <p> Choose <b>Use Proxy Integration</b>. 
                                  </p>
                                  
                               </li>
@@ -232,6 +235,14 @@
                                  <p>Here, the host name (for example, <code class="code">myApi.example.com</code>) is used
                                     to set the <code class="code">Host</code> header of the integration request. 
                                  </p>
+                                 
+                                 <div class="aws-note">
+                                    <p class="aws-note">Note</p>
+                                    <p>For the network load balancer (NLB), be sure to use the NLB DNS name as described
+                                       in <a href="./elasticloadbalancing/latest/network/network-load-balancer-getting-started.html">Getting Started with Network Load Balancers</a>. 
+                                       
+                                    </p>
+                                 </div>
                                  
                               </li>
                               <li>
@@ -311,15 +322,19 @@
                            
                         </li>
                      </ol>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -329,7 +344,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="api-gateway-create-api-step-by-step.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="getting-started-aws-proxy.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -337,6 +354,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

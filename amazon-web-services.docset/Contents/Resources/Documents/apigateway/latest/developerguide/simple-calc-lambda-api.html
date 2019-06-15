@@ -3,14 +3,16 @@
       <title>Simple Calculator API in API Gateway - Amazon API Gateway</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="how-to-generate-sdk.html" title="Generate SDK of an API">
+      <link rel="up" href="how-to-generate-sdk.html" title="Generate an SDK for a REST API in API Gateway">
       <link rel="prev" href="simple-calc-nodejs-lambda-function.html" title="Simple Calculator Lambda Function">
-      <link rel="next" href="simple-calc-lambda-api-swagger-definition.html" title="Simple Calculator API Swagger Definition">
+      <link rel="next" href="simple-calc-lambda-api-swagger-definition.html" title="Simple Calculator API OpenAPI Definition">
       <meta name="description" content="Demonstrates a simple calculator API in API Gateway.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/simple-calc-lambda-api.html">
@@ -20,7 +22,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,13 +34,17 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="how-to-deploy-api.html">Deploying an API in Amazon API Gateway</a> &#xBB; <a href="how-to-generate-sdk.html">Generate SDK of an API</a> &#xBB; <span class="breadcrumb">Simple Calculator API in API Gateway</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="how-to-deploy-api.html">Deploying a REST API in Amazon API Gateway</a> &#xBB; <a href="how-to-generate-sdk.html">Generate an SDK for a REST API in API Gateway</a> &#xBB; <span class="breadcrumb">Simple Calculator API in API Gateway</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="simple-calc-lambda-api">Simple Calculator API in API Gateway</h1>
-                     <p>Our simple calculator API exposes three methods (GET, POST, GET) to invoke the <a href="simple-calc-nodejs-lambda-function.html">Simple Calculator Lambda Function</a> (<code class="code">Calc</code>). A graphical
+                     <p>Our simple calculator API exposes three methods (GET, POST, GET) to invoke the <a href="simple-calc-nodejs-lambda-function.html">Simple Calculator Lambda Function</a>. A graphical
                         representation of this API is shown as follows:
                      </p>
                      <div class="mediaobject">
@@ -95,15 +101,16 @@
                         SDK
                         specific method names. 
                      </p>
-                     <p>You can, and should, override the default SDK method names by specifying the <a href="./apigateway/api-reference/resource/method/#operationName" target="_blank">operationName</a> property on each
-                        API method. You can do so when <a href="./apigateway/api-reference/link-relation/method-put/" target="_blank">creating
-                           the API method</a> or <a href="./apigateway/api-reference/link-relation/method-update/" target="_blank">updating the API method</a> using the API Gateway REST API. In the API Swagger
+                     <p>You can, and should, override the default SDK method names by specifying the <a href="./apigateway/api-reference/resource/method/#operationName">operationName</a> property on each
+                        API method. You can do so when <a href="./apigateway/api-reference/link-relation/method-put/">creating
+                           the API method</a> or <a href="./apigateway/api-reference/link-relation/method-update/">updating the API method</a> using the API Gateway REST API. In the API Swagger
                         definition, you can set the <code class="code">operationId</code> to achieve the same result.
                      </p>
                      <p>Before showing how to call these methods using an SDK generated by API Gateway for
                         this API,
-                        let&apos;s recall briefly how to set them up. For detailed instructions, see <a href="how-to-create-api.html">Creating an API in Amazon API Gateway</a>. If you&apos;re new to API Gateway,
-                        see <a href="getting-started-with-lambda-integration.html">Build an API Gateway API with Lambda Integration</a> first.
+                        let&apos;s recall briefly how to set them up. For detailed instructions, see <a href="how-to-create-api.html">Creating a REST API in Amazon API Gateway</a>. If you&apos;re new to API Gateway,
+                        see <a href="getting-started-with-lambda-integration.html">Build an API Gateway API with Lambda
+                           Integration</a> first.
                      </p>
                      
                      <h2 id="simple-calc-lambda-api-create-models-for-input-and-output">Create
@@ -192,9 +199,10 @@
                         
                      </div>
                      
-                     <p>With this model, your API customers can parse a successful output by reading
-                        properties of a <code class="code">Result</code> object. Without this model, customers would be
-                        required to create dictionary object to represent the JSON output. 
+                     <p>With this model, your API customers can call the SDK to specify the input by
+                        instantiating an <code class="code">Input</code> object. Without this model, your customers would be
+                        required to create dictionary object to represent the JSON input to the Lambda function.
+                        
                      </p>
                      
                      
@@ -218,10 +226,9 @@
                         
                      </div>
                      
-                     <p>With this model, your API customers can call the SDK to specify the input by
-                        instantiating an <code class="code">Input</code> object. Without this model, your customers would be
-                        required to create dictionary object to represent the JSON input to the Lambda function.
-                        
+                     <p>With this model, your API customers can parse a successful output by reading
+                        properties of a <code class="code">Result</code> object. Without this model, customers would be
+                        required to create dictionary object to represent the JSON output. 
                      </p>
                      
                      <p>In addition, you can
@@ -229,15 +236,19 @@
                         create and set up the API following the Swagger API <a href="simple-calc-lambda-api-swagger-definition.html">definitions</a>.
                      </p>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -247,7 +258,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="simple-calc-nodejs-lambda-function.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="simple-calc-lambda-api-swagger-definition.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -273,6 +286,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

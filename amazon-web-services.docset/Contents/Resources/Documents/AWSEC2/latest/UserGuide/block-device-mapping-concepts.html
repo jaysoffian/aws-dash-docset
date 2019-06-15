@@ -5,13 +5,15 @@
       <link rel="home" href="#top">
       <link rel="up" href="Storage.html" title="Storage">
       <link rel="prev" href="device_naming.html" title="Device Naming on Linux Instances">
-      <link rel="next" href="using-public-data-sets.html" title="Using Public Data Sets">
+      <link rel="next" href="EC2_Resources.html" title="Resources and Tags">
       <meta name="description" content="Use a block device mapping to specify additional EBS volumes or instance store volumes for your instance when it&apos;s launched.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <span class="breadcrumb">Block Device Mapping</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <span class="breadcrumb">Block Device Mapping</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="block-device-mapping-concepts">Block Device Mapping</h1>
                      <p>Each instance that you launch has an associated root device volume, either an Amazon
@@ -103,11 +108,10 @@
                         so this
                         mapping overrides the one specified in the AMI from which you launched the instance.
                         Note that
-                        all of the NVMe instance store volumes supported by an instance type are automatically
-                        added
-                        on instance launch; you do not need to add them to the block device mapping for the
-                        AMI or the
-                        instance.
+                        all NVMe instance store volumes supported by an instance type are automatically enumerated
+                        and assigned a device name on instance launch; including them in your block device
+                        mapping 
+                        has no effect.
                      </p>
                      
                      
@@ -146,8 +150,8 @@
                            <li class="listitem">
                               
                               <p>The device name used within Amazon EC2. The block device driver for the instance assigns
-                                 the actual volume name when mounting the volume, and the name assigned can be different
-                                 from the name that Amazon EC2 recommends. For more information, see <a href="device_naming.html">Device Naming on <span>Linux</span> Instances</a>.
+                                 the actual volume name when mounting the volume. The name assigned can be different
+                                 from the name that Amazon EC2 recommends. For more information, see <a href="device_naming.html">Device Naming on Linux Instances</a>.
                               </p>
                               
                            </li>
@@ -161,10 +165,9 @@
                            </li>
                            <li class="listitem">
                               
-                              <p>[NVMe instance store volumes] These volumes are mapped automatically; you do not
-                                 need to specify the NVMe instance type volumes supported by an instance type in a
-                                 block
-                                 device mapping.
+                              <p>[NVMe instance store volumes] These volumes are automatically enumerated and assigned
+                                 
+                                 a device name; including them in your block device mapping has no effect.
                               </p>
                               
                            </li>
@@ -457,14 +460,19 @@
                      <p><b>To add volumes to an AMI using the command line</b></p>
                      
                      
-                     <p>Use the <a href="./cli/latest/reference/ec2/create-image.html" target="_blank">create-image</a> AWS CLI
-                        command to specify a block device mapping for an EBS-backed AMI. Use the <a href="./cli/latest/reference/ec2/register-image.html" target="_blank">register-image</a> AWS CLI command to specify
+                     <p>Use the <a href="./cli/latest/reference/ec2/create-image.html">create-image</a> AWS CLI
+                        command to specify a block device mapping for an EBS-backed AMI. Use the <a href="./cli/latest/reference/ec2/register-image.html">register-image</a> AWS CLI command to specify
                         a block device mapping for an instance store-backed AMI.
                      </p>
                      
                      
-                     <p>Specify the block device mapping using the following parameter:</p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><b>--block-device-mappings</b> [<em class="replaceable"><code>mapping</code></em>, ...]</code></pre>
+                     <p>Specify the block device mapping using the <b>--block-device-mappings</b>
+                        parameter. Arguments encoded in JSON can be supplied either directly on the command
+                        line or
+                        by reference to a file:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><b>--block-device-mappings</b> [<em class="replaceable"><code>mapping</code></em>, ...]
+<b>--block-device-mappings</b> [file://<em class="replaceable"><code>mapping.json</code></em>]</code></pre>
                      
                      <p>To add an instance store volume, use the following mapping:</p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
@@ -504,12 +512,12 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p><a href="./powershell/latest/reference/items/New-EC2Image.html" target="_blank">New-EC2Image</a></p>
+                              <p><a href="./powershell/latest/reference/items/New-EC2Image.html">New-EC2Image</a></p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><a href="./powershell/latest/reference/items/Register-EC2Image.html" target="_blank">Register-EC2Image</a></p>
+                              <p><a href="./powershell/latest/reference/items/Register-EC2Image.html">Register-EC2Image</a></p>
                               
                            </li>
                         </ul>
@@ -592,8 +600,8 @@
                      <p><b>To view the EBS volumes for an AMI using the command line</b></p>
                      
                      
-                     <p>Use the <a href="./cli/latest/reference/ec2/describe-images.html" target="_blank">describe-images</a>
-                        (AWS CLI) command or <a href="./powershell/latest/reference/items/Get-EC2Image.html" target="_blank">Get-EC2Image</a>
+                     <p>Use the <a href="./cli/latest/reference/ec2/describe-images.html">describe-images</a>
+                        (AWS CLI) command or <a href="./powershell/latest/reference/items/Get-EC2Image.html">Get-EC2Image</a>
                         (AWS Tools for Windows PowerShell) command to enumerate the EBS volumes in the block
                         device mapping for an
                         AMI.
@@ -766,7 +774,7 @@
                      <p><b>To add volumes to an instance using the command line</b></p>
                      
                      
-                     <p>Use the <a href="./cli/latest/reference/ec2/run-instances.html" target="_blank">run-instances</a> AWS CLI
+                     <p>Use the <a href="./cli/latest/reference/ec2/run-instances.html">run-instances</a> AWS CLI
                         command to specify a block device mapping for an instance.
                      </p>
                      
@@ -836,7 +844,7 @@
     &quot;VirtualName&quot;: &quot;ephemeral1&quot;
 }</code></pre>
                      <p>Alternatively, you can use the <code class="code">-BlockDeviceMapping</code> parameter with the
-                        <a href="./powershell/latest/reference/items/New-EC2Instance.html" target="_blank">New-EC2Instance</a> command
+                        <a href="./powershell/latest/reference/items/New-EC2Instance.html">New-EC2Instance</a> command
                         (AWS Tools for Windows PowerShell).
                      </p>
                      
@@ -846,7 +854,7 @@
                      <h3 id="update-instance-bdm">Updating the Block Device Mapping of a Running Instance</h3>
                      
                      
-                     <p>You can use the following <a href="./cli/latest/reference/ec2/modify-instance-attribute.html" target="_blank">modify-instance-attribute</a> AWS CLI command to update the block device mapping of a
+                     <p>You can use the following <a href="./cli/latest/reference/ec2/modify-instance-attribute.html">modify-instance-attribute</a> AWS CLI command to update the block device mapping of a
                         running instance. Note that you do not need to stop the instance before changing this
                         attribute.
                      </p>
@@ -863,7 +871,7 @@
   }
 ]</code></pre>
                      <p>Alternatively, you can use the <code class="code">-BlockDeviceMapping</code> parameter with the
-                        <a href="./powershell/latest/reference/items/Edit-EC2InstanceAttribute.html" target="_blank">Edit-EC2InstanceAttribute</a> command (AWS Tools for Windows PowerShell).
+                        <a href="./powershell/latest/reference/items/Edit-EC2InstanceAttribute.html">Edit-EC2InstanceAttribute</a> command (AWS Tools for Windows PowerShell).
                      </p>
                      
                      
@@ -1021,8 +1029,8 @@
                            line</b></p>
                      
                      
-                     <p>Use the <a href="./cli/latest/reference/ec2/describe-instances.html" target="_blank">describe-instances</a>
-                        (AWS CLI) command or <a href="./powershell/latest/reference/items/Get-EC2Instance.html" target="_blank">Get-EC2Instance</a> (AWS Tools for Windows PowerShell) command to enumerate the EBS volumes in the block
+                     <p>Use the <a href="./cli/latest/reference/ec2/describe-instances.html">describe-instances</a>
+                        (AWS CLI) command or <a href="./powershell/latest/reference/items/Get-EC2Instance.html">Get-EC2Instance</a> (AWS Tools for Windows PowerShell) command to enumerate the EBS volumes in the block
                         device mapping for an instance.
                      </p>
                      
@@ -1035,7 +1043,6 @@
                      </h3>
                      
                      
-                     
                      <p>When you view the block device mapping for your instance, you can see only the EBS
                         volumes, not the instance store volumes. You can use instance metadata to query the
                         complete
@@ -1043,10 +1050,15 @@
                         <code class="code">http://169.254.169.254/latest/</code>.
                      </p>
                      
+                     <div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>NVMe instance store volumes are not included in the block device mapping.</p>
+                     </div>
+                     
                      
                      <p>First, connect to your running instance. From the instance, use this query to get
                         its
-                        block device mapping. 
+                        block device mapping.
                      </p>
                      
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>curl http://169.254.169.254/latest/meta-data/block-device-mapping/</code></strong></code></pre>
@@ -1083,15 +1095,19 @@ swap</code></pre>
                      
                      
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -1100,8 +1116,10 @@ swap</code></pre>
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="device_naming.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="using-public-data-sets.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="device_naming.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="EC2_Resources.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -1118,6 +1136,10 @@ swap</code></pre>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

@@ -1,19 +1,22 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
       <title>Create, Configure, and
-         Test Usage Plans Using the API Gateway REST API - Amazon API Gateway
+         Test Usage Plans Using the API Gateway CLI and REST API - Amazon API Gateway
       </title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="api-gateway-api-usage-plans.html" title="Create and Use API Gateway Usage Plans">
+      <link rel="up" href="api-gateway-api-usage-plans.html" title="Create and Use Usage Plans with API
+            Keys">
       <link rel="prev" href="api-gateway-setup-api-key-with-restapi.html" title="Set Up API Keys Using the API Gateway
                 REST API">
       <link rel="next" href="api-key-file-format.html" title="API Gateway API Key File Format">
-      <meta name="description" content="Create, configure, and test usage plans with the API Gateway REST API.">
+      <meta name="description" content="Create, configure, and test usage plans with the API Gateway CLI and REST API.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-usage-plans-with-rest-api.html">
@@ -23,7 +26,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -35,15 +38,20 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-control-access-to-api.html"> Controlling Access to an API in
-                                    			API Gateway</a> &#xBB; <a href="api-gateway-api-usage-plans.html">Create and Use API Gateway Usage Plans</a> &#xBB; <span class="breadcrumb">Create, Configure, and
-                                    Test Usage Plans Using the API Gateway REST API</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="apigateway-control-access-to-api.html">Controlling and Managing Access to a REST
+                                    			API in API Gateway</a> &#xBB; <a href="api-gateway-api-usage-plans.html">Create and Use Usage Plans with API
+                                    Keys</a> &#xBB; <span class="breadcrumb">Create, Configure, and
+                                    Test Usage Plans Using the API Gateway CLI and REST API</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="api-gateway-create-usage-plans-with-rest-api">Create, Configure, and
-                        Test Usage Plans Using the API Gateway REST API
+                        Test Usage Plans Using the API Gateway CLI and REST API
                      </h1>
                      <p>Before configuring a usage plan, you must have already done the following: set up
                         methods of a selected API to require API keys, deployed or redeployed the API to a
@@ -51,8 +59,7 @@
                            REST API</a>.
                      </p>
                      <p>To configure a usage plan by using the API Gateway REST API, use the following instructions,
-                        assuming that you&apos;ve already created the APIs to be added to the usage
-                        plan.
+                        assuming that you&apos;ve already created the APIs to be added to the usage plan.
                      </p>
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Topics</strong></p>
@@ -61,8 +68,8 @@
                                  Plans</a></li>
                            <li><a href="#api-gateway-usage-plan-create-using-rest-api">Create a Usage
                                  Plan</a></li>
-                           <li><a href="#api-gateway-usage-plan-manage-with-restapi">Manage a Usage
-                                 Plan</a></li>
+                           <li><a href="#api-gateway-usage-plan-manage-with-cli">Manage a Usage Plan by
+                                 Using the AWS CLI</a></li>
                            <li><a href="#api-gateway-usage-plan-test-with-postman">Test Usage Plans</a></li>
                         </ul>
                      </div>
@@ -71,9 +78,8 @@
                         Plans
                      </h2>
                      
-                     <p>When
-                        creating a usage plan the first time, you can migrate existing API stages that are
-                        associated with selected API keys to a usage plan by calling <a href="./apigateway/api-reference/link-relation/account-update/" target="_blank">account:update</a> with the following body:
+                     <p>When creating a usage plan the first time, you can migrate existing API stages
+                        that are associated with selected API keys to a usage plan by calling <a href="./apigateway/api-reference/link-relation/account-update/"><code class="code">account:update</code></a> with the following body:
                      </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
   &quot;patchOperations&quot; : [ {
@@ -98,9 +104,9 @@
                      <ol>
                         <li>
                            
-                           <p>Call <a href="./apigateway/api-reference/link-relation/usageplan-create/" target="_blank">usageplan:create</a> to create a usage plan. In the payload,
-                              specify the name and description of the plan, associated API stages, rate
-                              limits, and quotas. 
+                           <p>Call <a href="./apigateway/api-reference/link-relation/usageplan-create/"><code class="code">usageplan:create</code></a> to create a usage plan. In
+                              the payload, specify the name and description of the plan, associated API
+                              stages, rate limits, and quotas. 
                            </p>
                            
                            <p>Make note of the resultant usage plan identifier. You need it in the next
@@ -115,9 +121,9 @@
                            <ol>
                               <li>
                                  
-                                 <p>Call <a href="./apigateway/api-reference/link-relation/usageplankey-create/" target="_blank">usageplankey:create</a> to add an API key to the usage
-                                    plan. Specify <code class="code">keyId</code> and <code class="code">keyType</code> in the
-                                    payload. 
+                                 <p>Call <a href="./apigateway/api-reference/link-relation/usageplankey-create/"><code class="code">usageplankey:create</code></a> to add an API key
+                                    to the usage plan. Specify <code class="code">keyId</code> and
+                                    <code class="code">keyType</code> in the payload. 
                                  </p>
                                  
                                  <p>To add more API keys to the usage plan, repeat the previous call,
@@ -127,11 +133,11 @@
                               </li>
                               <li>
                                  
-                                 <p>Call <a href="./apigateway/api-reference/link-relation/apikey-import/" target="_blank">apikey:import</a> to add one or more API keys directly to
-                                    the specified usage plan. The request payload should contain API key
-                                    values, the associated usage plan identifier, the Boolean flags to
-                                    indicate that the keys are enabled for the usage plan, and,
-                                    possibly, the API key names and descriptions. 
+                                 <p>Call <a href="./apigateway/api-reference/link-relation/apikey-import/"><code class="code">apikey:import</code></a> to add one or more API
+                                    keys directly to the specified usage plan. The request payload
+                                    should contain API key values, the associated usage plan identifier,
+                                    the Boolean flags to indicate that the keys are enabled for the
+                                    usage plan, and, possibly, the API key names and descriptions. 
                                  </p>
                                  
                                  <p>The following example of the <code class="code">apikey:import</code> request
@@ -161,6 +167,15 @@ abcdef1234ghijklmnop9012345678, importedKey_3,          , true, n371pt
                                     <code class="code">&apos;n371pt,m282qs&apos;</code>).
                                  </p>
                                  
+                                 <div class="aws-note">
+                                    <p class="aws-note">Note</p>
+                                    <p>An API key can be associated with more than one usage plan. A
+                                       usage plan can be associated with more than one stage. However,
+                                       a given API key can only be associated with one usage plan for
+                                       each stage of your API.
+                                    </p>
+                                 </div>
+                                 
                               </li>
                            </ol>
                            
@@ -168,49 +183,44 @@ abcdef1234ghijklmnop9012345678, importedKey_3,          , true, n371pt
                      </ol>
                      
                      
-                     <h2 id="api-gateway-usage-plan-manage-with-restapi">Manage a Usage
-                        Plan
+                     <h2 id="api-gateway-usage-plan-manage-with-cli">Manage a Usage Plan by
+                        Using the AWS CLI
                      </h2>
                      
-                     <p>The following procedure describes how to manage a usage plan.</p>
+                     <p>The following code examples show how to add, remove, or modify the method-level
+                        throttling settings in a usage plan by calling the <a href="./cli/latest/reference/apigateway/update-usage-plan.html"><code class="code">update-usage-plan</code></a> command.
+                     </p>
                      
-                     <p class="title"><b>To manage a usage plan with the REST API</b></p>
-                     <ol>
-                        <li>
-                           
-                           <p>Call <a href="./apigateway/api-reference/link-relation/usageplan-by-id/" target="_blank">usageplan:by-id</a> to get a usage plan of a given plan ID. To see
-                              the available usage plans, call <a href="./apigateway/api-reference/link-relation/apigateway-usage-plans/" target="_blank">apigateway:usage-plans</a>.
-                           </p>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>Call <a href="./apigateway/api-reference/link-relation/usageplan-update/" target="_blank">usageplan:update</a> to add a new API stage to the plan, replace an
-                              existing API stage in the plan, remove an API stage from the plan, or modify
-                              the rate limits or quotas. 
-                           </p>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>Call <a href="./apigateway/api-reference/link-relation/usage-get/" target="_blank">usage:get</a> to query the usage data in a specified time
-                              interval.
-                           </p>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>Call <a href="./apigateway/api-reference/link-relation/usage-update/" target="_blank">usage:update</a> to grant an extension to the current usage in a
-                              usage plan.
-                           </p>
-                           
-                        </li>
-                     </ol>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>Be sure to change <code class="code">us-east-1</code> to the appropriate region value for
+                           your API.
+                        </p>
+                     </div>
                      
+                     <p>To add or replace a rate limit for throttling an individual resource and
+                        method:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws apigateway --region us-east-1 update-usage-plan --usage-plan-id <em class="replaceable"><code>&lt;planId&gt;</code></em> --patch-operations 
+                        op=&quot;replace&quot;,path=&quot;/apiStages/<em class="replaceable"><code>&lt;apiId&gt;</code></em>:<em class="replaceable"><code>&lt;stage&gt;</code></em>/throttle/<em class="replaceable"><code>&lt;resourcePath&gt;</code></em>/<em class="replaceable"><code>&lt;httpMethod&gt;</code></em>/rateLimit&quot;,value=&quot;0.1&quot;</code></pre>
+                     <p>To add or replace a burst limit for throttling an individual resource and
+                        method:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws apigateway --region us-east-1 update-usage-plan --usage-plan-id <em class="replaceable"><code>&lt;planId&gt;</code></em> --patch-operations op=&quot;replace&quot;,path=&quot;/apiStages/<em class="replaceable"><code>&lt;apiId&gt;</code></em>:<em class="replaceable"><code>&lt;stage&gt;</code></em>/throttle/<em class="replaceable"><code>&lt;resourcePath&gt;</code></em>/<em class="replaceable"><code>&lt;httpMethod&gt;</code></em>/burstLimit&quot;,value=&quot;1&quot;</code></pre>
+                     <p>To remove the method-level throttling settings for an individual resource and
+                        method:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws apigateway --region us-east-1 update-usage-plan --usage-plan-id <em class="replaceable"><code>&lt;planId&gt;</code></em> --patch-operations op=&quot;remove&quot;,path=&quot;/apiStages/<em class="replaceable"><code>&lt;apiId&gt;</code></em>:<em class="replaceable"><code>&lt;stage&gt;</code></em>/throttle/<em class="replaceable"><code>&lt;resourcePath&gt;</code></em>/<em class="replaceable"><code>&lt;httpMethod&gt;</code></em>&quot;,value=&quot;&quot;</code></pre>
+                     <p>To remove all method-level throttling settings for an API:</p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws apigateway --region us-east-1 update-usage-plan --usage-plan-id <em class="replaceable"><code>&lt;planId&gt;</code></em> --patch-operations op=&quot;remove&quot;,path=&quot;/apiStages/<em class="replaceable"><code>&lt;apiId&gt;</code></em>:<em class="replaceable"><code>&lt;stage&gt;</code></em>/throttle &quot;,value=&quot;&quot;</code></pre>
+                     <p>Here is an example using the Pet Store sample API:</p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws apigateway --region us-east-1 update-usage-plan --usage-plan-id <em class="replaceable"><code>&lt;planId&gt;</code></em> --patch-operations 
+                op=&quot;replace&quot;,path=&quot;/apiStages/<em class="replaceable"><code>&lt;apiId&gt;</code></em>:<em class="replaceable"><code>&lt;stage&gt;</code></em>/throttle&quot;,value=&apos;&quot;{\&quot;/pets/GET\&quot;:{\&quot;rateLimit\&quot;:1.0,\&quot;burstLimit\&quot;:1},\&quot;//GET\&quot;:{\&quot;rateLimit\&quot;:1.0,\&quot;burstLimit\&quot;:1}}&quot;&apos;</code></pre>
                      
                      <h2 id="api-gateway-usage-plan-test-with-postman">Test Usage Plans</h2>
                      
-                     <p>As an example, let&apos;s use the PetStore API, which was created in <a href="api-gateway-create-api-from-example.html">Build an API Gateway API from an Example</a>. Assume that the API is
+                     <p>As an example, let&apos;s use the PetStore API, which was created in <a href="api-gateway-create-api-from-example.html">TUTORIAL: Create a REST API by Importing an
+                           Example</a>. Assume that the API is
                         configured to use an API key of <code class="code">Hiorr45VR...c4GJc</code>. The following steps
                         describe how to test a usage plan.
                      </p>
@@ -253,23 +263,26 @@ Authorization: AWS4-HMAC-SHA256 Credential={access_key_ID}/20160803/ap-southeast
                               enforce usage plan throttling limits or quotas for the request, API Gateway serves
                               the request without applying the throttling limits or quotas as specified in
                               the usage plan. But, it logs an error message of <code class="code">Usage Plan check
-                                 failed due to an internal error</code> in
-                              your
-                              CloudWatch logs. You can ignore such occasional errors. 
+                                 failed due to an internal error</code> in CloudWatch. You can ignore such
+                              occasional errors. 
                            </p>
                            
                         </li>
                      </ul>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -279,7 +292,9 @@ Authorization: AWS4-HMAC-SHA256 Credential={access_key_ID}/20160803/ap-southeast
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="api-gateway-setup-api-key-with-restapi.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="api-key-file-format.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -294,15 +309,19 @@ Authorization: AWS4-HMAC-SHA256 Credential={access_key_ID}/20160803/ap-southeast
                         <li class="pagetoc" name="Create a Usage
                     Plan"><a class="pagetoc" href="#api-gateway-usage-plan-create-using-rest-api">Create a Usage
                               Plan</a></li>
-                        <li class="pagetoc" name="Manage a Usage
-                    Plan"><a class="pagetoc" href="#api-gateway-usage-plan-manage-with-restapi">Manage a Usage
-                              Plan</a></li>
+                        <li class="pagetoc" name="Manage a Usage Plan by
+                    Using the AWS CLI"><a class="pagetoc" href="#api-gateway-usage-plan-manage-with-cli">Manage a Usage Plan by
+                              Using the AWS CLI</a></li>
                         <li class="pagetoc" name="Test Usage Plans"><a class="pagetoc" href="#api-gateway-usage-plan-test-with-postman">Test Usage Plans</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

@@ -1,17 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Using AWS CloudTrail to Capture Requests Sent to the CloudFront API - Amazon CloudFront</title>
+      <title>Using AWS CloudTrail to 
+         Capture Requests Sent to the CloudFront API - Amazon CloudFront
+      </title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="Introduction.html" title="What Is Amazon CloudFront?">
-      <link rel="prev" href="monitoring-using-cloudwatch.html" title="Monitoring CloudFront Activity Using CloudWatch">
-      <link rel="next" href="tagging.html" title="Tagging Amazon CloudFront Distributions">
+      <link rel="up" href="reports-and-monitoring.html" title="Reports, Access Logs, and Monitoring">
+      <link rel="prev" href="AccessLogs.html" title="Configuring and Using Access Logs">
+      <link rel="next" href="monitoring-using-cloudwatch.html" title="Monitoring CloudFront Activity Using CloudWatch">
       <meta name="description" content="CloudFront is integrated with CloudTrail, an AWS service that captures information about every request that is sent to the CloudFront API by your AWS account, including your IAM users. CloudTrail periodically saves log files of these requests to an Amazon S3 bucket that you specify. CloudTrail captures information about all requests, whether they were made using the CloudFront console, the CloudFront API, the AWS SDKs, the CloudFront CLI, or another service, for example, AWS CloudFormation.">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/logging_using_cloudtrail.html">
@@ -21,7 +25,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,12 +37,18 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Using AWS CloudTrail to Capture Requests Sent to the CloudFront API</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="reports-and-monitoring.html">Reports, Access Logs, and Monitoring</a> &#xBB; <span class="breadcrumb">Using AWS CloudTrail to 
+                                    Capture Requests Sent to the CloudFront API</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="logging_using_cloudtrail">Using AWS CloudTrail to Capture Requests Sent to the CloudFront API</h1>
+                     <h1 class="topictitle" id="logging_using_cloudtrail">Using AWS CloudTrail to 
+                        Capture Requests Sent to the CloudFront API
+                     </h1>
                      <p>CloudFront is integrated with CloudTrail, an AWS service that captures information
                         about every request that is sent to the 
                         		CloudFront API by your AWS account, including your IAM users. CloudTrail periodically
@@ -51,78 +61,127 @@
                         made to CloudFront, the source IP address 
                         		from which each request was made, who made the request, when it was made, and so
                         on. To learn more about CloudTrail, 
-                        		including how to configure and enable it, see the <em><a href="./awscloudtrail/latest/userguide/" target="_blank">AWS CloudTrail User Guide</a></em>.
+                        		including how to configure and enable it, see the <em><a href="./awscloudtrail/latest/userguide/">AWS CloudTrail User Guide</a></em>.
                      </p>
                      <div class="aws-note">
                         <p class="aws-note">Note</p>
                         <p>CloudFront is a global service. To view CloudFront requests in CloudTrail logs, you
                            must update an existing trail to include global services. 
-                           		For more information, see <a href="./awscloudtrail/latest/userguide/cloudtrail-user-guide.html" target="_blank">Updating a Trail</a> and 
-                           		<a href="./awscloudtrail/latest/userguide/cloudtrail-concepts.html#cloudtrail-concepts-global-service-events" target="_blank">About Global Service Events</a> in the 
+                           		For more information, see <a href="./awscloudtrail/latest/userguide/cloudtrail-user-guide.html">Updating a Trail</a> and 
+                           		<a href="./awscloudtrail/latest/userguide/cloudtrail-concepts.html#cloudtrail-concepts-global-service-events">About Global Service Events</a> in the 
                            		<em>AWS CloudTrail User Guide</em>. 
                         </p>
                      </div>
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Topics</strong></p>
                         <ul>
-                           <li><a href="#cloudfront_info_in_cloudtrail">CloudFront Information in CloudTrail Log Files</a></li>
+                           <li><a href="#service-name-info-in-cloudtrail">CloudFront Information in CloudTrail</a></li>
                            <li><a href="#understanding_cloudfront_entries">Understanding CloudFront Log File Entries</a></li>
                         </ul>
                      </div>
-                     <h2 id="cloudfront_info_in_cloudtrail">CloudFront Information in CloudTrail Log Files</h2>
-                     		
                      
-                     		
-                     <p>When you enable CloudTrail, CloudTrail captures every request that you make to every
-                        AWS service that CloudTrail supports. 
-                        			(For a list of supported services, see <a href="./awscloudtrail/latest/userguide/what_is_cloud_trail_supported_services.html" target="_blank">Supported Services</a> 
-                        			in the <em>AWS CloudTrail User Guide</em>.) The log files aren&apos;t organized or sorted by service; each log file might 
-                        			contain records from more than one service. CloudTrail determines when to create
-                        a new log file.
+                     <h2 id="service-name-info-in-cloudtrail">CloudFront Information in CloudTrail</h2>
+                     
+                     
+                     <p>CloudTrail is enabled on your AWS account when you create the account. When activity
+                        occurs in
+                        CloudFront, that activity is recorded in a CloudTrail event along with other AWS service
+                        events in <b>Event history</b>. You can view, search, and download recent events 
+                        in your AWS account. Because CloudFront is a global service, events for the service
+                        are logged in US East (N. Virginia).
+                        For more information, see <a href="./awscloudtrail/latest/userguide/view-cloudtrail-events.html">Viewing Events with CloudTrail Event
+                           History</a>. 
                      </p>
-                     		
-                     		
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p>CloudTrail supports all CloudFront API actions.</p>
+                     
+                     
+                     <p>For an ongoing record of events in your AWS account, including events for CloudFront,
+                        create a trail. Your trail must include global service events. 
+                        A trail enables CloudTrail to deliver log files to an Amazon S3 bucket. By default,
+                        when
+                        you create a trail in the console, the trail applies to all regions and includes global
+                        service events. 
+                        The trail logs events
+                        from all regions in the AWS partition and delivers the log files to the Amazon S3
+                        bucket that you
+                        specify.  Additionally, you can configure other AWS services to further analyze and
+                        act upon
+                        the event data collected in CloudTrail logs. For more information, see: 
+                     </p>
+                     
+                     <div class="itemizedlist">
+                         
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><a href="./awscloudtrail/latest/userguide/cloudtrail-create-and-update-a-trail.html">Overview for Creating a Trail</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="./awscloudtrail/latest/userguide/cloudtrail-aws-service-specific-topics.html#cloudtrail-aws-service-specific-topics-integrations">CloudTrail Supported Services and Integrations</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="./awscloudtrail/latest/userguide/getting_notifications_top_level.html">Configuring Amazon SNS Notifications
+                                    for CloudTrail</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="./awscloudtrail/latest/userguide/receive-cloudtrail-log-files-from-multiple-regions.html">Receiving CloudTrail Log
+                                    Files from Multiple Regions</a> and <a href="./awscloudtrail/latest/userguide/cloudtrail-receive-logs-from-multiple-accounts.html">Receiving CloudTrail Log
+                                    Files from Multiple Accounts</a></p>
+                              
+                           </li>
+                        </ul>
                      </div>
-                     		
-                     		
-                     <p>Every log file entry contains information about who made the request. The user identity
-                        information in the log file 
-                        			helps you determine whether the request was made using root or IAM user credentials,
-                        using temporary security credentials 
-                        			for a role or federated user, or by another AWS service. For more information,
-                        see 
-                        			<a href="./awscloudtrail/latest/userguide/event_reference_user_identity.html" target="_blank">userIdentity Element</a> 
-                        			in the <em>AWS CloudTrail User Guide</em>.
-                     </p>
-                     		
-                     <p>You can store log files for as long as you want. You can also define Amazon S3 lifecycle
-                        rules to archive or delete log files automatically.
-                     </p>
-                     		
-                     <p>By default, your log files are encrypted by using Amazon S3 server-side encryption
-                        (SSE).
-                     </p>
-                     		
-                     <p>You can choose to have CloudTrail publish Amazon SNS notifications when new log files
-                        are delivered if you want to take quick action 
-                        			upon log file delivery. For more information, see <a href="./awscloudtrail/latest/userguide/getting_notifications_top_level.html" target="_blank">Configuring Amazon SNS Notifications</a> 
-                        			in the <em>AWS CloudTrail User Guide</em>.
-                     </p> 
-                     		
-                     <p>You can also aggregate log files from multiple AWS regions and multiple AWS accounts
-                        into a single Amazon S3 bucket. 
-                        			For more information, see <a href="./awscloudtrail/latest/userguide/aggregating_logs_top_level.html" target="_blank">Aggregating CloudTrail Log Files to a Single Amazon S3 Bucket</a> 
-                        			in the <em>AWS CloudTrail User Guide</em>. 
-                        		
+                     
+                     
+                     <p>All CloudFront API actions are logged by CloudTrail and are documented in the <a href="./cloudfront/latest/APIReference/">Amazon CloudFront API Reference</a>. 
+                        For example, calls to the <code class="code">CreateDistribution</code>, <code class="code">GetDistribution</code> and <code class="code">ListInvalidations </code>
+                        APIs generate entries in the CloudTrail log files. 
                      </p>
                      
-                     	
+                     <p>Every event or log entry contains information about who generated the request. The
+                        identity information helps you determine the following: 
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Whether the request was made with root or IAM user credentials.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Whether the request was made with temporary security credentials for a role or
+                                 federated user.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Whether the request was made by another AWS service.</p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>For more information, see the <a href="./awscloudtrail/latest/userguide/cloudtrail-event-reference-user-identity.html">CloudTrail userIdentity
+                           Element</a>.
+                     </p>
+                     
                      <h2 id="understanding_cloudfront_entries">Understanding CloudFront Log File Entries</h2>
-                     
-                     		
                      
                      		
                      <p>Each JSON-formatted CloudTrail log file can contain one or more log entries. A log
@@ -426,15 +485,19 @@
    }]
 }</code></pre>
                      
-                     	</div>
+                     	<div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -443,8 +506,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="monitoring-using-cloudwatch.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="tagging.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="AccessLogs.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="monitoring-using-cloudwatch.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -453,13 +518,17 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="CloudFront Information in CloudTrail Log Files"><a class="pagetoc" href="#cloudfront_info_in_cloudtrail">CloudFront Information in CloudTrail Log Files</a></li>
+                        <li class="pagetoc" name="CloudFront Information in CloudTrail"><a class="pagetoc" href="#service-name-info-in-cloudtrail">CloudFront Information in CloudTrail</a></li>
                         <li class="pagetoc" name="Understanding CloudFront Log File Entries"><a class="pagetoc" href="#understanding_cloudfront_entries">Understanding CloudFront Log File Entries</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

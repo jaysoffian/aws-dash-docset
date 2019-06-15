@@ -1,18 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Using CloudFront with Lambda@Edge - Amazon CloudFront</title>
+      <title>Customizing Content at the Edge with Lambda@Edge - Amazon CloudFront</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="Introduction.html" title="What Is Amazon CloudFront?">
-      <link rel="prev" href="on-demand-streaming-hls.html" title="Configuring On-Demand Apple HTTP Live Streaming (HLS)">
-      <link rel="next" href="lambda-edge-how-it-works.html" title="Overview of Creating and Using 
-		Lambda@Edge Functions">
-      <meta name="description" content="Configure and manage your CloudFront web distributions with Lambda@Edge.">
+      <link rel="prev" href="Streaming_Troubleshooting.html" title="Troubleshooting RTMP Distributions">
+      <link rel="next" href="lambda-edge-how-it-works.html" title="Get Started Creating and Using Lambda@Edge Functions">
+      <meta name="description" content="Customize content at the end by using Lambda@Edge with your CloudFront distributions.">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-at-the-edge.html">
@@ -22,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -34,103 +35,123 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Using CloudFront with Lambda@Edge</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Customizing Content at the Edge with Lambda@Edge</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="lambda-at-the-edge">Using CloudFront with Lambda@Edge</h1>
+                     <h1 class="topictitle" id="lambda-at-the-edge">Customizing Content at the Edge with Lambda@Edge</h1>
                      <p>Lambda@Edge is an extension of AWS Lambda, a compute service that lets you execute
-                        functions
-                        		that customize the content that CloudFront delivers. You can author functions in
-                        one
-                        		region and execute them in AWS locations globally that are closer to the viewer,
-                        without provisioning
-                        		or managing servers. Lambda@Edge scales automatically, from a few requests per day
-                        to thousands
-                        		per second. Processing requests at AWS locations closer to the viewer instead of
-                        on origin servers significantly
-                        		reduces latency and improves the user experience.
+                        functions that customize the content
+                        		that CloudFront delivers. You can author Node.js functions in one Region, US-East-1
+                        (N. Virginia), and then execute them in AWS
+                        		locations globally that are closer to the viewer, without provisioning or managing
+                        servers. Lambda@Edge scales
+                        		automatically, from a few requests per day to thousands per second. Processing requests
+                        at AWS locations closer to the
+                        		viewer instead of on origin servers significantly reduces latency and improves the
+                        user experience.
                      </p>
                      <p>When you associate a CloudFront distribution with a Lambda@Edge function, CloudFront
-                        intercepts requests and 
-                        		responses at CloudFront edge locations. You can execute Lambda functions when the
-                        following CloudFront events occur:
+                        intercepts requests and responses at CloudFront edge
+                        		locations. You can execute Lambda functions when the following CloudFront events
+                        occur:
                      </p>
                      <div class="itemizedlist">
-                        			
-                        			
-                        			
-                        			
                         		
+                        		
+                        		
+                        		
+                        	
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
+                              			
                               <p>When CloudFront receives a request from a viewer (viewer request)</p>
+                              		
                            </li>
                            <li class="listitem">
+                              			
                               <p>Before CloudFront forwards a request to the origin (origin request)</p>
+                              		
                            </li>
                            <li class="listitem">
+                              			
                               <p>When CloudFront receives a response from the origin (origin response)</p>
+                              		
                            </li>
                            <li class="listitem">
+                              			
                               <p>Before CloudFront returns the response to the viewer (viewer response)</p>
+                              		
                            </li>
                         </ul>
                      </div>
                      <p>There are many uses for Lambda@Edge processing. For example:</p>
                      <div class="itemizedlist">
-                        			
-                        			
-                        			
-                        			
-                        			
-                        			
                         		
+                        		
+                        		
+                        		
+                        		
+                        		
+                        	
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
+                              			
                               <p>A Lambda function can inspect cookies and rewrite URLs so that users see different
-                                 versions of a site for A/B testing.
+                                 versions of a site for A/B
+                                 				testing.
                               </p>
-                              			
+                              		
                            </li>
                            <li class="listitem">
-                              				
+                              			
                               <p>CloudFront can return different objects to viewers based on the device they&apos;re using
-                                 by checking the <code class="code">User-Agent</code> header, 
-                                 					which includes information about the devices. For example, CloudFront can return
-                                 different images based on the screen size of their device. 
-                                 					Similarly, the function could consider the value of the <code class="code">Referer</code> header and cause CloudFront to return the images to bots that have 
-                                 					the lowest available resolution. 
+                                 by checking the
+                                 					<code class="code">User-Agent</code> header, which includes information about the devices. For example, CloudFront can
+                                 return
+                                 				different images based on the screen size of their device. Similarly, the function
+                                 could consider the value of the
+                                 					<code class="code">Referer</code> header and cause CloudFront to return the images to bots that have the lowest available
+                                 				resolution. 
                               </p>
+                              		
+                           </li>
+                           <li class="listitem">
                               			
-                           </li>
-                           <li class="listitem">
                               <p>Or you could check cookies for other criteria. For example, on a retail website that
-                                 sells clothing, if you use cookies 
-                                 				to indicate which color a user chose for a jacket, a Lambda function can change
-                                 the request so that CloudFront returns the image of a jacket 
-                                 				in the selected color.
+                                 sells clothing, if you use
+                                 				cookies to indicate which color a user chose for a jacket, a Lambda function can
+                                 change the request so that CloudFront
+                                 				returns the image of a jacket in the selected color.
                               </p>
+                              		
                            </li>
                            <li class="listitem">
+                              			
                               <p>A Lambda function can generate HTTP responses when CloudFront viewer request or origin
                                  request events occur.
                               </p>
+                              		
                            </li>
                            <li class="listitem">
+                              			
                               <p>A function can inspect headers or authorization tokens, and insert a header to control
-                                 access to your content before 
-                                 					CloudFront forwards the request to your origin.
+                                 access to your content
+                                 				before CloudFront forwards the request to your origin.
                               </p>
-                              			
+                              		
                            </li>
                            <li class="listitem">
-                              <p>A Lambda function can also make network calls to external resources to confirm user
-                                 credentials, or fetch additional content 
-                                 				to customize a response.
-                              </p>
                               			
+                              <p>A Lambda function can also make network calls to external resources to confirm user
+                                 credentials, or fetch
+                                 				additional content to customize a response.
+                              </p>
+                              		
                            </li>
                         </ul>
                      </div>
@@ -139,21 +160,21 @@
                      <div class="highlights">
                         <p><strong>Topics</strong></p>
                         <ul>
-                           <li><a href="lambda-edge-how-it-works.html">Overview of Creating and Using 
-                                 		Lambda@Edge Functions</a></li>
+                           <li><a href="lambda-edge-how-it-works.html">Get Started Creating and Using Lambda@Edge Functions</a></li>
                            <li><a href="lambda-edge-permissions.html">Setting IAM Permissions and Roles for Lambda@Edge</a></li>
                            <li><a href="lambda-edge-create-function.html">Writing and Creating a Lambda@Edge Function</a></li>
                            <li><a href="lambda-edge-add-triggers.html">Adding Triggers for a Lambda@Edge Function</a></li>
                            <li><a href="lambda-edge-testing-debugging.html">Testing and Debugging Lambda@Edge Functions</a></li>
                            <li><a href="lambda-cloudwatch-metrics-logging.html">CloudWatch Metrics and CloudWatch Logs for Lambda Functions</a></li>
-                           <li><a href="lambda-edge-delete-replicas.html">Deleting Lambda@Edge Functions 
-                                 		and Replicas</a></li>
+                           <li><a href="lambda-edge-delete-replicas.html">Deleting Lambda@Edge Functions and Replicas</a></li>
                            <li><a href="lambda-event-structure.html">Lambda@Edge Event Structure</a></li>
-                           <li><a href="lambda-generating-http-responses.html">Generating HTTP Responses in Request Triggers</a></li>
-                           <li><a href="lambda-updating-http-responses.html">Updating HTTP Responses in Origin-Response Triggers</a></li>
+                           <li><a href="lambda-generating-http-responses.html">Working with Requests and Responses</a></li>
                            <li><a href="lambda-examples.html">Lambda@Edge Example Functions</a></li>
                            <li><a href="lambda-requirements-limits.html">Requirements and Restrictions on Lambda Functions</a></li>
                         </ul>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
                   </div>
                   <noscript>
@@ -161,9 +182,10 @@
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -172,8 +194,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="on-demand-streaming-hls.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="lambda-edge-how-it-works.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="Streaming_Troubleshooting.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="lambda-edge-how-it-works.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -181,6 +205,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

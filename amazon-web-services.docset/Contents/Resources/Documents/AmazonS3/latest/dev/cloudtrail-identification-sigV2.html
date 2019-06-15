@@ -1,0 +1,892 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Using AWS CloudTrail to Identify Amazon S3
+         Signature Version 2 Requests - Amazon Simple Storage Service
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="monitoring-overview.html" title="Monitoring Amazon S3">
+      <link rel="prev" href="cloudtrail-logging.html" title="Logging Amazon S3 API Calls by Using AWS CloudTrail">
+      <link rel="next" href="S3Torrent.html" title="Using BitTorrent with Amazon S3">
+      <meta name="description" content="Describes how to identify Amazon S3 Signature Version 2 request using AWS CloudTrail.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Simple Storage Service">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/cloudtrail-identification-sigV2.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="monitoring-overview.html">Monitoring Amazon S3</a> &#xBB; <span class="breadcrumb">Using AWS CloudTrail to Identify Amazon S3
+                                    Signature Version 2 Requests</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="cloudtrail-identification-sigV2">Using AWS CloudTrail to Identify Amazon S3
+                        Signature Version 2 Requests
+                     </h1>
+                     <p>Amazon S3 now
+                        lets
+                        you
+                        identify
+                        what API signature version was used to sign a request
+                        using an
+                        AWS CloudTrail
+                        event log. This
+                        capability
+                        is important
+                        because
+                        support
+                        for
+                        Signature Version 2
+                        will be turned off
+                        (deprecated). After that ,
+                        Amazon S3 will no longer accept requests that use Signature Version 2, and
+                        all requests
+                        must
+                        use
+                        <em>Signature
+                           Version
+                           4</em>
+                        signing. 
+                        
+                     </p>
+                     <p>We
+                        strongly
+                        recommend
+                        that you use
+                        CloudTrail to help
+                        determine
+                        whether any of your workflows are
+                        using
+                        Signature Version 2
+                        signing.
+                        Remediate them by
+                        upgrading
+                        your libraries and code to
+                        use
+                        Signature Version 4
+                        instead
+                        to prevent
+                        any
+                        impact to your business. 
+                     </p>
+                     <p>For
+                        more information, see
+                        <a href="https://forums.aws.amazon.com/ann.jspa?annID=6551" target="_blank">Announcement:
+                           AWS CloudTrail for Amazon S3 adds new fields for enhanced security
+                           auditing</a>
+                        in the AWS Discussion Forums.
+                     </p>
+                     <p>If you are using Amazon S3
+                        server
+                        access logs,
+                        see <a href="using-s3-access-logs-to-idenitfy-sigv2-requests.html"> Using Amazon S3 Access Logs to
+                           Identify Signature Version 2 Requests </a>.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#cloudtrail-logging-s3-sigv2">How
+                                 CloudTrail
+                                 Captures
+                                 Requests
+                                 Made
+                                 to
+                                 Amazon S3</a></li>
+                           <li><a href="#enable-cloudtrail-logging-for-s3">Enabling
+                                 CloudTrail
+                                 Event
+                                 Logging
+                                 for S3
+                                 Buckets
+                                 and
+                                 Objects</a></li>
+                           <li><a href="#identify-S3-requests-using-sigv2">Identifying
+                                 Requests
+                                 Made
+                                 to Amazon S3
+                                 Using
+                                 Signature Version 2 in a CloudTrail
+                                 Log</a></li>
+                           <li><a href="#cloudtrail-logging-related-resources">Related Resources</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="cloudtrail-logging-s3-sigv2">How
+                        CloudTrail
+                        Captures
+                        Requests
+                        Made
+                        to
+                        Amazon S3
+                     </h2>
+                     
+                     <p>By
+                        default,
+                        CloudTrail
+                        logs
+                        S3
+                        bucket-level
+                        API calls that
+                        were made in the last 90 days,
+                        but
+                        not log requests made to
+                        objects.
+                        Bucket-level
+                        calls include events like
+                        <code class="code">CreateBucket</code>,
+                        <code class="code">DeleteBucket</code>,
+                        <code class="code">PutBucketLifeCycle</code>,
+                        <code class="code">PutBucketPolicy</code>,
+                        etc. You can
+                        see
+                        bucket-level
+                        events
+                        on
+                        the CloudTrail console.
+                        However,
+                        you can&apos;t view data events (Amazon S3
+                        object-level
+                        calls)
+                        there&#x2014;you
+                        must parse or query CloudTrail logs for them. CloudTrail events for Amazon S3
+                        include
+                        the signature version in the request details under the key name of
+                        &apos;<code class="code">additionalEventData</code>&apos;.
+                        To
+                        find the
+                        signature
+                        version
+                        on requests made for objects in Amazon S3 like GETs,
+                        PUTs,
+                        and DELETEs,
+                        you
+                        must enable CloudTrail data events
+                        because
+                        it is turned off by default. 
+                     </p>
+                     
+                     <p>For
+                        information
+                        about
+                        what
+                        Amazon S3
+                        API calls are captured by
+                        CloudTrail,
+                        see <a href="cloudtrail-logging.html#cloudtrail-logging-s3-info">Amazon S3 Information in CloudTrail</a>.
+                        
+                     </p>
+                     
+                     
+                     <h2 id="enable-cloudtrail-logging-for-s3">Enabling
+                        CloudTrail
+                        Event
+                        Logging
+                        for S3
+                        Buckets
+                        and
+                        Objects
+                     </h2>
+                     
+                     <p>To enable CloudTrail data events for a specific bucket, see
+                        <a href="./AmazonS3/latest/user-guide/enable-cloudtrail-events.html">How Do
+                           I Enable Object-Level Logging for an S3 Bucket with AWS CloudTrail
+                           Data
+                           Events?</a>
+                        in the <em>Amazon Simple Storage Service Console User Guide</em>.
+                     </p>
+                     
+                     <p>To enable CloudTrail data events for all
+                        your
+                        buckets or for a list of specific
+                        buckets,
+                        you must
+                        <a href="./awscloudtrail/latest/userguide/cloudtrail-create-a-trail-using-the-console-first-time.html">create
+                           a trail
+                           manually
+                           in
+                           CloudTrail</a>.
+                        
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p> With
+                           an
+                           S3 bucket that is generating a high
+                           workload,
+                           you could quickly generate thousands
+                           of
+                           logs in a short amount of time. Be mindful of how long you choose to enable CloudTrail
+                           data events for a busy bucket. 
+                        </p>
+                     </div>
+                     
+                     <p> CloudTrail stores Amazon S3 data event logs in an S3 bucket of your choosing.
+                        For
+                        organizational purposes, you might consider using a
+                        bucket in a
+                        separate AWS
+                        account
+                        to hold
+                        them.
+                        Using
+                        AWS Organizations,
+                        you can create an AWS account that is linked to your own account.
+                        For
+                        more information, see <a href="./organizations/latest/userguide/orgs_introduction.html">What Is
+                           AWS Organizations?</a> in the
+                        <em>AWS Organizations User Guide</em></p>
+                     
+                     <p>When
+                        you
+                        create a trail in CloudTrail,
+                        in
+                        the data events section,
+                        you
+                        can select the
+                        <b>Select
+                           all S3 buckets in your
+                           account</b>
+                        check
+                        box
+                        to log all object level events.
+                        
+                     </p>
+                     
+                     
+                     <h2 id="identify-S3-requests-using-sigv2">Identifying
+                        Requests
+                        Made
+                        to Amazon S3
+                        Using
+                        Signature Version 2 in a CloudTrail
+                        Log
+                     </h2>
+                     
+                     <p>Events logged by CloudTrail
+                        are
+                        stored in a compressed gzipped JSON object in your S3 bucket.
+                        To
+                        efficiently find Signature Version 2 requests,
+                        you
+                        should use a service like
+                        Amazon Athena
+                        to index and query the CloudTrail logs.
+                        For
+                        more
+                        information
+                        about
+                        CloudTrail and Athena, see
+                        <a href="./athena/latest/ug/cloudtrail-logs.html">Querying
+                           AWS CloudTrail
+                           Logs</a>.
+                        
+                     </p>
+                     
+                     
+                     <h3 id="using-athena">Using Athena</h3>
+                     
+                     <p>After
+                        you set up CloudTrail to deliver events to a
+                        bucket,
+                        you should start to see objects go to your destination bucket
+                        on
+                        the Amazon S3
+                        console.
+                        These are
+                        formatted
+                        as follows:
+                        <code class="code"><em>s3://<em class="replaceable"><code>&lt;myawsexamplebucket&gt;</code></em>/AWSLogs/&lt;111122223333&gt;/CloudTrail/<em class="replaceable"><code>&lt;Region&gt;/&lt;yyyy&gt;/&lt;mm&gt;/&lt;dd&gt;</code></em></em></code>
+                        
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example 
+                              CloudTrail event logs</b></p>
+                        <div class="example-contents">
+                           <p>Consider
+                              the following example:
+                           </p>
+                           <p><code class="code">s3://myawsexamplebucket/AWSLogs/111122223333/CloudTrail/us-east-2/2019/04/14</code></p>
+                           <p>With these event logs, you can now create an Athena
+                              database and table to query them as follows:
+                           </p>
+                           <ol>
+                              <li>
+                                 <p>Open the Athena console at
+                                    <a href="https://console.aws.amazon.com/athena/home" target="_blank">https://console.aws.amazon.com/athena/</a>.
+                                 </p>
+                              </li>
+                              <li>
+                                 
+                                 <p>Change the
+                                    AWS
+                                    Region
+                                    to be the same
+                                    as
+                                    your CloudTrail destination S3 bucket.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>In the query window, create an Athena database for your CloudTrail
+                                    events:
+                                 </p>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">CREATE DATABASE s3_cloudtrail_events_db</code></pre>
+                                 </li>
+                              <li>
+                                 
+                                 <p>Use
+                                    the
+                                    following
+                                    query
+                                    to
+                                    create a table for
+                                    all
+                                    of your CloudTrail events in the bucket. Be sure to
+                                    change
+                                    the bucket name from
+                                    <em class="replaceable"><code>&lt;CloudTrail_myawsexamplebucket&gt;</code></em>
+                                    to your bucket&apos;s name.
+                                    Also
+                                    provide the
+                                    <em class="replaceable"><code>AWS_account_ID</code></em>
+                                    CloudTrail
+                                    that
+                                    is used in your bucket. 
+                                 </p>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">CREATE EXTERNAL TABLE s3_cloudtrail_events_db.cloudtrail_myawsexamplebucket_table(
+                    eventversion STRING,
+                    useridentity STRUCT&lt;
+                        type:STRING,
+                        principalid:STRING,
+                        arn:STRING,
+                        accountid:STRING,
+                        invokedby:STRING,
+                        accesskeyid:STRING,
+                        userName:STRING,
+                        sessioncontext:STRUCT&lt;
+                            attributes:STRUCT&lt;
+                                    mfaauthenticated:STRING,
+                                    creationdate:STRING&gt;,
+                                    sessionissuer:STRUCT&lt;  
+                                    type:STRING,
+                                    principalId:STRING,
+                                    arn:STRING, 
+                                    accountId:STRING,
+                                    userName:STRING&gt;
+                            &gt;
+                         &gt;,
+                    eventtime STRING,
+                    eventsource STRING,
+                    eventname STRING,
+                    awsregion STRING,
+                    sourceipaddress STRING,
+                    useragent STRING,
+                    errorcode STRING,
+                    errormessage STRING,
+                    requestparameters STRING,
+                    responseelements STRING,
+                    additionaleventdata STRING,
+                    requestid STRING,
+                    eventid STRING,
+                    resources ARRAY&lt;STRUCT&lt;
+                        ARN:STRING,
+                        accountId:STRING,
+                        type:STRING&gt;&gt;,
+                    eventtype STRING,
+                    apiversion STRING,
+                    readonly STRING,
+                    recipientaccountid STRING,
+                    serviceeventdetails STRING,
+                    sharedeventid STRING,
+                    vpcendpointid STRING
+                )
+                ROW FORMAT SERDE &apos;com.amazon.emr.hive.serde.CloudTrailSerde&apos;
+                STORED AS INPUTFORMAT &apos;com.amazon.emr.cloudtrail.CloudTrailInputFormat&apos;
+                OUTPUTFORMAT &apos;org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat&apos;
+                LOCATION &apos;s3://&lt;myawsexamplebucket&gt;/AWSLogs/&lt;111122223333&gt;/&apos;;
+                </code></pre>
+                                 </li>
+                              <li>
+                                 
+                                 <p>Test Athena to ensure that
+                                    the
+                                    query works.
+                                 </p>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">
+                        SELECT * FROM s3_cloudtrail_events_db.cloudtrail_myawsexamplebucket_table
+                        WHERE eventsource=&apos;s3.amazonaws.com&apos;
+                        LIMIT 2;
+                </code></pre>
+                                 </li>
+                           </ol>
+                        </div>
+                     </div>
+                     
+                     
+                     
+                     <h3 id="athena-queries">Athena Queries</h3>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example Athena query: Select all events that are Signature Version 2 or end in
+                              403s, print all columns,
+                              and
+                              limit
+                              it to
+                              five
+                              results</b></p>
+                        <div class="example-contents">
+                           <p>In
+                              the following
+                              query,
+                              replace
+                              <em class="replaceable"><code>&lt;s3_cloudtrail_events_db.cloudtrail_myawsexamplebucket_table&gt;</code></em>,
+                              and remove the limit as needed. 
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">
+                    SELECT *
+                    FROM &lt;s3_cloudtrail_events_db.cloudtrail_myawsexamplebucket_table&gt;
+                    WHERE eventsource=&apos;s3.amazonaws.com&apos;
+                    AND json_extract_scalar(additionalEventData, &apos;$.SignatureVersion&apos;)!=&apos;SigV4&apos;
+                    LIMIT 5;
+                </code></pre><div class="itemizedlist">
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p>The
+                                       &quot;<code class="code">useragent</code>&quot;
+                                       column
+                                       identifies
+                                       the client
+                                       that
+                                       the requester is using that made a
+                                       Signature
+                                       Version 2 request.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>The
+                                       &quot;<code class="code">additionaleventdata</code>&quot;
+                                       column
+                                       has
+                                       entries of
+                                       <code class="code">&quot;SignatureVersion&quot;:&quot;SigV2&quot;</code>.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                        </div>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example Athena query: Select all events that are Signature Version 2
+                              and
+                              print
+                              only
+                              EventTime, S3 Action, Request_Parameters, Region, SourceIP,
+                              and
+                              UserAgent</b></p>
+                        <div class="example-contents">
+                           <p>In
+                              the following query,
+                              replace
+                              <em class="replaceable"><code>&lt;s3_cloudtrail_events_db.cloudtrail_myawsexamplebucket_table&gt;</code></em>
+                              with your Athena details and increase
+                              or
+                              remove the limit as needed. 
+                           </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">
+                    SELECT EventTime, EventName as S3_Action, requestParameters as Request_Parameters, awsregion as AWS_Region, sourceipaddress as Source_IP, useragent as User_Agent
+                    FROM s3_cloudtrail_events_db.cloudtrail_myawsexamplebucket_table
+                    WHERE eventsource=&apos;s3.amazonaws.com&apos;
+                    AND json_extract_scalar(additionalEventData, &apos;$.SignatureVersion&apos;)=&apos;SigV2&apos;
+                    LIMIT 10;
+                </code></pre></div>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example Athena query: Select all Signature Version 2 requests</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">
+                    SELECT * 
+                    FROM s3_cloudtrail_events_db.cloudtrail_myawsexamplebucket_table
+                    WHERE eventsource=&apos;s3.amazonaws.com&apos;
+                    AND json_extract_scalar(additionalEventData, &apos;$.SignatureVersion&apos;)=&apos;SigV2&apos;
+                </code></pre></div>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example Athena query: Select all requesters that are sending Signature Version 2
+                              traffic</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">
+                    SELECT useridentity.arn, Count(requestid) as RequestCount
+                    FROM s3_cloudtrail_events_db.cloudtrail_myawsexamplebucket_table
+                    WHERE eventsource=&apos;s3.amazonaws.com&apos;
+                        and json_extract_scalar(additionalEventData, &apos;$.SignatureVersion&apos;)=&apos;SigV2&apos;
+                    Group by useridentity.arn
+                </code></pre></div>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example Athena query: Select all source
+                              IP
+                              addresses
+                              that are sending Signature Version 2 traffic</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">
+                    SELECT sourceIPAddress, Count(requestid) as RequestCount
+                    FROM s3_cloudtrail_events_db.cloudtrail_myawsexamplebucket_table
+                    WHERE eventsource=&apos;s3.amazonaws.com&apos;
+                        and json_extract_scalar(additionalEventData, &apos;$.SignatureVersion&apos;)=&apos;SigV2&apos;
+                    Group by sourceIPAddress
+                </code></pre></div>
+                     </div>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <div class="itemizedlist">
+                           
+                           
+                           
+                           
+                           <ul class="itemizedlist" type="disc">
+                              <li class="listitem">
+                                 
+                                 <p>It&apos;s a best practice to <a href="./AmazonS3/latest/user-guide/create-lifecycle.html">create an Amazon S3
+                                       lifecycle
+                                       policy</a>
+                                    for your server access logs bucket. Configure the
+                                    lifecycle policy to periodically remove log files. Doing so reduces
+                                    the amount of data that Athena analyzes for each query.
+                                 </p>
+                                 
+                              </li>
+                              <li class="listitem">
+                                 
+                                 <p>For
+                                    information about logging format, see <a href="./AmazonS3/latest/dev/cloudtrail-logging.html">Logging
+                                       Amazon S3 API Calls by Using AWS
+                                       CloudTrail</a>.
+                                 </p>
+                                 
+                              </li>
+                              <li class="listitem">
+                                 
+                                 <p>For
+                                    examples of how to query
+                                    CloudTrail
+                                    logs, see
+                                    <a href="http://aws.amazon.com/blogs/big-data/aws-cloudtrail-and-amazon-athena-dive-deep-to-analyze-security-compliance-and-operational-activity/" target="_blank">Analyze
+                                       Security, Compliance, and Operational Activity Using AWS
+                                       CloudTrail and Amazon
+                                       Athena</a>.
+                                    
+                                 </p>
+                                 
+                              </li>
+                           </ul>
+                        </div>
+                     </div>
+                     
+                     
+                     
+                     <h3 id="partitioning-sigv2-data">Partitioning Signature Version 2 Data
+                        
+                     </h3>
+                     
+                     <p>If you have a large amount of data that you
+                        need
+                        to
+                        query,
+                        you can reduce the
+                        costs
+                        and
+                        runtime
+                        of Athena by creating a partitioned table. 
+                     </p>
+                     
+                     <p>To
+                        do
+                        this,
+                        create a new table with
+                        partitions
+                        as follows.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">
+                   CREATE EXTERNAL TABLE s3_cloudtrail_events_db.cloudtrail_myawsexamplebucket_table_partitioned(
+                        eventversion STRING,
+                        userIdentity STRUCT&lt;
+                            type:STRING,
+                            principalid:STRING,
+                            arn:STRING,
+                            accountid:STRING,
+                            invokedby:STRING,
+                            accesskeyid:STRING,
+                            userName:STRING,
+                         sessioncontext:STRUCT&lt;
+                                    attributes:STRUCT&lt; 
+                                    mfaauthenticated:STRING,
+                                    creationdate:STRING&gt;,
+                                    sessionIssuer:STRUCT&lt;
+                                    type:STRING,
+                                    principalId:STRING,
+                                    arn:STRING,
+                                    accountId:STRING,
+                                    userName:STRING&gt;
+                                &gt;
+                             &gt;,
+                        eventTime STRING,
+                        eventSource STRING,
+                        eventName STRING,
+                        awsRegion STRING,
+                        sourceIpAddress STRING,
+                        userAgent STRING,
+                        errorCode STRING,
+                        errorMessage STRING,
+                        requestParameters STRING,
+                        responseElements STRING,
+                        additionalEventData STRING,
+                        requestId STRING,
+                        eventId STRING,
+                        resources ARRAY&lt;STRUCT&lt;ARN:STRING,accountId: STRING,type:STRING&gt;&gt;, 
+                        eventType STRING,
+                        apiVersion STRING,
+                        readOnly STRING,
+                        recipientAccountId STRING,
+                        serviceEventDetails STRING,
+                        sharedEventID STRING,
+                        vpcEndpointId STRING
+                    )   
+                    PARTITIONED BY (region string, year string, month string, day string)
+                    ROW FORMAT SERDE &apos;com.amazon.emr.hive.serde.CloudTrailSerde&apos;
+                    STORED AS INPUTFORMAT &apos;com.amazon.emr.cloudtrail.CloudTrailInputFormat&apos;
+                    OUTPUTFORMAT &apos;org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat&apos;
+                    LOCATION &apos;s3://myawsexamplebucket/AWSLogs/111122223333/&apos;;
+                </code></pre>
+                     <p>Then,
+                        create
+                        the
+                        partitions
+                        individually. You
+                        can&apos;t
+                        get results from dates that you have not created. 
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">
+                    ALTER TABLE s3_cloudtrail_events_db.cloudtrail_myawsexamplebucket_table_partitioned ADD
+                        PARTITION (region= &apos;us-east-1&apos;, year= &apos;2019&apos;, month= &apos;02&apos;, day= &apos;19&apos;) LOCATION &apos;s3://myawsexamplebucket/AWSLogs/111122223333/CloudTrail/us-east-1/2019/02/19/&apos;
+                        PARTITION (region= &apos;us-west-1&apos;, year= &apos;2019&apos;, month= &apos;02&apos;, day= &apos;19&apos;) LOCATION &apos;s3://myawsexamplebucket/AWSLogs/111122223333/CloudTrail/us-west-1/2019/02/19/&apos;
+                        PARTITION (region= &apos;us-west-2&apos;, year= &apos;2019&apos;, month= &apos;02&apos;, day= &apos;19&apos;) LOCATION &apos;s3://myawsexamplebucket/AWSLogs/111122223333/CloudTrail/us-west-2/2019/02/19/&apos;
+                        PARTITION (region= &apos;ap-southeast-1&apos;, year= &apos;2019&apos;, month= &apos;02&apos;, day= &apos;19&apos;) LOCATION &apos;s3://myawsexamplebucket/AWSLogs/111122223333/CloudTrail/ap-southeast-1/2019/02/19/&apos;
+                        PARTITION (region= &apos;ap-southeast-2&apos;, year= &apos;2019&apos;, month= &apos;02&apos;, day= &apos;19&apos;) LOCATION &apos;s3://myawsexamplebucket/AWSLogs/111122223333/CloudTrail/ap-southeast-2/2019/02/19/&apos;
+                        PARTITION (region= &apos;ap-northeast-1&apos;, year= &apos;2019&apos;, month= &apos;02&apos;, day= &apos;19&apos;) LOCATION &apos;s3://myawsexamplebucket/AWSLogs/111122223333/CloudTrail/ap-northeast-1/2019/02/19/&apos;
+                        PARTITION (region= &apos;eu-west-1&apos;, year= &apos;2019&apos;, month= &apos;02&apos;, day= &apos;19&apos;) LOCATION &apos;s3://myawsexamplebucket/AWSLogs/111122223333/CloudTrail/eu-west-1/2019/02/19/&apos;
+                        PARTITION (region= &apos;sa-east-1&apos;, year= &apos;2019&apos;, month= &apos;02&apos;, day= &apos;19&apos;) LOCATION &apos;s3://myawsexamplebucket/AWSLogs/111122223333/CloudTrail/sa-east-1/2019/02/19/&apos;;
+                </code></pre>
+                     <p>You
+                        can then make the request based on these
+                        partitions,
+                        and
+                        you
+                        don&apos;t need to load the full bucket. 
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">
+                    SELECT useridentity.arn,
+                    Count(requestid) AS RequestCount
+                    FROM s3_cloudtrail_events_db.cloudtrail_myawsexamplebucket_table_partitioned
+                    WHERE eventsource=&apos;s3.amazonaws.com&apos;
+                    AND json_extract_scalar(additionalEventData, &apos;$.SignatureVersion&apos;)=&apos;SigV2&apos;
+                    AND region=&apos;us-east-1&apos;
+                    AND year=&apos;2019&apos;
+                    AND month=&apos;02&apos;
+                    AND day=&apos;19&apos;
+                    Group by useridentity.arn
+                </code></pre>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>To
+                           find your Signature Version 2
+                           requests,
+                           consider the following:
+                        </p>
+                        <div class="itemizedlist">
+                           
+                           
+                           
+                           <ul class="itemizedlist" type="disc">
+                              <li class="listitem">
+                                 
+                                 <p>The default
+                                    setting
+                                    for CloudTrail is
+                                    to
+                                    find only
+                                    management
+                                    events. Check to ensure that you have the data events enabled for
+                                    your
+                                    account.
+                                 </p>
+                                 
+                              </li>
+                           </ul>
+                        </div>
+                     </div>
+                     
+                     
+                     
+                     <h2 id="cloudtrail-logging-related-resources">Related Resources</h2>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><a href="./awscloudtrail/latest/userguide/">AWS CloudTrail User Guide</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="./awscloudtrail/latest/userguide/cloudtrail-event-reference.html">CloudTrail Event
+                                    Reference</a></p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="cloudtrail-logging.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="S3Torrent.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="How
+                    CloudTrail
+                    Captures
+                    Requests
+                    Made
+                    to
+                    Amazon S3"><a class="pagetoc" href="#cloudtrail-logging-s3-sigv2">How
+                              CloudTrail
+                              Captures
+                              Requests
+                              Made
+                              to
+                              Amazon S3</a></li>
+                        <li class="pagetoc" name="Enabling
+                    CloudTrail
+                    Event
+                    Logging
+                    for S3
+                    Buckets
+                    and
+                    Objects"><a class="pagetoc" href="#enable-cloudtrail-logging-for-s3">Enabling
+                              CloudTrail
+                              Event
+                              Logging
+                              for S3
+                              Buckets
+                              and
+                              Objects</a></li>
+                        <li class="pagetoc" name="Identifying
+                    Requests
+                    Made
+                    to Amazon S3
+                    Using
+                    Signature Version 2 in a CloudTrail
+                    Log"><a class="pagetoc" href="#identify-S3-requests-using-sigv2">Identifying
+                              Requests
+                              Made
+                              to Amazon S3
+                              Using
+                              Signature Version 2 in a CloudTrail
+                              Log</a></li>
+                        <li class="pagetoc" name="Related Resources"><a class="pagetoc" href="#cloudtrail-logging-related-resources">Related Resources</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Simple Storage Service';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

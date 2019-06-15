@@ -1,0 +1,397 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Bring Your Own IP Addresses (BYOIP) - Amazon Elastic Compute Cloud</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="EC2_Network_and_Security.html" title="Network and Security">
+      <link rel="prev" href="MultipleIP.html" title="Multiple IP Addresses">
+      <link rel="next" href="elastic-ip-addresses-eip.html" title="Elastic IP Addresses">
+      <meta name="description" content="You can bring part or all of your public IPv4 address range from your on-premises network to your AWS account. You continue to own the address range, but AWS advertises it on the internet. After you bring the address range to AWS, it appears in your account as an address pool. You can create an Elastic IP address from your address pool and use it with your AWS resources, such as EC2 instances, NAT gateways, and Network Load Balancers.">
+      <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Elastic Compute Cloud">
+      <meta name="guide" content="User Guide for Linux Instances">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-byoip.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="EC2_Network_and_Security.html">Network and Security</a> &#xBB; <span class="breadcrumb">Bring Your Own IP Addresses (BYOIP)</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="ec2-byoip">Bring Your Own IP Addresses (BYOIP)</h1>
+                     <p>You can bring part or all of your public IPv4 address range from your on-premises
+                        network
+                        to your AWS account. You continue to own the address range, but AWS advertises it
+                        on the
+                        internet. After you bring the address range to AWS, it appears in your account as
+                        an address
+                        pool. You can create an Elastic IP address from your address pool and use it with
+                        your AWS
+                        resources, such as EC2 instances, NAT gateways, and Network Load Balancers.
+                     </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>BYOIP is not available in all Regions. For a list of supported Regions, see the
+                           <a href="https://aws.amazon.com/vpc/faqs/#Bring_Your_Own_IP" target="_blank">FAQ for Bring Your Own IP</a>.
+                        </p>
+                     </div>
+                     
+                     <h2 id="byoip-requirements">Requirements</h2>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>The address range must be registered with your regional internet registry (RIR), 
+                                 such as the American Registry for Internet Numbers (ARIN) or R&#xE9;seaux IP
+                                 Europ&#xE9;ens Network Coordination Centre (RIPE). It must be registered to a 
+                                 business or institutional entity and may not be registered to an individual person.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>For ARIN, the supported network types are &quot;Direct Allocation&quot; and &quot;Direct Assignment&quot;.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>For RIPE, the supported allocation statuses are &quot;ALLOCATED PA&quot;, &quot;LEGACY&quot;, and &quot;ASSIGNED
+                                 PI&quot;.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The most specific address range that you can specify is /24.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>You can bring each address range to one region at a time.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>You can bring 5 address ranges per region to your AWS account.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The addresses in the IP address range must have a clean history. We may 
+                                 investigate the reputation of the IP address range and reserve the right to 
+                                 reject an IP address range if it contains an IP address that has poor 
+                                 reputation or is associated with malicious behavior.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <h2 id="prepare-for-byoip">Prepare to Bring Your Address Range to Your AWS Account</h2>
+                     
+                     <p>To ensure that only you can bring your address range to your AWS account, you must
+                        authorize Amazon to advertise the address range and provide proof that you own the
+                        address range.
+                     </p>
+                     
+                     <p>A Route Origin Authorization (ROA) is a document that you can create through your
+                        RIR. It contains
+                        the address range, the ASNs that are allowed to advertise the address range, and an
+                        expiration date.
+                        An ROA authorizes Amazon to advertise an address range under a specific AS number.
+                        However, it does not
+                        authorize your AWS account to bring the address range to AWS. To authorize your AWS
+                        account to bring an 
+                        address range to AWS, you must publish a self-signed X509 certificate in the RDAP
+                        remarks for the address 
+                        range. The certificate contains a public key, which AWS uses to verify the authorization-context
+                        signature
+                        that you provide. You should keep your private key secure and use it to sign the authorization-context
+                        
+                        message.
+                     </p>
+                     
+                     <p>The commands in the following procedure require OpenSSL version 1.0.2 or later.</p>
+                     
+                     <p class="title"><b>To prepare to bring your address range to your AWS account</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Create an ROA to authorize Amazon ASNs 16509 and 14618 to advertise your
+                              address range, plus the ASNs that are currently authorized to advertise the
+                              address range. You must set the maximum length to the size of the smallest
+                              prefix that you want to bring (for example, /24). It might take up to 24 hours
+                              for the ROA to become available to Amazon. For more information, see the
+                              following:
+                           </p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p>ARIN &#x2014; <a href="https://www.arin.net/resources/rpki/roarequest.html" target="_blank">ROA Requests</a></p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>RIPE &#x2014; <a href="https://www.ripe.net/manage-ips-and-asns/resource-management/certification/resource-certification-roa-management" target="_blank">Managing ROAs</a></p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Generate an RSA 2048-bit key pair as follows:</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>openssl genrsa -out private.key 2048</code></strong></code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Create a public X509 certificate from the key pair using the following command. In
+                              this example, the certificate
+                              expires in 365 days, after which time it cannot be trusted. Therefore, be sure to
+                              set the expiration appropriately. 
+                              When prompted for information, you can accept the default values.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>openssl req -new -x509 -key private.key -days <em class="replaceable"><code>365</code></em> | tr -d &quot;\n&quot; &gt; publickey.cer</code></strong></code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Create a signed authorization message for the prefix and AWS account. The
+                              format of the message is as follows, where the date is the expiry date of the
+                              message:
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">1|aws|<em class="replaceable"><code>account</code></em>|<em class="replaceable"><code>cidr</code></em>|<em class="replaceable"><code>YYYYMMDD</code></em>|SHA256|RSAPSS</code></pre>
+                           <p>The following command creates a plain-text authorization message using an
+                              example account number, address range, and expiry date, and stores it in a
+                              variable named <code class="code">text_message</code>.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>text_message=&quot;1|aws|<em class="replaceable"><code>123456789012</code></em>|<em class="replaceable"><code>198.51.100.0/24</code></em>|<em class="replaceable"><code>20191201</code></em>|SHA256|RSAPSS&quot;</code></strong></code></pre>
+                           <p>The following command signs the authorization message in
+                              <code class="code">text_message</code> using the key pair that you created, and stores it
+                              in a variable named <code class="code">signed_message</code>:
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>signed_message=$(echo $text_message | tr -d &quot;\n&quot; | openssl dgst -sha256 -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1 -sign private.key -keyform PEM | openssl base64 | tr -- &apos;+=/&apos; &apos;-_~&apos; | tr -d &quot;\n&quot;)</code></strong></code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Update the RDAP record for your RIR with the X509 certificate. Be sure to copy the
+                              
+                              <code class="code">-----BEGIN CERTIFICATE-----</code> and <code class="code">-----END CERTIFICATE-----</code> 
+                              from the certificate. Be sure that you have removed newline characters, if you 
+                              haven&apos;t already done so using the <b>tr -d &quot;\n&quot;</b> commands in the 
+                              previous steps. To view your certificate, run the following command:
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>cat publickey.cer</code></strong></code></pre>
+                           <p>For ARIN, add the certificate in the &quot;Public Comments&quot; section for your address range.</p>
+                           
+                           <p>For RIPE, add the certificate as a new &quot;desc&quot; field for your address range.</p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <h2 id="byoip-provision">Provision the Address Range for use with AWS</h2>
+                     
+                     <p>When you provision an address range for use with AWS, you are confirming that you
+                        own
+                        the address range and authorizing Amazon to advertise it. We also verify that you
+                        own
+                        the address range.
+                     </p>
+                     
+                     <p>To provision the address range, use the following <a href="./cli/latest/reference/ec2/provision-byoip-cidr.html">provision-byoip-cidr</a>
+                        command. The <code class="code">--cidr-authorization-context</code> parameter uses the variables
+                        that you created in the previous section, not the ROA message.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 provision-byoip-cidr --cidr <em class="replaceable"><code>address-range</code></em> --cidr-authorization-context Message=&quot;$text_message&quot;,Signature=&quot;$signed_message</code></strong>&quot;</code></pre>
+                     <p>Provisioning an address range is an asynchronous operation, so the call returns immediately,
+                        but the address range is not ready to use until its status changes from <code class="code">pending-provision</code>
+                        to <code class="code">provisioned</code>. It can take up to five days to complete the provisioning process. 
+                        To monitor the status of the address ranges that you&apos;ve provisioned, use the following
+                        <a href="./cli/latest/reference/ec2/describe-byoip-cidrs.html">describe-byoip-cidrs</a> command:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 describe-byoip-cidrs --max-results 5</code></strong></code></pre>
+                     
+                     <h2 id="byoip-advertise">Advertise the Address Range through AWS</h2>
+                     
+                     <p>After the address range is provisioned, it is ready to be advertised. You must advertise
+                        the
+                        exact address range that you provisioned. You can&apos;t advertise only a portion of the
+                        provisioned 
+                        address range.
+                     </p> 
+                     
+                     <p>We recommend that you stop advertising the address range from other locations before
+                        you 
+                        advertise it through AWS. If you keep advertising your IP address range from other
+                        locations, 
+                        we can&apos;t reliably support it or troubleshoot issues. Specifically, we can&apos;t guarantee
+                        that
+                        traffic to the address range will enter our network.
+                     </p>
+                     
+                     <p>To minimize down time, you can configure your AWS resources to use an address from
+                        your 
+                        address pool before it is advertised, and then simultaneously stop advertising it
+                        from the 
+                        current location and start advertising it through AWS. For more information about
+                        allocating
+                        an Elastic IP address from your address pool, see <a href="elastic-ip-addresses-eip.html#using-instance-addressing-eips-allocating">Allocating an Elastic IP Address</a>.
+                     </p>
+                     
+                     
+                     <p>To advertise the address range, use the following <a href="./cli/latest/reference/ec2/advertise-byoip-cidr.html">advertise-byoip-cidr</a>
+                        command:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 advertise-byoip-cidr --cidr <em class="replaceable"><code>address-range</code></em></code></strong></code></pre>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>You can run the <b>advertise-byoip-cidr</b> command at most once every 10 seconds, 
+                           even if you specify different address ranges each time.
+                        </p>
+                     </div>
+                     
+                     
+                     <p>To stop advertising the address range, use the following <a href="./cli/latest/reference/ec2/withdraw-byoip-cidr.html">withdraw-byoip-cidr</a>
+                        command:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 withdraw-byoip-cidr --cidr <em class="replaceable"><code>address-range</code></em></code></strong></code></pre>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>You can run the <b>withdraw-byoip-cidr</b> command at most once every 10 seconds, 
+                           even if you specify different address ranges each time.
+                        </p>
+                     </div>
+                     
+                     
+                     <h2 id="byoip-deprovision">Deprovision the Address Range</h2>
+                     
+                     <p>To stop using your address range with AWS, release any Elastic IP addresses still
+                        allocated from the address pool, stop advertising the address range, and deprovision
+                        the
+                        address range.
+                     </p>
+                     
+                     <p>To release each Elastic IP address, use the following <a href="./cli/latest/reference/ec2/release-address.html">release-address</a> command:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 release-address --allocation-id <em class="replaceable"><code>eipalloc-12345678</code></em></code></strong></code></pre>
+                     <p>To stop advertising the address range, use the following <a href="./cli/latest/reference/ec2/withdraw-byoip-cidr.html">withdraw-byoip-cidr</a>
+                        command:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 withdraw-byoip-cidr --cidr <em class="replaceable"><code>address-range</code></em></code></strong></code></pre>
+                     <p>To deprovision the address range, use the following <a href="./cli/latest/reference/ec2/deprovision-byoip-cidr.html">deprovision-byoip-cidr</a>
+                        command:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 deprovision-byoip-cidr --cidr <em class="replaceable"><code>address-range</code></em></code></strong></code></pre>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="MultipleIP.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="elastic-ip-addresses-eip.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Requirements"><a class="pagetoc" href="#byoip-requirements">Requirements</a></li>
+                        <li class="pagetoc" name="Prepare to Bring Your Address Range to Your AWS Account"><a class="pagetoc" href="#prepare-for-byoip">Prepare to Bring Your Address Range to Your AWS Account</a></li>
+                        <li class="pagetoc" name="Provision the Address Range for use with AWS"><a class="pagetoc" href="#byoip-provision">Provision the Address Range for use with AWS</a></li>
+                        <li class="pagetoc" name="Advertise the Address Range through AWS"><a class="pagetoc" href="#byoip-advertise">Advertise the Address Range through AWS</a></li>
+                        <li class="pagetoc" name="Deprovision the Address Range"><a class="pagetoc" href="#byoip-deprovision">Deprovision the Address Range</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Elastic Compute Cloud';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide for Linux Instances';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

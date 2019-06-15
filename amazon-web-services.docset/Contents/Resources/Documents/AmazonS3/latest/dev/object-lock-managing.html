@@ -1,0 +1,287 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Managing Amazon S3 Object Locks - Amazon Simple Storage Service</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="object-lock.html" title="Locking Objects Using Amazon S3 Object Lock">
+      <link rel="prev" href="object-lock-overview.html" title="Amazon S3 Object Lock Overview">
+      <link rel="next" href="batch-ops.html" title="Performing Batch Operations">
+      <meta name="description" content="View and perform management operations on your Amazon S3 object locks.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Simple Storage Service">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/object-lock-managing.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="DataDurability.html">Protecting Data in Amazon S3</a> &#xBB; <a href="object-lock.html">Locking Objects Using Amazon S3 Object Lock</a> &#xBB; <span class="breadcrumb">Managing Amazon S3 Object Locks</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="object-lock-managing">Managing Amazon S3 Object Locks</h1>
+                     <p>Amazon S3 object lock lets you store objects in Amazon S3 using a
+                        <em>write-once-read-many</em> (WORM) model. You can use it to view,
+                        configure, and manage the object lock status of your Amazon S3 objects. For more information
+                        about Amazon S3 object lock capabilities, see <a href="object-lock-overview.html">Amazon S3 Object Lock Overview</a>.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#object-lock-managing-view">Viewing the Lock Information for an Object</a></li>
+                           <li><a href="#object-lock-managing-bypass">Bypassing Governance Mode</a></li>
+                           <li><a href="#object-lock-managing-events">Configuring Events and
+                                 Notifications</a></li>
+                           <li><a href="#object-lock-managing-retention-limits">Setting Retention Limits</a></li>
+                           <li><a href="#object-lock-managing-lifecycle">Managing Delete Markers and Object
+                                 Lifecycles</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="object-lock-managing-view">Viewing the Lock Information for an Object</h2>
+                     
+                     <p>You can view the object lock status of an Amazon S3 object version using the <code class="code">GET
+                           Object</code> or <code class="code">HEAD Object</code> commands. Both commands return the
+                        retention mode, <code class="code">Retain Until Date</code>, and the legal-hold status for the
+                        specified object version. 
+                     </p>
+                     
+                     <p>To view an object version&apos;s retention mode and retention period, you must have the
+                        <code class="code">s3:GetObjectRetention</code> permission. To view an object version&apos;s legal
+                        hold status, you must have the <code class="code">s3:GetObjectLegalHold</code> permission. If you
+                        <code class="code">GET</code> or <code class="code">HEAD</code> an object version but don&apos;t have the necessary
+                        permissions to view its lock status, the request succeeds. However, it doesn&apos;t return
+                        information that you don&apos;t have permission to view.
+                     </p>
+                     
+                     <p>To view a bucket&apos;s default retention configuration (if it has one), request the
+                        bucket&apos;s object lock configuration. To do this, you must have the
+                        <code class="code">s3:GetBucketObjectLockConfiguration</code> permission. If you make a request
+                        for an object lock configuration against a bucket that doesn&apos;t have Amazon S3 object
+                        lock
+                        enabled, Amazon S3 returns an error.
+                     </p>
+                     
+                     <p>You can configure Amazon S3 inventory reports on your buckets to include the <code class="code">Retain
+                           Until Date</code>, <code class="code">Object Lock Mode</code>, and <code class="code">Legal Hold Status</code>
+                        for all objects in a bucket. For more information, see <a href="storage-inventory.html"> Amazon S3 Inventory</a>.
+                     </p>
+                     
+                     
+                     <h2 id="object-lock-managing-bypass">Bypassing Governance Mode</h2>
+                     
+                     <p>You can perform operations on object versions that are locked in governance mode as
+                        if
+                        they were unprotected if you have the <code class="code">s3:BypassGovernanceRetention</code>
+                        permission. These operations include deleting an object version, shortening the
+                        retention period, or removing the object lock by placing a new lock with empty
+                        parameters. To bypass governance mode, you must explicitly indicate in your request
+                        that
+                        you want to bypass this mode. To do this, include the
+                        <code class="code">x-amz-bypass-governance-retention:true</code> header with your request, or use
+                        the equivalent parameter with requests made through the AWS CLI, or AWS SDKs. The
+                        AWS Management Console automatically applies this header for requests made through
+                        the console if you
+                        have the permission required to bypass governance mode.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>Bypassing governance mode doesn&apos;t affect an object version&apos;s legal hold status. If
+                           an object version has a legal hold enabled, the legal hold remains in force and
+                           prevents requests to overwrite or delete the object version.
+                        </p>
+                     </div>
+                     
+                     
+                     <h2 id="object-lock-managing-events">Configuring Events and
+                        Notifications
+                     </h2>
+                     
+                     <p>You can configure Amazon S3 events for object-level operations in an object lock bucket.
+                        When <code class="code">PUT Object</code>, <code class="code">HEAD Object</code>, and <code class="code">GET Object</code>
+                        calls include object lock metadata, events for these calls include those metadata
+                        values. When object lock metadata is added to or updated for an object, those actions
+                        also trigger events. These events occur whenever you <code class="code">PUT</code> or
+                        <code class="code">GET</code> object retention or legal-hold information.
+                     </p>
+                     
+                     <p>For more information about Amazon S3 events, see <a href="NotificationHowTo.html"> Configuring Amazon S3 Event Notifications</a>.
+                     </p>
+                     
+                     <p>You can use Amazon S3 event notifications to track access and changes to your object
+                        lock
+                        configurations and data using AWS CloudTrail. For information about CloudTrail, see
+                        the <a href="./cloudtrail/index.html">AWS CloudTrail Documentation</a>. 
+                     </p>
+                     
+                     <p>You can also use Amazon CloudWatch to generate alerts based on this data. For information
+                        about
+                        CloudWatch, see the <a href="./cloudwatch/index.html">Amazon CloudWatch
+                           Documentation</a>.
+                     </p>
+                     
+                     
+                     
+                     <h2 id="object-lock-managing-retention-limits">Setting Retention Limits</h2>
+                     
+                     <p>You can set minimum and maximum allowable retention periods for a bucket using a
+                        bucket policy. You do this using the
+                        <code class="code">s3:object-lock-remaining-retention-days</code> condition key. The following
+                        example shows a bucket policy that sets a minimum retention period of 10 days.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+    &quot;Version&quot;: &quot;2012-10-17&quot;,
+    &quot;Id&quot;: &quot;<em class="replaceable"><code>&lt;Policy1436912751980&gt;</code></em>&quot;,
+    &quot;Statement&quot;: [
+        {
+            &quot;Sid&quot;: &quot;<em class="replaceable"><code>&lt;Stmt1436912698057&gt;</code></em>&quot;,
+            &quot;Effect&quot;: &quot;Deny&quot;,
+            &quot;Principal&quot;: &quot;*&quot;,
+            &quot;Action&quot;: [
+                &quot;s3:PutObjectRetention&quot;
+            ],
+            &quot;Resource&quot;: &quot;arn:aws:s3:::<em class="replaceable"><code>&lt;example-bucket&gt;</code></em>/*&quot;,
+            &quot;Condition&quot;: {
+                &quot;NumericGreaterThan&quot;: {
+                    &quot;s3:object-lock-remaining-retention-days&quot;: &quot;10&quot;
+                }
+            }
+        }
+    ]
+}</code></pre>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>If your bucket is the destination bucket for a cross-region replication (CRR) policy
+                           and you
+                           want to set up minimum and maximum allowable retention periods for object replicas
+                           that are created using CRR, you must include the <code class="code">s3:ReplicateObject</code>
+                           action in your bucket policy.
+                        </p>
+                     </div>
+                     
+                     <p>For more information about using bucket policies, see <a href="using-iam-policies.html">Using Bucket Policies and User Policies</a>.
+                     </p>
+                     
+                     
+                     <h2 id="object-lock-managing-lifecycle">Managing Delete Markers and Object
+                        Lifecycles
+                     </h2>
+                     
+                     <p>Although you can&apos;t delete a protected object version, you can still create a delete
+                        marker for that object. Placing a delete marker on an object doesn&apos;t delete any object
+                        version. However, it makes Amazon S3 behave in most ways as though the object has
+                        been
+                        deleted. For more information, see <a href="DeleteMarker.html">Working with Delete Markers</a>.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>Delete markers are not WORM-protected, regardless of any retention period or legal
+                           hold in place on the underlying object.
+                        </p>
+                     </div>
+                     
+                     <p>Object lifecycle management configurations continue to function normally on protected
+                        objects, including placing delete markers. However, protected object versions remain
+                        safe from being deleted or overwritten by a lifecycle configuration. For more
+                        information about managing object lifecycles, see <a href="object-lifecycle-mgmt.html">Object Lifecycle Management</a>.
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="object-lock-overview.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="batch-ops.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Viewing the Lock Information for an Object"><a class="pagetoc" href="#object-lock-managing-view">Viewing the Lock Information for an Object</a></li>
+                        <li class="pagetoc" name="Bypassing Governance Mode"><a class="pagetoc" href="#object-lock-managing-bypass">Bypassing Governance Mode</a></li>
+                        <li class="pagetoc" name="Configuring Events and
+                Notifications"><a class="pagetoc" href="#object-lock-managing-events">Configuring Events and
+                              Notifications</a></li>
+                        <li class="pagetoc" name="Setting Retention Limits"><a class="pagetoc" href="#object-lock-managing-retention-limits">Setting Retention Limits</a></li>
+                        <li class="pagetoc" name="Managing Delete Markers and Object
+                Lifecycles"><a class="pagetoc" href="#object-lock-managing-lifecycle">Managing Delete Markers and Object
+                              Lifecycles</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Simple Storage Service';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

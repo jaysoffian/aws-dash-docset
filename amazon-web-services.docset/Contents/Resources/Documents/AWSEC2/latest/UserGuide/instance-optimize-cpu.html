@@ -1,0 +1,2965 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Optimizing CPU Options - Amazon Elastic Compute Cloud</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="Configure_Instance.html" title="Configuring Your Amazon Linux Instance">
+      <link rel="prev" href="set-time.html" title="Setting the Time for Your Linux Instance">
+      <link rel="next" href="set-hostname.html" title="Changing the Hostname of Your Linux Instance">
+      <meta name="description" content="Specify CPU options for your instance by specifying the number of CPU cores and disabling multithreading.">
+      <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Elastic Compute Cloud">
+      <meta name="guide" content="User Guide for Linux Instances">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-optimize-cpu.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="Configure_Instance.html">Configuring Your Amazon Linux Instance</a> &#xBB; <span class="breadcrumb">Optimizing CPU Options</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="instance-optimize-cpu">Optimizing CPU Options</h1>
+                     <p>Amazon EC2 instances support multithreading, which enables multiple threads to run
+                        concurrently
+                        on a single CPU core. Each thread is represented as a virtual CPU (vCPU) on the instance.
+                        An
+                        instance has a default number of CPU cores, which varies according to instance type.
+                        For
+                        example, an <code class="code">m5.xlarge</code> instance type has two CPU cores and two threads per core
+                        by default&#x2014;four vCPUs in total.
+                     </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>Each vCPU is a thread of a CPU core, except for T2 instances.</p>
+                     </div>
+                     <p>In most cases, there is an Amazon EC2 instance type that has a combination of memory
+                        and number
+                        of vCPUs to suit your workloads. However, you can specify the following CPU options
+                        to
+                        optimize your instance for specific workloads or business needs:
+                     </p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><b>Number of CPU cores</b>: You can customize the number
+                                 of CPU cores for the instance. You might do this to potentially optimize the
+                                 licensing costs of your software with an instance that has sufficient amounts of RAM
+                                 for memory-intensive workloads but fewer CPU cores.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>Threads per core</b>: You can disable multithreading
+                                 by specifying a single thread per CPU core. You might do this for certain workloads,
+                                 such as high performance computing (HPC) workloads.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <p>You can specify these CPU options during instance launch. There is no additional or
+                        reduced charge for specifying CPU options. You&apos;re charged the same as instances that
+                        are
+                        launched with default CPU options.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Contents</strong></p>
+                        <ul>
+                           <li><a href="#instance-cpu-options-rules">Rules for Specifying CPU Options</a></li>
+                           <li><a href="#cpu-options-supported-instances-values">CPU Cores and Threads Per CPU Core Per
+                                 Instance Type</a></li>
+                           <li><a href="#instance-specify-cpu-options">Specifying CPU Options for Your Instance</a></li>
+                           <li><a href="#view-cpu-options">Viewing the CPU Options for Your Instance</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="instance-cpu-options-rules">Rules for Specifying CPU Options</h2>
+                     
+                     <p>To specify the CPU options for your instance, be aware of the following rules:</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>CPU options are currently supported using the Amazon EC2 console, the AWS CLI, an
+                                 AWS SDK, or the Amazon EC2 API.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>CPU options can only be specified during instance launch and cannot be
+                                 modified after launch.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>When you launch an instance, you must specify both the number of CPU cores and
+                                 threads per core in the request. For example requests, see <a href="instance-optimize-cpu.html#instance-specify-cpu-options">Specifying CPU Options for Your Instance</a>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The number of vCPUs for the instance is the number of CPU cores multiplied by
+                                 the threads per core. To specify a custom number of vCPUs, you must specify a
+                                 valid number of CPU cores and threads per core for the instance type. You cannot
+                                 exceed the default number of vCPUs for the instance. For more information, see
+                                 <a href="instance-optimize-cpu.html#cpu-options-supported-instances-values">CPU Cores and Threads Per CPU Core Per
+                                    Instance Type</a>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>To disable multithreading, specify one thread per core.</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>When you <a href="ec2-instance-resize.html">change the instance type</a>
+                                 of an existing instance, the CPU options automatically change to the default CPU
+                                 options for the new instance type.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The specified CPU options persist after you stop, start, or reboot an
+                                 instance.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <h2 id="cpu-options-supported-instances-values">CPU Cores and Threads Per CPU Core Per
+                        Instance Type
+                     </h2>
+                     
+                     <p>The following tables list the instance types that support specifying CPU options.
+                        For
+                        each type, the table shows the default and supported number of CPU cores and threads
+                        per
+                        core.
+                     </p>
+                     
+                     
+                     <div class="table">
+                        <p class="title"><b>Accelerated Computing Instances</b></p><a id="cpu-options-accelerated"></a><div class="table-contents">
+                           <table id="w306aac20c17c17c17b5">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Instance type</th>
+                                 
+                                 <th>Default vCPUs</th>
+                                 
+                                 <th>Default CPU cores</th>
+                                 
+                                 <th>Default threads per core</th>
+                                 
+                                 <th>Valid number of CPU cores</th>
+                                 
+                                 <th>Valid number of threads per core</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">f1.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">f1.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4, 5, 6, 7, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">f1.16xlarge</code></td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">g3.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4, 5, 6, 7, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">g3.8xlarge</code></td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">g3.16xlarge</code></td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">g3s.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">p2.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">p2.8xlarge</code></td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">p2.16xlarge</code></td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">p3.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">p3.8xlarge</code></td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">p3.16xlarge</code></td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">p3dn.24xlarge</code></td>
+                                 
+                                 <td>96</td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36,
+                                    38, 40, 42, 44, 46, 48
+                                 </td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <div class="table">
+                        <p class="title"><b>Compute Optimized Instances</b></p><a id="cpu-options-compute-optimized"></a><div class="table-contents">
+                           <table id="w306aac20c17c17c17b7">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Instance type</th>
+                                 
+                                 <th>Default vCPUs</th>
+                                 
+                                 <th>Default CPU cores</th>
+                                 
+                                 <th>Default threads per core</th>
+                                 
+                                 <th>Valid number of CPU cores</th>
+                                 
+                                 <th>Valid number of threads per core</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c4.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c4.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c4.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c4.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4, 5, 6, 7, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c4.8xlarge</code></td>
+                                 
+                                 <td>36</td>
+                                 
+                                 <td>18</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5.9xlarge</code></td>
+                                 
+                                 <td>36</td>
+                                 
+                                 <td>18</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5.18xlarge</code></td>
+                                 
+                                 <td>72</td>
+                                 
+                                 <td>36</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34,
+                                    36
+                                 </td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5d.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5d.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5d.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5d.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5d.9xlarge</code></td>
+                                 
+                                 <td>36</td>
+                                 
+                                 <td>18</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5d.18xlarge</code></td>
+                                 
+                                 <td>72</td>
+                                 
+                                 <td>36</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34,
+                                    36
+                                 </td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5n.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5n.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5n.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5n.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5n.9xlarge</code></td>
+                                 
+                                 <td>36</td>
+                                 
+                                 <td>18</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">c5n.18xlarge</code></td>
+                                 
+                                 <td>72</td>
+                                 
+                                 <td>36</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34,
+                                    36
+                                 </td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <div class="table">
+                        <p class="title"><b>General Purpose Instances</b></p><a id="cpu-options-gen-purpose"></a><div class="table-contents">
+                           <table id="w306aac20c17c17c17b9">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Instance type</th>
+                                 
+                                 <th>Default vCPUs</th>
+                                 
+                                 <th>Default CPU cores</th>
+                                 
+                                 <th>Default threads per core</th>
+                                 
+                                 <th>Valid number of CPU cores</th>
+                                 
+                                 <th>Valid number of threads per core</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5.12xlarge</code></td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>24</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5.24xlarge</code></td>
+                                 
+                                 <td>96</td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,
+                                    40, 42, 44, 46, 48
+                                 </td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5a.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5a.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5a.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5a.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5a.12xlarge</code></td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>24</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>6, 12, 18, 24</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5a.24xlarge</code></td>
+                                 
+                                 <td>96</td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>12, 18, 24, 36, 48</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5ad.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5ad.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5ad.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5ad.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5ad.12xlarge</code></td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>24</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>6, 12, 18, 24</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5ad.24xlarge</code></td>
+                                 
+                                 <td>96</td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>12, 18, 24, 36, 48</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5d.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5d.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5d.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5d.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5d.12xlarge</code></td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>24</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">m5d.24xlarge</code></td>
+                                 
+                                 <td>96</td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,
+                                    40, 42, 44, 46, 48
+                                 </td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.nano</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.micro</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.small</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.medium</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.nano</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.micro</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.small</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.medium</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">t3a.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <div class="table">
+                        <p class="title"><b>Memory Optimized Instances</b></p><a id="cpu-options-mem-optimized"></a><div class="table-contents">
+                           <table id="w306aac20c17c17c17c11">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Instance type</th>
+                                 
+                                 <th>Default vCPUs</th>
+                                 
+                                 <th>Default CPU cores</th>
+                                 
+                                 <th>Default threads per core</th>
+                                 
+                                 <th>Valid number of CPU cores</th>
+                                 
+                                 <th>Valid number of threads per core</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r4.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r4.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r4.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r4.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4, 5, 6, 7, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r4.8xlarge</code></td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r4.16xlarge</code></td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5.12xlarge</code></td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>24</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5.24xlarge</code></td>
+                                 
+                                 <td>96</td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,
+                                    40, 42, 44, 46, 48
+                                 </td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5a.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5a.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5a.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5a.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5a.12xlarge</code></td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>24</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>6, 12, 18, 24</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5a.24xlarge</code></td>
+                                 
+                                 <td>96</td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>12, 18, 24, 36, 48</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5ad.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5ad.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5ad.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5ad.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5ad.12xlarge</code></td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>24</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>6, 12, 18, 24</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5ad.24xlarge</code></td>
+                                 
+                                 <td>96</td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>12, 18, 24, 36, 48</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5d.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5d.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5d.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5d.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5d.12xlarge</code></td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>24</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">r5d.24xlarge</code></td>
+                                 
+                                 <td>96</td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,
+                                    40, 42, 44, 46, 48
+                                 </td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">x1.16xlarge</code></td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">x1.32xlarge</code></td>
+                                 
+                                 <td>128</td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">x1e.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">x1e.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">x1e.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4, 5, 6, 7, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">x1e.8xlarge</code></td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">x1e.16xlarge</code></td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">x1e.32xlarge</code></td>
+                                 
+                                 <td>128</td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>4, 8, 12, 16, 20, 24, 28, 32, 36, 40, 44, 48, 52, 56, 60, 64</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">z1d.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">z1d.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">z1d.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">z1d.3xlarge</code></td>
+                                 
+                                 <td>12</td>
+                                 
+                                 <td>6</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">z1d.6xlarge</code></td>
+                                 
+                                 <td>24</td>
+                                 
+                                 <td>12</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">z1d.12xlarge</code></td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>24</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <div class="table">
+                        <p class="title"><b>Storage Optimized Instances</b></p><a id="cpu-options-storage-optimized"></a><div class="table-contents">
+                           <table id="w306aac20c17c17c17c13">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Instance type</th>
+                                 
+                                 <th>Default vCPUs</th>
+                                 
+                                 <th>Default CPU cores</th>
+                                 
+                                 <th>Default threads per core</th>
+                                 
+                                 <th>Valid number of CPU cores</th>
+                                 
+                                 <th>Valid number of threads per core</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.24xlarge</code></td>
+                                 
+                                 <td>96</td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,
+                                    40, 42, 44, 46, 48
+                                 </td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">d2.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">d2.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">d2.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4, 5, 6, 7, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">d2.8xlarge</code></td>
+                                 
+                                 <td>36</td>
+                                 
+                                 <td>18</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">h1.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">h1.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4, 5, 6, 7, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">h1.8xlarge</code></td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">h1.16xlarge</code></td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3.4xlarge</code></td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4, 5, 6, 7, 8</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3.8xlarge</code></td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>16</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3.16xlarge</code></td>
+                                 
+                                 <td>64</td>
+                                 
+                                 <td>32</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.large</code></td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.xlarge</code></td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.2xlarge</code></td>
+                                 
+                                 <td>8</td>
+                                 
+                                 <td>4</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.3xlarge</code></td>
+                                 
+                                 <td>12</td>
+                                 
+                                 <td>6</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.6xlarge</code></td>
+                                 
+                                 <td>24</td>
+                                 
+                                 <td>12</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.12xlarge</code></td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>24</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24</td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><code class="code">i3en.24xlarge</code></td>
+                                 
+                                 <td>96</td>
+                                 
+                                 <td>48</td>
+                                 
+                                 <td>2</td>
+                                 
+                                 <td>4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,
+                                    40, 42, 44, 46, 48
+                                 </td>
+                                 
+                                 <td>1, 2</td>
+                                 
+                              </tr>
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     
+                     
+                     <h2 id="instance-specify-cpu-options">Specifying CPU Options for Your Instance</h2>
+                     
+                     <p>You can specify CPU options during instance launch. The following examples are for
+                        an
+                        <code class="code">r4.4xlarge</code> instance type, which has the following <a href="instance-optimize-cpu.html#cpu-options-mem-optimized">default values</a>:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Default CPU cores: 8</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Default threads per core: 2</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Default vCPUs: 16 (8 * 2)</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Valid number of CPU cores: 1, 2, 3, 4, 5, 6, 7, 8</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Valid number of threads per core: 1, 2</p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     
+                     <h3 id="cpu-options-disable-intel-hyper-threading-technology">Disabling
+                        Multithreading
+                     </h3>
+                     
+                     <p>To disable multithreading, specify one thread per core.</p>
+                     
+                     <p class="title"><b>To disable multithreading during instance launch (console)</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Follow the <a href="launching-instance.html">Launching an Instance Using the Launch Instance Wizard</a> procedure.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>On the <b>Configure Instance Details</b> page, for <b>CPU
+                                 options</b>, choose <b>Specify CPU
+                                 options</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Core count</b>, choose the number of required CPU
+                              cores. In this example, to specify the default CPU core count for an
+                              <code class="code">r4.4xlarge</code> instance, choose <code class="code">8</code>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>To disable multithreading, for <b>Threads per core</b>, choose
+                              <b>1</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Continue as prompted by the wizard. When you&apos;ve finished reviewing your
+                              options on the <b>Review Instance Launch</b> page, choose
+                              <b>Launch</b>. For more information, see <a href="launching-instance.html">Launching an Instance Using the Launch Instance Wizard</a>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <p class="title"><b>To disable multithreading during instance launch (AWS CLI)</b></p>
+                     
+                     <p>Use the <a href="./cli/latest/reference/ec2/run-instances.html">run-instances</a>
+                        AWS CLI command and specify a value of <code class="code">1</code> for
+                        <code class="code">ThreadsPerCore</code> for the <code class="code">--cpu-options</code>
+                        parameter. For <code class="code">CoreCount</code>, specify the number of CPU cores. In
+                        this example, to specify the default CPU core count for an
+                        <code class="code">r4.4xlarge</code> instance, specify a value of
+                        <code class="code">8</code>.
+                     </p>
+                     
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws ec2 run-instances --image-id <em class="replaceable"><code>ami-1a2b3c4d</code></em> --instance-type <em class="replaceable"><code>r4.4xlarge</code></em> --cpu-options &quot;CoreCount=<em class="replaceable"><code>8</code></em>,ThreadsPerCore=<em class="replaceable"><code>1</code></em>&quot; --key-name <em class="replaceable"><code>MyKeyPair</code></em></code></pre>
+                     
+                     
+                     
+                     <h3 id="cpu-options-customer-number-of-vCPUs">Specifying a Custom Number of
+                        vCPUs
+                     </h3>
+                     
+                     <p>You can customize the number of CPU cores and threads per core for the
+                        instance.
+                     </p>
+                     
+                     <p class="title"><b>To specify a custom number of vCPUs during instance launch (console)</b></p>
+                     <p>The following example launches an <code class="code">r4.4xlarge</code> instance with six
+                        vCPUs.
+                     </p>
+                     <ol>
+                        <li>
+                           
+                           <p>Follow the <a href="launching-instance.html">Launching an Instance Using the Launch Instance Wizard</a> procedure.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>On the <b>Configure Instance Details</b> page, for
+                              <b>CPU options</b>, choose <b>Specify CPU
+                                 options</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>To get six vCPUs, specify three CPU cores and two threads per core, as
+                              follows:
+                           </p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p>For <b>Core count</b>, choose
+                                       <b>3</b>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>For <b>Threads per core</b>, choose
+                                       <b>2</b>.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Continue as prompted by the wizard. When you&apos;ve finished reviewing your
+                              options on the <b>Review Instance Launch</b> page, choose
+                              <b>Launch</b>. For more information, see <a href="launching-instance.html">Launching an Instance Using the Launch Instance Wizard</a>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <p class="title"><b>To specify a custom number of vCPUs during instance launch (AWS CLI)</b></p>
+                     
+                     <p>The following example launches an <code class="code">r4.4xlarge</code> instance with six
+                        vCPUs.
+                     </p>
+                     
+                     
+                     <p>Use the <a href="./cli/latest/reference/ec2/run-instances.html">run-instances</a> AWS CLI command and specify the number of CPU cores
+                        and number of threads in the <code class="code">--cpu-options</code> parameter. You can
+                        specify three CPU cores and two threads per core to get six vCPUs.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws ec2 run-instances --image-id <em class="replaceable"><code>ami-1a2b3c4d</code></em> --instance-type <em class="replaceable"><code>r4.4xlarge</code></em> --cpu-options &quot;CoreCount=<em class="replaceable"><code>3</code></em>,ThreadsPerCore=<em class="replaceable"><code>2</code></em>&quot; --key-name <em class="replaceable"><code>MyKeyPair</code></em></code></pre>
+                     <p>Alternatively, specify six CPU cores and one thread per core (disable
+                        multithreading) to get six vCPUs:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws ec2 run-instances --image-id <em class="replaceable"><code>ami-1a2b3c4d</code></em> --instance-type <em class="replaceable"><code>r4.4xlarge</code></em> --cpu-options &quot;CoreCount=<em class="replaceable"><code>6</code></em>,ThreadsPerCore=<em class="replaceable"><code>1</code></em>&quot; --key-name <em class="replaceable"><code>MyKeyPair</code></em></code></pre>
+                     
+                     
+                     
+                     <h2 id="view-cpu-options">Viewing the CPU Options for Your Instance</h2>
+                     
+                     <p>You can view the CPU options for an existing instance in the Amazon EC2 console or
+                        by describing
+                        the instance using the AWS CLI.
+                     </p>
+                     
+                     <p class="title"><b>To view the CPU options for an instance (console)</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           <p>In the left navigation pane, choose <b>Instances</b>, and select the
+                              instance.
+                           </p>
+                        </li>
+                        <li>
+                           <p>Choose <b>Description</b> and view the <b>Number of vCPUs</b>
+                              field.
+                           </p>
+                        </li>
+                        <li>
+                           <p>To view the core count and threads per core, choose the <b>Number of vCPUs</b>
+                              field value.
+                           </p>
+                        </li>
+                     </ol>
+                     
+                     
+                     <p class="title"><b>To view the CPU options for an instance (AWS CLI)</b></p>
+                     
+                     <p>Use the <a href="./cli/latest/reference/ec2/describe-instances.html">describe-instances</a> 
+                        command.
+                     </p>
+                     
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws ec2 describe-instances --instance-ids <em class="replaceable"><code>i-123456789abcde123</code></em></code></pre>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">...
+    &quot;Instances&quot;: [
+        {
+            &quot;Monitoring&quot;: {
+                &quot;State&quot;: &quot;disabled&quot;
+            }, 
+            &quot;PublicDnsName&quot;: &quot;ec2-198-51-100-5.eu-central-1.compute.amazonaws.com&quot;, 
+            &quot;State&quot;: {
+                &quot;Code&quot;: 16, 
+                &quot;Name&quot;: &quot;running&quot;
+            }, 
+            &quot;EbsOptimized&quot;: false, 
+            &quot;LaunchTime&quot;: &quot;2018-05-08T13:40:33.000Z&quot;, 
+            &quot;PublicIpAddress&quot;: &quot;198.51.100.5&quot;, 
+            &quot;PrivateIpAddress&quot;: &quot;172.31.2.206&quot;, 
+            &quot;ProductCodes&quot;: [], 
+            &quot;VpcId&quot;: &quot;vpc-1a2b3c4d&quot;, 
+            &quot;CpuOptions&quot;: {
+                &quot;CoreCount&quot;: 34, 
+                &quot;ThreadsPerCore&quot;: 1
+            }, 
+            &quot;StateTransitionReason&quot;: &quot;&quot;, 
+            ...
+        }
+    ]
+...</code></pre>
+                     <p>In the output that&apos;s returned, the <code class="code">CoreCount</code> field indicates the
+                        number of cores for the instance. The <code class="code">ThreadsPerCore</code> field
+                        indicates the number of threads per core.
+                     </p>
+                     
+                     
+                     <p>Alternatively, connect to your instance and use <span>a tool such as <b>lscpu</b></span>
+                        to view the CPU information for your instance.
+                     </p>
+                     
+                     <p>You can use AWS Config to record, assess, audit, and evaluate configuration changes
+                        for instances, including terminated instances. For more information, see <a href="./config/latest/developerguide/getting-started.html">Getting Started with AWS Config</a> in the <em>AWS Config Developer Guide</em>.
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="set-time.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="set-hostname.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Rules for Specifying CPU Options"><a class="pagetoc" href="#instance-cpu-options-rules">Rules for Specifying CPU Options</a></li>
+                        <li class="pagetoc" name="CPU Cores and Threads Per CPU Core Per
+                Instance Type"><a class="pagetoc" href="#cpu-options-supported-instances-values">CPU Cores and Threads Per CPU Core Per
+                              Instance Type</a></li>
+                        <li class="pagetoc" name="Specifying CPU Options for Your Instance"><a class="pagetoc" href="#instance-specify-cpu-options">Specifying CPU Options for Your Instance</a></li>
+                        <li class="pagetoc" name="Viewing the CPU Options for Your Instance"><a class="pagetoc" href="#view-cpu-options">Viewing the CPU Options for Your Instance</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Elastic Compute Cloud';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide for Linux Instances';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

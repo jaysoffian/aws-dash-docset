@@ -1,0 +1,455 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>AWS Lambda Layers - AWS Lambda</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="lambda-configuration.html" title="Configuring AWS Lambda Functions">
+      <link rel="prev" href="lambda-traffic-shifting-using-aliases.html" title="Traffic Shifting Using Aliases">
+      <link rel="next" href="vpc.html" title="Configuring a Lambda Function to Access Resources in an Amazon VPC">
+      <meta name="description" content="You can configure your Lambda function to pull in additional code and content in the form of layers. A layer is a ZIP archive that contains libraries, a custom runtime , or other dependencies. With layers, you can use libraries in your function without needing to include them in your deployment package.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="AWS Lambda">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-configuration.html">Configuring AWS Lambda Functions</a> &#xBB; <span class="breadcrumb">AWS Lambda Layers</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="configuration-layers">AWS Lambda Layers</h1>
+                     <p>You can configure your Lambda function to pull in additional code and content in the
+                        form of layers. A layer is a
+                        ZIP archive that contains libraries, a <a href="runtimes-custom.html">custom runtime</a>, or other dependencies.
+                        With layers, you can use libraries in your function without needing to include them
+                        in your deployment
+                        package.
+                     </p>
+                     <p>Layers let you keep your deployment package small, which makes development easier.
+                        You can avoid errors that can
+                        occur when you install and package dependencies with your function code. For Node.js,
+                        Python, and Ruby functions,
+                        you can <a href="code-editor.html">develop your function code in the Lambda console</a> as long as you keep your
+                        deployment package under 3 MB.
+                     </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>A function can use up to 5 layers at a time. The total unzipped size of the function
+                           and all layers
+                           can&apos;t exceed the unzipped deployment package size limit of 250 MB. For more information,
+                           see
+                           <a href="limits.html">AWS Lambda Limits</a>.
+                        </p>
+                     </div>
+                     <p>You can create layers, or use layers published by AWS and other AWS customers. Layers
+                        support <a href="configuration-layers.html#configuration-layers-permissions">resource-based policies</a> for granting layer usage permissions to
+                        specific AWS accounts, <a href="./organizations/latest/userguide/">AWS Organizations</a>, or all accounts.
+                     </p>
+                     <p>Layers are extracted to the <code class="code">/opt</code> directory in the function execution environment. Each runtime
+                        looks for libraries in a different location under <code class="code">/opt</code>, depending on the language. <a href="configuration-layers.html#configuration-layers-path">Structure your layer</a> so that function code can access libraries without
+                        additional configuration.
+                     </p>
+                     <p>You can also use AWS Serverless Application Model (AWS SAM) to manage layers and your
+                        function&apos;s layer configuration. For instructions,
+                        see <a href="./serverless-application-model/latest/developerguide/serverless-sam-template.html">Declaring Serverless Resources</a> in the <em>AWS Serverless Application Model Developer Guide</em>.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Sections</strong></p>
+                        <ul>
+                           <li><a href="#configuration-layers-using">Configuring a Function to Use Layers</a></li>
+                           <li><a href="#configuration-layers-manage">Managing Layers</a></li>
+                           <li><a href="#configuration-layers-path">Including Library Dependencies in a Layer</a></li>
+                           <li><a href="#configuration-layers-permissions">Layer Permissions</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="configuration-layers-using">Configuring a Function to Use Layers</h2>
+                     
+                     
+                     <p>You can specify up to 5 layers in your function&apos;s configuration, during or after function
+                        creation. You
+                        choose a specific version of a layer to use. If you want to use a different version
+                        later, update your function&apos;s
+                        configuration.
+                     </p>
+                     
+                     
+                     <p>To add layers to your function, use the <code class="code">update-function-configuration</code> command. The following
+                        example adds two layers: one from the same account as the function, and one from a
+                        different account.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda update-function-configuration --function-name my-function \
+--layers <em class="replaceable"><code>arn:aws:lambda:us-east-2:123456789012:layer:my-layer:3</code></em> \
+<em class="replaceable"><code>arn:aws:lambda:us-east-2:210987654321:layer:their-layer:2</code></em></code></strong>
+{
+    &quot;FunctionName&quot;: &quot;test-layers&quot;,
+    &quot;FunctionArn&quot;: &quot;arn:aws:lambda:us-east-2:123456789012:function:my-function&quot;,
+    &quot;Runtime&quot;: &quot;nodejs8.10&quot;,
+    &quot;Role&quot;: &quot;arn:aws:iam::123456789012:role/service-role/lambda-role&quot;,
+    &quot;Handler&quot;: &quot;index.handler&quot;,
+    &quot;CodeSize&quot;: 402,
+    &quot;Description&quot;: &quot;&quot;,
+    &quot;Timeout&quot;: 5,
+    &quot;MemorySize&quot;: 128,
+    &quot;LastModified&quot;: &quot;2018-11-14T22:47:04.542+0000&quot;,
+    &quot;CodeSha256&quot;: &quot;kDHAEY62Ni3OovMwVO8tNvgbRoRa6IOOKqShm7bSWF4=&quot;,
+    &quot;Version&quot;: &quot;$LATEST&quot;,
+    &quot;TracingConfig&quot;: {
+        &quot;Mode&quot;: &quot;Active&quot;
+    },
+    &quot;RevisionId&quot;: &quot;81cc64f5-5772-449a-b63e-12330476bcc4&quot;,
+    &quot;Layers&quot;: [
+        {
+            &quot;Arn&quot;: &quot;arn:aws:lambda:us-east-2:123456789012:layer:my-layer:3&quot;,
+            &quot;CodeSize&quot;: 169
+        },
+        {
+            &quot;Arn&quot;: &quot;arn:aws:lambda:us-east-2:210987654321:layer:their-layer:2&quot;,
+            &quot;CodeSize&quot;: 169
+        }
+    ]
+}</code></pre>
+                     
+                     <p>You must specify the version of each layer to use by providing the full ARN of the
+                        layer version. When you add
+                        layers to a function that already has layers, the previous list is overwritten by
+                        the new one. Include all layers
+                        every time you update the layer configuration. To remove all layers, specify an empty
+                        list.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda update-function-configuration --function-name my-function --layers []</code></strong></code></pre>
+                     
+                     <p>Your function can access the content of the layer during execution in the <code class="code">/opt</code> directory. Layers
+                        are applied in the order that&apos;s specified, merging any folders with the same name.
+                        If the same file appears in
+                        multiple layers, the version in the last applied layer is used.
+                     </p>
+                     
+                     
+                     <p>The creator of a layer can delete the version of the layer that you&apos;re using. When
+                        this happens, your function
+                        continues to run as though the layer version still existed. However, when you update
+                        the layer configuration, you
+                        must remove the reference to the deleted version.
+                     </p>
+                     
+                     
+                     <h2 id="configuration-layers-manage">Managing Layers</h2>
+                     
+                     
+                     <p>To create a layer, use the <code class="code">publish-layer-version</code> command with a name, description, ZIP archive,
+                        and a list of <a href="lambda-runtimes.html">runtimes</a> that are compatible with the layer. The list of
+                        runtimes is optional, but it makes the layer easier to discover.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda publish-layer-version --layer-name my-layer --description &quot;My layer&quot; --license-info &quot;MIT&quot; \
+--content S3Bucket=lambda-layers-us-east-2-123456789012,S3Key=layer.zip --compatible-runtimes python3.6 python3.7</code></strong>
+{
+    &quot;Content&quot;: {
+        &quot;Location&quot;: &quot;https://awslambda-us-east-2-layers.s3.us-east-2.amazonaws.com/snapshots/123456789012/my-layer-4aaa2fbb-ff77-4b0a-ad92-5b78a716a96a?versionId=27iWyA73cCAYqyH...&quot;,
+        &quot;CodeSha256&quot;: &quot;tv9jJO+rPbXUUXuRKi7CwHzKtLDkDRJLB3cC3Z/ouXo=&quot;,
+        &quot;CodeSize&quot;: 169
+    },
+    &quot;LayerArn&quot;: &quot;arn:aws:lambda:us-east-2:123456789012:layer:my-layer&quot;,
+    &quot;LayerVersionArn&quot;: &quot;arn:aws:lambda:us-east-2:123456789012:layer:my-layer:1&quot;,
+    &quot;Description&quot;: &quot;My layer&quot;,
+    &quot;CreatedDate&quot;: &quot;2018-11-14T23:03:52.894+0000&quot;,
+    &quot;Version&quot;: 1,
+    &quot;LicenseInfo&quot;: &quot;MIT&quot;,
+    &quot;CompatibleRuntimes&quot;: [
+        &quot;python3.6&quot;,
+        &quot;python3.7&quot;
+    ]
+}</code></pre>
+                     
+                     <p>Each time you call <code class="code">publish-layer-version</code>, you create a new version. Functions that use the layer
+                        refer directly to a layer version. You can <a href="configuration-layers.html#configuration-layers-permissions">configure
+                           permissions</a> on an existing layer version, but to make any other changes, you must create a new
+                        version.
+                     </p>
+                     
+                     
+                     <p> To find layers that are compatible with your function&apos;s runtime, use the <code class="code">list-layers</code>
+                        command.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda list-layers --compatible-runtime python3.7</code></strong>
+{
+    &quot;Layers&quot;: [
+        {
+            &quot;LayerName&quot;: &quot;my-layer&quot;,
+            &quot;LayerArn&quot;: &quot;arn:aws:lambda:us-east-2:123456789012:layer:my-layer&quot;,
+            &quot;LatestMatchingVersion&quot;: {
+                &quot;LayerVersionArn&quot;: &quot;arn:aws:lambda:us-east-2:123456789012:layer:my-layer:2&quot;,
+                &quot;Version&quot;: 2,
+                &quot;Description&quot;: &quot;My layer&quot;,
+                &quot;CreatedDate&quot;: &quot;2018-11-15T00:37:46.592+0000&quot;,
+                &quot;CompatibleRuntimes&quot;: [
+                    &quot;python3.6&quot;,
+                    &quot;python3.7&quot;
+                ]
+            }
+        }
+    ]
+}</code></pre>
+                     <p>You can omit the runtime option to list all layers. The details in the response reflect
+                        the latest version of
+                        the layer. See all the versions of a layer with <code class="code">list-layer-versions</code>. To see more information about a
+                        version, use <code class="code">get-layer-version</code>.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda get-layer-version --layer-name my-layer --version-number 2</code></strong>
+{
+    &quot;Content&quot;: {
+        &quot;Location&quot;: &quot;https://awslambda-us-east-2-layers.s3.us-east-2.amazonaws.com/snapshots/123456789012/my-layer-91e9ea6e-492d-4100-97d5-a4388d442f3f?versionId=GmvPV.309OEpkfN...&quot;,
+        &quot;CodeSha256&quot;: &quot;tv9jJO+rPbXUUXuRKi7CwHzKtLDkDRJLB3cC3Z/ouXo=&quot;,
+        &quot;CodeSize&quot;: 169
+    },
+    &quot;LayerArn&quot;: &quot;arn:aws:lambda:us-east-2:123456789012:layer:my-layer&quot;,
+    &quot;LayerVersionArn&quot;: &quot;arn:aws:lambda:us-east-2:123456789012:layer:my-layer:2&quot;,
+    &quot;Description&quot;: &quot;My layer&quot;,
+    &quot;CreatedDate&quot;: &quot;2018-11-15T00:37:46.592+0000&quot;,
+    &quot;Version&quot;: 2,
+    &quot;CompatibleRuntimes&quot;: [
+        &quot;python3.6&quot;,
+        &quot;python3.7&quot;
+    ]
+}</code></pre>
+                     
+                     <p>The link in the response lets you download the layer archive and is valid for 10 minutes.
+                        To delete a layer
+                        version, use the <code class="code">delete-layer-version</code> command.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda delete-layer-version --layer-name my-layer --version-number 1</code></strong></code></pre>
+                     <p>When you delete a layer version, you can no longer configure functions to use it.
+                        However, any function that
+                        already uses the version continues to have access to it. Version numbers are never
+                        re-used for a layer
+                        name.
+                     </p>
+                     
+                     
+                     <h2 id="configuration-layers-path">Including Library Dependencies in a Layer</h2>
+                     
+                     <p>You can move runtime dependencies out of your function code by placing them in a layer.
+                        Lambda runtimes include
+                        paths in the <code class="code">/opt</code> directory to ensure that your function code has access to libraries that are
+                        included in layers.
+                     </p>
+                     
+                     <p>To include libraries in a layer, place them in one of the folders supported by your
+                        runtime.
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><b>Node.js</b> &#x2013; <code class="code">nodejs/node_modules</code>,
+                                 <code class="code">nodejs/node8/node_modules</code> (<code class="code">NODE_PATH</code>)
+                              </p>
+                              
+                              <div class="example">
+                                 <p class="title"><b>Example AWS X-Ray SDK for Node.js</b></p>
+                                 <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">xray-sdk.zip
+&#x2514; nodejs/node_modules/aws-xray-sdk</code></pre></div>
+                              </div>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>Python</b> &#x2013; <code class="code">python</code>,
+                                 <code class="code">python/lib/python3.7/site-packages</code> (site directories)
+                              </p>
+                              
+                              <div class="example">
+                                 <p class="title"><b>Example Pillow</b></p>
+                                 <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">pillow.zip
+&#x2502; python/PIL
+&#x2514; python/Pillow-5.3.0.dist-info</code></pre></div>
+                              </div>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>Java</b> &#x2013; <code class="code">java/lib</code> (classpath)
+                              </p>
+                              
+                              <div class="example">
+                                 <p class="title"><b>Example Jackson</b></p>
+                                 <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">jackson.zip
+&#x2514; java/lib/jackson-core-2.2.3.jar</code></pre></div>
+                              </div>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>Ruby</b> &#x2013; <code class="code">ruby/gems/2.5.0</code> (<code class="code">GEM_PATH</code>),
+                                 <code class="code">ruby/lib</code> (<code class="code">RUBY_LIB</code>)
+                              </p>
+                              
+                              <div class="example">
+                                 <p class="title"><b>Example JSON</b></p>
+                                 <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">json.zip
+&#x2514; ruby/gems/2.5.0/
+               | build_info
+               | cache
+               | doc
+               | extensions
+               | gems
+               | &#x2514; json-2.1.0
+               &#x2514; specifications
+                 &#x2514; json-2.1.0.gemspec</code></pre></div>
+                              </div>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>All</b> &#x2013; <code class="code">bin</code> (<code class="code">PATH</code>), <code class="code">lib</code>
+                                 (<code class="code">LD_LIBRARY_PATH</code>)
+                              </p>
+                              
+                              <div class="example">
+                                 <p class="title"><b>Example JQ</b></p>
+                                 <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">jq.zip
+&#x2514; bin/jq</code></pre></div>
+                              </div>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>For more information about path settings in the Lambda execution environment, see
+                        <a href="lambda-environment-variables.html">Environment Variables Available to Lambda Functions</a>.
+                     </p>
+                     
+                     
+                     <h2 id="configuration-layers-permissions">Layer Permissions</h2>
+                     
+                     
+                     <p>Layer usage permissions are managed on the resource. To configure a function with
+                        a layer, you need permission
+                        to call <code class="code">GetLayerVersion</code> on the layer version. For functions in your account, you can get this
+                        permission from your <a href="access-control-identity-based.html">user policy</a> or from the function&apos;s <a href="access-control-resource-based.html">resource-based policy</a>. To use a layer in another account, you
+                        need permission on your user policy, and the owner of the other account must grant
+                        your account permission with a
+                        resource-based policy.
+                     </p>
+                      
+                     <p>To grant layer-usage permission to another account, add a statement to the layer version&apos;s
+                        permissions policy
+                        with the <code class="code">add-layer-version-permission</code> command. In each statement, you can grant permission to a
+                        single account, all accounts, or an organization.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda add-layer-version-permission --layer-name xray-sdk-nodejs --statement-id xaccount \
+--action lambda:GetLayerVersion  --principal 210987654321 --version-number 1 --output text</code></strong>
+e210ffdc-e901-43b0-824b-5fcd0dd26d16    {&quot;Sid&quot;:&quot;xaccount&quot;,&quot;Effect&quot;:&quot;Allow&quot;,&quot;Principal&quot;:{&quot;AWS&quot;:&quot;arn:aws:iam::210987654321:root&quot;},&quot;Action&quot;:&quot;lambda:GetLayerVersion&quot;,&quot;Resource&quot;:&quot;arn:aws:lambda:us-east-2:123456789012:layer:xray-sdk-nodejs:1&quot;}</code></pre>
+                     
+                     <p>Permissions only apply to a single version of a layer. Repeat the procedure each time
+                        you create a new layer
+                        version.
+                     </p>
+                     
+                     
+                     
+                     <p>For more examples, see <a href="access-control-resource-based.html#permissions-resource-xaccountlayer">Granting Layer Access to Other Accounts</a>.
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="lambda-traffic-shifting-using-aliases.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="vpc.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Configuring a Function to Use Layers"><a class="pagetoc" href="#configuration-layers-using">Configuring a Function to Use Layers</a></li>
+                        <li class="pagetoc" name="Managing Layers"><a class="pagetoc" href="#configuration-layers-manage">Managing Layers</a></li>
+                        <li class="pagetoc" name="Including Library Dependencies in a Layer"><a class="pagetoc" href="#configuration-layers-path">Including Library Dependencies in a Layer</a></li>
+                        <li class="pagetoc" name="Layer Permissions"><a class="pagetoc" href="#configuration-layers-permissions">Layer Permissions</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='AWS Lambda';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

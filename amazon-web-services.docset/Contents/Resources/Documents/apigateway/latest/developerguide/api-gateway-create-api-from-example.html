@@ -1,16 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Build an API Gateway API from an Example - Amazon API Gateway</title>
+      <title>TUTORIAL: Create a REST API by Importing an
+         Example - Amazon API Gateway
+      </title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="getting-started.html" title="Getting Started with Amazon API Gateway">
-      <link rel="prev" href="getting-started.html" title="Getting Started with Amazon API Gateway">
-      <link rel="next" href="api-gateway-create-api-from-example-console.html" title="Create and Test an API from the Example in the API Gateway Console">
+      <link rel="up" href="api-gateway-tutorials.html" title="Amazon API Gateway Tutorials">
+      <link rel="prev" href="getting-started-lambda-non-proxy-integration.html" title="TUTORIAL: Build an API Gateway API with
+            Lambda Non-Proxy Integration">
+      <link rel="next" href="getting-started-http-integrations.html" title="">
       <meta name="description" content="Learn how to create an API in API Gateway with the help of an example.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-create-api-from-example.html">
@@ -20,7 +25,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,24 +37,29 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="getting-started.html">Getting Started with Amazon API Gateway</a> &#xBB; <span class="breadcrumb">Build an API Gateway API from an Example</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="api-gateway-tutorials.html">Amazon API Gateway Tutorials</a> &#xBB; <span class="breadcrumb">TUTORIAL: Create a REST API by Importing an
+                                    Example</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="api-gateway-create-api-from-example">Build an API Gateway API from an Example</h1>
-                     <p> To help you get started with basic work flow to build and test an API Gateway API,
-                        you can use
-                        the Amazon API Gateway console to create and test a simple API with the HTTP integration
-                        for a
-                        PetStore website. The API definition is preconfigured as a Swagger 2.0 file. After
-                        loading
-                        the API definition into API Gateway, you can use the API Gateway console to examine
-                        the API&apos;s basic
-                        structure or simply deploy and test the API. 
+                     <h1 class="topictitle" id="api-gateway-create-api-from-example">TUTORIAL: Create a REST API by Importing an
+                        Example
+                     </h1>
+                     <p>You can use the Amazon API Gateway console to create and test a simple REST API with
+                        the HTTP
+                        integration for a PetStore website. The API definition is preconfigured as a OpenAPI
+                        2.0
+                        file. After loading the API definition into API Gateway, you can use the API Gateway
+                        console to examine
+                        the API&apos;s basic structure or simply deploy and test the API. 
                      </p>
-                     <p> The example API supports the following methods for a client to access the HTTP backend
-                        website of <code class="code">http://petstore-demo-endpoint.execute-api.com/petstore/pets</code>. 
+                     <p> The PetStore example API supports the following methods for a client to access the
+                        HTTP
+                        backend website of <code class="code">http://petstore-demo-endpoint.execute-api.com/petstore/pets</code>. 
                      </p>
                      <div class="itemizedlist">
                         
@@ -59,64 +69,365 @@
                         
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
-                              <p><code class="code">GET /</code>: for read access of the API&apos;s root resource that is not integrated with any backend
-                                 endpoint. API Gateway responds with  an overview of the PetStore website. This is
-                                 an example of the <code class="code">MOCK</code> integration type.
+                              
+                              <p><code class="code">GET /</code>: for read access of the API&apos;s root resource that is not
+                                 integrated with any backend endpoint. API Gateway responds with an overview of the
+                                 PetStore website. This is an example of the <code class="code">MOCK</code> integration
+                                 type.
                               </p>
+                              
                            </li>
                            <li class="listitem">
-                              <p><code class="code">GET /pets</code>: for read access to the API&apos;s <code class="code">/pets</code> resource that is
-                                 integrated with the like-named backend <code class="code">/pets</code> resource. The backend
-                                 returns a page of available pets in the PetStore. This is an example of the
+                              
+                              <p><code class="code">GET /pets</code>: for read access to the API&apos;s <code class="code">/pets</code> resource
+                                 that is integrated with the like-named backend <code class="code">/pets</code> resource. The
+                                 backend returns a page of available pets in the PetStore. This is an example of the
                                  <code class="code">HTTP</code> integration type. The URL of the integration endpoint is
                                  <code class="code">http://petstore-demo-endpoint.execute-api.com/petstore/pets</code>.
                               </p>
+                              
                            </li>
                            <li class="listitem">
-                              <p><code class="code">POST /pets</code>: for write access to the API&apos;s <code class="code">/pets</code> resource that is
-                                 integrated with the backend <code class="code">/petstore/pets</code> resource. Upon receiving a
-                                 correct request, the backend adds the specified pet to the PetStore and return the
-                                 result to the caller. The integration is also <code class="code">HTTP</code>.
+                              
+                              <p><code class="code">POST /pets</code>: for write access to the API&apos;s <code class="code">/pets</code> resource
+                                 that is integrated with the backend <code class="code">/petstore/pets</code> resource. Upon
+                                 receiving a correct request, the backend adds the specified pet to the PetStore and
+                                 returns the result to the caller. The integration is also <code class="code">HTTP</code>.
                               </p>
+                              
                            </li>
                            <li class="listitem">
-                              <p><code class="code">GET /pets/{petId}</code>: for read access to a pet as identified by a <code class="code">petId</code>
-                                 value as specified as a path variable of the incoming request URL. This method also
-                                 has the <code class="code">HTTP</code> integration type. The backend returns the specified pet
-                                 found in the PetStore. The URL of the backend HTTP endpoint is
+                              
+                              <p><code class="code">GET /pets/{petId}</code>: for read access to a pet as identified by a
+                                 <code class="code">petId</code> value as specified as a path variable of the incoming request
+                                 URL. This method also has the <code class="code">HTTP</code> integration type. The backend
+                                 returns the specified pet found in the PetStore. The URL of the backend HTTP
+                                 endpoint is
                                  <code class="code">http://petstore-demo-endpoint.execute-api.com/petstore/pets/<em class="replaceable"><code>n</code></em></code>,
                                  where <code class="code">n</code> is an integer as the identifier of the queried pet.
                               </p>
+                              
                            </li>
                         </ul>
                      </div>
-                     <p>
-                        The API supports CORS access via the <code class="code">OPTIONS</code> methods of the <code class="code">MOCK</code> integration type. API Gateway returns the required headers supporting CORS access.
-                        
-                        
+                     <p> The API supports CORS access via the <code class="code">OPTIONS</code> methods of the
+                        <code class="code">MOCK</code> integration type. API Gateway returns the required headers supporting CORS
+                        access. 
                      </p>
-                     <div class="highlights">
-                        <p><strong>Topics</strong></p>
-                        <ul>
-                           <li><a href="api-gateway-create-api-from-example-console.html">Create and Test an API from the Example in the API Gateway Console</a></li>
-                           <li><a href="api-gateway-create-api-from-example-next.html">Next Step</a></li>
-                           <li><a href="#api-gateway-create-api-from-example-see-also">See Also</a></li>
-                        </ul>
+                     <p>The following procedure walks you through the steps to create and test an API from
+                        an
+                        example using the API Gateway Console.
+                     </p>
+                     <p class="title"><b>To import, build, and test the example API</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>If you haven&apos;t already done so, complete the steps in <a href="setting-up.html">Prerequisites: Get Ready to Build an API in API Gateway</a>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           <p>Sign in to the API Gateway console at <a href="https://console.aws.amazon.com/apigateway" target="_blank">https://console.aws.amazon.com/apigateway</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>Do one of the following:</p>
+                           
+                           
+                           <ol>
+                              <li>
+                                 
+                                 <p> If this is the first API in your account, choose <b>Get
+                                       Started</b> from the API Gateway console welcome page. 
+                                 </p>
+                                 
+                                 <p> If prompted with hints, choose <b>OK</b> to close them and
+                                    continue. 
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p> If this is not your first API, choose <b>Create API</b>
+                                    from the API Gateway <b>APIs</b> home page: 
+                                 </p>
+                                 
+                                 
+                                 <div class="mediaobject">
+                                    
+                                    <img src="../../..//img/api-gateway-service-home-page.png" alt="
+                            
+                        " style="max-width:100%">
+                                    
+                                    
+                                    
+                                 </div>
+                                 
+                              </li>
+                           </ol>
+                           
+                        </li>
+                        <li>
+                           
+                           <p> Under <b>Create new API</b>, choose <b>Example
+                                 API</b> and then choose <b>Import</b> to create the example
+                              API. For your first API, the API Gateway console starts with this option as default.
+                              
+                           </p>
+                           
+                           
+                           <div class="mediaobject">
+                              
+                              <img src="../../..//img/api-gateway-create-api-by-importing-example.png" alt="
+                    
+                " style="max-width:100%">
+                              
+                              
+                              
+                           </div>
+                           
+                           <p> You can scroll down the OpenAPI definition for details of this example API before
+                              choosing <b>Import</b>. 
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>The newly created API is shown as follows:</p>
+                           
+                           
+                           <div class="mediaobject">
+                              
+                              <img src="../../..//img/api-gateway-create-api-by-importing-example-result.png" alt="
+                    
+                " style="max-width:100%">
+                              
+                              
+                              
+                           </div>
+                           
+                           
+                           <p> The <b>Resources</b> pane shows the structure of the created API as
+                              a tree of nodes. API methods defined on each resource are edges of the tree. When
+                              a
+                              resource is selected, all of its methods are listed in the
+                              <b>Methods</b> pane on the right. Displayed under each method is a
+                              brief summary of the method, including its endpoint URL, authorization type, and API
+                              Key requirement. 
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p> To view the details of a method, to modify its set-up, or to test the method
+                              invocation, choose the method name from either the method list or the resource tree.
+                              Here, we choose the <code class="code">POST /pets</code> method as an illustration: 
+                           </p>
+                           
+                           
+                           <div class="mediaobject">
+                              
+                              <img src="../../..//img/api-gateway-create-api-by-importing-example-post-method-execution.png" alt="
+                    
+                " style="max-width:100%">
+                              
+                              
+                              
+                           </div>
+                           
+                           <p> The resulting <b>Method Execution</b> pane presents a logical view
+                              of the chosen (<code class="code">POST /pets</code>) method&apos;s structure and behaviors:
+                              <b>Method Request</b> and <b>Method Response</b> are
+                              the API&apos;s interface with the API&apos;s frontend (a client), whereas
+                              <b>Integration Request</b> and <b>Integration
+                                 Response</b> are the API&apos;s interface with the backend
+                              (<code class="code">http://petstore-demo-endpoint.execute-api.com/petstore/pets</code>). A
+                              client uses the API to access a backend feature through the <b>Method
+                                 Request</b>. API Gateway translates the client request, if necessary, into the
+                              form acceptable to the backend in <b>Integration Request</b> before
+                              forwarding the incoming request to the backend. The transformed request is known as
+                              the integration request. Similarly, the backend returns the response to API Gateway
+                              in
+                              <b>Integration Response</b>. API Gateway then routes it to
+                              <b>Method Response</b> before sending it to the client. Again, if
+                              necessary, API Gateway can map the backend response data to a form expected by the
+                              client. 
+                           </p>
+                           
+                           <p> For the <code class="code">POST</code> method on an API resource, the method request payload
+                              can be passed through to the integration request without modification, if the method
+                              request&apos;s payload is of the same format as the integration request&apos;s payload. 
+                           </p>
+                           
+                           <p>The <code class="code">GET /</code> method request uses the <code class="code">MOCK</code> integration type
+                              and is not tied to any real backend endpoint. The corresponding
+                              <b>Integration Response</b> is set up to return a static HTML
+                              page. When the method is called, the API Gateway simply accepts the request and
+                              immediately returns the configured integration response to the client by way of
+                              <b>Method Response</b>. You can use the mock integration to test
+                              an API without requiring a backend endpoint. You can also use it to serve a local
+                              response, generated from a response body-mapping template. 
+                           </p>
+                           
+                           <p>As an API developer, you control the behaviors of your API&apos;s frontend interactions
+                              by configuring the method request and a method response. You control the behaviors
+                              of your API&apos;s backend interactions by setting up the integration request and
+                              integration response. These involve data mappings between a method and its
+                              corresponding integration. We cover the method setup in <a href="api-gateway-create-api-step-by-step.html">TUTORIAL: Build an API with HTTP Non-Proxy
+                                 Integration</a>. For now, we focus on
+                              testing the API to provide an end-to-end user experience. 
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p> Choose <b>Test</b> shown on <b>Client</b> (as shown
+                              in the previous image) to start testing. For example, to test the <code class="code">POST
+                                 /pets</code> method, enter the following <code class="code">{&quot;type&quot;: &quot;dog&quot;,&quot;price&quot;:
+                                 249.99}</code> payload into the <b>Request Body</b> before
+                              choosing the <b>Test</b> button. 
+                           </p>
+                           
+                           
+                           <div class="mediaobject">
+                              
+                              <img src="../../..//img/api-gateway-create-api-by-importing-example-post-method-test.png" alt="
+                    
+                " style="max-width:100%">
+                              
+                              
+                              
+                           </div>
+                           
+                           <p> The input specifies the attributes of the pet that we want to add to the list of
+                              pets on the PetStore website. 
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>The results display as follows:</p>
+                           
+                           
+                           <div class="mediaobject">
+                              
+                              <img src="../../..//img/api-gateway-create-api-by-importing-example-post-method-test-result.png" alt="
+                    
+                " style="max-width:100%">
+                              
+                              
+                              
+                           </div>
+                           
+                           <p> The <b>Logs</b> entry of the output shows the state changes from
+                              the method request to the integration request, and from the integration response to
+                              the method response. This can be useful for troubleshooting any mapping errors that
+                              cause the request to fail. In this example, no mapping is applied: the method
+                              request payload is passed through the integration request to the backend and,
+                              similarly, the backend response is passed through the integration response to the
+                              method response. 
+                           </p>
+                           
+                           <p> To test the API using a client other than the API Gateway test-invoke-request feature,
+                              you must first deploy the API to a stage. 
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p> To deploy the sample API, select the <b>PetStore</b> API, and then
+                              choose <b>Deploy API</b> from the <b>Actions</b> menu. 
+                           </p>
+                           
+                           
+                           <div class="mediaobject">
+                              
+                              <img src="../../..//img/api-gateway-create-api-by-importing-example-deploy-api.png" alt="
+                    
+                " style="max-width:100%">
+                              
+                              
+                              
+                           </div>
+                           
+                           <p> In <b>Deploy API</b>, for <b>Deployment stage</b>,
+                              choose <b>[New Stage]</b> because this is the first deployment of the
+                              API. Type a name (e.g., <strong class="userinput"><code>test</code></strong>) in <b>Stage
+                                 name</b> and, optionally, type descriptions in <b>Stage
+                                 description</b> and <b>Deployment description</b>. Choose
+                              <b>Deploy</b>. 
+                           </p>
+                           
+                           
+                           <div class="mediaobject">
+                              
+                              <img src="../../..//img/api-gateway-create-api-by-importing-example-deploy-create.png" alt="
+                    
+                " style="max-width:100%">
+                              
+                              
+                              
+                           </div>
+                           
+                           <p> In the resulting <b>Stage Editor</b> pane, <b>Invoke
+                                 URL</b> displays the URL to invoke the API&apos;s <code class="code">GET /</code> method
+                              request. 
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>On <b>Stage Editor</b>, follow the <b>Invoke URL</b>
+                              link to submit the <code class="code">GET /</code> method request in a browser. A successful
+                              response return the result, generated from the mapping template in the integration
+                              response. 
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p> In the <b>Stages</b> navigation pane, expand the
+                              <b>test</b> stage, select <b>GET</b> on
+                              <code class="code">/pets/{petId}</code>, and then copy the <b>Invoke URL</b>
+                              value of
+                              <code class="code">https://<em class="replaceable"><code>api-id</code></em>.execute-api.<em class="replaceable"><code>region</code></em>.amazonaws.com/test/pets/{petId}</code>.
+                              <code class="code">{petId}</code> stands for a path variable. 
+                           </p>
+                           
+                           <p> Paste the <b>Invoke URL</b> value (obtained in the previous step)
+                              into the address bar of a browser, replacing <code class="code">{petId}</code> by, for example,
+                              <code class="code">1</code>, and press Enter to submit the request. A 200 OK response should
+                              return with the following JSON payload: 
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+  &quot;id&quot;: 1,
+  &quot;type&quot;: &quot;dog&quot;,
+  &quot;price&quot;: 249.99
+}</code></pre>
+                           <p> Invoking the API method as shown is possible because its
+                              <b>Authorization</b> type is set to <code class="code">NONE</code>. If the
+                              <code class="code">AWS_IAM</code> authorization were used, you would sign the request using
+                              the <a href="./general/latest/gr/sigv4_signing.html">Signature Version 4</a> (SigV4)
+                              protocols. For an example of such a request, see <a href="api-gateway-create-api-step-by-step.html">TUTORIAL: Build an API with HTTP Non-Proxy
+                                 Integration</a>. 
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
-                     <h2 id="api-gateway-create-api-from-example-see-also">See Also</h2>
-                     
-                     
-                     <p><a href="apigateway-use-lambda-authorizer.html">Use API Gateway Lambda Authorizers</a>, <a href="how-to-deploy-api.html">Deploying an API in Amazon API Gateway</a></p>
-                     
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -125,22 +436,21 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="getting-started.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="api-gateway-create-api-from-example-console.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="getting-started-lambda-non-proxy-integration.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="getting-started-http-integrations.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
             <div id="right-expanded">
-               <div id="right-content-wrapper">
-                  <div id="pagetoc">
-                     <p>On this page:</p>
-                     <ul class="pagetoc">
-                        <li class="pagetoc" name="See Also"><a class="pagetoc" href="#api-gateway-create-api-from-example-see-also">See Also</a></li>
-                     </ul>
-                  </div>
-               </div>
+               <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

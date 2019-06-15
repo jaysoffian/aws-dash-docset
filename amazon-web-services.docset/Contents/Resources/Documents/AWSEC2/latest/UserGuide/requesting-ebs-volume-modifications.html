@@ -1,0 +1,431 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Requesting Modifications to Your EBS
+         Volumes - Amazon Elastic Compute Cloud
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="ebs-modify-volume.html" title="Modifying the Size, Performance, or Type of an EBS
+      Volume">
+      <link rel="prev" href="modify-volume-requirements.html" title="Requirements When Modifying Volumes">
+      <link rel="next" href="monitoring-volume-modifications.html" title="Monitoring the Progress of Volume
+        Modifications">
+      <meta name="description" content="Modify an EBS volume without detaching it.">
+      <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Elastic Compute Cloud">
+      <meta name="guide" content="User Guide for Linux Instances">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/requesting-ebs-volume-modifications.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <a href="EBSVolumes.html">Amazon EBS Volumes</a> &#xBB; <a href="ebs-modify-volume.html">Modifying the Size, Performance, or Type of an EBS
+                                    Volume</a> &#xBB; <span class="breadcrumb">Requesting Modifications to Your EBS
+                                    Volumes</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="requesting-ebs-volume-modifications">Requesting Modifications to Your EBS
+                        Volumes
+                     </h1>
+                     <p>With Elastic Volumes, you can dynamically modify the size, performance, and volume
+                        type of
+                        your Amazon EBS volumes without detaching them.
+                     </p>
+                     <p>Use the following process when modifying a volume:</p>
+                     <div class="orderedlist">
+                        
+                        
+                        
+                        
+                        
+                        <ol>
+                           <li>
+                              
+                              <p>(Optional) Before modifying a volume that contains valuable data, it is a best
+                                 practice to create a snapshot of the volume in case you need to roll back your changes.
+                                 For more information, see <a href="./AWSEC2/latest/UserGuide/ebs-creating-snapshot.html">Creating
+                                    an Amazon EBS Snapshot</a>.
+                              </p>
+                              
+                           </li>
+                           <li>
+                              
+                              <p>Request the volume modification.</p>
+                              
+                           </li>
+                           <li>
+                              
+                              <p>Monitor the progress of the volume modification. For more information, see <a href="monitoring-volume-modifications.html">Monitoring the Progress of Volume
+                                    Modifications</a>.
+                              </p>
+                              
+                           </li>
+                           <li>
+                              
+                              <p>If the size of the volume was modified, extend the volume&apos;s file system to take
+                                 advantage of the increased storage capacity. For more information, see <a href="recognize-expanded-volume-linux.html">Extending a Linux File System After Resizing
+                                    a Volume</a>.
+                              </p>
+                              
+                           </li>
+                        </ol>
+                     </div>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Contents</strong></p>
+                        <ul>
+                           <li><a href="#modify-ebs-volume">Modifying an EBS Volume Using Elastic Volumes
+                                 (Console)</a></li>
+                           <li><a href="#modify-ebs-volume-cli">Modifying an EBS Volume Using Elastic Volumes
+                                 (AWS CLI)</a></li>
+                           <li><a href="#initialize-modification-support">Initializing Elastic Volumes Support (If
+                                 Needed)</a></li>
+                           <li><a href="#modify-volume-stop-start">Modifying an EBS Volume If Elastic Volumes Is
+                                 Unsupported</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="modify-ebs-volume">Modifying an EBS Volume Using Elastic Volumes
+                        (Console)
+                     </h2>
+                     
+                     <p>Use the following procedure to modify an EBS volume.</p>
+                     <a id="console-modify-size"></a><p class="title"><b>To modify an EBS volume using the console</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Volumes</b>, select the volume to modify, and then choose
+                              <b>Actions</b>, <b>Modify Volume</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>The <b>Modify Volume</b> window displays the volume ID and the
+                              volume&apos;s current configuration, including type, size, and IOPS. You can change any
+                              or
+                              all of these settings in a single action. Set new configuration values as
+                              follows:
+                           </p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p>To modify the type, choose a value for <b>Volume Type</b>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>To modify the size, enter an allowed integer value for
+                                       <b>Size</b>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>If you chose <b>Provisioned IOPS SSD (io1)</b> as the volume type,
+                                       enter an allowed integer value for <b>IOPS</b>.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>After you have finished changing the volume settings, choose
+                              <b>Modify</b>. When prompted for confirmation, choose
+                              <b>Yes</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Modifying volume size has no practical effect until you also extend the volume&apos;s
+                              file system to make use of the new storage capacity. For more information, see <a href="recognize-expanded-volume-linux.html">Extending a Linux File System After Resizing
+                                 a Volume</a>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <h2 id="modify-ebs-volume-cli">Modifying an EBS Volume Using Elastic Volumes
+                        (AWS CLI)
+                     </h2>
+                     
+                     <p>Use the <a href="./cli/latest/reference/ec2/modify-volume.html">modify-volume</a> command
+                        modify one or more configuration settings for a volume. For example, if you have a
+                        volume of
+                        type <code class="code">gp2</code> with a size of 100 GiB, the following command changes its
+                        configuration to a volume of type <code class="code">io1</code> with 10,000 IOPS and a size of 200
+                        GiB.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 modify-volume --volume-type io1 --iops 10000 --size 200 --volume-id <em class="replaceable"><code>vol-11111111111111111</code></em> </code></strong></code></pre>
+                     <p>The following is example output:</p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+    &quot;VolumeModification&quot;: {
+        &quot;TargetSize&quot;: 200,
+        &quot;TargetVolumeType&quot;: &quot;io1&quot;,
+        &quot;ModificationState&quot;: &quot;modifying&quot;,
+        &quot;VolumeId&quot;: &quot;vol-11111111111111111&quot;,
+        &quot;TargetIops&quot;: 10000,
+        &quot;StartTime&quot;: &quot;2017-01-19T22:21:02.959Z&quot;,
+        &quot;Progress&quot;: 0,
+        &quot;OriginalVolumeType&quot;: &quot;gp2&quot;,
+        &quot;OriginalIops&quot;: 300,
+        &quot;OriginalSize&quot;: 100
+    }
+}</code></pre>
+                     <p>Modifying volume size has no practical effect until you also extend the volume&apos;s file
+                        system to make use of the new storage capacity. For more information, see <a href="recognize-expanded-volume-linux.html">Extending a Linux File System After Resizing
+                           a Volume</a>.
+                     </p>
+                     
+                     
+                     <h2 id="initialize-modification-support">Initializing Elastic Volumes Support (If
+                        Needed)
+                     </h2>
+                     
+                     <p>Before you can modify a volume that was attached to an instance before November 1,
+                        2016,
+                        you must initialize volume modification support using one of the following actions:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>Detach and attach the volume</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Restart the instance</p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>Use one of the following procedures to determine whether your instances are ready
+                        for
+                        volume modification.
+                     </p>
+                     
+                     <p class="title"><b>To determine whether your instances are ready using the console</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>On the navigation pane, choose <b>Instances</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose the <b>Show/Hide Columns</b> icon (the gear). Select the
+                              <b>Launch Time</b> and <b>Block Devices</b> attributes and
+                              then choose <b>Close</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Sort the list of instances by the <b>Launch Time</b> column. For
+                              instances that were started before the cutoff date, check when the devices were
+                              attached. In the following example, you must initialize volume modification for the
+                              first instance because it was started before the cutoff date and its root volume was
+                              attached before the cutoff date. The other instances are ready because they were started
+                              after the cutoff date.
+                           </p>
+                           
+                           <div class="mediaobject">
+                              
+                              <img src="../../..//img/check-volume-modification-support.png" alt="
+              Check the Launch Time and Block Devices columns.
+            ">
+                              
+                              
+                              
+                           </div>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <p class="title"><b>To determine whether your instances are ready using the CLI</b></p>
+                     
+                     <p>Use the following <a href="./cli/latest/reference/ec2/describe-instances.html">describe-instances</a> command to determine whether the volume was attached before
+                        November 1, 2016.
+                     </p>
+                     
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 describe-instances --query &quot;Reservations[*].Instances[*].[InstanceId,LaunchTime&lt;=&apos;2016-11-01&apos;,BlockDeviceMappings[*][Ebs.AttachTime&lt;=&apos;2016-11-01&apos;]]&quot; --output text</code></strong></code></pre>
+                     <p>The first line of the output for each instance shows its ID and whether it was started
+                        before the cutoff date (True or False). The first line is followed by one or more
+                        lines that
+                        show whether each EBS volume was attached before the cutoff date (True or False).
+                        In the
+                        following example output, you must initialize volume modification for the first instance
+                        because it was started before the cutoff date and its root volume was attached before
+                        the
+                        cutoff date. The other instances are ready because they were started after the cutoff
+                        date.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">i-e905622e              True
+True
+i-719f99a8              False
+True
+i-006b02c1b78381e57     False
+False
+False
+i-e3d172ed              False
+True</code></pre>
+                     
+                     <h2 id="modify-volume-stop-start">Modifying an EBS Volume If Elastic Volumes Is
+                        Unsupported
+                     </h2>
+                     
+                     <p>If you are using a supported instance type, you can use Elastic Volumes to dynamically
+                        modify the size, performance, and volume type of your Amazon EBS volumes without detaching
+                        them.
+                     </p>
+                     
+                     <p>If you cannot use Elastic Volumes but you need to modify the root (boot) volume, you
+                        must stop the instance, modify the volume, and then restart the instance.
+                     </p>
+                     
+                     <p>After the instance has started, you can check the file system size to see if your
+                        instance recognizes the larger volume space. <span>On Linux, use the
+                           <b>df -h</b> command to check the file system size.</span></p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>df -h</code></strong><code class="computeroutput" copy="false">
+Filesystem            Size  Used Avail Use% Mounted on
+/dev/xvda1            7.9G  943M  6.9G  12% /
+tmpfs                 1.9G     0  1.9G   0% /dev/shm</code></code></pre>
+                     <p>If the size does not reflect your newly expanded volume, you must extend the file
+                        system
+                        of your device so that your instance can use the new space. For more information,
+                        see <a href="recognize-expanded-volume-linux.html">Extending a Linux File System After Resizing
+                           a Volume</a>.
+                     </p>
+                     
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="modify-volume-requirements.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="monitoring-volume-modifications.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Modifying an EBS Volume Using Elastic Volumes
+          (Console)"><a class="pagetoc" href="#modify-ebs-volume">Modifying an EBS Volume Using Elastic Volumes
+                              (Console)</a></li>
+                        <li class="pagetoc" name="Modifying an EBS Volume Using Elastic Volumes
+          (AWS CLI)"><a class="pagetoc" href="#modify-ebs-volume-cli">Modifying an EBS Volume Using Elastic Volumes
+                              (AWS CLI)</a></li>
+                        <li class="pagetoc" name="Initializing Elastic Volumes Support (If
+          Needed)"><a class="pagetoc" href="#initialize-modification-support">Initializing Elastic Volumes Support (If
+                              Needed)</a></li>
+                        <li class="pagetoc" name="Modifying an EBS Volume If Elastic Volumes Is
+          Unsupported"><a class="pagetoc" href="#modify-volume-stop-start">Modifying an EBS Volume If Elastic Volumes Is
+                              Unsupported</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Elastic Compute Cloud';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide for Linux Instances';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

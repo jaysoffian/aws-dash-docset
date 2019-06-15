@@ -12,6 +12,8 @@
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/managing-users.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,140 +35,216 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="Configure_Instance.html">Configuring Your Amazon Linux Instance</a> &#xBB; <span class="breadcrumb">Managing User Accounts on Your Linux Instance</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="Configure_Instance.html">Configuring Your Amazon Linux Instance</a> &#xBB; <span class="breadcrumb">Managing User Accounts on Your Linux Instance</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="managing-users">Managing User Accounts on Your Linux Instance</h1>
-                     <p>Each Linux instance type launches with a default Linux system user account.
-                        			For Amazon Linux, the user name is <code class="code">ec2-user</code>. 
-                        For Centos, the user name is <code class="code">centos</code>. 
+                     <p>Each Linux instance launches with a default Linux system user account. The default
+                        user name
+                        			is determined by the AMI that was specified when you launched the instance. For
+                        Amazon Linux 2 or the Amazon Linux AMI, the user name is <code class="code">ec2-user</code>. 
+                        For CentOS, the user name is <code class="code">centos</code>. 
                         For Debian, the user name is <code class="code">admin</code> or <code class="code">root</code>. 
                         For Fedora, the user name is <code class="code">ec2-user</code> or <code class="code">fedora</code>. 
                         For RHEL, the user name is <code class="code">ec2-user</code> or <code class="code">root</code>. 
                         For SUSE, the user name is <code class="code">ec2-user</code> or <code class="code">root</code>. 
-                        For Ubuntu, the user name is <code class="code">ubuntu</code> or <code class="code">root</code>. 
+                        For Ubuntu, the user name is <code class="code">ubuntu</code>. 
                         Otherwise, if <code class="code">ec2-user</code> and <code class="code">root</code> don&apos;t work, check with your AMI provider.
                      </p>
                      <div class="aws-note">
                         <p class="aws-note">Note</p>
                         <p>Linux system users should not be confused with AWS Identity and Access Management
                            (IAM) users. For more
-                           				information, see <a href="./IAM/latest/UserGuide/Using_WorkingWithGroupsAndUsers.html" target="_blank">IAM
+                           				information, see <a href="./IAM/latest/UserGuide/Using_WorkingWithGroupsAndUsers.html">IAM
                               				Users and Groups</a> in the <em>IAM User Guide</em>.
                         </p>
                      </div>
-                     <p>Using the default user account is adequate for many applications, but you may choose
-                        			to add user accounts so that individuals can have their own files and workspaces.
-                        			Creating user accounts for new users is much more secure than granting multiple
-                        			(possibly inexperienced) users access to the <code class="code">ec2-user</code> account, because
-                        			that account can cause a lot of damage to a system when used improperly.
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Contents</strong></p>
+                        <ul>
+                           <li><a href="#add-user-best-practice">Best Practice</a></li>
+                           <li><a href="#create-user-account">Creating a User Account</a></li>
+                           <li><a href="#delete-user-acount">Removing a User Account</a></li>
+                        </ul>
+                     </div>
+                     			
+                     <h2 id="add-user-best-practice">Best Practice</h2>
+                     		
+                     <p>Using the default user account is adequate for many applications. However, you may
+                        choose to
+                        				add user accounts so that individuals can have their own files and workspaces.
+                        				Furthermore, creating user accounts for new users is much more secure than granting
+                        				multiple (possibly inexperienced) users access to the default user account, because
+                        				the default user account can cause a lot of damage to a system when used improperly.
+                        				For more information, see <a href="https://aws.amazon.com/articles/tips-for-securing-your-ec2-instance/" target="_blank">Tips
+                           					for Securing Your EC2 Instance</a>.
                      </p>
-                     <p>After you add the user account, you must set up access keys that allow the user to
-                        log in.
-                     </p>
-                     	
-                     <p class="title"><b>Prerequisites</b></p>
-                     	
-                     <p>Create a key pair for the user or use an existing key pair. For more information,
-                        see 
-                        		<a href="ec2-key-pairs.html#having-ec2-create-your-key-pair">Creating a Key Pair Using Amazon EC2</a>. 
-                        		To retrieve a public key from an existing key pair, see <a href="ec2-key-pairs.html#retrieving-the-public-key">Retrieving the Public Key for Your Key Pair on Linux</a>.
+                     		
+                     			
+                     <h2 id="create-user-account">Creating a User Account</h2>
+                     		
+                     <p>First create the user account, and then add the SSH public key that allows the user
+                        to
+                        				connect to and log into the instance.
                      </p>
                      
-                     <p class="title"><b>To add a user account</b></p>
+                     	
+                     <div class="itemizedlist">
+                        		
+                        <p class="title"><b>Prerequisites</b></p>
+                        		
+                        		
+                        	
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              		
+                              <p><b>Create a key pair or use an existing key
+                                    							pair.</b></p>
+                              						
+                              <p>For more information, see <a href="ec2-key-pairs.html#having-ec2-create-your-key-pair">Creating a Key Pair Using Amazon EC2</a>.
+                              </p>	
+                              		
+                           </li>
+                           <li class="listitem">
+                              			
+                              <p><b>Retrieve the public key from the key pair.</b></p>
+                              				
+                              <p>For more information, see <a href="ec2-key-pairs.html#retrieving-the-public-key">Retrieving the Public Key for Your Key Pair on Linux</a> or <a href="ec2-key-pairs.html#retrieving-the-public-key-windows">Retrieving the Public Key for Your Key Pair on Windows</a>.
+                              </p>
+                              		
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     		
+                     <p class="title"><b>To create a user account</b></p>
                      <ol>
                         <li>
                            				
-                           <p>Use the following <b>adduser</b> command to add the <code class="code">newuser</code> account 
-                              					to the system (with an entry in the <code>/etc/passwd</code> file). This command also
-                              					creates a group and a home directory for the account.
+                           <p>Use the <b>adduser</b> command to create the user account and add it to the
+                              						system (with an entry in the <code>/etc/passwd</code> file). The
+                              						command also creates a group and a home directory for the account. In this
+                              						example, the user account is named <code class="code">newuser</code>.
                            </p>
                            				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo adduser <em class="replaceable"><code>newuser</code></em></code></strong></code></pre>
-                           				<p>[Ubuntu] When adding a user to an Ubuntu system, include the <code class="code">--disabled-password</code> 
-                              					option with this command to avoid adding a password to the account.
+                           				<p>[Ubuntu] When adding a user to an Ubuntu system, include the
+                              							<code class="code">--disabled-password</code> parameter with this command to avoid
+                              						adding a password to the account.
                            </p>
                            				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ubuntu ~]$ </code><strong class="userinput"><code>sudo adduser <em class="replaceable"><code>newuser</code></em></code></strong> --disabled-password</code></pre>
                            			</li>
                         <li>
                            				
-                           <p>Switch to the new account so that newly created files have the proper
-                              					ownership.
+                           <p>Switch to the new account so that the directory and file that you will create will
+                              have
+                              						the proper ownership.
                            </p>
                            				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo su - <em class="replaceable"><code>newuser</code></em></code></strong>
 <code class="prompt" copy="false">[newuser ~]$</code></code></pre>
-                           				<p>Notice that the prompt changes from <code class="code">ec2-user</code> to <code class="code">newuser</code> to
-                              					indicate that you have switched the shell session to the new account.
+                           				<p>Notice that, in this example, the prompt changes from <code class="code">ec2-user</code> to
+                              							<code class="code">newuser</code> to indicate that you have switched the shell
+                              						session to the new account.
                            </p>
                            			
                         </li>
                         <li>
                            				
-                           <p>Create a <code>.ssh</code> directory in the <code>newuser</code> home
-                              					directory and change its file permissions to <code class="code">700</code> (only the owner
-                              					can read, write, or open the directory).
+                           <p>Add the SSH public key to the user account. First create a directory in the user&apos;s
+                              home
+                              						directory for the SSH key file, then create the key file, and finally paste
+                              						the public key into the key file.
                            </p>
-                           				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[newuser ~]$ </code><strong class="userinput"><code>mkdir .ssh</code></strong>
+                           				
+                           <ol>
+                              <li>
+                                 <p>Create a <code>.ssh</code> directory in the <code>newuser</code> home
+                                    					directory and change its file permissions to <code class="code">700</code> (only the owner
+                                    					can read, write, or open the directory).
+                                 </p>
+                                 				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[newuser ~]$ </code><strong class="userinput"><code>mkdir .ssh</code></strong>
 <code class="prompt" copy="false">[newuser ~]$ </code><strong class="userinput"><code>chmod 700 .ssh</code></strong></code></pre>
-                           				<div class="aws-note">
-                              <p class="aws-note">Important</p>
-                              <p>Without these exact file permissions, the user will not be able to log in.</p>
-                           </div>				
-                           			
-                        </li>
-                        <li>
-                           				
-                           <p>Create a file named <code>authorized_keys</code> in the <code>.ssh</code> directory
-                              					and change its file permissions to <code class="code">600</code> (only the owner can read or write to the file).
-                           </p>
-                           				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[newuser ~]$ </code><strong class="userinput"><code>touch .ssh/authorized_keys</code></strong>
+                                 				<div class="aws-note">
+                                    <p class="aws-note">Important</p>
+                                    <p>Without these exact file permissions, the user will not be able to log in.</p>
+                                 </div>
+                                 					
+                              </li>
+                              <li>
+                                 				
+                                 <p>Create a file named <code>authorized_keys</code> in the <code>.ssh</code> directory
+                                    					and change its file permissions to <code class="code">600</code> (only the owner can read or write to the file).
+                                 </p>
+                                 				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[newuser ~]$ </code><strong class="userinput"><code>touch .ssh/authorized_keys</code></strong>
 <code class="prompt" copy="false">[newuser ~]$ </code><strong class="userinput"><code>chmod 600 .ssh/authorized_keys</code></strong></code></pre>
-                           				<div class="aws-note">
-                              <p class="aws-note">Important</p>
-                              <p>Without these exact file permissions, the user will not be able to log in.</p>
-                           </div>
-                           			
-                        </li>
-                        <li><a id="edit_auth_keys"></a>
-                           				
-                           <p>Open the <code>authorized_keys</code> file using your favorite text editor (such
-                              					as <b>vim</b> or <b>nano</b>).
-                           </p>
-                           				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[newuser ~]$ </code><strong class="userinput"><code>nano .ssh/authorized_keys</code></strong></code></pre>
-                           					<p>Paste the public key for your key pair into the file and save the changes. For
-                              					example:
-                           </p>
-                           				<pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClKsfkNkuSevGj3eYhCe53pcjqP3maAhDFcvBS7O6V
+                                 				<div class="aws-note">
+                                    <p class="aws-note">Important</p>
+                                    <p>Without these exact file permissions, the user will not be able to log in.</p>
+                                 </div>
+                                 			
+                              </li>
+                              <li><a id="edit_auth_keys"></a>
+                                 				
+                                 <p>Open the <code>authorized_keys</code> file using your favorite text editor (such
+                                    					as <b>vim</b> or <b>nano</b>).
+                                 </p>
+                                 				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[newuser ~]$ </code><strong class="userinput"><code>nano .ssh/authorized_keys</code></strong></code></pre>
+                                 					<p>Paste the public key for the key pair into the file and save the changes. For
+                                    						example:
+                                 </p>
+                                 				<pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClKsfkNkuSevGj3eYhCe53pcjqP3maAhDFcvBS7O6V
 hz2ItxCih+PnDSUaw+WNQn/mZphTk/a/gU8jEzoOWbkM4yxyb/wB96xbiFveSFJuOp/d6RJhJOI0iBXr
 lsLnBItntckiJ7FbtxJMXLvvwJryDUilBMTjYtwB+QhYXUMOzce5Pjz5/i8SeJtjnV3iAoG/cQk+0FzZ
 qaeJAAHco+CY/5WrUBkrHmFJr6HcXkvJdWPkYQS3xqC0+FmUZofz221CBt5IMucxXPkX4rWi+z7wB3Rb
 BQoQzd8v7yeb7OzlPnWOyN0qFU0XA246RA8QFYiCNYwI3f05p6KLxEXAMPLE</code></pre>
-                           				<p>The user should now be able to log into the <code class="code">newuser</code> account on your
-                              					instance using the private key that corresponds to the public key that you added
-                              					to the <code>authorized_keys</code> file.
-                           </p>
+                                 				<p>The user should now be able to log into the <code class="code">newuser</code> account on your
+                                    					instance using the private key that corresponds to the public key that you added
+                                    					to the <code>authorized_keys</code> file.
+                                 </p>
+                                 			
+                              </li>
+                           </ol>
                            			
                         </li>
                      </ol>
+                     		
                      			
-                     <p class="title"><b>To remove a user from the system</b></p>
+                     <h2 id="delete-user-acount">Removing a User Account</h2>
                      			
                      <p>If a user account is no longer needed, you can remove that account so that it may
-                        				no longer be used. When you specify the <code class="code">-r</code> option, the user&apos;s home
-                        			    directory and mail spool are deleted. To keep the user&apos;s home directory and
-                        mail
-                        			    spool, omit the <code class="code">-r</code> option.
+                        no longer be used.
                      </p>
-                     		<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo userdel -r <em class="replaceable"><code>olduser</code></em></code></strong></code></pre></div>
+                     		
+                     <p class="title"><b>To remove a user from the system</b></p>
+                     <ul>
+                        <li>
+                           			
+                           <p>Use the <b>userdel</b> command to remove the user account from the system. When
+                              						you specify the <code class="code">-r</code> parameter, the user&apos;s home directory and
+                              						mail spool are deleted. To keep the user&apos;s home directory and mail spool,
+                              						omit the <code class="code">-r</code> parameter.
+                           </p>
+                           		<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo userdel -r <em class="replaceable"><code>olduser</code></em></code></strong></code></pre>
+                           			</li>
+                     </ul>
+                     		
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -176,14 +254,29 @@ BQoQzd8v7yeb7OzlPnWOyN0qFU0XA246RA8QFYiCNYwI3f05p6KLxEXAMPLE</code></pre>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="compile-software.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="processor_state_control.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
             <div id="right-expanded">
-               <div id="right-content-wrapper"></div>
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Best Practice"><a class="pagetoc" href="#add-user-best-practice">Best Practice</a></li>
+                        <li class="pagetoc" name="Creating a User Account"><a class="pagetoc" href="#create-user-account">Creating a User Account</a></li>
+                        <li class="pagetoc" name="Removing a User Account"><a class="pagetoc" href="#delete-user-acount">Removing a User Account</a></li>
+                     </ul>
+                  </div>
+               </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

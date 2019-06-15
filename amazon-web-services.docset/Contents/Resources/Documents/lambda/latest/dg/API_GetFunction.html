@@ -6,12 +6,14 @@
       <link rel="up" href="API_Operations.html" title="Actions">
       <link rel="prev" href="API_GetEventSourceMapping.html" title="GetEventSourceMapping">
       <link rel="next" href="API_GetFunctionConfiguration.html" title="GetFunctionConfiguration">
-      <meta name="description" content="Returns the configuration information of the Lambda function and a presigned URL link to the .zip file you uploaded with so you can download the .zip file. Note that the URL is valid for up to 10 minutes. The configuration information is the same information you provided as parameters when uploading the function.">
-      <meta name="keywords" content="API,requests,GetFunction">
+      <meta name="description" content="Returns information about the function or function version, with a link to download the deployment package that&apos;s valid for 10 minutes. If you specify a function version, only details that are specific to that version are returned.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing,API,requests,GetFunction">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/API_GetFunction.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,24 +35,20 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="API_Reference.html">API Reference</a> &#xBB; <a href="API_Operations.html">Actions</a> &#xBB; <span class="breadcrumb">GetFunction</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="API_Reference.html">API Reference</a> &#xBB; <a href="API_Operations.html">Actions</a> &#xBB; <span class="breadcrumb">GetFunction</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="API_GetFunction">GetFunction</h1>
-                     <p>Returns the configuration information of the Lambda function and a presigned URL 
-                        link to the .zip file you uploaded with <a href="API_CreateFunction.html">CreateFunction</a> so you can download the .zip file. 
-                        Note that the URL is valid for up to 10 minutes. The configuration information is
-                        the same information you provided 
-                        as parameters when uploading the function.
-                     </p>
-                     <p>Using the optional <code class="code">Qualifier</code> parameter, you can specify a specific function version for which you want this information.
-                        If you don&apos;t specify this parameter, the API uses 
-                        unqualified function ARN which return information about the <code class="code">$LATEST</code> version of the Lambda function. 
-                        For more information, see  <a href="./lambda/latest/dg/versioning-aliases.html" target="_blank">AWS Lambda Function Versioning and Aliases</a>.
-                     </p>
-                     <p>This operation requires permission for the <code class="code">lambda:GetFunction</code> action.
+                     <p>Returns information about the function or function version, with a link to download
+                        the deployment package
+                        that&apos;s valid for 10 minutes. If you specify a function version, only details that
+                        are specific to that version are
+                        returned.
                      </p>
                      
                      <h2 id="API_GetFunction_RequestSyntax">Request Syntax</h2>
@@ -75,23 +73,48 @@
                            
                            <dd>
                               
-                              <p>The Lambda function name.</p>
+                              <p>The name of the Lambda function, version, or alias.</p>
                               
-                              <p>
-                                 You can specify a function name (for example, <code class="code">Thumbnail</code>) or you can 
-                                 specify Amazon Resource Name (ARN) of the function (for example, 
-                                 <code class="code">arn:aws:lambda:us-west-2:account-id:function:ThumbNail</code>). AWS Lambda also allows 
-                                 you to specify a partial ARN (for example, <code class="code">account-id:Thumbnail</code>).
+                              <div class="itemizedlist">
                                  
-                                 Note that the length constraint applies only 
-                                 to the ARN. If you specify only the function name, it is limited to 64 characters
-                                 in length.
+                                 <p class="title"><b>Name formats</b></p>
                                  
+                                 
+                                 
+                                 
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       
+                                       <p>
+                                          <b>Function name</b> - <code class="code">my-function</code> (name-only), <code class="code">my-function:v1</code> (with alias).
+                                       </p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p>
+                                          <b>Function ARN</b> - <code class="code">arn:aws:lambda:us-west-2:123456789012:function:my-function</code>.
+                                       </p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p>
+                                          <b>Partial ARN</b> - <code class="code">123456789012:function:my-function</code>.
+                                       </p>
+                                       
+                                    </li>
+                                 </ul>
+                              </div>
+                              
+                              <p>You can append a version number or alias to any of the formats. The length constraint
+                                 applies only to the full ARN.
+                                 If you specify only the function name, it is limited to 64 characters in length.
                               </p>
                               
                               <p>Length Constraints: Minimum length of 1. Maximum length of 170.</p>
                               
-                              <p>Pattern: <code class="code">(arn:aws:lambda:)?([a-z]{2}-[a-z]+-\d{1}:)?(\d{12}:)?(function:)?([a-zA-Z0-9-_\.]+)(:(\$LATEST|[a-zA-Z0-9-_]+))?</code>
+                              <p>Pattern: <code class="code">(arn:(aws[a-zA-Z-]*)?:lambda:)?([a-z]{2}(-gov)?-[a-z]+-\d{1}:)?(\d{12}:)?(function:)?([a-zA-Z0-9-_\.]+)(:(\$LATEST|[a-zA-Z0-9-_]+))?</code>
                                  
                               </p>
                               
@@ -106,16 +129,7 @@
                            
                            <dd>
                               
-                              <p>Use this optional parameter to specify a function version or an alias name. 
-                                 If you specify function version, the API uses qualified function ARN for the request
-                                 and returns information 
-                                 about the specific Lambda function version. If 
-                                 you specify an alias name, the API uses the alias ARN and returns information about
-                                 the function version to which the alias points. If you don&apos;t provide this 
-                                 parameter, the API uses unqualified function ARN and returns information about the
-                                 <code class="code">$LATEST</code> version of the Lambda function.
-                                 
-                              </p>
+                              <p>Specify a version or alias to get details about a published version of the function.</p>
                               
                               <p>Length Constraints: Minimum length of 1. Maximum length of 128.</p>
                               
@@ -167,6 +181,12 @@ Content-type: application/json
       &quot;<a href="API_FunctionConfiguration.html#SSS-Type-FunctionConfiguration-Handler">Handler</a>&quot;: &quot;<b><em>string</em></b>&quot;,
       &quot;<a href="API_FunctionConfiguration.html#SSS-Type-FunctionConfiguration-KMSKeyArn">KMSKeyArn</a>&quot;: &quot;<b><em>string</em></b>&quot;,
       &quot;<a href="API_FunctionConfiguration.html#SSS-Type-FunctionConfiguration-LastModified">LastModified</a>&quot;: &quot;<b><em>string</em></b>&quot;,
+      &quot;<a href="API_FunctionConfiguration.html#SSS-Type-FunctionConfiguration-Layers">Layers</a>&quot;: [ 
+         { 
+            &quot;<a href="API_Layer.html#SSS-Type-Layer-Arn">Arn</a>&quot;: &quot;<b><em>string</em></b>&quot;,
+            &quot;<a href="API_Layer.html#SSS-Type-Layer-CodeSize">CodeSize</a>&quot;: <b><em>number</em></b>
+         }
+      ],
       &quot;<a href="API_FunctionConfiguration.html#SSS-Type-FunctionConfiguration-MasterArn">MasterArn</a>&quot;: &quot;<b><em>string</em></b>&quot;,
       &quot;<a href="API_FunctionConfiguration.html#SSS-Type-FunctionConfiguration-MemorySize">MemorySize</a>&quot;: <b><em>number</em></b>,
       &quot;<a href="API_FunctionConfiguration.html#SSS-Type-FunctionConfiguration-RevisionId">RevisionId</a>&quot;: &quot;<b><em>string</em></b>&quot;,
@@ -210,7 +230,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The object for the Lambda function location.</p>
+                              <p>The deployment package of the function or version.</p>
                               
                               <p>Type: <a href="API_FunctionCodeLocation.html">FunctionCodeLocation</a> object
                               </p>
@@ -226,7 +246,8 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>The concurrent execution limit set for this function. For more information, see <a href="concurrent-executions.html">Managing Concurrency</a>.
+                              <p>The function&apos;s <a href="./lambda/latest/dg/concurrent-executions.html">reserved
+                                    concurrency</a>.
                               </p>
                               
                               <p>Type: <a href="API_Concurrency.html">Concurrency</a> object
@@ -243,7 +264,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>A complex type that describes function metadata.</p>
+                              <p>The configuration of the function or version.</p>
                               
                               <p>Type: <a href="API_FunctionConfiguration.html">FunctionConfiguration</a> object
                               </p>
@@ -259,7 +280,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>Returns the list of tags associated with the function. For more information, see <a href="./lambda/latest/dg/tagging.html" target="_blank">Tagging Lambda Functions</a> in the <b>AWS Lambda Developer Guide</b>.
+                              <p>The function&apos;s <a href="./lambda/latest/dg/tagging.html">tags</a>.
                               </p>
                               
                               <p>Type: String to string map</p>
@@ -286,10 +307,10 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>One of the parameters in the request is invalid. For example, 
-                                 if you provided an IAM role for AWS Lambda to assume 
-                                 in the <code class="code">CreateFunction</code> or the <code class="code">UpdateFunctionConfiguration</code> API, 
-                                 that AWS Lambda is unable to assume you will get this exception.
+                              <p>One of the parameters in the request is invalid. For example, if you provided an IAM
+                                 role for AWS Lambda to
+                                 assume in the <code class="code">CreateFunction</code> or the <code class="code">UpdateFunctionConfiguration</code> API, that AWS Lambda is
+                                 unable to assume you will get this exception.
                               </p>
                               
                               <p>HTTP Status Code: 400</p>
@@ -304,7 +325,8 @@ Content-type: application/json
                            <dd>
                               
                               <p>The resource (for example, a Lambda function or access policy statement) specified
-                                 in the request does not exist.
+                                 in the request does not
+                                 exist.
                               </p>
                               
                               <p>HTTP Status Code: 404</p>
@@ -331,9 +353,7 @@ Content-type: application/json
                            
                            <dd>
                               
-                              <p>
-                                 
-                              </p>
+                              <p>Request throughput limit exceeded.</p>
                               
                               <p>HTTP Status Code: 429</p>
                               
@@ -359,11 +379,12 @@ Content-type: application/json
                         
                         
                         
+                        
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/aws-cli/lambda-2015-03-31/GetFunction" target="_blank">AWS Command Line Interface</a>
+                                 <a href="./goto/aws-cli/lambda-2015-03-31/GetFunction">AWS Command Line Interface</a>
                                  
                               </p>
                               
@@ -371,7 +392,7 @@ Content-type: application/json
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/DotNetSDKV3/lambda-2015-03-31/GetFunction" target="_blank">AWS SDK for .NET</a>
+                                 <a href="./goto/DotNetSDKV3/lambda-2015-03-31/GetFunction">AWS SDK for .NET</a>
                                  
                               </p>
                               
@@ -379,7 +400,7 @@ Content-type: application/json
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/SdkForCpp/lambda-2015-03-31/GetFunction" target="_blank">AWS SDK for C++</a>
+                                 <a href="./goto/SdkForCpp/lambda-2015-03-31/GetFunction">AWS SDK for C++</a>
                                  
                               </p>
                               
@@ -387,7 +408,7 @@ Content-type: application/json
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/SdkForGoV1/lambda-2015-03-31/GetFunction" target="_blank">AWS SDK for Go</a>
+                                 <a href="./goto/SdkForGoV1/lambda-2015-03-31/GetFunction">AWS SDK for Go</a>
                                  
                               </p>
                               
@@ -395,7 +416,7 @@ Content-type: application/json
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/SdkForJava/lambda-2015-03-31/GetFunction" target="_blank">AWS SDK for Java</a>
+                                 <a href="./goto/SdkForGoPilot/lambda-2015-03-31/GetFunction">AWS SDK for Go - Pilot</a>
                                  
                               </p>
                               
@@ -403,7 +424,7 @@ Content-type: application/json
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/AWSJavaScriptSDK/lambda-2015-03-31/GetFunction" target="_blank">AWS SDK for JavaScript</a>
+                                 <a href="./goto/SdkForJava/lambda-2015-03-31/GetFunction">AWS SDK for Java</a>
                                  
                               </p>
                               
@@ -411,7 +432,7 @@ Content-type: application/json
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/SdkForPHPV3/lambda-2015-03-31/GetFunction" target="_blank">AWS SDK for PHP V3</a>
+                                 <a href="./goto/AWSJavaScriptSDK/lambda-2015-03-31/GetFunction">AWS SDK for JavaScript</a>
                                  
                               </p>
                               
@@ -419,7 +440,7 @@ Content-type: application/json
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/boto3/lambda-2015-03-31/GetFunction" target="_blank">AWS SDK for Python</a>
+                                 <a href="./goto/SdkForPHPV3/lambda-2015-03-31/GetFunction">AWS SDK for PHP V3</a>
                                  
                               </p>
                               
@@ -427,12 +448,23 @@ Content-type: application/json
                            <li class="listitem">
                               
                               <p>
-                                 <a href="./goto/SdkForRubyV2/lambda-2015-03-31/GetFunction" target="_blank">AWS SDK for Ruby V2</a>
+                                 <a href="./goto/boto3/lambda-2015-03-31/GetFunction">AWS SDK for Python</a>
+                                 
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>
+                                 <a href="./goto/SdkForRubyV2/lambda-2015-03-31/GetFunction">AWS SDK for Ruby V2</a>
                                  
                               </p>
                               
                            </li>
                         </ul>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
                   </div>
                   <noscript>
@@ -440,9 +472,10 @@ Content-type: application/json
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -452,7 +485,9 @@ Content-type: application/json
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="API_GetEventSourceMapping.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="API_GetFunctionConfiguration.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -473,6 +508,10 @@ Content-type: application/json
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

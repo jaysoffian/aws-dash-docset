@@ -1,17 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Logging (Python) - AWS Lambda</title>
+      <title>AWS Lambda Function Logging in Python - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="python-programming-model.html" title="Programming Model for Authoring Lambda Functions in
-        Python">
-      <link rel="prev" href="python-context-object.html" title="The Context Object (Python)">
-      <link rel="next" href="python-exceptions.html" title="Function Errors (Python)">
-      <meta name="description" content="Your Lambda function can contain logging statements. AWS Lambda writes these logs to CloudWatch. If you use the Lambda console to invoke your Lambda function, the console displays the same logs.">
+      <link rel="up" href="python-programming-model.html" title="Building Lambda Functions with Python">
+      <link rel="prev" href="python-context-object.html" title="AWS Lambda Context Object in Python">
+      <link rel="next" href="python-exceptions.html" title="AWS Lambda Function Errors in Python">
+      <meta name="description" content="To output logs from your function code, you can use the print method , or any logging library that writes to stdout or stderr . The following example logs the values of environment variables and the event object.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/python-logging.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,170 +35,126 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-introduction-function.html">Lambda Functions</a> &#xBB; <a href="lambda-app.html">Building Lambda Functions</a> &#xBB; <a href="programming-model-v2.html">Programming Model</a> &#xBB; <a href="python-programming-model.html">Programming Model for Authoring Lambda Functions in
-                                    Python</a> &#xBB; <span class="breadcrumb">Logging (Python)</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="python-programming-model.html">Building Lambda Functions with Python</a> &#xBB; <span class="breadcrumb">AWS Lambda Function Logging in Python</span></div>
                            </td>
                         </tr>
                      </tbody></table>
-                     <div></div>
-                     <h1 class="topictitle" id="python-logging">Logging (Python)</h1>
-                     <p>Your Lambda function can contain logging statements. AWS Lambda writes these logs
-                        to
-                        CloudWatch. If you use the Lambda console to invoke your Lambda function, the console
-                        displays
-                        the same logs. 
-                     </p>
-                     <p>The following Python statements generate log entries:</p>
-                     <div class="itemizedlist">
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              
-                              <p><code class="code">print</code> statements.
-                              </p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p><code class="code">Logger</code> functions in the <code class="code">logging</code> module (for
-                                 example, <code class="code">logging.Logger.info</code> and
-                                 <code class="code">logging.Logger.error</code>).
-                              </p>
-                              
-                           </li>
-                        </ul>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
                      </div>
-                     <p>Both <code class="code">print</code> and <code class="code">logging.*</code> functions write logs to CloudWatch Logs
-                        but the <code class="code">logging.*</code> functions write additional information to each log entry,
-                        such as time stamp and log level.
+                     <div></div>
+                     <h1 class="topictitle" id="python-logging">AWS Lambda Function Logging in Python</h1>
+                     <p>Your Lambda function comes with a CloudWatch Logs log group, with a log stream for
+                        each
+                        instance of your function. The runtime sends details about each invocation to the
+                        log stream, and relays logs and
+                        other output from your function&apos;s code.
                      </p>
-                     <p>For example, consider the following Python code example.  </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">import logging
+                     <p>To output logs from your function code, you can use <a href="https://docs.python.org/3/library/functions.html#print" target="_blank">the print method</a>, or any logging library that
+                        writes to <code class="code">stdout</code> or <code class="code">stderr</code>. The following example logs the values of environment variables
+                        and the event object.
+                     </p>
+                     <div class="example">
+                        <p class="title"><b>Example lambda_function.py</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">import json
+import os
+
+def lambda_handler(event, context):
+    print(&apos;## ENVIRONMENT VARIABLES&apos;)
+    print(os.environ)
+    print(&apos;## EVENT&apos;)
+    print(event)
+    return {
+        &apos;statusCode&apos;: 200,
+        &apos;body&apos;: json.dumps(&apos;Hello from Lambda!&apos;)
+    }</code></pre></div>
+                     </div>
+                     <p>For more detailed logs, use the <a href="https://docs.python.org/3/library/logging.html" target="_blank">logging
+                           library</a>. 
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">import json
+import os
+import logging
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
-def my_logging_handler(event, context):
-    logger.info(&apos;got event{}&apos;.format(event))
-    logger.error(&apos;something went wrong&apos;)
-    return &apos;Hello from Lambda!&apos;  </code></pre><p>Because the code example uses the <code class="code">logging</code> module to write message to the
-                        logs, you also get some additional information in the log such as the time stamp and
-                        the
-                        log levels. The log level identifies the type of log, such as <code class="code">[INFO]</code>,
-                        <code class="code">[ERROR]</code>, and <code class="code">[DEBUG]</code>.
-                     </p>
-                     <p>You can also find these logs in CloudWatch. For more information, see 
-                        <a href="monitoring-functions-logs.html">Accessing Amazon CloudWatch Logs for AWS Lambda</a>.
-                     </p>
-                     <p>Instead of using the <code class="code">logging</code> module, you can use the <code class="code">print</code>
-                        statements in your code as shown in the following Python example:
-                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">from __future__ import print_function
+
 def lambda_handler(event, context):
-    print(&apos;this will also show up in cloud watch&apos;)
-   &#xA0;return &apos;Hello World!&apos;    </code></pre><p>In this case only the text passed to the print method is sent to CloudWatch. The log
-                        entries
-                        will not have additional information that the <code class="code">logging.*</code> function returns.
-                        The <code class="code">from __future__</code> statement enables you to write code that is compatible
-                        with Python 2 or 3.
+    logger.info(&apos;## ENVIRONMENT VARIABLES&apos;)
+    logger.info(os.environ)
+    logger.info(&apos;## EVENT&apos;)
+    logger.info(event)
+    return {
+        &apos;statusCode&apos;: 200,
+        &apos;body&apos;: json.dumps(&apos;Hello from Lambda!&apos;)
+    }
+</code></pre><p>The output from <code class="code">logger</code> includes the log level, timestamp, and request ID.
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">[INFO]	2019-04-21T23:24:14.135Z	00d3cdad-8aaf-42b2-af4e-6f8b2cae00a5	## EVENT
+[INFO]	2019-04-21T23:24:14.135Z	00d3cdad-8aaf-42b2-af4e-6f8b2cae00a5	{&apos;key1&apos;: &apos;value1&apos;, &apos;key2&apos;: &apos;value2&apos;, &apos;key3&apos;: &apos;value3&apos;}</code></pre><p>The Lambda console shows log output when you test a function on the function
+                        configuration page. To view logs for all invocations, use the CloudWatch Logs console.
                      </p>
-                     <div class="mediaobject">
-                        
-                        <img src="../../..//img/python-logging-20.png">
-                        
-                        
-                     </div>
-                     <p>The console uses the <code class="code">RequestResponse</code> invocation type (synchronous
-                        invocation) when invoking the function. And therefore it gets the return value (&quot;Hello
-                        world!&quot;) back from AWS Lambda which the console displays.
-                     </p>
-                     <p class="title"><b>To test the preceding Python code (console)</b></p>
+                     <p class="title"><b>To view your Lambda function&apos;s logs</b></p>
                      <ol>
                         <li>
                            
-                           <p>In the console, create a Lambda function using the hello-world-python
-                              blueprint. In <b>runtime</b>, choose <b>Python
-                                 2.7</b>. In <b>Handler</b>,
-                              replace <code class="code">lambda_function.lambda_handler</code>&#xA0;with <code class="code">lambda_function.my_other_logging_handler</code> 
-                              and in <b>Role</b>, choose <b>Basic
-                                 execution role</b>. You also replace the code provided by the
-                              blueprint by the code in this section. For step-by-step instructions to create
-                              a Lambda function using the console, see 
-                              <a href="get-started-create-function.html">Create a Simple Lambda
-                                 			Function</a>. 
+                           <p>Open the <a href="https://console.aws.amazon.com/cloudwatch/home?#logs:" target="_blank">Logs page of the CloudWatch
+                                 console</a>.
                            </p>
                            
                         </li>
                         <li>
                            
-                           <p>Replace the template code with the code provided in this section.</p>
+                           <p>Choose the log group for your function
+                              (<b>/aws/lambda/<em class="replaceable"><code>function-name</code></em></b>).
+                           </p>
                            
                         </li>
                         <li>
                            
-                           <p>Test the Lambda function using the <b>Sample event template</b>
-                              called <b>Hello World</b>&#xA0;provided in the Lambda console. 
-                           </p>
+                           <p>Choose the first stream in the list.</p>
                            
                         </li>
                      </ol>
-                     <h2 id="python-logging-finding-logs">Finding Logs</h2>
-                     
-                     
-                     <p>You can find the logs that your Lambda function writes, as follows:</p>
-                     
-                     <div class="itemizedlist">
-                        
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              
-                              <p><span class="topcom">In the AWS Lambda console</span> &#x2013; 
-                                 The&#xA0;<b> Log output</b> &#xA0;section in AWS Lambda console
-                                 shows the logs. 
-                              </p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p><span class="topcom">In the response header, when you invoke a Lambda
-                                    function programmatically</span> &#x2013; If you invoke a Lambda
-                                 function programmatically, you can add the&#xA0;<code class="code">LogType</code> parameter to
-                                 retrieve the last 4 KB of log data that is written to CloudWatch Logs. AWS
-                                 Lambda returns this log information in
-                                 the&#xA0;<code class="code">x-amz-log-results</code>&#xA0;header in the response. For more
-                                 information, see&#xA0;<a href="API_Invoke.html">Invoke</a>.
-                              </p>
-                              
-                              <p>If you use AWS CLI to invoke the function, you can specify
-                                 the<code class="code">&#xA0;--log-type&#xA0;parameter</code> with value&#xA0;<code class="code">Tail</code>&#xA0;to
-                                 retrieve the same information.
-                              </p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p><span class="topcom">In CloudWatch Logs</span> &#x2013; To find your
-                                 logs in CloudWatch you need to know the log group name and log stream name.
-                                 You can use the <code class="code">context.log_group_name</code> and
-                                 <code class="code">context.log_stream_name</code> properties in your code to get this
-                                 information. When you run your Lambda function, the resulting logs in the
-                                 console or CLI will show you the log group name and log stream name. 
-                              </p>
-                              
-                           </li>
-                        </ul>
+                     <p>Each log stream corresponds to an <a href="running-lambda-code.html">instance of your function</a>. New streams appear 
+                        when you update your function and when additional instances are created to handle
+                        multiple concurrent invocations. To find
+                        logs for specific invocations, you can instrument your function with X-Ray and record
+                        details about the request and
+                        log stream in the trace. For a sample application that correlates logs and traces
+                        with X-Ray, see <a href="sample-errorprocessor.html">Error Processor Sample Application for AWS Lambda</a>.
+                     </p>
+                     <p>To get logs for an invocation from the command line, use the <code class="code">--log-type</code> option. The response
+                        includes a <code class="code">LogResult</code> field that contains up to 4 KB of base64-encoded logs from the invocation.
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda invoke --function-name my-function out --log-type Tail</code></strong>
+{
+    &quot;StatusCode&quot;: 200,
+    &quot;LogResult&quot;: &quot;U1RBUlQgUmVxdWVzdElkOiA4N2QwNDRiOC1mMTU0LTExZTgtOGNkYS0yOTc0YzVlNGZiMjEgVmVyc2lvb...&quot;,
+    &quot;ExecutedVersion&quot;: &quot;$LATEST&quot;
+}</code></pre><p>You can use the <code class="code">base64</code> utility to decode the logs.
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda invoke --function-name my-function out --log-type Tail \
+--query &apos;LogResult&apos; --output text |  base64 -d</code></strong>
+START RequestId: 57f231fb-1730-4395-85cb-4f71bd2b87b8 Version: $LATEST
+  &quot;AWS_SESSION_TOKEN&quot;: &quot;AgoJb3JpZ2luX2VjELj...&quot;, &quot;_X_AMZN_TRACE_ID&quot;: &quot;Root=1-5d02e5ca-f5792818b6fe8368e5b51d50;Parent=191db58857df8395;Sampled=0&quot;&quot;,ask/lib:/opt/lib&quot;,
+END RequestId: 57f231fb-1730-4395-85cb-4f71bd2b87b8
+REPORT RequestId: 57f231fb-1730-4395-85cb-4f71bd2b87b8  Duration: 79.67 ms      Billed Duration: 100 ms         Memory Size: 128 MB     Max Memory Used: 73 MB</code></pre><p><code class="code">base64</code> is available on Linux, macOS, and <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10" target="_blank">Ubuntu on Windows</a>. For macOS, the command
+                        is <code class="code">base64 -D</code>.
+                     </p>
+                     <p>Log groups are not deleted automatically when you delete a function. To avoid storing
+                        logs indefinitely, delete
+                        the log group, or <a href="./AmazonCloudWatch/latest/logs/Working-with-log-groups-and-streams.html#SettingLogRetention">configure
+                           a retention period</a> after which logs are deleted automatically.
+                     </p>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
-                     
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -206,21 +164,20 @@ def lambda_handler(event, context):
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="python-context-object.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="python-exceptions.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
             <div id="right-expanded">
-               <div id="right-content-wrapper">
-                  <div id="pagetoc">
-                     <p>On this page:</p>
-                     <ul class="pagetoc">
-                        <li class="pagetoc" name="Finding Logs"><a class="pagetoc" href="#python-logging-finding-logs">Finding Logs</a></li>
-                     </ul>
-                  </div>
-               </div>
+               <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

@@ -3,14 +3,16 @@
       <title>Enabling Logging Programmatically - Amazon Simple Storage Service</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="ServerLogs.html" title="Server Access Logging">
+      <link rel="up" href="ServerLogs.html" title="Amazon S3 Server Access Logging">
       <link rel="prev" href="enable-logging-console.html" title="Enabling Logging Using the Console">
-      <link rel="next" href="LogFormat.html" title="Server Access Log Format">
+      <link rel="next" href="LogFormat.html" title="Amazon S3 Server Access Log Format">
       <meta name="description" content="Enable server access logging programmatically to track requests for access to your buckets by using the Amazon S3 API or the AWS SDKs.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/enable-logging-programming.html">
@@ -20,7 +22,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,10 +34,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="ServerLogs.html">Server Access Logging</a> &#xBB; <span class="breadcrumb">Enabling Logging Programmatically</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="ServerLogs.html">Amazon S3 Server Access Logging</a> &#xBB; <span class="breadcrumb">Enabling Logging Programmatically</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="enable-logging-programming">Enabling Logging Programmatically</h1>
                      <p>You can enable or disable logging programmatically by using either the Amazon S3 API
@@ -50,45 +55,41 @@
                            <li><a href="#grant-log-delivery-permissions-general">Granting the Log Delivery Group
                                  WRITE and READ_ACP Permissions</a></li>
                            <li><a href="#enable-logging-dotnetsdk-exmaple">Example: AWS SDK for .NET</a></li>
+                           <li><a href="#enable-logging-programming-more-info">Related Resources</a></li>
                         </ul>
                      </div>
                      
                      <h2 id="enabling-logging-general">Enabling Logging</h2>
                      
                      
-                     
-                     <p>To enable logging, you submit a <a href="./AmazonS3/latest/API/RESTBucketPUTlogging.html" target="_blank">PUT
+                     <p>To enable logging, you submit a <a href="./AmazonS3/latest/API/RESTBucketPUTlogging.html">PUT
                            Bucket logging</a> request to add the logging configuration on the source bucket. The
                         request specifies the target bucket and, optionally, the prefix to be used with all
                         log
                         object keys. The following example identifies <code class="code">logbucket</code> as the target bucket
                         and <code class="code">logs/</code> as the prefix. 
                      </p>
-                     
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">&lt;BucketLoggingStatus xmlns=&quot;http://doc.s3.amazonaws.com/2006-03-01&quot;&gt;
   &lt;LoggingEnabled&gt;
     &lt;TargetBucket&gt;logbucket&lt;/TargetBucket&gt;
     &lt;TargetPrefix&gt;logs/&lt;/TargetPrefix&gt;
   &lt;/LoggingEnabled&gt;
 &lt;/BucketLoggingStatus&gt;</code></pre>
-                     
                      <p>The log objects are written and owned by the Log Delivery account, and the bucket
                         owner
                         is granted full permissions on the log objects. In addition, you can optionally grant
                         permissions to other users so that they can access the logs. For more information,
                         see
-                        <a href="./AmazonS3/latest/API/RESTBucketPUTlogging.html" target="_blank">PUT Bucket logging</a>. 
+                        <a href="./AmazonS3/latest/API/RESTBucketPUTlogging.html">PUT Bucket logging</a>. 
                      </p>
                      
-                     <p>Amazon S3 also provides the <a href="./AmazonS3/latest/API/RESTBucketGETlogging.html" target="_blank">GET Bucket
+                     <p>Amazon S3 also provides the <a href="./AmazonS3/latest/API/RESTBucketGETlogging.html">GET Bucket
                            logging</a> API to retrieve logging configuration on a bucket. To delete the logging
                         configuration, you send the PUT Bucket logging request with an empty
                         <code class="code">BucketLoggingStatus</code>. 
                      </p>
-                     
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">&lt;BucketLoggingStatus xmlns=&quot;http://doc.s3.amazonaws.com/2006-03-01&quot;&gt;
 &lt;/BucketLoggingStatus&gt;</code></pre>
-                     
                      <p>You can use either the Amazon S3 API or the AWS SDK wrapper libraries to enable logging
                         on a
                         bucket.
@@ -98,7 +99,6 @@
                      <h2 id="grant-log-delivery-permissions-general">Granting the Log Delivery Group
                         WRITE and READ_ACP Permissions
                      </h2>
-                     
                      
                      
                      <p>Amazon S3 writes the log files to the target bucket as a member of the predefined
@@ -111,11 +111,9 @@
                      </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">http://acs.amazonaws.com/groups/s3/LogDelivery</code></pre>
                      
-                     
                      <p> To grant <code class="code">WRITE</code> and <code class="code">READ_ACP</code> permissions, add the following
                         grants. For information about ACLs, see <a href="S3_ACLs_UsingACLs.html">Managing Access with ACLs</a>.
                      </p>
-                     
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">&lt;Grant&gt;
     &lt;Grantee xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;  xsi:type=&quot;Group&quot;&gt;
         &lt;URI&gt;http://acs.amazonaws.com/groups/s3/LogDelivery&lt;/URI&gt; 
@@ -128,13 +126,11 @@
     &lt;/Grantee&gt;
     &lt;Permission&gt;READ_ACP&lt;/Permission&gt;
 &lt;/Grant&gt;                                    </code></pre>
-                     
                      <p>For examples of adding ACL grants programmatically using the AWS SDKs, see <a href="acl-using-java-sdk.html">Managing ACLs Using the AWS SDK for JavaConfiguring ACL Grants on an Existing Object</a> and <a href="acl-using-dot-net-sdk.html">Managing ACLs Using the AWS SDK for .NET </a>.
                      </p>
                      
                      
                      <h2 id="enable-logging-dotnetsdk-exmaple">Example: AWS SDK for .NET</h2>
-                     
                      
                      <p>The following C# example enables logging on a bucket. You need to create two buckets,
                         a
@@ -146,9 +142,11 @@
                         working sample, see <a href="UsingTheMPDotNetAPI.html#TestingDotNetApiSamples">Running the Amazon S3 .NET Code Examples</a>.
                      </p>
                      
-                     
                      <div class="example">
-                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">using Amazon.S3;
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">// Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: MIT-0 (For details, see https://github.com/awsdocs/amazon-s3-developer-guide/blob/master/LICENSE-SAMPLECODE.)
+
+&#xFEFF;using Amazon.S3;
 using Amazon.S3.Model;
 using System;
 using System.Threading.Tasks;
@@ -225,15 +223,40 @@ namespace Amazon.DocSamples.S3
                      </div>
                      
                      
+                     <h2 id="enable-logging-programming-more-info">Related Resources</h2>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><a href="ServerLogs.html">Amazon S3 Server Access Logging</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="./AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html">AWS::S3::Bucket</a> in
+                                 the <em>AWS CloudFormation User Guide</em></p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -243,7 +266,9 @@ namespace Amazon.DocSamples.S3
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="enable-logging-console.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="LogFormat.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -257,11 +282,16 @@ namespace Amazon.DocSamples.S3
           WRITE and READ_ACP Permissions"><a class="pagetoc" href="#grant-log-delivery-permissions-general">Granting the Log Delivery Group
                               WRITE and READ_ACP Permissions</a></li>
                         <li class="pagetoc" name="Example: AWS SDK for .NET"><a class="pagetoc" href="#enable-logging-dotnetsdk-exmaple">Example: AWS SDK for .NET</a></li>
+                        <li class="pagetoc" name="Related Resources"><a class="pagetoc" href="#enable-logging-programming-more-info">Related Resources</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

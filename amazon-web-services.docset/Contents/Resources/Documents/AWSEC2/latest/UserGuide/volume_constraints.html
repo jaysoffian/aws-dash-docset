@@ -1,17 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Constraints on Modifying EBS Volume Size - Amazon Elastic Compute Cloud</title>
+      <title>Constraints on the Size and Configuration of an EBS
+         Volume - Amazon Elastic Compute Cloud
+      </title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="ebs-modify-volume.html" title="Modifying the Size, IOPS, or Type of an EBS Volume on Linux">
-      <link rel="prev" href="ebs-modify-volume.html" title="Modifying the Size, IOPS, or Type of an EBS Volume on Linux">
-      <link rel="next" href="console-modify.html" title="Modifying an EBS Volume from the Console">
-      <meta name="description" content="Limitations on EBS volume size changes related to block storage device architecture.">
+      <link rel="up" href="EBSVolumes.html" title="Amazon EBS Volumes">
+      <link rel="prev" href="EBSVolumeTypes.html" title="Amazon EBS Volume Types">
+      <link rel="next" href="ebs-creating-volume.html" title="Creating an Amazon EBS Volume">
+      <meta name="description" content="Learn about limitations on EBS volume size changes related to block storage device architecture.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/volume_constraints.html">
@@ -21,7 +25,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,153 +37,236 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <a href="EBSVolumes.html">Amazon EBS Volumes</a> &#xBB; <a href="ebs-modify-volume.html">Modifying the Size, IOPS, or Type of an EBS Volume on Linux</a> &#xBB; <span class="breadcrumb">Constraints on Modifying EBS Volume Size</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <a href="EBSVolumes.html">Amazon EBS Volumes</a> &#xBB; <span class="breadcrumb">Constraints on the Size and Configuration of an EBS
+                                    Volume</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="volume_constraints">Constraints on Modifying EBS Volume Size</h1>
-                     <p>Modifications to the size of an Amazon EBS volume are constrained by the physics and
-                        arithmetic
-                        of block data storage, as well as by the implementation decisions of operating system
-                        and file
-                        system designers. AWS imposes additional limits on volume size to safeguard the reliability
+                     <h1 class="topictitle" id="volume_constraints">Constraints on the Size and Configuration of an EBS
+                        Volume
+                     </h1>
+                     <p>The size of an Amazon EBS volume is constrained by the physics and arithmetic of block
+                        data
+                        storage, as well as by the implementation decisions of operating system (OS) and file
+                        system
+                        designers. AWS imposes additional limits on volume size to safeguard the reliability
+                        of its
+                        services.
+                     </p>
+                     <p>The following table summarizes the theoretical and implemented storage capacities
+                        for the
+                        most commonly used file systems on Amazon EBS, assuming a 4,096 byte block size. 
+                     </p>
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w306aac29c29c17c15b7">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Partitioning Scheme</th>
+                                 
+                                 <th>Max. addressable blocks </th>
+                                 
+                                 <th>Theoretical max. size (blocks &#xD7; block size)</th>
+                                 
+                                 <th>Ext4 implemented max. size*</th>
+                                 
+                                 <th>XFS implemented max. size**</th>
+                                 
+                                 <th>NTFS implemented max. size</th>
+                                 
+                                 <th>Max. supported by EBS</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td><b>MBR</b></td>
+                                 
+                                 <td>2<sup>32</sup></td>
+                                 
+                                 <td>2 TiB</td>
+                                 
+                                 <td>2 TiB</td>
+                                 
+                                 <td>2 TiB</td>
+                                 
+                                 <td>2 TiB</td>
+                                 
+                                 <td>2 TiB</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td><b>GPT</b></td>
+                                 
+                                 <td>2<sup>64</sup></td>
+                                 
+                                 <td>
+                                    <p>8 ZiB = 8 &#xD7;</p>1024<sup>3</sup> TiB
+                                 </td>
+                                 
+                                 <td>
+                                    <p>1 EiB =</p>1024<sup>2</sup> TiB 
+                                    <p>(50 TiB certified
+                                       on RHEL7)
+                                    </p>
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>500 TiB</p>
+                                    
+                                    <p>(certified on RHEL7)</p>
+                                    
+                                 </td>
+                                 
+                                 <td>256 TiB</td>
+                                 
+                                 <td>16 TiB</td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     <p>* <a href="https://ext4.wiki.kernel.org/index.php/Ext4_Howto" target="_blank">https://ext4.wiki.kernel.org/index.php/Ext4_Howto</a> and <a href="https://access.redhat.com/solutions/1532" target="_blank">https://access.redhat.com/solutions/1532</a></p>
+                     <p>** <a href="https://access.redhat.com/solutions/1532" target="_blank">https://access.redhat.com/solutions/1532</a></p>
+                     <p>The following sections describe the most important factors that limit the usable size
                         of
-                        its services. 
+                        an EBS volume and offer recommendations for configuring your EBS volumes.
                      </p>
-                     <p>As a service, EBS abstracts the massively distributed storage of a data center into
-                        virtual hard disk drives. To an operating system installed on an EC2 instance, an
-                        attached EBS
-                        volume appears to be a physical hard disk drive containing 512-byte disk sectors.
-                        The OS
-                        manages the allocation of data blocks (or clusters) onto those virtual sectors through
-                        its
-                        storage management utilities. The allocation is in conformity with a volume partitioning
-                        scheme, such as master boot record (MBR) or GUID partition table (GPT), and within
-                        the
-                        capabilities of the installed file system (ext4, NTFS, and so on). 
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Content</strong></p>
+                        <ul>
+                           <li><a href="#aws_limits">Service Limitations</a></li>
+                           <li><a href="#partitioning">Partitioning Schemes</a></li>
+                           <li><a href="#block_size">Data Block Sizes</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="aws_limits">Service Limitations</h2>
+                     
+                     <p>Amazon EBS abstracts the massively distributed storage of a data center into virtual
+                        hard
+                        disk drives. To an operating system installed on an EC2 instance, an attached EBS
+                        volume
+                        appears to be a physical hard disk drive containing 512-byte disk sectors. The OS
+                        manages
+                        the allocation of data blocks (or clusters) onto those virtual sectors through its
+                        storage
+                        management utilities. The allocation is in conformity with a volume partitioning scheme,
+                        such as master boot record (MBR) or GUID partition table (GPT), and within the capabilities
+                        of the installed file system (ext4, NTFS, and so on). 
                      </p>
+                     
                      <p>EBS is not aware of the data contained in its virtual disk sectors; it only ensures
                         the
-                        integrity of the sectors. This means that AWS actions and OS actions are completely
-                        independent of each other. When modifying volume size, be aware of the capabilities
-                        and limits
-                        of both. For example, you can increase the size of an EBS volume to as much as 16
-                        TiB, but
-                        whether the OS recognizes all of that capacity depends on its own design characteristics
-                        and
-                        on how the volume is partitioned.
-                     </p>
-                     <p>This section describes the most important factors that limit the usable size of an
-                        EBS
-                        volume.
+                        integrity of the sectors. This means that AWS actions and OS actions are independent
+                        of
+                        each other. When you are selecting a volume size, be aware of the capabilities and
+                        limits of
+                        both, as in the following cases: 
                      </p>
                      
-                     <h2 id="aws_limits">AWS Service Limitations</h2>
-                     
-                     <p>Amazon EBS currently supports a maximum volume size of 16 TiB. </p>
-                     
-                     <p>Amazon EC2 requires Windows boot volumes to use MBR partitioning. As discussed in
-                        <a href="volume_constraints.html#partitioning">Partitioning Schemes</a>, this means that boot volumes cannot
-                        be bigger than 2 TiB. Windows data volumes are not subject to this limitation and
-                        may be
-                        GPT-partitioned. 
-                     </p>
-                     
-                     <p>Linux boot volumes may be either MBR or GPT, and Linux GPT boot volumes are not subject
-                        to the 2-TiB limit.
-                     </p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p>EBS currently supports a maximum volume size of 16 TiB. This means that you can
+                                 create an EBS volume as large as 16 TiB, but whether the OS recognizes all of that
+                                 capacity depends on its own design characteristics and on how the volume is
+                                 partitioned.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Amazon EC2 requires Windows boot volumes to use MBR partitioning. As discussed in
+                                 <a href="volume_constraints.html#partitioning">Partitioning Schemes</a>, this means that boot volumes
+                                 cannot be bigger than 2 TiB. Windows data volumes are not subject to this limitation
+                                 and
+                                 may be GPT-partitioned. 
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>Linux boot volumes may be either MBR or GPT, and Linux GPT boot volumes are not
+                                 subject to the 2-TiB limit.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
                      
                      
                      <h2 id="partitioning">Partitioning Schemes</h2>
                      
                      <p>Among other impacts, the partitioning scheme determines how many logical data blocks
                         can
-                        be uniquely addressed in a single volume. For more information, see <a href="volume_constraints.html#block_size">Data Block Sizes</a>. Two partitioning schemes are in common
-                        use on Linux and Windows systems: master boot record (MBR) and GUID partition table
-                        (GPT).
-                        The important differences between the two can be summarized as follows:
+                        be uniquely addressed in a single volume. For more information, see <a href="volume_constraints.html#block_size">Data Block Sizes</a>. The common partitioning schemes in use
+                        are <em>master boot record</em> (MBR) and <em>GUID partition table</em> (GPT). The important differences between these schemes
+                        can be summarized as follows.
                      </p>
                      
-                     <div class="itemizedlist">
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              
-                              <p><b>MBR</b></p>
-                              
-                              <p>MBR uses a 32-bit data structure to store block addresses. This means that each data
-                                 block is mapped with one of 2<sup>32</sup>possible integers. The maximum
-                                 addressable size of a volume is given by: 
-                              </p>
-                              
-                              <p>(2<sup>32</sup> - 1) &#xD7; Block size = Number of addressable
-                                 blocks
-                              </p>
-                              
-                              <p>The block size for MBR volumes is conventionally limited to 512 bytes.
-                                 Therefore:
-                              </p>
-                              
-                              <p> (2<sup>32</sup> - 1) &#xD7; 512 bytes = 2 TiB - 512 bytes
-                              </p>
-                              
-                              <p>Engineering workarounds to increase this 2-TiB limit for MBR volumes have not met
-                                 with widespread industry adoption. Consequently, Linux and Windows never detect an
-                                 MBR
-                                 volume as being larger than 2 TiB even if AWS shows its size to be larger. 
-                              </p>
-                              
-                           </li>
-                        </ul>
-                     </div>
                      
-                     <div class="itemizedlist">
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              
-                              <p><b>GPT</b></p>
-                              
-                              <p>GPT uses a 64-bit data structure to store block addresses. This means that each data
-                                 block is mapped with one of 2<sup>64</sup> possible integers. The
-                                 maximum addressable size of a volume is given by:
-                              </p>
-                              
-                              <p>(2<sup>64</sup> - 1) &#xD7; Block size = Number of addressable
-                                 blocks
-                              </p>
-                              
-                              <p> The block size for GPT volumes is commonly 4,096 bytes. Therefore:</p>
-                              
-                              <p> (2<sup>64</sup> - 1) &#xD7; 4,096 bytes = 8 ZiB - 4,096 bytes = 8
-                                 billion TiB - 4,096 bytes
-                              </p>
-                              
-                              <p>Real-world computer systems don&apos;t support anything close to this theoretical
-                                 maximum. Implemented file-system size is currently limited to 50 TiB for ext4 and
-                                 256
-                                 TiB for NTFS&#x2014;both of which exceed the 16-TiB limit imposed by AWS.
-                              </p>
-                              
-                           </li>
-                        </ul>
-                     </div>
+                     <h3 id="mbr-partitioning">MBR</h3>
+                     
+                     <p>MBR uses a 32-bit data structure to store block addresses. This means that each data
+                        block is mapped with one of 2<sup>32</sup> possible integers. The maximum
+                        addressable size of a volume is given by:
+                     </p>
+                     <pre class="screen">(2<sup>32</sup> - 1) &#xD7; Block size = Number of addressable blocks</pre>
+                     <p>The block size for MBR volumes is conventionally limited to 512 bytes.
+                        Therefore:
+                     </p>
+                     <pre class="screen">(2<sup>32</sup> - 1) &#xD7; 512 bytes = 2 TiB - 512 bytes</pre>
+                     <p>Engineering workarounds to increase this 2-TiB limit for MBR volumes have not met
+                        with
+                        widespread industry adoption. Consequently, Linux and Windows never detect an MBR
+                        volume
+                        as being larger than 2 TiB even if AWS shows its size to be larger. 
+                     </p>
+                     
+                     
+                     
+                     <h3 id="gpt-partitioning">GPT</h3>
+                     
+                     <p>GPT uses a 64-bit data structure to store block addresses. This means that each data
+                        block is mapped with one of 2<sup>64</sup> possible integers. The maximum
+                        addressable size of a volume is given by:
+                     </p>
+                     <pre class="screen">(2<sup>64</sup> - 1) &#xD7; Block size = Number of addressable blocks</pre>
+                     <p>The block size for GPT volumes is commonly 4,096 bytes. Therefore:</p>
+                     <pre class="screen">(2<sup>64</sup> - 1) &#xD7; 4,096 bytes = 8 ZiB - 4,096 bytes = 8 billion TiB - 4,096 bytes</pre>
+                     <p>Real-world computer systems don&apos;t support anything close to this theoretical maximum.
+                        Implemented file-system size is currently limited to 50 TiB for ext4 and 256 TiB for
+                        NTFS&#x2014;both of which exceed the 16-TiB limit imposed by AWS.
+                     </p>
+                     
                      
                      
                      <h2 id="block_size">Data Block Sizes</h2>
                      
-                     <p>Data storage on a modern hard drive is managed through logical block Addressing, an
-                        abstraction layer that allows the operating system to read and write data in logical
-                        blocks
-                        without knowing much about the underlying hardware. The OS relies on the storage device
-                        to
-                        map the blocks to its physical sectors. EBS advertises 512-byte sectors to the operating
-                        system, which reads and writes data to disk using data blocks that are a multiple
-                        of the
-                        sector size. 
+                     <p>Data storage on a modern hard drive is managed through <em>logical
+                           block addressing</em>, an abstraction layer that allows the operating system to read
+                        and write data in logical blocks without knowing much about the underlying hardware.
+                        The OS
+                        relies on the storage device to map the blocks to its physical sectors. EBS advertises
+                        512-byte sectors to the operating system, which reads and writes data to disk using
+                        data
+                        blocks that are a multiple of the sector size. 
                      </p>
                      
                      <p>The industry default size for logical data blocks is currently 4,096 bytes (4 KiB).
@@ -194,9 +281,8 @@
                      </p>
                      
                      <div class="table">
-                        <p class="title"><b>Block Size and Resulting Volume Capacity</b></p>
                         <div class="table-contents">
-                           <table id="w185aac23c29c17c27c19c15b7">
+                           <table id="w306aac29c29c17c15c21b7">
                               
                               <tbody><tr>
                                  
@@ -251,148 +337,23 @@
                         </div>
                      </div>
                      
-                     <p>The EBS-imposed limit on volume size is currently equal to the maximum size enabled
-                        by
-                        4-KiB data blocks.
+                     <p>The EBS-imposed limit on volume size (16 TiB) is currently equal to the maximum size
+                        enabled by 4-KiB data blocks.
                      </p>
                      
-                     
-                     <h2 id="summary">Summary</h2>
-                     
-                     <p>The following table summarizes the theoretical and implemented storage capacities
-                        for
-                        the most commonly used file systems on Amazon EBS. 
-                     </p>
-                     
-                     <div class="table">
-                        <p class="title"><b>MBR vs. GPT volume sizes for popular file systems, assuming 4,096-byte block
-                              size</b></p>
-                        <div class="table-contents">
-                           <table id="w185aac23c29c17c27c19c17b5">
-                              
-                              <tbody><tr>
-                                 
-                                 <th>Partitioning Scheme</th>
-                                 
-                                 <th>Max. addressable blocks </th>
-                                 
-                                 <th>Theoretical max. size (blocks &#xD7; block size)</th>
-                                 
-                                 <th>Ext4 implemented max. size*</th>
-                                 
-                                 <th>XFS implemented max. size**</th>
-                                 
-                                 <th>NTFS implemented max. size</th>
-                                 
-                                 <th>Max. supported by EBS</th>
-                                 
-                              </tr>
-                              
-                              
-                              <tr>
-                                 
-                                 <td><b>MBR</b></td>
-                                 
-                                 <td>2<sup>32</sup></td>
-                                 
-                                 <td>2 TiB</td>
-                                 
-                                 <td>2 TiB</td>
-                                 
-                                 <td>2 TiB</td>
-                                 
-                                 <td>2 TiB</td>
-                                 
-                                 <td>2 TiB</td>
-                                 
-                              </tr>
-                              
-                              <tr>
-                                 
-                                 <td><b>GPT</b></td>
-                                 
-                                 <td>2<sup>64</sup></td>
-                                 
-                                 <td>
-                                    <p>8 ZiB = 8 &#xD7;</p>1024<sup>3</sup> TiB
-                                 </td>
-                                 
-                                 <td>
-                                    <p>1 EiB =</p>1024<sup>2</sup> TiB 
-                                    <p>(50 TiB
-                                       certified on RHEL7)
-                                    </p>
-                                 </td>
-                                 
-                                 <td>
-                                    
-                                    <p>500 TiB</p>
-                                    
-                                    <p>(certified on RHEL7)</p>
-                                    
-                                 </td>
-                                 
-                                 <td>256 TiB</td>
-                                 
-                                 <td>16 TiB</td>
-                                 
-                              </tr>
-                              
-                           </tbody></table>
-                        </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
-                     
-                     <p>* <a href="https://ext4.wiki.kernel.org/index.php/Ext4_Howto" target="_blank">https://ext4.wiki.kernel.org/index.php/Ext4_Howto</a> and <a href="https://access.redhat.com/solutions/1532" target="_blank">https://access.redhat.com/solutions/1532</a></p>
-                     
-                     <p>** <a href="https://access.redhat.com/solutions/1532" target="_blank">https://access.redhat.com/solutions/1532</a></p>
-                     
-                     
-                     <h2 id="linux-volumes">Recommendations for Linux Volumes</h2>
-                     
-                     <p>Linux AMIs require a GUID partition table (GPT) and GRUB 2 for boot volumes that are
-                        2
-                        TiB (2,048 GiB) or larger. Many Linux AMIs today still use the MBR partitioning scheme,
-                        which only supports boot-volume sizes up to 2 TiB. If your instance does not boot
-                        with a
-                        boot volume that is 2 TiB or larger, the AMI you are using may be limited to a 2 TiB
-                        GiB
-                        boot volume size. Non-boot volumes do not have this limitation on Linux instances.
-                        For recommendations for Windows volumes, see <a href="./AWSEC2/latest/WindowsGuide/volume_constraints.html" target="_blank">Recommendations for Windows Volumes</a> in the <em>Amazon EC2 User Guide for Windows Instances</em>.
-                     </p>
-                     
-                     <p>Before attempting to resize a boot volume beyond 2 TiB, you can determine whether
-                        the
-                        volume is using MBR or GPT partitioning by running the following command on your
-                        instance:
-                     </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo gdisk -l /dev/xvda</code></strong></code></pre>
-                     <p>An Amazon Linux instance with GPT partitioning returns the following information:</p>
-                     <pre class="screen">GPT fdisk (gdisk) version 0.8.10
-
-Partition table scan:
-  MBR: protective
-  BSD: not present
-  APM: not present
-  GPT: present
-
-Found valid GPT with protective MBR; using GPT.</pre>
-                     <p>A SUSE instance with MBR partitioning returns the following information:</p>
-                     <pre class="screen">GPT fdisk (gdisk) version 0.8.8
-
-Partition table scan:
-  MBR: MBR only
-  BSD: not present
-  APM: not present
-  GPT: not present</pre>
-                     </div>
+                  </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -401,8 +362,10 @@ Partition table scan:
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="ebs-modify-volume.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="console-modify.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="EBSVolumeTypes.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="ebs-creating-volume.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -411,16 +374,18 @@ Partition table scan:
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="AWS Service Limitations"><a class="pagetoc" href="#aws_limits">AWS Service Limitations</a></li>
+                        <li class="pagetoc" name="Service Limitations"><a class="pagetoc" href="#aws_limits">Service Limitations</a></li>
                         <li class="pagetoc" name="Partitioning Schemes"><a class="pagetoc" href="#partitioning">Partitioning Schemes</a></li>
                         <li class="pagetoc" name="Data Block Sizes"><a class="pagetoc" href="#block_size">Data Block Sizes</a></li>
-                        <li class="pagetoc" name="Summary"><a class="pagetoc" href="#summary">Summary</a></li>
-                        <li class="pagetoc" name="Recommendations for Linux Volumes"><a class="pagetoc" href="#linux-volumes">Recommendations for Linux Volumes</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

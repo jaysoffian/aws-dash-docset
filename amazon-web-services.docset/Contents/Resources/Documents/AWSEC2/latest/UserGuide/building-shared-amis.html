@@ -12,6 +12,8 @@
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/building-shared-amis.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="AMIs.html">Amazon Machine Images (AMI)</a> &#xBB; <a href="sharing-amis.html">Shared AMIs</a> &#xBB; <span class="breadcrumb">Guidelines for Shared Linux AMIs</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="AMIs.html">Amazon Machine Images (AMI)</a> &#xBB; <a href="sharing-amis.html">Shared AMIs</a> &#xBB; <span class="breadcrumb">Guidelines for Shared Linux AMIs</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="building-shared-amis">Guidelines for Shared Linux AMIs</h1>
                      <p>Use the following guidelines to reduce the attack surface and improve the reliability
@@ -53,7 +58,7 @@
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Topics</strong></p>
                         <ul>
-                           <li><a href="#public-amis-update-ami-tools">Update the AMI Tools at Boot Time</a></li>
+                           <li><a href="#public-amis-update-ami-tools">Update the AMI Tools Before Using Them</a></li>
                            <li><a href="#public-amis-disable-password-logins-for-root">Disable Password-Based Remote
                                  				Logins for Root</a></li>
                            <li><a href="#restrict-root-access">Disable Local Root Access</a></li>
@@ -96,33 +101,25 @@
                            </li>
                         </ul>
                      </div>
-                     <h2 id="public-amis-update-ami-tools">Update the AMI Tools at Boot Time</h2>
+                     <h2 id="public-amis-update-ami-tools">Update the AMI Tools Before Using Them</h2>
                      			
                      			
-                     <p>For AMIs backed by instance store, we recommend that your AMIs download and
-                        				upgrade the Amazon EC2 AMI creation tools during startup. This ensures that new
-                        AMIs
-                        				based on your shared AMIs have the latest AMI tools. 
+                     <p>For AMIs backed by instance store, we recommend that your AMIs download and upgrade
+                        the
+                        				Amazon EC2 AMI creation tools before you use them. This ensures that new AMIs
+                        based on
+                        				your shared AMIs have the latest AMI tools. 
                      </p>
                      			
-                     <p>For <a href="https://aws.amazon.com/amazon-linux-ami" target="_blank">Amazon Linux</a>, add the
-                        				following to <code>/etc/rc.local</code>:
+                     <p>For <a href="https://aws.amazon.com/amazon-linux-2" target="_blank">Amazon Linux 2</a>, install the
+                        					<code class="code">aws-amitools-ec2</code> package and add the AMI tools to your PATH with
+                        				the following command. For the <a href="https://aws.amazon.com/amazon-linux-ami" target="_blank">Amazon Linux AMI</a>, <code class="code">aws-amitools-ec2</code> package is already installed
+                        				by default.
                      </p>
-                     			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight "># Update the Amazon EC2 AMI tools
-echo &quot; + Updating EC2 AMI tools&quot;
-yum update -y aws-amitools-ec2
-echo &quot; + Updated EC2 AMI tools&quot;</code></pre>
-                     			<p>Use this method to automatically update other software on your image. </p>
-                     			
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p>When deciding which software to automatically update, consider the amount of
-                           					WAN traffic that the update will generate (your users will be charged for it)
-                           					and the risk of the update breaking other software on the AMI. 
-                        </p>
-                     </div>
-                     			
-                     <p>For other distributions, make sure you have the latest AMI tools.</p>
+                     			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo yum install -y aws-amitools-ec2 &amp;&amp; export PATH=$PATH:/opt/aws/bin &gt; /etc/profile.d/aws-amitools-ec2.sh &amp;&amp; . /etc/profile.d/aws-amitools-ec2.sh</code></strong></code></pre>
+                     			<p>Upgrade the AMI tools with the following command:</p>
+                     			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo yum upgrade -y aws-amitools-ec2</code></strong></code></pre>
+                     			<p>For other distributions, make sure you have the latest AMI tools.</p>
                      		
                      <h2 id="public-amis-disable-password-logins-for-root">Disable Password-Based Remote
                         				Logins for Root
@@ -453,15 +450,19 @@ fi</code></pre>
                         </ul>
                      </div>
                      		
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -471,7 +472,9 @@ fi</code></pre>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="using-bookmarks.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="paid-amis.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -480,7 +483,7 @@ fi</code></pre>
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Update the AMI Tools at Boot Time"><a class="pagetoc" href="#public-amis-update-ami-tools">Update the AMI Tools at Boot Time</a></li>
+                        <li class="pagetoc" name="Update the AMI Tools Before Using Them"><a class="pagetoc" href="#public-amis-update-ami-tools">Update the AMI Tools Before Using Them</a></li>
                         <li class="pagetoc" name="Disable Password-Based Remote
 				Logins for Root"><a class="pagetoc" href="#public-amis-disable-password-logins-for-root">Disable Password-Based Remote
                               				Logins for Root</a></li>
@@ -497,6 +500,10 @@ fi</code></pre>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

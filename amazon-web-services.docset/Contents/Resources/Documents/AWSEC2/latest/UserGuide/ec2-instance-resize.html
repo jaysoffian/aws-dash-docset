@@ -1,17 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Resizing Your Instance - Amazon Elastic Compute Cloud</title>
+      <title>Changing the Instance Type - Amazon Elastic Compute Cloud</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="instance-types.html" title="Instance Types">
-      <link rel="prev" href="concepts_micro_instances.html" title="T1 Micro Instances">
+      <link rel="prev" href="fpga-getting-started.html" title="Getting Started with FPGA Development">
       <link rel="next" href="instance-purchasing-options.html" title="Instance Purchasing Options">
-      <meta name="description" content="Resize your instance to match its workload.">
+      <meta name="description" content="Resize your instance to match its workload or to use features that are available on other instance types.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-instance-resize.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,18 +35,27 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="instance-types.html">Instance Types</a> &#xBB; <span class="breadcrumb">Resizing Your Instance</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="instance-types.html">Instance Types</a> &#xBB; <span class="breadcrumb">Changing the Instance Type</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="ec2-instance-resize">Resizing Your Instance</h1>
+                     <h1 class="topictitle" id="ec2-instance-resize">Changing the Instance Type</h1>
                      <p>As your needs change, you might find that your instance is over-utilized (the instance
                         type
                         is too small) or under-utilized (the instance type is too large). If this is the case,
                         you can
                         change the size of your instance. For example, if your <code class="code">t2.micro</code> instance is too
-                        small for its workload, you can change it to an <code class="code">m3.medium</code> instance.
+                        small for its workload, you can change it to another instance type that is appropriate
+                        for the
+                        workload.
+                     </p>
+                     <p>You might also want to migrate from a previous generation instance type to a current
+                        generation instance type to take advantage of some features; for example, support
+                        for IPv6.
                      </p>
                      <p>If the root device for your instance is an EBS volume, you can change the size of
                         the
@@ -66,15 +77,15 @@
                      <div class="aws-note">
                         <p class="aws-note">Important</p>
                         <p>When you resize an instance, the resized instance usually has the same number of instance
-                           store volumes that you specified when you launched the original instance. If you want
-                           to add
-                           instance store volumes, you must migrate your application to a  new instance with
-                           the instance
-                           type and instance store volumes that you need. An exception to this rule is when you
-                           resize to
-                           a storage-optimized instance type that by default contains a higher number of volumes.
-                           For
-                           more information about instance store volumes, see <a href="InstanceStorage.html">Amazon EC2 Instance Store</a>.
+                           store volumes that you specified when you launched the original instance. With instance
+                           types 
+                           that support NVMe instance store volumes (which are available by default), the resized
+                           instance
+                           might have additional instance store volumes, depending on the AMI. Otherwise, you
+                           can migrate 
+                           your application to an instance with a new instance type manually, specifying the
+                           number of 
+                           instance store volumes that you need when you launch the new instance.
                         </p>
                      </div>
                      <div class="highlights" id="inline-topiclist">
@@ -95,7 +106,9 @@
                         want are compatible in the following ways:
                      </p>
                      
+                     
                      <div class="itemizedlist">
+                        
                         
                         
                         
@@ -116,63 +129,112 @@
                            </li>
                            <li class="listitem">
                               
-                              <p><b>Network</b>: Some instance types are not supported in
-                                 EC2-Classic and must be launched in a VPC. Therefore, you can&apos;t resize an
-                                 instance in EC2-Classic to a instance type that is available only in a VPC
-                                 unless you have a nondefault VPC. For more information, see <a href="using-vpc.html#vpc-only-instance-types">Instance Types Available Only in a VPC</a>.
-                                 To check if your instance is in a VPC, check the <b>VPC ID</b>
-                                 value on the details pane of the <b>Instances</b> screen in the
-                                 Amazon EC2 console.
+                              <p><b>Architecture</b>: AMIs are specific to the architecture of
+                                 the processor, so you must select an instance type with the same processor architecture
+                                 as the current instance type. For example:
                               </p>
+                              
+                              <div class="itemizedlist">
+                                 
+                                 
+                                 
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       
+                                       <p>A1 instances are the only instances that support processors based on the Arm architecture.
+                                          If you are resizing an instance type with a processor based on the Arm architecture,
+                                          
+                                          you are limited to the instance types that support a processor based on the Arm
+                                          architecture.
+                                       </p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p>The following instance types are the only instance types that support 32-bit AMIs:
+                                          
+                                          <code class="code">t2.nano</code>, <code class="code">t2.micro</code>, <code class="code">t2.small</code>, <code class="code">t2.medium</code>, 
+                                          <code class="code">c3.large</code>, <code class="code">t1.micro</code>, <code class="code">m1.small</code>, <code class="code">m1.medium</code>, 
+                                          and <code class="code">c1.medium</code>. If you are resizing a 32-bit instance, you are limited to these 
+                                          instance types.
+                                       </p>
+                                       
+                                    </li>
+                                 </ul>
+                              </div>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><b>Platform</b>: All Amazon EC2 instance types support 64-bit
-                                 AMIs, but only the following instance types support 32-bit AMIs:
-                                 <code class="code">t2.nano</code>, <code class="code">t2.micro</code>, <code class="code">t2.small</code>,
-                                 <code class="code">t2.medium</code>, <code class="code">c3.large</code>, <code class="code">t1.micro</code>,
-                                 <code class="code">m1.small</code>, <code class="code">m1.medium</code>, and <code class="code">c1.medium</code>.
-                                 If you are resizing a 32-bit instance, you are limited to these instance types.
-                                 To check the platform of your instance, go to the <b>Instances</b>
-                                 screen in the Amazon EC2 console and choose <b>Show/Hide Columns</b>,
-                                 <b>Architecture</b>.
+                              <p><b>Network</b>: Newer instance types must be launched in a
+                                 VPC. Therefore, you can&apos;t resize an instance in the EC2-Classic platform to a instance
+                                 type that is available only in a VPC unless you have a nondefault VPC. To check whether
+                                 your instance is in a VPC, check the <b>VPC ID</b> value on the details pane
+                                 of the <b>Instances</b> screen in the Amazon EC2 console. For more information, 
+                                 see <a href="vpc-migrate.html">Migrating from a Linux Instance in EC2-Classic to a Linux Instance in a VPC</a>.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
                               <p><b>Enhanced networking</b>: Instance types that
-                                 support <a href="enhanced-networking.html">enhanced networking</a> require
-                                 the necessary drivers installed. For example, the C5 and M5 instance types
-                                 require EBS-backed AMIs with the Elastic Network Adapter (ENA) drivers
-                                 installed. If you are resizing an existing instance to an instance that supports
-                                 enhanced networking, then you must first install the <a href="./AWSEC2/latest/UserGuide/enhanced-networking-ena.html" target="_blank">ENA</a>
-                                 or <a href="./AWSEC2/latest/UserGuide/sriov-networking.html" target="_blank">ixgbevf</a> drivers on your
-                                 instance, as appropriate.
+                                 support <a href="enhanced-networking.html">enhanced networking</a> require the
+                                 necessary drivers installed. For example, the <span>A1, </span>C5, C5d, C5n, I3en, M5, M5a, M5ad, M5d, <code class="code">p3dn.24xlarge</code>, R5, R5a, R5ad, R5d, T3, T3a, and z1d instance types require
+                                 EBS-backed AMIs with the Elastic Network Adapter (ENA) drivers installed. To resize
+                                 an existing instance to an instance type that supports enhanced networking, you must
+                                 
+                                 first install the <a href="enhanced-networking-ena.html">ENA drivers</a> or 
+                                 <a href="sriov-networking.html">ixgbevf drivers</a> on your instance, as appropriate.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><b>NVMe</b>: Some instance types, such as C5 and M5,
-                                 expose EBS volumes as NVMe block devices. If you are resizing an instance to one
-                                 of these instance types, you must first install the <a href="./AWSEC2/latest/UserGuide/nvme-ebs-volumes.html" target="_blank">NVMe</a> drivers on your
-                                 instance. For more information about supported AMIs, see the Release Notes in
-                                 <a href="./AWSEC2/latest/UserGuide/compute-optimized-instances.html" target="_blank">Compute Optimized Instances</a> and <a href="./AWSEC2/latest/UserGuide/general-purpose-instances.html" target="_blank">General Purpose Instances</a>.
+                              <p><b>NVMe</b>: EBS volumes are exposed as NVMe block devices on
+                                 <a href="instance-types.html#ec2-nitro-instances">Nitro-based instances</a>. If you resize an instance 
+                                 from an instance type that does not support NVMe to an instance type that supports
+                                 NVMe, 
+                                 you must first install the <a href="nvme-ebs-volumes.html">NVMe drivers</a> on your 
+                                 instance. Also, the device names for devices that you specify in the block device
+                                 mapping
+                                 are renamed using NVMe device names (<code>/dev/nvme[0-26]n1</code>).<span> Therefore, to mount 
+                                    file systems at boot time using <code>/etc/fstab</code>, you must use UUID/Label 
+                                    instead of device names.</span></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>AMI</b>: For information about the AMIs required by instance types
+                                 that support enhanced networking and NVMe, see the Release Notes in the following
+                                 documentation:
                               </p>
+                              
+                              <div class="itemizedlist">
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       <p><a href="general-purpose-instances.html">General Purpose Instances</a></p>
+                                    </li>
+                                    <li class="listitem">
+                                       <p><a href="compute-optimized-instances.html">Compute Optimized Instances</a></p>
+                                    </li>
+                                    <li class="listitem">
+                                       <p><a href="memory-optimized-instances.html">Memory Optimized Instances</a></p>
+                                    </li>
+                                    <li class="listitem">
+                                       <p><a href="storage-optimized-instances.html">Storage Optimized Instances</a></p>
+                                    </li>
+                                 </ul>
+                              </div>
                               
                            </li>
                         </ul>
                      </div>
                      
-                     
-                     <p>For example, T2 instances are not supported in EC2-Classic and they are HVM only.
-                        On
-                        Linux, T1 instances do not support HVM and must be launched from PV AMIs. Therefore,
-                        you can&apos;t
-                        resize a T1 Linux instance to a T2 Linux instance.
-                     </p>
                      
                      
                      <h2 id="resize-ebs-backed-instance">Resizing an Amazon EBS&#x2013;backed Instance</h2>
@@ -199,19 +261,10 @@
                            </li>
                            <li class="listitem">
                               
-                              <p>If your instance is running in a VPC and has a public IPv4 address, we release the
-                                 address and give it a new public IPv4 address. The instance retains its private IPv4
-                                 addresses, any Elastic IP addresses, and any IPv6 addresses.
-                              </p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p>If your instance is running in EC2-Classic, we give it new public and private IP
-                                 addresses, and disassociate any Elastic IP address that&apos;s associated with the instance.
-                                 Therefore, to ensure that your users can continue to use the applications that you&apos;re
-                                 hosting on your instance uninterrupted, you must re-associate any Elastic IP address
-                                 after you restart your instance.
+                              <p>If your instance has a public IPv4 address, we release the address and give it a new
+                                 public IPv4 address. The instance retains its private IPv4 addresses, any Elastic
+                                 IP
+                                 addresses, and any IPv6 addresses.
                               </p>
                               
                            </li>
@@ -221,8 +274,19 @@
                                  marks the stopped
                                  instance as unhealthy, and may terminate it and launch a replacement instance.
                                  To prevent this, you can suspend the scaling processes for the group while
-                                 you&apos;re resizing your instance. For more information, see <a href="./autoscaling/latest/userguide/as-suspend-resume-processes.html" target="_blank">Suspending and Resuming
+                                 you&apos;re resizing your instance. For more information, see <a href="./autoscaling/latest/userguide/as-suspend-resume-processes.html">Suspending and Resuming
                                     Scaling Processes</a> in the <em>Amazon EC2 Auto Scaling User Guide</em>.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>If your instance is in a <a href="placement-groups.html#placement-groups-cluster">cluster placement
+                                    group</a> and, after changing the instance type, the instance start fails, try the
+                                 following: stop all the instances in the cluster placement group, change the instance
+                                 type
+                                 for the affected instance, and then restart all the instances in the cluster placement
+                                 group. 
                               </p>
                               
                            </li>
@@ -238,7 +302,7 @@
                         </ul>
                      </div>
                      
-                     <p>For more information, see <a href="Stop_Start.html">Stop and Start Your Instance</a>. 
+                     <p>For more information, see <a href="Stop_Start.html">Stop and Start Your Instance</a>.
                      </p>
                      
                      
@@ -250,28 +314,30 @@
                      <ol>
                         <li>
                            
+                           <p>(Optional) If the new instance type requires drivers that are not installed on the
+                              existing
+                              instance, you must connect to your instance and install the drivers first. For more
+                              information, 
+                              see <a href="ec2-instance-resize.html#resize-limitations">Compatibility for Resizing Instances</a>.
+                           </p>
+                           
+                           
+                        </li>
+                        <li>
+                           
                            <p>Open the Amazon EC2 console.</p>
                            
                         </li>
                         <li>
                            
-                           <p>In the navigation pane, choose <b>Instances</b>, and select the
-                              instance.
+                           <p>In the navigation pane, choose <b>Instances</b>.
                            </p>
                            
                         </li>
                         <li>
                            
-                           <p>[EC2-Classic] If the instance has an associated Elastic IP address, write down the
-                              Elastic IP address 
-                              and the instance ID shown in the details pane.
-                           </p>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>Choose <b>Actions</b>, select <b>Instance State</b>, and
-                              then choose <b>Stop</b>.
+                           <p>Select the instance and choose <b>Actions</b>, <b>Instance
+                                 State</b>, <b>Stop</b>.
                            </p>
                            
                         </li>
@@ -281,21 +347,12 @@
                               few minutes for the instance to stop.
                            </p>
                            
-                           <p>[EC2-Classic] When the instance state becomes <code class="code">stopped</code>, the
-                              <b>Elastic IP</b>, <b>Public DNS (IPv4)</b>,
-                              <b>Private DNS</b>, and <b>Private IPs</b> fields in the
-                              details pane are blank to indicate that the old values are no longer associated with
-                              the
-                              instance.
-                           </p>
-                           
                         </li>
                         <li>
                            
-                           <p>With the instance still selected, choose <b>Actions</b>, select
-                              <b>Instance Settings</b>, and then choose <b>Change Instance
-                                 Type</b>. Note that this action is disabled if the instance state is not
-                              <code class="code">stopped</code>.
+                           <p>With the instance still selected, choose <b>Actions</b>,
+                              <b>Instance Settings</b>, <b>Change Instance Type</b>. This
+                              action is disabled if the instance state is not <code class="code">stopped</code>.
                            </p>
                            
                         </li>
@@ -308,19 +365,19 @@
                               <li>
                                  
                                  <p>From <b>Instance Type</b>, select the instance type that you want.
-                                    If the instance type that you want does not appear in the list, then it is not compatible
-                                    with the configuration
-                                    of your instance (for example, because of virtualization type).
+                                    If the instance type that you want does not appear in the list, then it is not
+                                    compatible with the configuration of your instance (for example, because of
+                                    virtualization type). For more information, see <a href="ec2-instance-resize.html#resize-limitations">Compatibility for Resizing Instances</a>.
                                  </p>
                                  
                               </li>
                               <li>
                                  
-                                 <p>(Optional) If the instance type that you selected supports EBS&#x2013;optimization, select
-                                    <b>EBS-optimized</b>
-                                    to enable EBS&#x2013;optimization or deselect <b>EBS-optimized</b> to disable EBS&#x2013;optimization.
-                                    Note that if the instance type that you selected is EBS&#x2013;optimized by default, <b>EBS-optimized</b> is selected 
-                                    and you can&apos;t deselect it.
+                                 <p>(Optional) If the instance type that you selected supports EBS&#x2013;optimization,
+                                    select <b>EBS-optimized</b> to enable EBS&#x2013;optimization or deselect
+                                    <b>EBS-optimized</b> to disable EBS&#x2013;optimization. If the
+                                    instance type that you selected is EBS&#x2013;optimized by default,
+                                    <b>EBS-optimized</b> is selected and you can&apos;t deselect it.
                                  </p>
                                  
                               </li>
@@ -335,9 +392,9 @@
                         </li>
                         <li>
                            
-                           <p>To restart the stopped instance, select the instance, choose
-                              <b>Actions</b>, select <b>Instance State</b>, and then
-                              choose <b>Start</b>.
+                           <p>To restart the stopped instance, select the instance and choose
+                              <b>Actions</b>, <b>Instance State</b>,
+                              <b>Start</b>.
                            </p>
                            
                         </li>
@@ -350,36 +407,13 @@
                         </li>
                         <li>
                            
-                           <p>[EC2-Classic] When the instance state is <code class="code">running</code>, the <b>Public
-                                 DNS (IPv4)</b>, <b>Private DNS</b>, and <b>Private
-                                 IPs</b> fields in the details pane contain the new values that we assigned to the
-                              instance. If your instance had an associated Elastic IP address, you must reassociate
-                              it
-                              as follows:
-                           </p>
-                           
-                           <ol>
-                              <li>
-                                 <p>In the navigation pane, choose <b>Elastic IPs</b>.
-                                 </p>
-                              </li>
-                              <li>
-                                 <p>Select the Elastic IP address that you wrote down before you stopped the instance.</p>
-                              </li>
-                              <li>
-                                 <p>Choose <b>Actions</b> and then choose <b>Associate
-                                       address</b>.
-                                 </p>
-                              </li>
-                              <li>
-                                 <p>From <b>Instance</b>, select the instance ID that you wrote down before you
-                                    stopped the instance, and then choose <b>Associate</b>.
-                                 </p>
-                              </li>
-                           </ol>
+                           <p>(Troubleshooting) If your instance won&apos;t boot, it is possible that one of the
+                              requirements for the new instance type was not met. For more information, see <a href="https://aws.amazon.com/premiumsupport/knowledge-center/boot-error-linux-m5-c5/" target="_blank">Why is my Linux instance not
+                                 booting after I changed its type?</a></p>
                            
                         </li>
                      </ol>
+                     
                      
                      
                      <h2 id="resize-instance-store-backed-instance">Migrating an Instance Store-backed Instance</h2>
@@ -404,19 +438,11 @@
                      <ol>
                         <li>
                            
-                           <p>[EC2-Classic] If the instance you are migrating has an associated Elastic IP address,
-                              record the Elastic IP address now so that you can associate it with the new instance
-                              later.
-                           </p>
-                           
-                        </li>
-                        <li>
-                           
                            <p>Back up any data on your instance store volumes that you need to keep to persistent
                               storage. 
                               To migrate data on your EBS volumes that you need to keep, take a snapshot of the
                               volumes (see 
-                              <a href="ebs-creating-snapshot.html">Creating an Amazon EBS Snapshot</a>) or detach the volume  
+                              <a href="ebs-creating-snapshot.html">Creating Amazon EBS Snapshots</a>) or detach the volume  
                               from the instance so that you can attach it to the new instance later (see 
                               <a href="ebs-detaching-volume.html">Detaching an Amazon EBS Volume from an Instance</a>).
                            </p>
@@ -432,17 +458,17 @@
                         </li>
                         <li>
                            
-                           <p>Open the Amazon EC2 console and in the navigation pane, select <b>AMIs</b>.
-                              From the filter lists, select <b>Owned by me</b>, and select the image that you
-                              created in the previous step. Notice that <b>AMI Name</b> is the name that
-                              you specified when you registered the image and <b>Source</b> is your Amazon S3
-                              bucket.
+                           <p>Open the Amazon EC2 console and in the navigation pane, choose <b>AMIs</b>.
+                              From the filter lists, choose <b>Owned by me</b>, and choose the image that
+                              you created in the previous step. Notice that <b>AMI Name</b> is the name
+                              that you specified when you registered the image and <b>Source</b> is your
+                              Amazon S3 bucket.
                            </p>
                            
                            <div class="aws-note">
                               <p class="aws-note">Note</p>
                               <p>If you do not see the AMI that you created in the previous step, make sure that
-                                 you have selected the region in which you created your AMI.
+                                 you have selected the Region in which you created your AMI.
                               </p>
                            </div>
                            
@@ -457,35 +483,9 @@
                               You can also specify any EBS volumes that you detached from the original instance.
                            </p>
                            
-                           <p>Note that it can take a few minutes for the instance to enter the <code class="code">running</code> state.
+                           <p>It can take a few minutes for the instance to enter the <code class="code">running</code>
+                              state.
                            </p>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>[EC2-Classic] If the instance that you started with had an associated Elastic IP address,
-                              you must associate it with the new instance as follows:
-                           </p>
-                           
-                           <ol>
-                              <li>
-                                 <p>In the navigation pane, choose <b>Elastic IPs</b>.
-                                 </p>
-                              </li>
-                              <li>
-                                 <p>Select the Elastic IP address that you recorded at the beginning of this procedure.</p>
-                              </li>
-                              <li>
-                                 <p>Choose <b>Actions</b> and then choose <b>Associate
-                                       Address</b>.
-                                 </p>
-                              </li>
-                              <li>
-                                 <p>From <b>Instance</b>, select the new instance, and then choose
-                                    <b>Associate</b>.
-                                 </p>
-                              </li>
-                           </ol>
                            
                         </li>
                         <li>
@@ -493,8 +493,8 @@
                            <p>(Optional) You can terminate the instance that you started with, if it&apos;s no longer
                               needed. Select the instance and verify that you are about to terminate the original
                               instance, not the new instance (for example, check the name or launch time). Choose
-                              <b>Actions</b>, select <b>Instance State</b>, and then
-                              choose <b>Terminate</b>.
+                              <b>Actions</b>, <b>Instance State</b>,
+                              <b>Terminate</b>.
                            </p>
                            
                         </li>
@@ -527,7 +527,7 @@
                               storage. 
                               To migrate data on your EBS volumes that you need to keep, create a snapshot of the
                               volumes (see 
-                              <a href="ebs-creating-snapshot.html">Creating an Amazon EBS Snapshot</a>) or detach the volume  
+                              <a href="ebs-creating-snapshot.html">Creating Amazon EBS Snapshots</a>) or detach the volume  
                               from the instance so that you can attach it to the new instance later (see 
                               <a href="ebs-detaching-volume.html">Detaching an Amazon EBS Volume from an Instance</a>).
                            </p>
@@ -557,8 +557,7 @@
                                  </li>
                                  <li class="listitem">
                                     
-                                    <p>[EC2-VPC] If you are using an Elastic IP address, select the VPC that the original
-                                       instance
+                                    <p>If you are using an Elastic IP address, select the VPC that the original instance
                                        is currently running in.
                                     </p>
                                     
@@ -605,15 +604,14 @@
                                  </p>
                               </li>
                               <li>
-                                 <p>Select the Elastic IP address that is associated with the original instance, choose
-                                    <b>Actions</b>, and then choose <b>Disassociate
-                                       address</b>. When prompted for confirmation, choose <b>Disassociate
-                                       address</b>.
+                                 <p>Select the Elastic IP address that is associated with the original instance and choose
+                                    <b>Actions</b>, <b>Disassociate address</b>. When
+                                    prompted for confirmation, choose <b>Disassociate address</b>.
                                  </p>
                               </li>
                               <li>
-                                 <p>With the Elastic IP address still selected, choose <b>Actions</b>, and then
-                                    choose <b>Associate address</b>.
+                                 <p>With the Elastic IP address still selected, choose <b>Actions</b>,
+                                    <b>Associate address</b>.
                                  </p>
                               </li>
                               <li>
@@ -629,30 +627,27 @@
                            <p>(Optional) You can terminate the original instance if it&apos;s no longer needed. Select
                               the instance and verify that you are about to terminate the original instance, not
                               the new
-                              instance (for example, check the name or launch time). Choose
-                              <b>Actions</b>, select <b>Instance State</b>, and then choose
-                              <b>Terminate</b>.
+                              instance (for example, check the name or launch time). Choose <b>Actions</b>, 
+                              <b>Instance State</b>, <b>Terminate</b>.
                            </p>
                            
                         </li>
                      </ol>
                      
                      
-                     <p>For information about migrating an application from an instance in EC2-Classic to
-                        an instance in a VPC, see
-                        <a href="vpc-migrate.html">Migrating from a <span>Linux</span> Instance in EC2-Classic to a <span>Linux</span> Instance in a VPC</a>.
-                     </p>
-                     
-                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -661,8 +656,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="concepts_micro_instances.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="instance-purchasing-options.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="fpga-getting-started.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="instance-purchasing-options.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -680,6 +677,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

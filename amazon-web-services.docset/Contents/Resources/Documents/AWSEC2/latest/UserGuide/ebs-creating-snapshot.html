@@ -1,17 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Creating an Amazon EBS Snapshot - Amazon Elastic Compute Cloud</title>
+      <title>Creating Amazon EBS Snapshots - Amazon Elastic Compute Cloud</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="EBSSnapshots.html" title="Amazon EBS Snapshots">
       <link rel="prev" href="EBSSnapshots.html" title="Amazon EBS Snapshots">
       <link rel="next" href="ebs-deleting-snapshot.html" title="Deleting an Amazon EBS Snapshot">
-      <meta name="description" content="Create a snapshot of an Amazon EBS volume to use as a baseline for new volumes or for data backup.">
+      <meta name="description" content="Create snapshots of an Amazon EBS volume or create multi-volume snapshots to use as a baseline for new volumes or for data backup.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ebs-creating-snapshot.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,16 +35,19 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <a href="EBSSnapshots.html">Amazon EBS Snapshots</a> &#xBB; <span class="breadcrumb">Creating an Amazon EBS Snapshot</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <a href="EBSSnapshots.html">Amazon EBS Snapshots</a> &#xBB; <span class="breadcrumb">Creating Amazon EBS Snapshots</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="ebs-creating-snapshot">Creating an Amazon EBS Snapshot</h1>
+                     <h1 class="topictitle" id="ebs-creating-snapshot">Creating Amazon EBS Snapshots</h1>
                      <p>A point-in-time snapshot of an EBS volume, can be used as a baseline for new volumes
                         or
                         for data backup. If you make periodic snapshots of a volume, the snapshots are
-                        incremental&#x2014;only the blocks on the device that have changed after your last snapshot
+                        incremental-only the blocks on the device that have changed after your last snapshot
                         are saved
                         in the new snapshot. Even though snapshots are saved incrementally, the snapshot deletion
                         process is designed so that you need to retain only the most recent snapshot in order
@@ -63,7 +68,7 @@
                         <p>Although you can take a snapshot of a volume while a previous snapshot of that volume
                            is
                            in the <code class="code">pending</code> status, having multiple <code class="code">pending</code> snapshots of a
-                           volume may result in reduced volume performance until the snapshots complete.
+                           volume can result in reduced volume performance until the snapshots complete.
                         </p>
                         <p>There is a limit of five <code class="code">pending</code> snapshots for a single <code class="code">gp2</code>, <code class="code">io1</code>, or
                            Magnetic volume, and one <code class="code">pending</code> snapshot for a single <code class="code">st1</code> or <code class="code">sc1</code> volume.
@@ -79,7 +84,7 @@
                         your
                         encrypted volumes and any associated snapshots is protected both at rest and in motion.
                         For
-                        more information, see <a href="./AWSEC2/latest/UserGuide/EBSEncryption.html" target="_blank">Amazon EBS
+                        more information, see <a href="./AWSEC2/latest/UserGuide/EBSEncryption.html">Amazon EBS
                            Encryption</a>.
                      </p>
                      <p>By default, only you can create volumes from snapshots that you own. However, you
@@ -98,6 +103,13 @@
                         can also
                         be re-encrypted with a different key. For more information, see <a href="ebs-modifying-snapshot-permissions.html">Sharing an Amazon EBS Snapshot</a>.
                      </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>If you copy a snapshot and encrypt it to a new CMK, a complete
+                           (non-incremental) copy is always created, resulting in additional delay and
+                           storage costs.
+                        </p>
+                     </div>
                      <p>When a snapshot is created from a volume with an AWS Marketplace product code, the
                         product code is propagated to the snapshot.
                      </p>
@@ -116,13 +128,20 @@
                         use your
                         volume while the snapshot status is <code class="code">pending</code>.
                      </p>
+                     <p>Multi-volume snapshots, or point-in-time snapshots for all EBS volumes attached to
+                        a
+                        single EC2 instance, can be created using the AWS Console, AWS CLI, or AWS SDK. You
+                        can also
+                        create lifecycle policies to automate the creation and retention of multi-volume snapshots.
+                        For more information about creating EBS lifecycle policies, see <a href="snapshot-lifecycle.html">Automating the Amazon EBS Snapshot Lifecycle</a>.
+                     </p>
                      <p>To create a snapshot for an Amazon EBS volume that serves as a root device, you should
                         stop the
                         instance before taking the snapshot.
                      </p>
                      <p>To unmount the volume in Linux, use the following command, where
                         <em>device_name</em> is the device name (for example,
-                        <code>/dev/sdh</code>):
+                        <code>/dev/sdh</code>).
                      </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">umount -d <em>device_name</em></code></pre><p>To make snapshot management easier, you can tag your snapshots during creation or
                         add tags
                         afterward. For example, you can apply tags describing the original volume from which
@@ -153,7 +172,7 @@
                         <li>
                            
                            <p>On the <b>Create Snapshot</b> page, select the volume to create a
-                              snapshot for.
+                              snapshot for. 
                            </p>
                            
                         </li>
@@ -185,19 +204,147 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p><a href="./cli/latest/reference/ec2/create-snapshot.html" target="_blank">create-snapshot</a>
+                              <p><a href="./cli/latest/reference/ec2/create-snapshot.html">create-snapshot</a>
                                  (AWS CLI)
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><a href="./powershell/latest/reference/items/New-EC2Snapshot.html" target="_blank">New-EC2Snapshot</a>
+                              <p><a href="./powershell/latest/reference/items/New-EC2Snapshot.html">New-EC2Snapshot</a>
                                  (AWS Tools for Windows PowerShell)
-                              </p>
+                              </p> 
                               
                            </li>
                         </ul>
+                     </div>
+                     <p class="title"><b>To create multi-volume snapshots using the console</b></p>
+                     <ol>
+                        <li>
+                           <p>Open the Amazon EC2 console at
+                              <a href="https://console.aws.amazon.com/ec2/" target="_blank">https://console.aws.amazon.com/ec2/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Snapshots</b> under <b>Elastic Block Store</b>
+                              in the navigation pane.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create Snapshot</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>On the <b>Create Snapshot</b> page, select <b>Instance</b> as the 
+                              resource type.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Select the instance ID for which you want to create simultaneous backups for all of
+                              the attached EBS volumes. If you want to exclude the root volume, set the
+                              <b>Exclude root volume</b> flag. Multi-volume snapshots support up to 40
+                              EBS volumes per instance. 
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>(Optional) Set the <b>Copy tags from volume</b> flag to automatically
+                              copy tags from the source volume to the corresponding snapshots. This sets snapshot
+                              metadata&#x2014;such as access policies, attachment information, and cost allocation&#x2014;to match
+                              the
+                              source
+                              volume.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create Snapshot</b>.
+                           </p>
+                           
+                           <p>During snapshot creation, the snapshots are managed together. If one of the snapshots
+                              in the volume set fails, the other snapshots are moved to error status for the volume
+                              set.
+                              You can monitor the progress of your snapshots with 
+                              <a href="./AmazonCloudWatch/latest/events/WhatIsCloudWatchEvents.html">CloudWatch Events</a>. After the snapshot
+                              creation process completes, CloudWatch generates an event that contains the status
+                              and all of the
+                              relevant snapshots details for the affected instance. 
+                           </p>
+                           
+                           <p>After the snapshots are created, each snapshot is treated as an individual snapshot.
+                              You can perform all snapshot operations, such as restore, delete, and cross-region/account
+                              copy, just as you would with a single volume snapshot. You can also tag your multi-volume
+                              snapshots as you would a single volume snapshot. We recommend you tag your multiple
+                              volume
+                              snapshots to manage them collectively during restore, copy, or retention. 
+                           </p>
+                           
+                           <p>Multi-volume, crash-consistent snapshots are typically restored as a set. It is
+                              helpflul to identify the snapshots that are in a crash-consistent set by tagging your
+                              set
+                              with instance-id, name, or other relevant details. You can also set the <b>Copy
+                                 tags from volume</b> flag to automatically copy tags from the source volume to
+                              the corresponding snapshots. This helps you to set the snapshot metadata, such as
+                              access
+                              policies, attachment information, and cost allocation, to match the source volume.
+                              
+                           </p>
+                           
+                           <p>After it&apos;s created, a multi-volume snapshot behaves like a normal snapshot. You can
+                              perform all operations, such as restore, delete, and copy across Regions and accounts.
+                              You
+                              can also tag your snapshots. We recommend that you tag your multi-volume snapshots
+                              to
+                              collectively manage them during restore, copy, or retention.
+                           </p>
+                           
+                           <p>After creating your snapshots, they will appear in your EC2 console created at the
+                              exact point-in-time.
+                              The snapshots are collectively managed and, therefore, if any one snapshot for the
+                              volume set fails, all of the
+                              other snapshots will display an error status.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     <div class="itemizedlist">
+                        
+                        <p class="title"><b>To create multi-volume snapshots using the command line</b></p>
+                        
+                        <p>You can use one of the following commands. For more information about these command
+                           line
+                           interfaces, see <a href="concepts.html#access-ec2">Accessing Amazon EC2</a>.
+                        </p>
+                        
+                         
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><a href="./cli/latest/reference/ec2/create-snapshots.html">create-snapshots</a>
+                                 (AWS CLI)
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="./powershell/latest/reference/items/New-EC2SnapshotBatch.html">New-EC2SnapshotBatch</a> (AWS Tools for Windows PowerShell)
+                              </p> 
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
                   </div>
                   <noscript>
@@ -205,9 +352,10 @@
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -217,7 +365,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="EBSSnapshots.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="ebs-deleting-snapshot.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -225,6 +375,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

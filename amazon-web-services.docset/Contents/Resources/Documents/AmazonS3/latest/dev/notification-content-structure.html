@@ -6,12 +6,14 @@
       <link rel="up" href="NotificationHowTo.html" title=" Configuring Amazon S3 Event Notifications">
       <link rel="prev" href="notification-walkthrough-2.html" title="Example Walkthrough 2: Configure a Bucket for
             Notifications (Message Destination: AWS Lambda)">
-      <link rel="next" href="crr.html" title="Cross-Region Replication (CRR)">
+      <link rel="next" href="crr.html" title="Cross-Region Replication">
       <meta name="description" content="How to structure an event message for Amazon S3.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/notification-content-structure.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,17 +35,23 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="NotificationHowTo.html"> Configuring Amazon S3 Event Notifications</a> &#xBB; <span class="breadcrumb">Event Message Structure</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="NotificationHowTo.html"> Configuring Amazon S3 Event Notifications</a> &#xBB; <span class="breadcrumb">Event Message Structure</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="notification-content-structure">Event Message Structure</h1>
-                     <p>The notification message Amazon S3 sends to publish an event is a JSON message with
-                        the
-                        following structure. Note the following:
+                     <p>The notification message that Amazon S3 sends to publish an event is in the JSON format.
+                        The following example shows the structure of the JSON message. 
                      </p>
+                     <p>Note the following about the example:</p>
                      <div class="itemizedlist">
+                        
+                        
+                        
                         
                         
                         
@@ -51,20 +59,60 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p>The <code class="code">responseElements</code> key value is useful if you want to trace the
-                                 request by following up with Amazon S3 support. Both <code class="code">x-amz-request-id</code>
-                                 and <code class="code">x-amz-id-2</code> help Amazon S3 to trace the individual request. These
-                                 values are the same as those that Amazon S3 returned in the response to your original
-                                 PUT request, which initiated the event.
+                              <p>The <code class="code">eventVersion</code> key value contains a major and minor version in
+                                 the form <code class="code">&lt;major&gt;</code>.<code class="code">&lt;minor&gt;</code>.
                               </p>
+                              
+                              <p>The major version is incremented if Amazon S3 makes a change to the event structure
+                                 that is not backward compatible. This includes removing a JSON field that is
+                                 already present or changing how the contents of a field are represented (for
+                                 example, a date format).
+                              </p>
+                              
+                              <p>The minor version is incremented if Amazon S3 adds new fields to the event structure.
+                                 This might occur if new information is provided for some or all existing events,
+                                 or if new information is provided on only newly introduced event types.
+                                 Applications should ignore new fields to stay forward compatible with new minor
+                                 versions of the event structure.
+                              </p>
+                              
+                              <p>If new event types are introduced but the structure of the event is otherwise
+                                 unmodified, the event version does not change.
+                              </p>
+                              
+                              <p>To ensure that your applications can parse the event structure correctly, we
+                                 recommend that you do an equal-to comparison on the major version number. To
+                                 ensure that the fields expected by your application are present, we also
+                                 recommend doing a greater-than-or-equal-to comparison on the minor
+                                 version.
+                              </p>
+                              
+                              <p>&#xA0;</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The <code class="code">responseElements</code> key value is useful if you want to trace a
+                                 request by following up with AWS Support. Both <code class="code">x-amz-request-id</code> and
+                                 <code class="code">x-amz-id-2</code> help Amazon S3 trace an individual request. These values
+                                 are the same as those that Amazon S3 returns in the response to the request that
+                                 initiates the events, so they can be used to match the event to the
+                                 request.
+                              </p>
+                              
+                              <p>&#xA0;</p>
                               
                            </li>
                            <li class="listitem">
                               
                               <p>The <code class="code">s3</code> key provides information about the bucket and object
-                                 involved in the event. Note that the object keyname value is URL encoded. For
-                                 example &quot;red flower.jpg&quot; becomes &quot;red+flower.jpg&quot;. 
+                                 involved in the event. The object key name value is URL encoded. For example,
+                                 &quot;red flower.jpg&quot; becomes &quot;red+flower.jpg&quot; (Amazon S3 returns
+                                 &quot;<code class="code">application/x-www-form-urlencoded</code>&quot; as the content type in the
+                                 response).
                               </p>
+                              
+                              <p>&#xA0;</p>
                               
                            </li>
                            <li class="listitem">
@@ -84,8 +132,7 @@
                                  <code class="code">sequencer</code> values as you process each event notification. 
                               </p>
                               
-                              <p>Note that:</p>
-                              
+                              <p>Note the following:</p>
                               
                               <div class="itemizedlist">
                                  
@@ -94,15 +141,15 @@
                                  <ul class="itemizedlist" type="disc">
                                     <li class="listitem">
                                        
-                                       <p><code class="code">sequencer</code> cannot be used to determine order for
-                                          events on different object keys.
+                                       <p>You cannot use <code class="code">sequencer</code> to determine order for events on
+                                          different object keys.
                                        </p>
                                        
                                     </li>
                                     <li class="listitem">
                                        
                                        <p>The sequencers can be of different lengths. So to compare these
-                                          values, you first right pad the shorter value with zeros and then do
+                                          values, you first left pad the shorter value with zeros, and then do a
                                           lexicographical comparison.
                                        </p>
                                        
@@ -110,15 +157,83 @@
                                  </ul>
                               </div>
                               
+                              <p>&#xA0;</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The <code class="code">glacierEventData</code> key is only visible for
+                                 <code class="code">s3:ObjectRestore:Completed</code> events. 
+                              </p>
+                              
+                              <p>&#xA0;</p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p>The <code class="code">restoreEventData</code> key contains attributes related to your
+                                 restore request.
+                              </p>
                               
                            </li>
                         </ul>
-                     </div><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{  
+                     </div>
+                     <p>The following example shows version 2.1 of the event message JSON structure, which
+                        is
+                        the version currently being used by Amazon S3.
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{  
+   &quot;Records&quot;:[  
+      {  
+         &quot;eventVersion&quot;:&quot;2.1&quot;,
+         &quot;eventSource&quot;:&quot;aws:s3&quot;,
+         &quot;awsRegion&quot;:&quot;us-west-2&quot;,
+         &quot;eventTime&quot;:<em class="replaceable"><code>The time, in ISO-8601 format, for example, 1970-01-01T00:00:00.000Z, when Amazon S3 finished processing the request</code></em>,
+         &quot;eventName&quot;:&quot;<em class="replaceable"><code>event-type</code></em>&quot;,
+         &quot;userIdentity&quot;:{  
+            &quot;principalId&quot;:&quot;<em class="replaceable"><code>Amazon-customer-ID-of-the-user-who-caused-the-event</code></em>&quot;
+         },
+         &quot;requestParameters&quot;:{  
+            &quot;sourceIPAddress&quot;:&quot;<em class="replaceable"><code>ip-address-where-request-came-from</code></em>&quot;
+         },
+         &quot;responseElements&quot;:{  
+            &quot;x-amz-request-id&quot;:&quot;<em class="replaceable"><code>Amazon S3 generated request ID</code></em>&quot;,
+            &quot;x-amz-id-2&quot;:&quot;<em class="replaceable"><code>Amazon S3 host that processed the request</code></em>&quot;
+         },
+         &quot;s3&quot;:{  
+            &quot;s3SchemaVersion&quot;:&quot;1.0&quot;,
+            &quot;configurationId&quot;:&quot;<em class="replaceable"><code>ID found in the bucket notification configuration</code></em>&quot;,
+            &quot;bucket&quot;:{  
+               &quot;name&quot;:&quot;<em class="replaceable"><code>bucket-name</code></em>&quot;,
+               &quot;ownerIdentity&quot;:{  
+                  &quot;principalId&quot;:&quot;<em class="replaceable"><code>Amazon-customer-ID-of-the-bucket-owner</code></em>&quot;
+               },
+               &quot;arn&quot;:&quot;<em class="replaceable"><code>bucket-ARN</code></em>&quot;
+            },
+            &quot;object&quot;:{  
+               &quot;key&quot;:&quot;<em class="replaceable"><code>object-key</code></em>&quot;,
+               &quot;size&quot;:<em class="replaceable"><code>object-size</code></em>,
+               &quot;eTag&quot;:&quot;<em class="replaceable"><code>object eTag</code></em>&quot;,
+               &quot;versionId&quot;:&quot;<em class="replaceable"><code>object version if bucket is versioning-enabled, otherwise null</code></em>&quot;,
+               &quot;sequencer&quot;: &quot;<em class="replaceable"><code>a string representation of a hexadecimal value used to determine event sequence, 
+                   only used with PUTs and DELETEs</code></em>&quot;
+            }
+         },
+         &quot;glacierEventData&quot;: {
+            &quot;restoreEventData&quot;: {
+               &quot;lifecycleRestorationExpiryTime&quot;: &quot;<em class="replaceable"><code>The time, in ISO-8601 format, for example, 1970-01-01T00:00:00.000Z, of Restore Expiry</code></em>&quot;,
+               &quot;lifecycleRestoreStorageClass&quot;: &quot;<em class="replaceable"><code>Source storage class for restore</code></em>&quot;
+            }
+         }
+      }
+   ]
+}</code></pre><p>The following example shows version 2.0 of the event message structure, which is no
+                        longer used by Amazon S3.
+                     </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{  
    &quot;Records&quot;:[  
       {  
          &quot;eventVersion&quot;:&quot;2.0&quot;,
          &quot;eventSource&quot;:&quot;aws:s3&quot;,
-         &quot;awsRegion&quot;:&quot;us-east-1&quot;,
+         &quot;awsRegion&quot;:&quot;us-west-2&quot;,
          &quot;eventTime&quot;:<em class="replaceable"><code>The time, in ISO-8601 format, for example, 1970-01-01T00:00:00.000Z, when S3 finished processing the request</code></em>,
          &quot;eventName&quot;:&quot;<em class="replaceable"><code>event-type</code></em>&quot;,
          &quot;userIdentity&quot;:{  
@@ -147,12 +262,9 @@
                &quot;eTag&quot;:&quot;<em class="replaceable"><code>object eTag</code></em>&quot;,
                &quot;versionId&quot;:&quot;<em class="replaceable"><code>object version if bucket is versioning-enabled, otherwise null</code></em>&quot;,
                &quot;sequencer&quot;: &quot;<em class="replaceable"><code>a string representation of a hexadecimal value used to determine event sequence, 
-                   only used with PUTs and DELETEs</code></em>&quot;            
+                   only used with PUTs and DELETEs</code></em>&quot;
             }
          }
-      },
-      {
-          // Additional events
       }
    ]
 }  </code></pre><p>The following are example messages:</p>
@@ -184,9 +296,9 @@
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">{  
    &quot;Records&quot;:[  
       {  
-         &quot;eventVersion&quot;:&quot;2.0&quot;,
+         &quot;eventVersion&quot;:&quot;2.1&quot;,
          &quot;eventSource&quot;:&quot;aws:s3&quot;,
-         &quot;awsRegion&quot;:&quot;us-east-1&quot;,
+         &quot;awsRegion&quot;:&quot;us-west-2&quot;,
          &quot;eventTime&quot;:&quot;1970-01-01T00:00:00.000Z&quot;,
          &quot;eventName&quot;:&quot;ObjectCreated:Put&quot;,
          &quot;userIdentity&quot;:{  
@@ -224,15 +336,19 @@
                               </li>
                         </ul>
                      </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -242,7 +358,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="notification-walkthrough-2.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="crr.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -250,6 +368,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

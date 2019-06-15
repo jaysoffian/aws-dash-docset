@@ -1,19 +1,23 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Build an API Gateway API with
-         Custom Lambda Integration - Amazon API Gateway
+      <title>TUTORIAL: Build an API Gateway API with
+         Lambda Non-Proxy Integration - Amazon API Gateway
       </title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="getting-started-with-lambda-integration.html" title="Build an API Gateway API with Lambda Integration">
-      <link rel="prev" href="apigateway-cross-account-lambda-integrations.html" title="Build an API Gateway API with
-            Cross-Account Lambda Proxy Integration">
-      <link rel="next" href="getting-started-http-integrations.html" title="">
+      <link rel="up" href="getting-started-with-lambda-integration.html" title="Build an API Gateway API with Lambda
+            Integration">
+      <link rel="prev" href="apigateway-cross-account-lambda-integrations.html" title="TUTORIAL: Build an API Gateway API
+            with Cross-Account Lambda Proxy Integration">
+      <link rel="next" href="api-gateway-create-api-from-example.html" title="TUTORIAL: Create a REST API by Importing an
+            Example">
       <meta name="description" content="Learn how to create and test an API method to expose a Lambda function with the Lambda custom integration using the API Gateway console.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/getting-started-lambda-non-proxy-integration.html">
@@ -23,7 +27,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -35,29 +39,24 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="getting-started.html">Getting Started with Amazon API Gateway</a> &#xBB; <a href="getting-started-with-lambda-integration.html">Build an API Gateway API with Lambda Integration</a> &#xBB; <span class="breadcrumb">Build an API Gateway API with
-                                    Custom Lambda Integration</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="api-gateway-tutorials.html">Amazon API Gateway Tutorials</a> &#xBB; <a href="getting-started-with-lambda-integration.html">Build an API Gateway API with Lambda
+                                    Integration</a> &#xBB; <span class="breadcrumb">TUTORIAL: Build an API Gateway API with
+                                    Lambda Non-Proxy Integration</span></div>
                            </td>
                         </tr>
                      </tbody></table>
-                     <div></div>
-                     <h1 class="topictitle" id="getting-started-lambda-non-proxy-integration">Build an API Gateway API with
-                        Custom Lambda Integration
-                     </h1>
-                     <div class="aws-note">
-                        <p class="aws-note">Note</p>
-                        <p> The <em>Lambda custom integration</em>, formerly known as the
-                           <em>Lambda integration</em>, is a legacy technology. We recommend that
-                           you use the <em>Lambda proxy integration</em> for any new API. For more
-                           information, see <a href="api-gateway-create-api-as-simple-proxy-for-lambda.html">
-                              Build an API Gateway API with Lambda Proxy Integration 
-                              </a></p>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
                      </div>
+                     <div></div>
+                     <h1 class="topictitle" id="getting-started-lambda-non-proxy-integration">TUTORIAL: Build an API Gateway API with
+                        Lambda Non-Proxy Integration
+                     </h1>
                      <p>In this walkthrough, we use the API Gateway console to build an API that enables a
                         client to
-                        call Lambda functions through the Lambda custom integration. For more information
-                        about
-                        AWS Lambda and Lambda functions, see the <a href="./lambda/latest/dg/" target="_blank">AWS Lambda Developer Guide</a>. 
+                        call Lambda functions through the Lambda non-proxy integration (also known as custom
+                        integration). For more information about
+                        AWS Lambda and Lambda functions, see the <a href="./lambda/latest/dg/">AWS Lambda Developer Guide</a>. 
                      </p>
                      <p>To facilitate learning, we chose a simple Lambda function with minimal API setup to
                         walk
@@ -65,7 +64,8 @@
                         When
                         necessary, we describe some of the logic. For a more detailed example of the Lambda
                         custom
-                        integration, see <a href="integrating-api-with-aws-services-lambda.html">Create an API Gateway API for AWS Lambda Functions</a>. 
+                        integration, see <a href="integrating-api-with-aws-services-lambda.html">TUTORIAL: Create a
+                           Calc REST API with Two AWS Service Integrations and and One Lambda Non-Proxy Integration</a>. 
                      </p>
                      <p>Before creating the API, set up the Lambda backend by creating a Lambda function in
                         AWS Lambda, described next.
@@ -73,9 +73,9 @@
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Topics</strong></p>
                         <ul>
-                           <li><a href="#getting-started-new-lambda">Create a Lambda Function for the Lambda
-                                 Custom Integration</a></li>
-                           <li><a href="#getting-started-new-api">Create an API with the Lambda Custom
+                           <li><a href="#getting-started-new-lambda">Create a Lambda Function for Lambda
+                                 Non-Proxy Integration</a></li>
+                           <li><a href="#getting-started-new-api">Create an API with Lambda Non-Proxy
                                  Integration</a></li>
                            <li><a href="#getting-started-new-get">Test Invoking the API Method</a></li>
                            <li><a href="#getting-started-deploy-api">Deploy the API</a></li>
@@ -84,8 +84,8 @@
                         </ul>
                      </div>
                      
-                     <h2 id="getting-started-new-lambda">Create a Lambda Function for the Lambda
-                        Custom Integration
+                     <h2 id="getting-started-new-lambda">Create a Lambda Function for Lambda
+                        Non-Proxy Integration
                      </h2>
                      
                      <div class="aws-note">
@@ -95,8 +95,7 @@
                      
                      <p> In this step, you create a &quot;Hello, World!&quot;-like Lambda function for the Lambda custom
                         integration. Throughout this walkthrough, the function is called
-                        <code class="code">GetStartedLambdaIntegration</code>. It is similar to <a href="api-gateway-create-api-as-simple-proxy-for-lambda.html#api-gateway-proxy-integration-lambda-function-nodejs"><code class="code">GetStartedLambdaProxyIntegration</code></a>, which is the function we
-                        created for the Lambda proxy integration. 
+                        <code class="code">GetStartedLambdaIntegration</code>.
                      </p>
                      
                      <p> The Node.js implementation of this <code class="code">GetStartedLambdaIntegration</code> Lambda
@@ -148,7 +147,7 @@ exports.handler = function(event, context, callback) {
   &quot;day&quot;: &quot;...&quot;,
   &quot;name&quot; : &quot;...&quot;
 }</code></pre>
-                     <p>For more information, see the <a href="./lambda/latest/dg/welcome.html" target="_blank">AWS Lambda Developer Guide</a>. 
+                     <p>For more information, see the <a href="./lambda/latest/dg/welcome.html">AWS Lambda Developer Guide</a>. 
                      </p>
                      
                      <p>In addition, the function logs its execution to Amazon CloudWatch by calling
@@ -161,7 +160,7 @@ exports.handler = function(event, context, callback) {
                         create the required IAM roles and policies.
                      </p>
                      
-                     <p>If you set up the API without using the API Gateway console, such as when <a href="https://github.com/awslabs/api-gateway-secure-pet-store/blob/master/src/main/resources/swagger.yaml#L39" target="_blank">importing an API from Swagger</a>, you must explicitly create, if necessary,
+                     <p>If you set up the API without using the API Gateway console, such as when <a href="https://github.com/awslabs/api-gateway-secure-pet-store/blob/master/src/main/resources/swagger.yaml#L39" target="_blank">importing an API from an OpenAPI file</a>, you must explicitly create, if necessary,
                         and set up an invocation role and policy for API Gateway to invoke the Lambda functions.
                         For
                         more information on how to set up Lambda invocation and execution roles for an API
@@ -169,7 +168,7 @@ exports.handler = function(event, context, callback) {
                         see <a href="permissions.html">Control Access to an API with IAM Permissions</a>. 
                      </p>
                      
-                     <p> Compared to <a href="api-gateway-create-api-as-simple-proxy-for-lambda.html#api-gateway-proxy-integration-lambda-function-nodejs"><code class="code">GetStartedLambdaProxyIntegation</code></a>, the Lambda function for the
+                     <p> Compared to <code class="code">GetStartedLambdaProxyIntegation</code>, the Lambda function for the
                         Lambda proxy integration, the <code class="code">GetStartedLambdaIntegration</code> Lambda function for
                         the Lambda custom integration only takes input from the API Gateway API integration
                         request
@@ -228,177 +227,54 @@ exports.handler = function(event, context, callback) {
                         </li>
                         <li>
                            
-                           <p> From <b>Select blueprint</b>, choose <b>Author from
-                                 scratch</b>. 
+                           <p>Choose <b>Author from scratch</b>. 
                            </p>
                            
                         </li>
                         <li>
                            
-                           <p>In the <b>Configure triggers</b> pane, choose
-                              <b>Next</b>.
-                           </p>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>In the <b>Configure function</b> pane, do the following:
+                           <p>In the <b>Author from scratch</b> pane, do the following:
                            </p>
                            
                            <ol>
                               <li>
                                  
-                                 <p>Under <b>Basic information</b>: 
-                                 </p>
-                                 
-                                 <div class="itemizedlist">
-                                    
-                                    
-                                    
-                                    
-                                    <ul class="itemizedlist" type="disc">
-                                       <li class="listitem">
-                                          
-                                          <p>For <b>Name</b>, type
-                                             <strong class="userinput"><code>GetStartedLambdaIntegration</code></strong> as the
-                                             Lambda function name.
-                                          </p>
-                                          
-                                       </li>
-                                       <li class="listitem">
-                                          
-                                          <p>For <b>Description</b>, type <strong class="userinput"><code>Backend
-                                                   for the Getting Started walkthrough with Lambda custom
-                                                   integration</code></strong>. This is optional and you can leave
-                                             it blank.
-                                          </p>
-                                          
-                                       </li>
-                                       <li class="listitem">
-                                          
-                                          <p> For <b>Runtime</b>, choose <b>Node.js
-                                                6.10</b>. 
-                                          </p>
-                                          
-                                       </li>
-                                    </ul>
-                                 </div>
-                                 
-                              </li>
-                              <li>
-                                 
-                                 <p>Under <b>Lambda function code</b>:
-                                 </p>
-                                 
-                                 <div class="itemizedlist">
-                                    
-                                    
-                                    
-                                    
-                                    <ul class="itemizedlist" type="disc">
-                                       <li class="listitem">
-                                          
-                                          <p>Choose <b>Edit code inline</b>, if it is not
-                                             already shown, under <b>Content entry
-                                                type</b>.
-                                          </p>
-                                          
-                                       </li>
-                                       <li class="listitem">
-                                          
-                                          <p>Copy the Lambda function code listed in the beginning of this
-                                             section and paste it in the inline code editor.
-                                          </p>
-                                          
-                                       </li>
-                                       <li class="listitem">
-                                          
-                                          <p>Leave the default choices for all other fields in this
-                                             section.
-                                          </p>
-                                          
-                                       </li>
-                                    </ul>
-                                 </div>
-                                 
-                              </li>
-                              <li>
-                                 
-                                 <p> Under <b>Lambda function handler and role</b>: 
-                                 </p>
-                                 
-                                 <div class="itemizedlist">
-                                    
-                                    
-                                    
-                                    
-                                    
-                                    <ul class="itemizedlist" type="disc">
-                                       <li class="listitem">
-                                          
-                                          <p> Leave the default of <code class="literal">index.handler</code> for <b>Handler</b>.
-                                             
-                                          </p>
-                                          
-                                       </li>
-                                       <li class="listitem">
-                                          
-                                          <p>For <b>Role</b>, choose <code class="literal">Create new role from template(s)</code>.
-                                          </p>
-                                          
-                                       </li>
-                                       <li class="listitem">
-                                          
-                                          <p>For <b>Role name</b>, type a name for your role
-                                             (for example,
-                                             <strong class="userinput"><code>GetStartedLambdaIntegrationRole</code></strong>).
-                                          </p>
-                                          
-                                       </li>
-                                       <li class="listitem">
-                                          
-                                          <p>For <b>Policy templates</b>, choose <code class="literal">Simple Microservice permissions</code>. 
-                                          </p>
-                                          
-                                          <div class="aws-note">
-                                             <p class="aws-note">Tip</p>
-                                             <p> To use an existing IAM role, choose <code class="literal">Choose an existing role</code> for
-                                                <b>Role</b> and then select an entry from
-                                                the drop-down list of existing roles. Alternatively, to
-                                                create a custom role, choose <code class="literal">Create
-                                                   a Custom Role</code> and follow the instructions.
-                                                
-                                             </p>
-                                          </div>
-                                          
-                                       </li>
-                                    </ul>
-                                 </div>
-                                 
-                              </li>
-                              <li>
-                                 
-                                 <p> For <b>Tags</b>, leave them blank. 
+                                 <p>For <b>Name</b>, type
+                                    <strong class="userinput"><code>GetStartedLambdaIntegration</code></strong> as the Lambda
+                                    function name.
                                  </p>
                                  
                               </li>
                               <li>
                                  
-                                 <p> For <b>Advanced settings</b> leave the defaults.
-                                    
+                                 <p>For <b>Runtime</b>, choose <b>Node.js
+                                       8.10</b>.
                                  </p>
                                  
                               </li>
                               <li>
                                  
-                                 <p> Choose <b>Next</b>. 
+                                 <p>For <b>Role</b>, choose <code class="literal">Create
+                                       new role from template(s)</code>.
                                  </p>
                                  
                               </li>
                               <li>
                                  
-                                 <p>Choose <b>Create function</b>. Note of the AWS Region
-                                    where you created this function. You need it later. 
+                                 <p>For <b>Role name</b>, type a name for your role (for
+                                    example, <strong class="userinput"><code>GetStartedLambdaIntegrationRole</code></strong>).
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>For <b>Policy templates</b>, choose <code class="literal">Simple Microservice permissions</code>. 
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Choose <b>Create function</b>.
                                  </p>
                                  
                               </li>
@@ -407,17 +283,64 @@ exports.handler = function(event, context, callback) {
                         </li>
                         <li>
                            
-                           <p> To test the newly created function, as a best practice, choose
-                              <b>Actions</b> and select <b>Configure test
-                                 event</b>. 
+                           <p>In the <b>Configure function</b> pane, under <b>Function
+                                 code</b> do the following:
                            </p>
                            
                            <ol>
                               <li>
                                  
-                                 <p>For <b>Input test event</b>, replace any default code
-                                    statements with the following, and then choose <b>Save and
-                                       test</b>.
+                                 <p>Choose <b>Edit code inline</b>, if it is not already
+                                    shown, under <b>Content entry type</b>.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Leave <b>Handler</b> set to <code class="literal">index.handler</code>. 
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Set <b>Runtime</b> to <b>Node.js
+                                       8.10</b>.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Copy the Lambda function code listed in the beginning of this section
+                                    and paste it in the inline code editor.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Leave the default choices for all other fields in this section.</p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Choose <b>Save</b>.
+                                 </p>
+                                 
+                              </li>
+                           </ol>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>To test the newly created function, choose <b>Configure test
+                                 events</b> from <b>Select a test event...</b>.
+                           </p>
+                           
+                           <ol>
+                              <li>
+                                 
+                                 <p>For <b>Create new event</b>, replace any default code
+                                    statements with the following, type HellowWorldTest for the Event aname,
+                                    and choose <b>Create</b>.
                                  </p>
                                  <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
   &quot;name&quot;: &quot;Jonny&quot;,
@@ -506,7 +429,7 @@ exports.handler = function(event, context, callback) {
                      </p>
                      
                      
-                     <h2 id="getting-started-new-api">Create an API with the Lambda Custom
+                     <h2 id="getting-started-new-api">Create an API with Lambda Non-Proxy
                         Integration
                      </h2>
                      
@@ -521,9 +444,6 @@ exports.handler = function(event, context, callback) {
                         for API Gateway to transform the client-supplied request data into the valid format
                         as
                         required by the backend Lambda function.
-                     </p>
-                     
-                     <p>The API is named <code class="code">GetStartedLambdaIntegrationAPI</code>. 
                      </p>
                      
                      <p class="title"><b>To create an API with Lambda custom integration with a Lambda function</b></p>
@@ -541,7 +461,7 @@ exports.handler = function(event, context, callback) {
                            <ol>
                               <li>
                                  
-                                 <p>Type <code class="code">GetStartedLambdaIntegrationAPI</code> for <b>API
+                                 <p>Type <strong class="userinput"><code>GetStartedLambdaNonProxyIntegration</code></strong> for <b>API
                                        name</b>. 
                                  </p>
                                  
@@ -627,7 +547,7 @@ exports.handler = function(event, context, callback) {
                         </li>
                         <li>
                            
-                           <p> In <b>Method Execution</b>, for the <code class="code">ANY /{city}</code>
+                           <p> In <b>Method Execution</b>, for the <code class="code">/{city} ANY</code>
                               method, do the following: 
                            </p>
                            
@@ -641,8 +561,8 @@ exports.handler = function(event, context, callback) {
                               </li>
                               <li>
                                  
-                                 <p>Leave the <b>Use Lambda Proxy integration</b> box clear
-                                    to use custom Lambda custom integration.
+                                 <p>Leave the <b>Use Lambda Proxy integration</b> box
+                                    unchecked.
                                  </p>
                                  
                               </li>
@@ -663,15 +583,22 @@ exports.handler = function(event, context, callback) {
                               </li>
                               <li>
                                  
+                                 <p>Leave the <b>Use Default timeout</b> box checked.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
                                  <p>Choose <b>Save</b>. 
                                  </p>
                                  
                               </li>
                               <li>
                                  
-                                 <p>Choose <b>OK</b> in <b>Add Permission to Lambda
-                                       Function</b> to have API Gateway set up the required access
-                                    permissions for the API to invoke the integrated Lambda function. 
+                                 <p>Choose <b>OK</b> in the <b>Add Permission to
+                                       Lambda Function</b> popup to have API Gateway set up the required
+                                    access permissions for the API to invoke the integrated Lambda function.
+                                    
                                  </p>
                                  
                               </li>
@@ -680,9 +607,7 @@ exports.handler = function(event, context, callback) {
                         </li>
                         <li>
                            
-                           <p> In <b>Method Execution</b>, choose <b>Method
-                                 Request</b> and configure as follows: 
-                           </p>
+                           <p>In this step you&apos;ll configure the following:</p>
                            
                            <div class="itemizedlist">
                               
@@ -698,32 +623,28 @@ exports.handler = function(event, context, callback) {
                                  </li>
                                  <li class="listitem">
                                     
-                                    <p>To set up a header parameter (<code class="code">day</code>) 
+                                    <p>A header parameter (<code class="code">day</code>)
                                     </p>
                                     
                                  </li>
                                  <li class="listitem">
                                     
-                                    <p>To define a payload property (<code class="code">callerName</code>)
+                                    <p>A payload property (<code class="code">callerName</code>)
                                     </p>
                                     
                                  </li>
                               </ul>
                            </div>
                            
-                           <p> At run time, the client can use these request parameters and the request body
+                           <p>At run time, the client can use these request parameters and the request body
                               to provide time of the day, the day of the week, and the name of the caller. You
-                              already configured the /{city} path variable. 
+                              already configured the /{city} path variable.
                            </p>
                            
                            <ol>
                               <li>
                                  
-                                 <p> Under <b>Settings</b> choose the pencil icon to choose
-                                    <code class="code">Validate body, query string parameters, and headers</code>
-                                    from the <b>Request Validator</b> drop-down menu. This
-                                    lets API Gateway perform basic request validation before forwarding the
-                                    request to the Lambda function. 
+                                 <p>In the <b>Method Execution</b> pane, choose <b>Method Request</b>.
                                  </p>
                                  
                               </li>
@@ -778,14 +699,13 @@ exports.handler = function(event, context, callback) {
                                     </li>
                                     <li>
                                        
-                                       <p>Type a description for <b>Model description</b>
-                                          or leave it blank.
+                                       <p>Leave the <b>Model description</b> blank.
                                        </p>
                                        
                                     </li>
                                     <li>
                                        
-                                       <p> Copy the following schema definition to the <b>Model
+                                       <p> Copy the following schema definition into the <b>Model
                                              schema</b> editor:
                                        </p>
                                        <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
@@ -799,17 +719,19 @@ exports.handler = function(event, context, callback) {
                                        </li>
                                     <li>
                                        
-                                       <p>Choose <b>Save</b> to finish defining the input
-                                          model.
+                                       <p>Choose <b>Create model</b> to finish defining
+                                          the input model.
                                        </p>
                                        
                                     </li>
                                     <li>
                                        
-                                       <p> Go back to <b>Method Request</b> and expand
-                                          <b>Request body</b>. Choose <b>Add
-                                             model</b>. Type <code class="code">application/json</code> for
-                                          <b>Content type</b>. Choose
+                                       <p>Choose <b>Resources</b>, choose the
+                                          <code class="code">/{city} ANY</code> method, choose <b>Method
+                                             Request</b>, and expand <b>Request
+                                             body</b>. Choose <b>Add model</b>. Type
+                                          <code class="code">application/json</code> for <b>Content
+                                             type</b>. Choose
                                           <code class="code">GetStartedLambdaIntegrationInput</code> for
                                           <b>Model name</b>. Choose the check-mark icon
                                           to save the setting. 
@@ -824,44 +746,27 @@ exports.handler = function(event, context, callback) {
                         </li>
                         <li>
                            
-                           <p>In <b>Method Execution</b> for the <code class="code">ANY /{city}</code>
-                              method, choose <b>Integration Request</b> to set up a body-mapping
-                              template. This maps the previously configured method request parameter of
-                              <code class="code">nameQuery</code> or <code class="code">nameHeader</code> to the JSON payload, as
-                              required by the backend Lambda function. 
+                           <p>Choose the <code class="code">/{city} ANY</code> method and choose <b>Integration
+                                 Request</b> to set up a body-mapping template. In this step you&apos;ll
+                              map the previously configured method request parameter of <code class="code">nameQuery</code>
+                              or <code class="code">nameHeader</code> to the JSON payload, as required by the backend Lambda
+                              function:
                            </p>
                            
                            <ol>
                               <li>
                                  
-                                 <p>Expand the <b>Body Mapping Templates</b> section. Choose
+                                 <p>Expand the <b>Mapping Templates</b> section. Choose
                                     <b>Add mapping template</b>. Type
                                     <code class="code">application/json</code> for <b>Content-Type</b>.
-                                    Choose the check-mark icon to save the setting. 
+                                    Choose the check-mark icon to save the setting.
                                  </p>
                                  
                               </li>
                               <li>
                                  
-                                 <p>Type the following mapping template in the VTL script editor. Choose
-                                    <b>Save</b> to finish the setup. 
-                                 </p>
-                                 
-                              </li>
-                           </ol>
-                           
-                        </li>
-                        <li>
-                           
-                           <p>Choose <b>Integration Request</b> to set up a mapping template
-                              to transform the client-supplied request data to the input format of the
-                              integrated Lambda function: 
-                           </p>
-                           
-                           <ol>
-                              <li>
-                                 
-                                 <p>Expand the <b>Body mapping templates</b> section.
+                                 <p>In the popup that appears, choose <b>Yes, secure this
+                                       integration</b>.
                                  </p>
                                  
                               </li>
@@ -870,24 +775,6 @@ exports.handler = function(event, context, callback) {
                                  <p>Check the recommended <code class="code">When there are no templates defined</code>
                                     for <b>Request body passthrough</b>.
                                  </p>
-                                 
-                              </li>
-                              <li>
-                                 
-                                 <p>Choose <b>Add mapping template</b>.
-                                 </p>
-                                 
-                              </li>
-                              <li>
-                                 
-                                 <p>Type <code class="code">application/json</code> for
-                                    <b>Content-type</b>.
-                                 </p>
-                                 
-                              </li>
-                              <li>
-                                 
-                                 <p>Choose the check-mark icon to save the setting.</p>
                                  
                               </li>
                               <li>
@@ -902,8 +789,8 @@ exports.handler = function(event, context, callback) {
                               </li>
                               <li>
                                  
-                                 <p>Modify the mapping script in the mapping template editor as
-                                    follows:
+                                 <p>Replace the generated mapping script in the mapping template editor
+                                    with the following:
                                  </p>
                                  <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">#set($inputRoot = $input.path(&apos;$&apos;))
 {
@@ -913,6 +800,12 @@ exports.handler = function(event, context, callback) {
   &quot;name&quot;: &quot;$inputRoot.callerName&quot;
 }</code></pre>
                                  </li>
+                              <li>
+                                 
+                                 <p>Choose <b>Save</b>.
+                                 </p>
+                                 
+                              </li>
                            </ol>
                            
                         </li>
@@ -933,13 +826,13 @@ day:Wednesday
 {
     &quot;callerName&quot;: &quot;John&quot;
 }</code></pre>
-                     <p> In this test request, you set <code class="code">ANY</code> to <code class="code">POST</code>, set
+                     <p> In this test request, you&apos;ll set <code class="code">ANY</code> to <code class="code">POST</code>, set
                         <code class="code">{city}</code> to <code class="code">Seattle</code>, assign <code class="code">Wednesday</code> as the
                         <code class="code">day</code> header value, and assign <code class="code">&quot;John&quot;</code> as the
                         <code class="code">callerName</code> value. 
                      </p>
                      
-                     <p class="title"><b>To test invoking the <code class="code">ANY /{city}</code> method</b></p>
+                     <p class="title"><b>To test-invoke the <code class="code">ANY /{city}</code> method</b></p>
                      <ol>
                         <li>
                            
@@ -957,21 +850,28 @@ day:Wednesday
                         </li>
                         <li>
                            
-                           <p>Type <code class="code">Seattle</code> for the <code class="code">{city}</code> path variable.
+                           <p>In <b>Path</b>, type <strong class="userinput"><code>Seattle</code></strong>.
                            </p>
                            
                         </li>
                         <li>
                            
-                           <p>Type <code class="code">morning</code> for the <code class="code">day</code> query string
-                              parameter.
+                           <p>In <b>Query Strings</b>, type
+                              <strong class="userinput"><code>time=morning</code></strong>.
                            </p>
                            
                         </li>
                         <li>
                            
-                           <p>Type <code class="code">{ &quot;callerName&quot;:&quot;John&quot; }</code> for <b>Request
-                                 Body</b>.
+                           <p>In <b>Headers</b>, type
+                              <strong class="userinput"><code>day:Wednesday</code></strong>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In <b>Request Body</b>, type <strong class="userinput"><code>{ &quot;callerName&quot;:&quot;John&quot;
+                                    }</code></strong>.
                            </p>
                            
                         </li>
@@ -1261,15 +1161,19 @@ Thu Aug 31 01:07:25 UTC 2017 : Method completed with status: 200
                      
                      <p>You have now reached the end of this walkthrough.</p>
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -1278,8 +1182,10 @@ Thu Aug 31 01:07:25 UTC 2017 : Method completed with status: 200
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="apigateway-cross-account-lambda-integrations.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="getting-started-http-integrations.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="apigateway-cross-account-lambda-integrations.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="api-gateway-create-api-from-example.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -1288,11 +1194,11 @@ Thu Aug 31 01:07:25 UTC 2017 : Method completed with status: 200
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Create a Lambda Function for the Lambda
-                Custom Integration"><a class="pagetoc" href="#getting-started-new-lambda">Create a Lambda Function for the Lambda
-                              Custom Integration</a></li>
-                        <li class="pagetoc" name="Create an API with the Lambda Custom
-                Integration"><a class="pagetoc" href="#getting-started-new-api">Create an API with the Lambda Custom
+                        <li class="pagetoc" name="Create a Lambda Function for Lambda
+                Non-Proxy Integration"><a class="pagetoc" href="#getting-started-new-lambda">Create a Lambda Function for Lambda
+                              Non-Proxy Integration</a></li>
+                        <li class="pagetoc" name="Create an API with Lambda Non-Proxy
+                Integration"><a class="pagetoc" href="#getting-started-new-api">Create an API with Lambda Non-Proxy
                               Integration</a></li>
                         <li class="pagetoc" name="Test Invoking the API Method"><a class="pagetoc" href="#getting-started-new-get">Test Invoking the API Method</a></li>
                         <li class="pagetoc" name="Deploy the API"><a class="pagetoc" href="#getting-started-deploy-api">Deploy the API</a></li>
@@ -1303,6 +1209,10 @@ Thu Aug 31 01:07:25 UTC 2017 : Method completed with status: 200
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

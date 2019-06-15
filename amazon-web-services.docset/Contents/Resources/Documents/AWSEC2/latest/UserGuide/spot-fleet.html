@@ -12,6 +12,8 @@
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/spot-fleet.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="instance-purchasing-options.html">Instance Purchasing Options</a> &#xBB; <a href="using-spot-instances.html">Spot Instances</a> &#xBB; <span class="breadcrumb">How Spot Fleet Works</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="instance-purchasing-options.html">Instance Purchasing Options</a> &#xBB; <a href="using-spot-instances.html">Spot Instances</a> &#xBB; <span class="breadcrumb">How Spot Fleet Works</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="spot-fleet">How Spot Fleet Works</h1>
                      <p>A <em>Spot Fleet</em> is a collection, or fleet, of Spot Instances, and optionally On-Demand Instances.
@@ -45,29 +50,29 @@
                      <p>The Spot Fleet attempts to launch the number of Spot Instances and On-Demand Instances
                         to meet the target capacity that
                         			you specified in the Spot Fleet request. The request for Spot Instances is fulfilled
-                        if the Spot price
-                        			exceeds the current Spot price and there is available capacity. The Spot Fleet
-                        also attempts
-                        			to maintain its target capacity fleet if your Spot Instances are interrupted due
-                        to a change in
-                        			Spot prices or available capacity.
+                        if there is
+                        			available capacity and the maximum price you specified in the request exceeds the
+                        			current Spot price. The Spot Fleet also attempts to maintain its target capacity
+                        fleet if your
+                        			Spot Instances are interrupted.
                      </p>
-                     <p>A <em>Spot Instance pool</em> is a set of unused EC2 instances with the same
-                        			instance type, operating system, Availability Zone, and network platform (EC2-Classic
-                        or
-                        			EC2-VPC). When you make a Spot Fleet request, you can include multiple launch
+                     <p>A <em>Spot Instance pool</em> is a set of unused EC2 instances with the same instance
+                        			type (for example, <code class="code">m5.large</code>), operating system, Availability Zone, and
+                        			network platform. When you make a Spot Fleet request, you can include multiple
+                        launch
                         			specifications, that vary by instance type, AMI, Availability Zone, or subnet.
-                        The Spot Fleet selects the Spot Instance pools that are used to fulfill the request,
-                        based on the
-                        			launch specifications included in your Spot Fleet request, and the configuration
-                        of the
-                        			Spot Fleet request. The Spot Instances come from the selected pools.
+                        The Spot Fleet
+                        			selects the Spot Instance pools that are used to fulfill the request, based on
+                        the launch
+                        			specifications included in your Spot Fleet request, and the configuration of the
+                        Spot Fleet request.
+                        			The Spot Instances come from the selected pools.
                      </p>
                      <div class="highlights" id="inline-topiclist">
                         <p><strong>Contents</strong></p>
                         <ul>
                            <li><a href="#on-demand-in-spot">On-Demand in Spot Fleet</a></li>
-                           <li><a href="#spot-fleet-allocation-strategy">Spot Fleet Allocation Strategy</a></li>
+                           <li><a href="#spot-fleet-allocation-strategy">Allocation Strategy for Spot Instances</a></li>
                            <li><a href="#spot-price-overrides">Spot Price Overrides</a></li>
                            <li><a href="#spot-instance-weighting">Spot Fleet Instance Weighting</a></li>
                            <li><a href="#instance-weighting-walkthrough">Walkthrough: Using Spot Fleet with Instance Weighting</a></li>
@@ -81,25 +86,54 @@
                         desired target
                         				capacity and how much of that capacity must be On-Demand. The balance comprises
                         Spot
-                        				capacity, which is launched if there is available EC2 capacity and availability.
-                        For
-                        				example, if in your Spot Fleet request you specify target capacity as 10 and On-Demand
+                        				capacity, which is launched if there is available Amazon EC2 capacity and availability.
+                        				For example, if in your Spot Fleet request you specify target capacity as 10 and
+                        On-Demand
                         				capacity as 8, Amazon EC2 launches 8 capacity units as On-Demand, and 2 capacity
-                        				units (10-8=2) as Spot.
+                        units
+                        				(10-8=2) as Spot.
                      </p>
+                     	
+                     		
+                     <h3 id="spot-fleet-on-demand-priority">Prioritizing Instance Types for On-Demand
+                        				Capacity
+                     </h3>
+                     		
+                     <p>When Spot Fleet attempts to fulfill your On-Demand capacity, it defaults to launching
+                        the
+                        			lowest-priced instance type first. If <code class="code">OnDemandAllocationStrategy</code> is set to
+                        			<code class="code">prioritized</code>, Spot Fleet uses priority to determine which instance
+                        			type to use first in fulfilling On-Demand capacity. The priority is assigned to
+                        			the launch template override, and the highest priority is launched first.
+                     </p>
+                     		
+                     <p>For example, you have configured three launch template overrides, each with a different
+                        			instance type: <code class="code">c3.large</code>, <code class="code">c4.large</code>, and
+                        			<code class="code">c5.large</code>. The On-Demand price for <code class="code">c5.large</code> is less
+                        			than for <code class="code">c4.large</code>. <code class="code">c3.large</code> is the cheapest. If you do
+                        			not use priority to determine the order, the fleet fulfills On-Demand capacity
+                        			by starting with <code class="code">c3.large</code>, and then <code class="code">c5.large</code>. Because
+                        			you often have unused Reserved Instances for <code class="code">c4.large</code>, you can set the launch
+                        			template override priority so that the order is
+                        			<code class="code">c4.large</code>, <code class="code">c3.large</code>, and then
+                        			<code class="code">c5.large</code>.
+                     </p>
+                     	
                      
                      	
-                     <h2 id="spot-fleet-allocation-strategy">Spot Fleet Allocation Strategy</h2>
+                     <h2 id="spot-fleet-allocation-strategy">Allocation Strategy for Spot Instances</h2>
                      
                      	
-                     <p>The allocation strategy for your Spot Fleet determines how it fulfills your Spot Fleet
-                        request from the possible Spot Instance pools represented by its launch
-                        				specifications. The following are the allocation strategies that you can specify
-                        in
-                        				your Spot Fleet request:
+                     <p>The allocation strategy for the Spot Instances in your Spot Fleet determines how it
+                        fulfills your Spot Fleet
+                        				request from the possible Spot Instance pools represented by its launch specifications.
+                        The
+                        				following are the allocation strategies that you can specify in your Spot Fleet
+                        				request:
                      </p>       
                      	
                      <div class="variablelist">
+                        		
                         		
                         		
                         	
@@ -124,58 +158,119 @@
                               			
                            </dd>
                            		
+                           			
+                           <dt><span class="term"><code class="code">InstancePoolsToUseCount</code></span></dt>
+                           			
+                           <dd>
+                              				
+                              <p>The Spot Instances are distributed across the number of Spot pools that you specify.
+                                 This
+                                 					parameter is valid only when used in combination with
+                                 					<code class="code">lowestPrice</code>.
+                              </p>
+                              			
+                           </dd>
+                           		
                         </dl>
                      </div>
                      	
                      	
-                     <p>For On-Demand target capacity, we always select the cheapest option based on the
-                        				On-Demand price, while continuing to follow the allocation strategy (either lowest
-                        				price or diversified) for Spot Instances.
+                     		
+                     <h3 id="maintain-fleet-capacity">Maintaining Target Capacity</h3>
+                     		
+                     <p>After Spot Instances are terminated due to a change in the Spot price or available
+                        capacity
+                        					of a Spot Instance pool, a Spot Fleet of type <code class="code">maintain</code> launches replacement Spot Instances.
+                        					If the allocation strategy is <code class="code">lowestPrice</code>, the fleet launches
+                        					replacement instances in the pool where the Spot price is currently the lowest.
+                        					If the allocation strategy is <code class="code">diversified</code>, the fleet distributes
+                        					the replacement Spot Instances across the remaining pools. If the allocation
+                        strategy is
+                        						<code class="code">lowestPrice</code> in combination with
+                        						<code class="code">InstancePoolsToUseCount</code>, the fleet selects the Spot pools with
+                        					the lowest price and launches Spot Instances across the number of Spot pools
+                        that you
+                        					specify.
                      </p>
                      	
                      	
+                     	
                      		
-                     <h3 id="allocation-use-cases">Choosing an Allocation Strategy</h3>
+                     <h3 id="spot-fleet-strategy-cost-optimization">Configuring Spot Fleet for
+                        				Cost Optimization
+                     </h3>
+                     		
+                     <p>To optimize the costs for your use of Spot Instances, specify the
+                        			<code class="code">lowestPrice</code> allocation strategy so that Spot Fleet automatically
+                        			deploys the cheapest combination of instance types and Availability Zones
+                        			based on the current Spot price.
+                     </p>
+                     		
+                     <p>For On-Demand Instance target capacity, Spot Fleet always selects the cheapest instance
+                        type
+                        			based on the public On-Demand price, while continuing to follow the
+                        			allocation strategy (either <code class="code">lowestPrice</code> or
+                        			<code class="code">diversified</code>) for Spot Instances.
+                     </p>
+                     	
+                     	
+                     	
+                     		
+                     <h3 id="spot-fleet-strategy-cost-optimization-and-diversified">Configuring Spot Fleet for Cost Optimization and Diversification</h3>
+                     		
+                     <p>To create a fleet of Spot Instances that is both cheap and diversified, use the
+                        						<code class="code">lowestPrice</code> allocation strategy in combination with
+                        						<code class="code">InstancePoolsToUseCount</code>. Spot Fleet automatically deploys the
+                        					cheapest combination of instance types and Availability Zones based on the
+                        					current Spot price across the number of Spot pools that you specify. This
+                        					combination can be used to avoid the most expensive Spot Instances.
+                     </p>
+                     	
+                     	
+                     	
+                     		
+                     <h3 id="allocation-use-cases">Choosing an Appropriate Allocation Strategy</h3>
                      		
                      <p>You can optimize your Spot Fleets based on your use case.</p>
                      		
                      <p>If your fleet is small or runs for a short time, the probability that your Spot Instances
-                        will be interrupted is low, even with all the instances in a single
-                        					Spot Instance pool. Therefore, the <code class="code">lowestPrice</code> strategy is likely
-                        					to meet your needs while providing the lowest cost.
+                        may
+                        					be interrupted is low, even with all the instances in a single Spot Instance
+                        pool.
+                        					Therefore, the <code class="code">lowestPrice</code> strategy is likely to meet your needs
+                        					while providing the lowest cost.
                      </p>
                      		
                      <p>If your fleet is large or runs for a long time, you can improve the availability of
-                        					your fleet by distributing the Spot Instances across multiple pools. For
-                        					example, if your Spot Fleet request specifies 10 pools and a target capacity
-                        of
-                        					100 instances, the Spot Fleet launches 10 Spot Instances in each pool. If the
-                        					Spot price for one pool exceeds your maximum price for this pool, only 10%
-                        					of your fleet is affected. Using this strategy also makes your fleet less
-                        					sensitive to increases in the Spot price in any one pool over time.
+                        					your fleet by distributing the Spot Instances across multiple pools. For example,
+                        if your
+                        					Spot Fleet request specifies 10 pools and a target capacity of 100 instances,
+                        the
+                        					fleet launches 10 Spot Instances in each pool. If the Spot price for one pool
+                        exceeds
+                        					your maximum price for this pool, only 10% of your fleet is affected. Using this
+                        					strategy also makes your fleet less sensitive to increases in the Spot price
+                        in
+                        					any one pool over time.
                      </p>
                      		
                      <p>With the <code class="code">diversified</code> strategy, the Spot Fleet does not launch Spot Instances into any pools with a Spot
                         price that is equal to or higher than the
                         					<a href="https://aws.amazon.com/ec2/pricing/" target="_blank">On-Demand price</a>.
                      </p>
-                     	
-                     
-                     
-                     				
-                     <h3 id="maintain-fleet-capacity">Maintaining Target Capacity</h3>
-                     				
-                     <p>After Spot Instances are terminated due to a change in the Spot price or available
-                        capacity of a
-                        					Spot Instance pool, the Spot Fleet launches replacement Spot Instances. If the
-                        allocation strategy is
-                        						<code class="code">lowestPrice</code>, the Spot Fleet launches replacement instances in the
-                        					pool where the Spot price is currently the lowest. If the allocation strategy
-                        is
-                        						<code class="code">diversified</code>, the Spot Fleet distributes the replacement Spot Instances across
-                        					the remaining pools.
+                     		
+                     <p>To create a cheap and diversified fleet, use the <code class="code">lowestPrice</code> strategy
+                        					in combination with <code class="code">InstancePoolsToUseCount</code>. You can use a low or
+                        					high number of Spot pools across which to allocate your Spot Instances. For example,
+                        if
+                        					you run batch processing, we recommend specifying a low number of Spot pools
+                        					(for example, <code class="code">InstancePoolsToUseCount=2</code>) to ensure that your queue
+                        					always has compute capacity while maximizing savings. If you run a web service,
+                        					we recommend specifying a high number of Spot pools (for example,
+                        						<code class="code">InstancePoolsToUseCount=10</code>) to minimize the impact if a Spot Instance
+                        					pool becomes temporarily unavailable.
                      </p>
-                     			
+                     	
                      
                      
                      	
@@ -221,14 +316,14 @@
                      </p>
                      
                      			
-                     <p>The following table includes examples of calculations to determine the price per unit
-                        				for a Spot Fleet request with a target capacity of 10.
+                     <p>The following tables provide examples of calculations to determine the price per unit
+                        for a
+                        				Spot Fleet request with a target capacity of 10.
                      </p>
                      			
                      <div class="table">
-                        <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w185aac17c13c18c27c17b9">
+                           <table id="w306aac20c13c18c21c17b9">
                               						
                               <tbody><tr>
                                  							
@@ -276,6 +371,30 @@
                                  </td>
                                  						
                               </tr>
+                              					
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     			
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w306aac20c13c18c21c17c11">
+                              						
+                              <tbody><tr>
+                                 							
+                                 <th>Instance type</th>
+                                 							
+                                 <th>Instance weight</th>
+                                 							
+                                 <th>Price per instance hour</th>
+                                 							
+                                 <th>Price per unit hour</th>
+                                 							
+                                 <th>Number of instances launched</th>
+                                 						
+                              </tr>
+                              					
                               						
                               <tr>
                                  							
@@ -437,10 +556,11 @@
                      			
                      <p>The Spot Fleet would launch four instances (30 divided by 8, result rounded up). With
                         the
-                        				<code class="code">lowestPrice</code> strategy, all four instances come from the pool that
-                        				provides the lowest price per unit. With the <code class="code">diversified</code> strategy,
-                        				the Spot Fleet launches 1 instance in each of the three pools, and the fourth
-                        				instance in whichever of the three pools provides the lowest price per unit.
+                        					<code class="code">lowestPrice</code> strategy, all four instances come from the pool that
+                        				provides the lowest price per unit. With the <code class="code">diversified</code> strategy, the
+                        				Spot Fleet launches one instance in each of the three pools, and the fourth instance
+                        in
+                        				whichever  pool provides the lowest price per unit.
                      </p>
                      
                      		
@@ -485,7 +605,7 @@
                      				
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac17c13c18c27c19b7b7">
+                           <table id="w306aac20c13c18c21c19b7b7">
                               							
                               <tbody><tr>
                                  								
@@ -619,7 +739,7 @@
                      				
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac17c13c18c27c19b7c19">
+                           <table id="w306aac20c13c18c21c19b7c19">
                               							
                               <tbody><tr>
                                  								
@@ -749,7 +869,7 @@
     }
   ]
 }</code></pre>
-                     				<p>Example Corp creates the Spot Fleet request using the following <a href="./cli/latest/reference/ec2/request-spot-fleet.html" target="_blank">request-spot-fleet</a>
+                     				<p>Example Corp creates the Spot Fleet request using the following <a href="./cli/latest/reference/ec2/request-spot-fleet.html">request-spot-fleet</a>
                         					command:
                      </p>
                      				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 request-spot-fleet --spot-fleet-request-config file://config.json</code></strong></code></pre>
@@ -783,15 +903,19 @@
                      </p>
                      						
                      		
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -801,7 +925,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="how-spot-instances-work.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="using-spot-instances-history.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -811,7 +937,7 @@
                      <p>On this page:</p>
                      <ul class="pagetoc">
                         <li class="pagetoc" name="On-Demand in Spot Fleet"><a class="pagetoc" href="#on-demand-in-spot">On-Demand in Spot Fleet</a></li>
-                        <li class="pagetoc" name="Spot Fleet Allocation Strategy"><a class="pagetoc" href="#spot-fleet-allocation-strategy">Spot Fleet Allocation Strategy</a></li>
+                        <li class="pagetoc" name="Allocation Strategy for Spot Instances"><a class="pagetoc" href="#spot-fleet-allocation-strategy">Allocation Strategy for Spot Instances</a></li>
                         <li class="pagetoc" name="Spot Price Overrides"><a class="pagetoc" href="#spot-price-overrides">Spot Price Overrides</a></li>
                         <li class="pagetoc" name="Spot Fleet Instance Weighting"><a class="pagetoc" href="#spot-instance-weighting">Spot Fleet Instance Weighting</a></li>
                         <li class="pagetoc" name="Walkthrough: Using Spot Fleet with Instance Weighting"><a class="pagetoc" href="#instance-weighting-walkthrough">Walkthrough: Using Spot Fleet with Instance Weighting</a></li>
@@ -820,6 +946,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

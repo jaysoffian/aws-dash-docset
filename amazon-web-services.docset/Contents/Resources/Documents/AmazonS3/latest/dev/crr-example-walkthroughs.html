@@ -1,19 +1,21 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Cross-Region Replication Examples - Amazon Simple Storage Service</title>
+      <title>Cross-Region Replication (CRR) Walkthroughs - Amazon Simple Storage Service</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="crr.html" title="Cross-Region Replication (CRR)">
+      <link rel="up" href="crr.html" title="Cross-Region Replication">
       <link rel="prev" href="crr-replication-config-for-kms-objects.html" title="CRR Additional Configuration:
             Replicating Objects Created with Server-Side Encryption (SSE) Using AWS KMS-Managed
             Encryption Keys">
-      <link rel="next" href="crr-walkthrough1.html" title="Walkthrough 1: Configure Cross-Region Replication Where Source and
-      Destination Buckets Are Owned by the Same AWS Account">
-      <meta name="description" content="This section provides the following example walkthroughs to set up cross-region replication.">
+      <link rel="next" href="crr-walkthrough1.html" title="Example 1: Configure CRR When Source and Destination
+            Buckets Are Owned by the Same AWS Account">
+      <meta name="description" content="The following examples show how to set up cross-region replication.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/crr-example-walkthroughs.html">
@@ -23,7 +25,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -35,26 +37,64 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="crr.html">Cross-Region Replication (CRR)</a> &#xBB; <span class="breadcrumb">Cross-Region Replication Examples</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="crr.html">Cross-Region Replication</a> &#xBB; <span class="breadcrumb">Cross-Region Replication (CRR) Walkthroughs</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="crr-example-walkthroughs">Cross-Region Replication Examples</h1>
-                     <p>This section provides the following example walkthroughs to set up cross-region replication.</p>
+                     <h1 class="topictitle" id="crr-example-walkthroughs">Cross-Region Replication (CRR) Walkthroughs</h1>
+                     <p>The following examples show how to configure cross-region replication (CRR) for common
+                        use
+                        		cases. The examples show setting replication configuration using the Amazon S3 console,
+                        AWS
+                        		Command Line Interface (CLI), and AWS SDKs (example of Java and .NET SDK are shown).
+                        For
+                        		information about installing and configuring AWS CLI, see the following topics in
+                        the
+                        		AWS Command Line Interface User Guide.
+                     </p>
+                     <div class="itemizedlist">
+                        		
+                        		
+                        	
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              			
+                              <p>
+                                 				<a href="./cli/latest/userguide/installing.html">Installing the AWS Command Line Interface</a>
+                                 			
+                              </p>
+                              		
+                           </li>
+                           <li class="listitem">
+                              			
+                              <p>
+                                 				<a href="./cli/latest/userguide/cli-chap-getting-started.html">Configuring the AWS CLI</a> - You will need to set up at least one profile.
+                                 				You will need to set two profiles if you are exploring cross-account
+                                 				scenarios.
+                              </p>
+                              		
+                           </li>
+                        </ul>
+                     </div>
+                     <p>For information about AWS SDK, see <a href="https://aws.amazon.com/sdk-for-java/" target="_blank">AWS SDK for Java</a> and <a href="https://aws.amazon.com/sdk-for-net/" target="_blank">AWS SDK for .NET</a>.
+                     </p>
                      <div class="highlights">
                         <p><strong>Topics</strong></p>
                         <ul>
-                           <li><a href="crr-walkthrough1.html">Walkthrough 1: Configure Cross-Region Replication Where Source and
-                                 Destination Buckets Are Owned by the Same AWS Account</a></li>
-                           <li><a href="crr-walkthrough-2.html">Walkthrough 2: Configure Cross-Region Replication Where Source
-                                 and Destination Buckets Are Owned by Different AWS Accounts</a></li>
-                           <li><a href="crr-addtional-walkthroughs.html">Cross-Region Replication: Additional
-                                 Walkthroughs</a></li>
-                           <li><a href="crr-using-console.html">Setting Up Cross-Region Replication Using the Console</a></li>
-                           <li><a href="crr-using-java.html">Setting Up Cross-Region Replication Using the AWS SDK for Java</a></li>
-                           <li><a href="crr-using-dotnet.html">Setting Up Cross-Region Replication Using the AWS SDK for .NET</a></li>
+                           <li><a href="crr-walkthrough1.html">CRR Example 1: Same AWS Account</a></li>
+                           <li><a href="crr-walkthrough-2.html">CRR Example 2: Different AWS Accounts</a></li>
+                           <li><a href="crr-walkthrough-3.html">CRR Example 3: Change Replica Owner
+                                 </a></li>
+                           <li><a href="crr-walkthrough-4.html">CRR Example 4: Replicating Encrypted
+                                 Objects</a></li>
                         </ul>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
                   </div>
                   <noscript>
@@ -62,9 +102,10 @@
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -74,7 +115,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="crr-replication-config-for-kms-objects.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="crr-walkthrough1.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -82,6 +125,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

@@ -1,16 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Deploying Lambda-based Applications - AWS Lambda</title>
+      <title>AWS Lambda Applications - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="welcome.html" title="What Is AWS Lambda?">
-      <link rel="prev" href="lambda-edge.html" title="AWS Lambda@Edge">
-      <link rel="next" href="versioning-aliases.html" title="AWS Lambda Function Versioning and Aliases">
-      <meta name="description" content="The following sections introduce how to create, test and deploy serverless applications.">
+      <link rel="prev" href="runtimes-walkthrough.html" title="Tutorial &#x2013; Publishing a Custom Runtime">
+      <link rel="next" href="applications-console.html" title="Managing Applications in the AWS Lambda Console">
+      <meta name="description" content="The following sections introduce how to create, test, and deploy serverless applications.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/deploying-lambda-apps.html">
@@ -20,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,109 +35,68 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Deploying Lambda-based Applications</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">AWS Lambda Applications</span></div>
                            </td>
                         </tr>
                      </tbody></table>
-                     <div></div>
-                     <h1 class="topictitle" id="deploying-lambda-apps">Deploying Lambda-based Applications</h1>
-                     <p> 
-                        Lambda-based applications (also referred to as <em>serverless applications</em>) are composed
-                        of functions triggered by events. A typical serverless application consists of one
-                        or more functions triggered by events such as object uploads to Amazon S3, Amazon
-                        SNS notifications,
-                        and API actions. Those functions can stand alone or leverage other resources such
-                        as DynamoDB
-                        tables or Amazon S3 buckets. The most basic serverless application is simply a function.
-                     </p>
-                     <p>AWS Lambda provides API operations that you can use to create and update Lambda functions
-                        by providing
-                        a deployment package as a ZIP file. However, this mechanism might not be convenient
-                        for automating deployment steps for functions, or coordinating deployments and updates
-                        to other elements of a serverless application (like event sources and downstream resources).
-                        For example, in order to deploy an Amazon SNS trigger, you need to update the function,
-                        the Amazon SNS topic, 
-                        the mapping between the function and the topic, and any other downstream resources
-                        required by your
-                        function such as a DynamoDB table.
-                     </p>
-                     <p>You can deploy your serverless applications in the following ways:</p>
-                     <div class="itemizedlist">
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              <p><b>AWS CLI</b> - Using the <code class="code">aws cloudformation deploy</code> command. For more information, see <a href="serverless-deploy-wt.html#serv-deploy">Deployment</a>, which is included in a tutorial on creating 
-                                 a severless application. For more information, see <a href="serverless-deploy-wt.html">Create Your Own Serverless Application</a>. Lambda also offers other AWS CLI operations for you to deploy your serverless applications:
-                                 
-                              </p>
-                              <div class="itemizedlist">
-                                 
-                                 
-                                 
-                                 <ul class="itemizedlist" type="disc">
-                                    <li class="listitem">
-                                       
-                                       <p><a href="API_CreateFunction.html">CreateFunction</a></p>
-                                       
-                                    </li>
-                                    <li class="listitem">
-                                       
-                                       <p><a href="API_UpdateFunctionConfiguration.html">UpdateFunctionConfiguration</a></p>
-                                       
-                                    </li>
-                                 </ul>
-                              </div>
-                           </li>
-                           <li class="listitem">
-                              <p><b>AWS CloudFormation</b> - You can use AWS CloudFormation to specify, deploy, and configure serverless 
-                                 applications. AWS CloudFormation is a service that helps you model and set up your
-                                 AWS resources 
-                                 so that you can spend less time managing those resources and more time focusing on
-                                 your
-                                 applications that run in AWS. You create a template that describes all of the AWS
-                                 resources 
-                                 that you want (like Lambda functions and DynamoDB tables), and AWS CloudFormation
-                                 takes care of provisioning 
-                                 and configuring those resources for you. You don&apos;t need to individually create and
-                                 configure
-                                 AWS resources and figure out what&apos;s dependent on what&#x2014;AWS CloudFormation handles all
-                                 of that. For more information, see <a href="./AWSCloudFormation/latest/UserGuide/cfn-whatis-concepts.html#d0e3897" target="_blank">AWS CloudFormation Concepts</a> in the <em>AWS CloudFormation User Guide</em>.
-                              </p>
-                           </li>
-                           <li class="listitem">
-                              <p><b>AWS SAM</b> - AWS SAM supports special resource types that simplify how to express 
-                                 
-                                 
-                                 functions, APIs, mappings, and DynamoDB tables for serverless applications,
-                                 as well as some features for these services like environment variables. 
-                                 The AWS CloudFormation description of these resources conforms to the <a href="https://github.com/awslabs/serverless-application-model" target="_blank">AWS Serverless Application Model</a>.
-                                 In order to deploy your application, simply specify the resources you need as part
-                                 of your application,
-                                 
-                                 along with their associated permissions policies in an AWS CloudFormation template
-                                 file 
-                                 (written in either JSON or YAML), package your deployment artifacts, and deploy the
-                                 template. For more information, see <a href="serverless_app.html">Using the AWS Serverless Application Model (AWS SAM)</a></p>
-                           </li>
-                        </ul>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
                      </div>
-                     <p>Before you learn about the AWS Serverless Model (AWS SAM), we suggest you read the
-                        following section, which discusses Lambda function versioning, aliases and how to
-                        shift traffic to function revisions, which is a pivotal
-                        aspect to serverless application development. For more information, see <a href="versioning-aliases.html">AWS Lambda Function Versioning and Aliases</a>.
+                     <div></div>
+                     <h1 class="topictitle" id="deploying-lambda-apps">AWS Lambda Applications</h1>
+                     <p>An AWS Lambda application is a combination of Lambda functions, event sources, and
+                        other resources that work
+                        together to perform tasks. You can use AWS CloudFormation and other tools to collect
+                        your application&apos;s components into a
+                        single package that can be deployed and managed as one resource. Applications make
+                        your Lambda projects portable and
+                        enable you to integrate with additional developer tools, such as AWS CodePipeline,
+                        AWS CodeBuild, and the AWS Serverless Application Model command
+                        line interface (SAM CLI).
+                     </p>
+                     <p>The <a href="./serverlessrepo/latest/devguide/">AWS Serverless Application Repository</a> provides a collection of Lambda applications that you can deploy
+                        in your account with a few clicks. The repository includes both ready-to-use applications
+                        and samples that you can
+                        use as a starting point for your own projects. You can also submit your own projects
+                        for inclusion.
+                     </p>
+                     <p><a href="./AWSCloudFormation/latest/UserGuide/cfn-whatis-concepts.html">AWS CloudFormation</a> enables you to create a template that defines
+                        your application&apos;s resources and lets you manage the application as a <em>stack</em>. You can more
+                        safely add or modify resources in your application stack. If any part of an update
+                        fails, AWS CloudFormation automatically rolls
+                        back to the previous configuration. With AWS CloudFormation parameters, you can create
+                        multiple environments for your application
+                        from the same template.
+                     </p>
+                     <p>The <a href="serverless_app.html">AWS Serverless Application Model</a> (AWS SAM) is an extension for the AWS CloudFormation template language that
+                        lets you define serverless applications at a higher level. It abstracts away common
+                        tasks such as function role
+                        creation, which makes it easier to write templates. AWS SAM is supported directly
+                        by AWS CloudFormation, and includes additional
+                        functionality through the AWS CLI and AWS SAM CLI.
+                     </p>
+                     <p>The <a href="./cli/latest/userguide/">AWS CLI</a> and <a href="./serverless-application-model/latest/developerguide/serverless-sam-reference.html">AWS SAM
+                           CLI</a> are command line tools for managing Lambda application stacks. In addition to commands
+                        for managing
+                        application stacks with the AWS CloudFormation API, the AWS CLI supports higher-level
+                        commands that simplify tasks like uploading
+                        deployment packages and updating templates. The AWS SAM CLI provides additional functionality,
+                        including validating
+                        templates and testing locally.
                      </p>
                      <div class="highlights">
                         <p><strong>Topics</strong></p>
                         <ul>
+                           <li><a href="applications-console.html">Managing Applications in the AWS Lambda Console</a></li>
                            <li><a href="serverless_app.html">Using the AWS Serverless Application Model (AWS SAM)</a></li>
-                           <li><a href="automating-deployment.html">Automating Deployment of Lambda-based Applications</a></li>
+                           <li><a href="sample-errorprocessor.html">Error Processor Sample Application for AWS Lambda</a></li>
+                           <li><a href="build-pipeline.html">Building a Continuous Delivery Pipeline for a Lambda Application with
+                                 AWS CodePipeline</a></li>
+                           <li><a href="best-practices.html">Best Practices for Working with AWS Lambda Functions</a></li>
                         </ul>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
                   </div>
                   <noscript>
@@ -142,9 +104,10 @@
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -153,8 +116,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="lambda-edge.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="versioning-aliases.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="runtimes-walkthrough.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="applications-console.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -162,6 +127,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

@@ -12,6 +12,8 @@
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,26 +35,28 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="EC2_Network_and_Security.html">Network and Security</a> &#xBB; <span class="breadcrumb">Amazon EC2 Key Pairs</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="EC2_Network_and_Security.html">Network and Security</a> &#xBB; <span class="breadcrumb">Amazon EC2 Key Pairs</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="ec2-key-pairs">Amazon EC2 Key Pairs</h1>
                      <p>Amazon EC2 uses public&#x2013;key cryptography to encrypt and decrypt login information.
-                        Public&#x2013;key cryptography uses a public key to encrypt a piece of data, such as a password,
-                        then the recipient uses the private key to decrypt the data. The public and private
-                        keys are
-                        known as a <em>key pair</em>.
+                        Public&#x2013;key cryptography uses a public key to encrypt a piece of data, and then the
+                        recipient uses the private key to decrypt the data. The public and private keys are
+                        known as a
+                        <em>key pair</em>. Public-key cryptography enables you to securely access your
+                        instances using a private key instead of a password.
                      </p>
-                     <p>To log in to your instance, you must create a key pair, specify the name of the key
-                        pair
-                        		when you launch the instance, and provide the private key when you connect to the
-                        instance.
-                        			<span>On a Linux instance, the public key content is placed in an entry
-                           			within <code>~/.ssh/authorized_keys</code>. This is done at boot time and
-                           			enables you to securely access your instance using the private key instead of a
-                           			password.</span></p>
+                     <p>When you launch an instance, you specify the key pair. You can specify an existing
+                        key pair
+                        or a new key pair that you create at launch. <span>At boot time, the public key
+                           content is placed on the instance in an entry within
+                           <code>~/.ssh/authorized_keys</code>. To log in to your instance, you must specify
+                           the private key when you connect to the instance. For more information, see <a href="LaunchingAndUsingInstances.html">Launch Your Instance</a> and <a href="AccessingInstances.html">Connect to Your Linux Instance</a></span></p>
                      
                      <p class="title"><b>Creating a Key Pair</b></p>
                      
@@ -75,7 +79,7 @@
                      </p>
                      <p>The keys that Amazon EC2 uses are 2048-bit SSH-2 RSA keys. You can have up to five
                         thousand key
-                        pairs per region.
+                        pairs per Region.
                      </p>
                      
                      <p class="title"><b>Launching and Connecting to Your Instance</b></p>
@@ -172,9 +176,8 @@
                         </li>
                         <li>
                            
-                           <p>Enter a name for the new key pair in the <b>Key pair name</b> field of
-                              the <b>Create Key Pair</b> dialog box, and then choose
-                              <b>Create</b>.
+                           <p>For <b>Key pair name</b>, enter a name for the new key pair, and then
+                              choose <b>Create</b>.
                            </p>
                            
                         </li>
@@ -203,7 +206,11 @@
                               that only you can read it.
                            </p>
                            <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>chmod 400 <em class="replaceable"><code>my-key-pair</code></em>.pem</code></strong></code></pre>
-                           </li>
+                           <p>If you do not set these permissions, then you cannot connect to your instance using
+                              this key pair. For more information, see <a href="TroubleshootingInstancesConnecting.html#troubleshoot-unprotected-key">Error: Unprotected Private Key File</a>.
+                           </p>
+                           
+                        </li>
                      </ol>
                      
                      
@@ -221,14 +228,14 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p><a href="./cli/latest/reference/ec2/create-key-pair.html" target="_blank">create-key-pair</a>
+                              <p><a href="./cli/latest/reference/ec2/create-key-pair.html">create-key-pair</a>
                                  (AWS CLI)
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><a href="./powershell/latest/reference/items/New-EC2KeyPair.html" target="_blank">New-EC2KeyPair</a>
+                              <p><a href="./powershell/latest/reference/items/New-EC2KeyPair.html">New-EC2KeyPair</a>
                                  (AWS Tools for Windows PowerShell)
                               </p>
                               
@@ -250,9 +257,10 @@
                         provide standard libraries that you can use to create an RSA key pair.
                      </p>
                      
-                     <p>Amazon EC2 accepts the following formats:</p>
                      
                      <div class="itemizedlist">
+                        
+                        <p class="title"><b>Requirements</b></p>
                         
                         
                         
@@ -260,29 +268,54 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p>OpenSSH public key format <span>(the format in
-                                    <code>~/.ssh/authorized_keys</code>)</span></p>
+                              <div class="itemizedlist">
+                                 
+                                 <p>The following formats are supported:</p>
+                                 
+                                 
+                                 
+                                 
+                                 
+                                 <ul class="itemizedlist" type="disc">
+                                    <li class="listitem">
+                                       
+                                       <p>OpenSSH public key format <span>(the format in
+                                             <code>~/.ssh/authorized_keys</code>)</span></p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p>Base64 encoded DER format</p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p>SSH public key file format as specified in <a href="http://tools.ietf.org/html/rfc4716" target="_blank">RFC4716</a></p>
+                                       
+                                    </li>
+                                    <li class="listitem">
+                                       
+                                       <p>SSH private key file format must be PEM (for example, use <code class="code">ssh-keygen -m
+                                             PEM</code> to convert the OpenSSH key into the PEM format)
+                                       </p>
+                                       
+                                    </li>
+                                 </ul>
+                              </div>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>Base64 encoded DER format</p>
+                              <p>Create an RSA key. Amazon EC2 does not accept DSA keys.</p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>SSH public key file format as specified in <a href="http://tools.ietf.org/html/rfc4716" target="_blank">RFC4716</a></p>
+                              <p>The supported lengths are 1024, 2048, and 4096.</p>
                               
                            </li>
                         </ul>
                      </div>
-                     
-                     <p>Amazon EC2 does not accept DSA keys. Make sure your key generator is set up to create
-                        RSA
-                        keys.
-                     </p>
-                     
-                     <p>Supported lengths: 1024, 2048, and 4096.</p>
                      
                      
                      <p class="title"><b>To create a key pair using a third-party tool</b></p>
@@ -365,14 +398,14 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p><a href="./cli/latest/reference/ec2/import-key-pair.html" target="_blank">import-key-pair</a>
+                              <p><a href="./cli/latest/reference/ec2/import-key-pair.html">import-key-pair</a>
                                  (AWS CLI)
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><a href="./powershell/latest/reference/items/Import-EC2KeyPair.html" target="_blank">Import-EC2KeyPair</a>
+                              <p><a href="./powershell/latest/reference/items/Import-EC2KeyPair.html">Import-EC2KeyPair</a>
                                  (AWS Tools for Windows PowerShell)
                               </p>
                               
@@ -394,7 +427,7 @@
                         </li>
                         <li>
                            
-                           <p>From the navigation bar, select the region in which you created the key pair.</p>
+                           <p>From the navigation bar, select the Region in which you created the key pair.</p>
                            
                         </li>
                         <li>
@@ -427,14 +460,14 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p><a href="./cli/latest/reference/ec2/describe-key-pairs.html" target="_blank">describe-key-pairs</a>
+                              <p><a href="./cli/latest/reference/ec2/describe-key-pairs.html">describe-key-pairs</a>
                                  (AWS CLI)
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><a href="./powershell/latest/reference/items/Get-EC2KeyPair.html" target="_blank">Get-EC2KeyPair</a>
+                              <p><a href="./powershell/latest/reference/items/Get-EC2KeyPair.html">Get-EC2KeyPair</a>
                                  (AWS Tools for Windows PowerShell)
                               </p>
                               
@@ -448,35 +481,24 @@
                      
                      
                      <p>On your local Linux or Mac computer, you can use the <b>ssh-keygen</b> command to
-                        			retrieve the public key for your key pair.
+                        			retrieve the public key for your key pair. Specify the path where you downloaded
+                        your private key
+                        (the <code>.pem</code> file).
                      </p>
-                     	
-                     <p class="title"><b>To retrieve the public key from your computer</b></p>
-                     <ol>
-                        <li> 
-                           <p>Use the <b>ssh-keygen</b> command on a computer to which you&apos;ve downloaded your
-                              					private key:
-                           </p>
-                           			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>ssh-keygen -y</code></strong></code></pre></li>
-                        <li> 
-                           <p>When prompted to enter the file in which the key is, specify the path to your
-                              			<code>.pem</code> file; for example:
-                           </p>
-                           			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">/<em class="replaceable"><code>path_to_key_pair</code></em>/<em class="replaceable"><code>my-key-pair.pem</code></em></code></pre></li>
-                        <li>
-                           <p>The command returns the public key: </p>
-                           			<pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClKsfkNkuSevGj3eYhCe53pcjqP3maAhDFcvBS7O6V
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>ssh-keygen -y -f /<em class="replaceable"><code>path_to_key_pair</code></em>/<em class="replaceable"><code>my-key-pair.pem</code></em></code></strong></code></pre>
+                     
+                     <p>The command returns the public key. For example:</p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClKsfkNkuSevGj3eYhCe53pcjqP3maAhDFcvBS7O6V
 hz2ItxCih+PnDSUaw+WNQn/mZphTk/a/gU8jEzoOWbkM4yxyb/wB96xbiFveSFJuOp/d6RJhJOI0iBXr
 lsLnBItntckiJ7FbtxJMXLvvwJryDUilBMTjYtwB+QhYXUMOzce5Pjz5/i8SeJtjnV3iAoG/cQk+0FzZ
 qaeJAAHco+CY/5WrUBkrHmFJr6HcXkvJdWPkYQS3xqC0+FmUZofz221CBt5IMucxXPkX4rWi+z7wB3Rb
 BQoQzd8v7yeb7OzlPnWOyN0qFU0XA246RA8QFYiCNYwI3f05p6KLxEXAMPLE</code></pre>
-                           			<p>If this command fails, ensure that you&apos;ve changed the permissions on your key pair
-                              file so
-                              				that only you can view it by running the following command:
-                           </p>
-                           			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>chmod 400 <em class="replaceable"><code>my-key-pair</code></em>.pem</code></strong></code></pre>
-                           		</li>
-                     </ol>
+                     
+                     <p>If the command fails, ensure that you&apos;ve changed the permissions on your key pair
+                        file so
+                        that only you can view it by running the following command:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>chmod 400 <em class="replaceable"><code>my-key-pair</code></em>.pem</code></strong></code></pre>
                      
                      
                      <h2 id="retrieving-the-public-key-windows">Retrieving the Public Key for Your Key Pair on Windows</h2>
@@ -546,26 +568,33 @@ BQoQzd8v7yeb7OzlPnWOyN0qFU0XA246RA8QFYiCNYwI3f05p6KLxEXAMPLE my-key-pair</code><
                         calculated using an MD5 hash function.
                      </p>
                      
-                     <p>You can use the fingerprint that&apos;s displayed on the <b>Key Pairs</b> page to
-                        verify that the private key you have on your local machine matches the public key
-                        that&apos;s
-                        stored in AWS.
+                     <p>You can use the SSH2 fingerprint that&apos;s displayed on the <b>Key Pairs</b> 
+                        page to verify that the private key you have on your local machine matches the public
+                        key 
+                        stored in AWS. From the computer where you downloaded the private key file, generate
+                        an
+                        SSH2 fingerprint from the private key file. The output should match the fingerprint
+                        that&apos;s 
+                        displayed in the console.
                      </p>
+                     
                      
                      <p>If you created your key pair using AWS, you can use the OpenSSL tools to generate
                         a
-                        fingerprint from the private key file:
+                        fingerprint as follows:
                      </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><span><code class="prompt" copy="false">$ </code></span><strong class="userinput"><code>openssl pkcs8 -in <em class="replaceable"><code>path_to_private_key</code></em> -inform PEM -outform DER -topk8 -nocrypt | openssl sha1 -c</code></strong></code></pre>
-                     <p>If you created your key pair using a third-party tool and uploaded the public key
-                        to
-                        AWS, you can use the OpenSSL tools to generate a fingerprint from the private key
-                        file on
-                        your local machine:
+                     
+                     <p>If you created a key pair using a third-party tool and uploaded the public key to
+                        AWS, you can use the OpenSSL tools to generate the fingerprint as follows:
                      </p>
                      <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><span><code class="prompt" copy="false">$ </code></span><strong class="userinput"><code>openssl rsa -in <em class="replaceable"><code>path_to_private_key</code></em> -pubout -outform DER | openssl md5 -c</code></strong></code></pre>
-                     <p>The output should match the fingerprint that&apos;s displayed in the console.</p>
                      
+                     <p>If you created an OpenSSH key pair using OpenSSH 7.8 or later and uploaded the public
+                        key to 
+                        AWS, you can use <b>ssh-keygen</b> to generate the fingerprint as follows:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><span><code class="prompt" copy="false">$ </code></span><strong class="userinput"><code>ssh-keygen -ef <em class="replaceable"><code>path_to_private_key</code></em> -m PEM | openssl rsa -RSAPublicKey_in -outform DER | openssl md5 -c</code></strong></code></pre>
                      
                      <h2 id="delete-key-pair">Deleting Your Key Pair</h2>
                      
@@ -639,14 +668,14 @@ BQoQzd8v7yeb7OzlPnWOyN0qFU0XA246RA8QFYiCNYwI3f05p6KLxEXAMPLE my-key-pair</code><
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p><a href="./cli/latest/reference/ec2/delete-key-pair.html" target="_blank">delete-key-pair</a>
+                              <p><a href="./cli/latest/reference/ec2/delete-key-pair.html">delete-key-pair</a>
                                  (AWS CLI)
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><a href="./powershell/latest/reference/items/Remove-EC2KeyPair.html" target="_blank">Remove-EC2KeyPair</a>
+                              <p><a href="./powershell/latest/reference/items/Remove-EC2KeyPair.html">Remove-EC2KeyPair</a>
                                  (AWS Tools for Windows PowerShell)
                               </p>
                               
@@ -658,16 +687,16 @@ BQoQzd8v7yeb7OzlPnWOyN0qFU0XA246RA8QFYiCNYwI3f05p6KLxEXAMPLE my-key-pair</code><
                      <div class="aws-note">
                         <p class="aws-note">Note</p>
                         <p>If you create a Linux AMI from an instance, and then use the AMI to launch a new
-                           instance in a different region or account, the new instance includes the public key
+                           instance in a different Region or account, the new instance includes the public key
                            from the
                            original instance. This enables you to connect to the new instance using the same
                            private
                            key file as your original instance. You can remove this public key from your instance
                            by
-                           removing its entry from the <code>.ssh/authorized_keys</code> file using a text editor of
-                           your choice. For more information about managing users on your instance and providing
-                           remote
-                           access using a specific key pair, see <a href="managing-users.html">Managing User Accounts on Your Linux Instance</a>.
+                           removing its entry from the <code>.ssh/authorized_keys</code> file using a text
+                           editor of your choice. For more information about managing users on your instance
+                           and
+                           providing remote access using a specific key pair, see <a href="managing-users.html">Managing User Accounts on Your Linux Instance</a>.
                         </p>
                      </div>
                      
@@ -802,10 +831,11 @@ BQoQzd8v7yeb7OzlPnWOyN0qFU0XA246RA8QFYiCNYwI3f05p6KLxEXAMPLE my-key-pair</code><
                         </li>
                         <li>
                            
-                           <p>Save the following information that you&apos;ll need to complete this procedure.</p>
+                           <p>From the <b>Description</b> tab, save the following information that you&apos;ll 
+                              need to complete this procedure.
+                           </p>
                            
                            <div class="itemizedlist">
-                              
                               
                               
                               
@@ -826,14 +856,6 @@ BQoQzd8v7yeb7OzlPnWOyN0qFU0XA246RA8QFYiCNYwI3f05p6KLxEXAMPLE my-key-pair</code><
                                     </p>
                                     
                                  </li>
-                                 <li class="listitem">
-                                    
-                                    <p>[EC2-Classic] If the original instance has an associated Elastic IP address, write
-                                       down the Elastic IP address shown in the <b>Elastic IP</b> field in the
-                                       details pane.
-                                    </p>
-                                    
-                                 </li>
                               </ul>
                            </div>
                            
@@ -848,8 +870,7 @@ BQoQzd8v7yeb7OzlPnWOyN0qFU0XA246RA8QFYiCNYwI3f05p6KLxEXAMPLE my-key-pair</code><
                            <div class="aws-note">
                               <p class="aws-note">Warning</p>
                               <p>When you stop an instance, the data on any instance store volumes is erased. 
-                                 Therefore, if you have any data on instance store volumes that you want to keep, be
-                                 sure to back it up to persistent storage.
+                                 To keep data from instance store volumes, be sure to back it up to persistent storage.
                               </p>
                            </div>  
                         </li>
@@ -915,7 +936,7 @@ BQoQzd8v7yeb7OzlPnWOyN0qFU0XA246RA8QFYiCNYwI3f05p6KLxEXAMPLE my-key-pair</code><
                            <p>In the navigation pane, choose <b>Volumes</b> and select the root device
                               volume for the original instance (you wrote down its volume ID in a previous step).
                               Choose
-                              <b>Actions</b>, and then select <b>Detach Volume</b>. Wait
+                              	<b>Actions</b>, <b>Detach Volume</b>, and then select <b>Yes, Detach</b>. Wait
                               for the state of the volume to become <code class="code">available</code>. (You might need to choose
                               the <b>Refresh</b> icon.)
                            </p>
@@ -926,7 +947,7 @@ BQoQzd8v7yeb7OzlPnWOyN0qFU0XA246RA8QFYiCNYwI3f05p6KLxEXAMPLE my-key-pair</code><
                            <p>With the volume still selected, choose <b>Actions</b>, and then select
                               <b>Attach Volume</b>. Select the instance ID of the temporary instance,
                               write down the device name specified under <b>Device</b> (for example,
-                              <code>/dev/sdf</code>), and then choose <b>Yes, Attach</b>.
+                              <code>/dev/sdf</code>), and then choose <b>Attach</b>.
                            </p>
                            
                            <div class="aws-note">
@@ -992,11 +1013,39 @@ xvdg    202:96   0   30G  0 disk</code></code></pre>
                               <li>
                                  
                                  <p>Mount the volume (or partition) at the temporary mount point, using the volume
-                                    name or device name you identified earlier.
+                                    name or device name you identified earlier. The required command depends on your operating
+                                    system&apos;s
+                                    file system.
                                  </p>
-                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo mount /dev/<em class="replaceable"><code>xvdf1</code></em> /mnt/tempvol</code></strong></code></pre>
-                                 </li>
+                                 	
+                                 <div class="itemizedlist">
+                                    		
+                                    		
+                                    	
+                                    <ul class="itemizedlist" type="disc">
+                                       <li class="listitem">
+                                          			
+                                          <p>Amazon Linux, Ubuntu, and Debian</p>
+                                          			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo mount /dev/<em class="replaceable"><code>xvdf1</code></em> /mnt/tempvol</code></strong></code></pre>
+                                          		</li>
+                                       <li class="listitem">
+                                          			
+                                          <p>Amazon Linux 2, CentOS, SLES 12, and RHEL 7.x</p>
+                                          			<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo mount -o nouuid /dev/<em class="replaceable"><code>xvdf1</code></em> /mnt/tempvol</code></strong></code></pre>
+                                          		</li>
+                                    </ul>
+                                 </div>
+                                 	 
+                                 
+                              </li>
                            </ol>
+                           
+                           <div class="aws-note">
+                              <p class="aws-note">Note</p>
+                              <p>If you get an error stating that the file system is corrupt, run the following command
+                                 to 
+                                 use the <b>fsck</b> utility to check the file system and repair any issues:
+                              </p><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><code class="prompt" copy="false">[ec2-user ~]$ </code><strong class="userinput"><code>sudo fsck /dev/<em class="replaceable"><code>xvdf1</code></em></code></strong></code></pre></div>
                            
                         </li>
                         <li>
@@ -1048,7 +1097,7 @@ total 4
                         <li>
                            
                            <p>From the Amazon EC2 console, select the volume with the volume ID that you wrote down,
-                              choose <b>Actions</b>, and then select <b>Detach Volume</b>.
+                              choose <b>Actions</b>, <b>Detach Volume</b>, and then select <b>Yes, Detach</b>.
                               Wait for the state of the volume to become <code class="code">available</code>. (You might need to
                               choose the <b>Refresh</b> icon.)
                            </p>
@@ -1060,7 +1109,7 @@ total 4
                                  Volume</b>. Select the instance ID of the original instance, specify the device
                               name you noted earlier for the original root device attachment
                               (<code>/dev/sda1</code> or <code>/dev/xvda</code>), and then choose
-                              <b>Yes, Attach</b>.
+                              <b>Attach</b>.
                            </p>
                            
                            <div class="aws-note">
@@ -1091,44 +1140,6 @@ total 4
                         </li>
                         <li>
                            
-                           <p>[EC2-Classic] If the original instance had an associated Elastic IP address before
-                              you
-                              stopped it, you must re-associate it with the instance as follows:
-                           </p>
-                           
-                           <ol>
-                              <li>
-                                 
-                                 <p>In the navigation pane, choose <b>Elastic IPs</b>.
-                                 </p>
-                                 
-                              </li>
-                              <li>
-                                 
-                                 <p>Select the Elastic IP address that you wrote down at the beginning of this
-                                    procedure.
-                                 </p>
-                                 
-                              </li>
-                              <li>
-                                 
-                                 <p>Choose <b>Actions</b>, and then select <b>Associate
-                                       address</b>.
-                                 </p>
-                                 
-                              </li>
-                              <li>
-                                 
-                                 <p>Select the ID of the original instance, and then choose
-                                    <b>Associate</b>.
-                                 </p>
-                                 
-                              </li>
-                           </ol>
-                           
-                        </li>
-                        <li>
-                           
                            <p>(Optional) You can terminate the temporary instance if you have no further use for
                               it.
                               Select the temporary instance, choose <b>Actions</b>, select
@@ -1139,15 +1150,19 @@ total 4
                      </ol>
                      
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -1157,7 +1172,9 @@ total 4
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="EC2_Network_and_Security.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="using-network-security.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -1180,6 +1197,10 @@ total 4
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

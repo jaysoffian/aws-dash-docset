@@ -7,12 +7,14 @@
       <link rel="prev" href="SelectObjectContentUsingOtherSDKs.html" title="Selecting Content from Objects Using
                 Other SDKs">
       <link rel="next" href="restoring-objects-console.html" title="Restore an Archived Object Using the Amazon S3
-            Console">
-      <meta name="description" content="To access an archived object, you must initiate a restore request which you can do programmatically by using the Amazon S3 console.">
+                Console">
+      <meta name="description" content="To access an archived object, you must initiate a restore request, which you can do programmatically by using the Amazon S3 console.">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/restoring-objects.html">
@@ -22,7 +24,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -34,47 +36,97 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="UsingObjects.html">Working with Amazon S3 Objects</a> &#xBB; <a href="ObjectOperations.html">Operations on Objects</a> &#xBB; <span class="breadcrumb">Restoring Archived Objects</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="UsingObjects.html">Working with Amazon S3 Objects</a> &#xBB; <a href="ObjectOperations.html">Operations on Objects</a> &#xBB; <span class="breadcrumb">Restoring Archived Objects</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="restoring-objects">Restoring Archived Objects</h1>
-                     <p>Objects archived to Amazon Glacier are not accessible in real-time. You must first
-                        initiate a
-                        restore request and then wait until a temporary copy of the object is available for
-                        the
-                        duration (number of days) that you specify in the request. The time it takes restore
-                        jobs to
-                        complete depends on which retrieval option you specify <code class="code">Standard</code>, 
-                        <code class="code">Expedited</code>, or <code class="code">Bulk</code>. For
-                        more information about archiving objects to Amazon Glacier, see <a href="lifecycle-transition-general-considerations.html#before-deciding-to-archive-objects">Transitioning to the GLACIER
-                           Storage Class (Object Archival)</a>.
+                     <p>Objects that you archive to the GLACIER or DEEP_ARCHIVE storage classes are not accessible
+                        in real time. You must first initiate a restore request, and then wait until a temporary
+                        copy of the object is available for the duration (number of days) that you specify
+                        in the
+                        request. For more information about how the GLACIER, DEEP_ARCHIVE, and other Amazon
+                        S3 storage
+                        classes compare, see <a href="storage-class-intro.html">Amazon S3 Storage Classes</a>. 
+                     </p>
+                     <p>Amazon S3 restores a temporary copy of the object only for the specified duration.
+                        After that,
+                        it deletes the restored object copy. You can modify the expiration period of a restored
+                        copy
+                        by reissuing a restore. In this case, Amazon S3 updates the expiration period relative
+                        to the
+                        current time. 
+                     </p>
+                     <p>Amazon S3 calculates the expiration time of the restored object copy by adding the
+                        number of
+                        days specified in the restoration request to the current time. It then rounds the
+                        resulting
+                        time to the next day at midnight Universal Coordinated Time (UTC). For example, suppose
+                        that
+                        an object was created on October 15, 2012 10:30 AM UTC, and the restoration period
+                        was
+                        specified as three days. In this case, the restored copy expires on October 19, 2012
+                        00:00
+                        UTC, at which time Amazon S3 deletes the object copy. 
                      </p>
                      <p>After you receive a temporary copy of the restored object, the object&apos;s storage class
-                        remains <code class="code">GLACIER</code> (a GET or HEAD request will return <code class="code">GLACIER</code> as the
-                        storage class). Note that when you restore an archive you pay for both the archive
-                        (<code class="code">GLACIER</code>
-                        rate) and a copy you restored temporarily (<code class="code">RRS</code> rate). For information about pricing, see
-                        <a href="https://aws.amazon.com/s3/pricing/" target="_blank">Amazon S3 Pricing</a>. 
+                        remains GLACIER or DEEP_ARCHIVE. (A <a href="./AmazonS3/latest/API/RESTObjectHEAD.html">HEAD
+                           Object</a> or the <a href="./AmazonS3/latest/API/RESTObjectGET.html">GET Object</a> API
+                        operations request returns GLACIER or DEEP_ARCHIVE as the storage class.) 
                      </p>
-                     <p>The following topics provide more information.</p>
+                     <p>The time it takes a restore job to finish depends on which archive storage class you
+                        use
+                        and which retrieval option you specify: <code class="code">Expedited</code> (only available for GLACIER),
+                        <code class="code">Standard</code>, or <code class="code">Bulk</code>. You can be notified when your restore is
+                        complete using Amazon S3 event notifications. For more information, see <a href="NotificationHowTo.html"> Configuring Amazon S3 Event Notifications</a>.
+                     </p>
+                     <p>You can restore an object copy for any number of days. However you should restore
+                        objects
+                        only for the duration that you need because of the storage costs associated with the
+                        object
+                        copy. When you restore an archive, you pay for both the archive (at the GLACIER or
+                        DEEP_ARCHIVE rate) and a copy that you restored temporarily
+                        (Reduced
+                        Redundancy Storage (RRS) rate). For information about pricing, see <a href="https://aws.amazon.com/s3/pricing/" target="_blank">Amazon S3 Pricing</a>.
+                     </p>
+                     <p>When required, you can restore large segments of the data stored in the GLACIER and
+                        DEEP_ARCHIVE storage classes. For example, you might want to restore data for a secondary
+                        copy. However, if you need to restore a large amount of data, keep in mind that the
+                        GLACIER
+                        and DEEP_ARCHIVE storage classes are designed for 35 random restore requests per pebibyte
+                        (PiB) stored per day.
+                     </p>
+                     <p>For information about using lifecycle transitions to move objects to the GLACIER or
+                        DEEP_ARCHIVE storage classes, see <a href="lifecycle-transition-general-considerations.html#before-deciding-to-archive-objects">Transitioning to the
+                           GLACIER and DEEP ARCHIVE Storage Classes (Object Archival)</a>.
+                     </p>
+                     <p>The following sections provide more information.</p>
                      <div class="highlights">
                         <p><strong>Topics</strong></p>
                         <ul>
                            <li><a href="#restoring-objects-retrieval-options">Archive Retrieval Options</a></li>
+                           <li><a href="#restoring-objects-upgrade-tier">Upgrading the Speed of an In-Progress
+                                 Restore</a></li>
                            <li><a href="restoring-objects-console.html">Restore an Archived Object Using the Amazon S3
                                  Console</a></li>
                            <li><a href="restoring-objects-java.html">Restore an Archived Object Using the
                                  AWS SDK for Java</a></li>
-                           <li><a href="restore-object-dotnet.html">Restore an Archived Object Using the AWS SDK for .NET</a></li>
-                           <li><a href="restoring-objects-rest.html">Restore an Archived Object Using the REST API</a></li>
+                           <li><a href="restore-object-dotnet.html">Restore an Archived Object Using the
+                                 AWS SDK for .NET</a></li>
+                           <li><a href="restoring-objects-rest.html">Restore an Archived Object Using the REST
+                                 API</a></li>
                         </ul>
                      </div>
+                     
                      <h2 id="restoring-objects-retrieval-options">Archive Retrieval Options</h2>
                      
-                     
-                     <p>You can specify one of the following when restoring an archived object: </p>
+                     <p>The following are the available retrieval options when restoring an archived object:
+                        
+                     </p>
                      
                      <div class="itemizedlist">
                         
@@ -85,93 +137,205 @@
                            <li class="listitem">
                               
                               <p><b><code class="code">Expedited</code></b> - Expedited retrievals
-                                 allow you to quickly access your data when occasional urgent requests for a
-                                 subset of archives are required. For all but the largest archived objects (250
-                                 MB+), data accessed using Expedited retrievals are typically made available
-                                 within 1&#x2013;5 minutes. There are two types of Expedited retrievals: On-Demand and
-                                 Provisioned. On-Demand requests are similar to EC2 On-Demand instances and are
-                                 available most of the time. Provisioned requests are guaranteed to be available
-                                 when you need them. For more information, see <a href="restoring-objects.html#restoring-objects-expedited-capacity">Provisioned Capacity</a>. 
+                                 allow you to quickly access your data stored in the GLACIER storage class when
+                                 occasional urgent requests for a subset of archives are required. For all but
+                                 the largest archived objects (250 MB+), data accessed using Expedited retrievals
+                                 is typically made available within 1&#x2013;5 minutes. Provisioned capacity ensures
+                                 that retrieval capacity for Expedited retrievals is available when you need it.
+                                 For more information, see <a href="restoring-objects.html#restoring-objects-expedited-capacity">Provisioned Capacity</a>. Expedited retrievals
+                                 and provisioned capacity are not available for objects stored in the
+                                 DEEP_ARCHIVE storage class.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
                               <p><b><code class="code">Standard</code></b> - Standard retrievals
-                                 allow you to access any of your archived objects within several hours. Standard
-                                 retrievals typically complete within 3&#x2013;5 hours. This is the default option for
-                                 retrieval requests that do not specify the retrieval option.
+                                 allow you to access any of your archived objects within several hours. This is
+                                 the default option for the GLACIER and DEEP_ARCHIVE retrieval requests that do
+                                 not specify the retrieval option. Standard retrievals typically finish within
+                                 3&#x2013;5 hours for objects stored in the GLACIER storage class. They typically finish
+                                 within 12 hours for objects stored in the DEEP_ARCHIVE storage class. 
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><b><code class="code">Bulk</code></b> - Bulk retrievals are Amazon Glacier&#x2019;s lowest-cost
-                                 retrieval option, enabling you to retrieve large amounts, even petabytes, of
-                                 data inexpensively in a day. Bulk retrievals typically complete within 5&#x2013;12
-                                 hours.
+                              <p><b><code class="code">Bulk</code></b> - Bulk retrievals are the
+                                 lowest-cost retrieval option in Amazon S3 Glacier, enabling you to retrieve large
+                                 amounts, even petabytes, of data inexpensively. Bulk retrievals typically finish
+                                 within 5&#x2013;12 hours for objects stored in the GLACIER storage class. They
+                                 typically finish within 48 hours for objects stored in the DEEP_ARCHIVE storage
+                                 class.
                               </p>
                               
                            </li>
                         </ul>
                      </div>
                      
+                     <p>The following table summarizes the archival retrieval options.</p>
+                     
+                     <div class="table">
+                        <p class="title"><b>Retrieval Options</b></p>
+                        <div class="table-contents">
+                           <table id="w203aac19c27c31c23b9">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>Storage Class</th>
+                                 
+                                 <th>Expedited</th>
+                                 
+                                 <th>Standard</th>
+                                 
+                                 <th>Bulk</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>GLACIER</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>1&#x2013;5 minutes</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>3&#x2013;5 hours</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>5&#x2013;12 hours</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>DEEP_ARCHIVE</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Not Available</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Within 12 hours</p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Within 48 hours</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
                      <p>To make an <code class="code">Expedited</code>, <code class="code">Standard</code>, or <code class="code">Bulk</code>
-                        retrieval, set the <code class="code">Tier</code> request element in the <a href="./AmazonS3/latest/API/RESTObjectPOSTrestore.html" target="_blank">POST Object restore</a> REST API
-                        request to the option you want, or the equivalent in the AWS CLI, or AWS SDKs. For
-                        Expedited retrievals, there is no need to designate whether an expedited retrieval
-                        is
-                        On-Demand or Provisioned. If you have purchased provisioned capacity, all Expedited
-                        retrievals are automatically served through your provisioned capacity. 
+                        retrieval, set the <code class="code">Tier</code> request element in the <a href="./AmazonS3/latest/API/RESTObjectPOSTrestore.html">POST Object restore</a> REST API
+                        request to the option you want, or the equivalent in the AWS CLI, or AWS SDKs. If
+                        you have
+                        purchased provisioned capacity, all Expedited retrievals are automatically served
+                        through your provisioned capacity. 
                      </p>
                      
-                     
                      <p>You can restore an archived object programmatically or by using the Amazon S3 console.
-                        Amazon S3 processes only one restore request at a time per object. You can use both
-                        the
-                        console and the Amazon S3 API to check the restoration status and to find out when
                         Amazon S3
-                        will delete the restored copy. 
+                        processes only one restore request at a time per object. You can use both the console
+                        and the Amazon S3 API to check the restoration status and to find out when Amazon
+                        S3 will delete
+                        the restored copy. 
                      </p>
                      
                      
                      
                      <h3 id="restoring-objects-expedited-capacity">Provisioned Capacity</h3>
                      
-                     
-                     <p>Provisioned capacity guarantees that your retrieval capacity for expedited
-                        retrievals is available when you need it. Each unit of capacity ensures that at
-                        least three expedited retrievals can be performed every five minutes and provides
-                        up
-                        to 150 MB/s of retrieval throughput.
+                     <p>Provisioned capacity ensures that your retrieval capacity for expedited retrievals
+                        is available when you need it. Each unit of capacity provides that at least three
+                        expedited retrievals can be performed every five minutes and provides up to 150 MB/s
+                        of retrieval throughput.
                      </p>
                      
-                     <p>You should purchase provisioned retrieval capacity if your workload
-                        requires highly reliable and predictable access to a subset of your data in
-                        minutes. Without provisioned capacity Expedited retrievals are accepted,
-                        except for rare situations of unusually high demand. However, if you require
-                        access to Expedited retrievals under all circumstances, you must purchase
-                        provisioned retrieval capacity. You can purchase provisioned capacity using
-                        the Amazon S3 console, the Amazon Glacier console, the 
-                        <a href="./amazonglacier/latest/dev/api-PurchaseProvisionedCapacity.html" target="_blank">Purchase Provisioned Capacity</a>
-                        REST API, the AWS
-                        SDKs, or the AWS CLI. For provisioned capacity pricing information, see the
-                        <a href="https://aws.amazon.com/glacier/pricing/" target="_blank">Amazon Glacier Pricing</a>. 
+                     <p>You should purchase provisioned retrieval capacity if your workload requires
+                        highly reliable and predictable access to a subset of your data in minutes. Without
+                        provisioned capacity, Expedited retrievals might not be accepted during periods of
+                        high demand. If you require access to Expedited retrievals under all circumstances,
+                        we recommend that you purchase provisioned retrieval capacity. 
+                     </p>
+                     
+                     <p>You can purchase provisioned capacity using the Amazon S3 console, the Amazon S3 Glacier
+                        console, the <a href="./amazonglacier/latest/dev/api-PurchaseProvisionedCapacity.html">Purchase
+                           Provisioned Capacity</a> REST API, the AWS SDKs, or the AWS CLI. For
+                        provisioned capacity pricing information, see <a href="https://aws.amazon.com/s3/pricing/" target="_blank">Amazon S3 Pricing</a>. 
+                     </p>
+                     
+                     <p>Expedited retrievals using provisioned capacity still incur request and retrieval
+                        charges, and are not available for the DEEP_ARCHIVE storage class.
                      </p>
                      
                      
                      
+                     <h2 id="restoring-objects-upgrade-tier">Upgrading the Speed of an In-Progress
+                        Restore
+                     </h2>
                      
+                     <p>Using Amazon S3 restore speed upgrade, you can change the restore speed to a faster
+                        speed
+                        while the restore is in progress. A restore speed upgrade overrides an in-progress
+                        restore with a faster restore tier. You cannot slow down an in-progress restore.
+                     </p>
                      
+                     <p>To upgrade the speed of an in-progress restoration, issue another restore request
+                        to
+                        the same object that sets a new <code class="code">Tier</code> request element in the <a href="./AmazonS3/latest/API/RESTObjectPOSTrestore.html">POST Object restore</a> REST API,
+                        or the equivalent in the AWS CLI or AWS SDKs. When issuing a request to upgrade the
+                        restore tier, you must choose a tier that is faster than the tier that the in-progress
+                        restore is using. You must not change any other parameters, such as the
+                        <code class="code">Days</code> request element. 
+                     </p>
+                     
+                     <p>You can be notified of the completion of the restore by using Amazon S3 event
+                        notifications. Restores are charged at the price of the upgraded tier. For information
+                        about restore pricing, see <a href="https://aws.amazon.com/s3/pricing/" target="_blank">Amazon S3
+                           Pricing</a>.
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -181,7 +345,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="SelectObjectContentUsingOtherSDKs.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="restoring-objects-console.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -191,11 +357,18 @@
                      <p>On this page:</p>
                      <ul class="pagetoc">
                         <li class="pagetoc" name="Archive Retrieval Options"><a class="pagetoc" href="#restoring-objects-retrieval-options">Archive Retrieval Options</a></li>
+                        <li class="pagetoc" name="Upgrading the Speed of an In-Progress
+                Restore"><a class="pagetoc" href="#restoring-objects-upgrade-tier">Upgrading the Speed of an In-Progress
+                              Restore</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

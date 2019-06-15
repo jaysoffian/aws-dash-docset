@@ -1,0 +1,1000 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Create a REST API with Lambda
+         Integrations in Amazon API Gateway - Amazon API Gateway
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="getting-started.html" title="Getting Started with Amazon API Gateway">
+      <link rel="prev" href="setting-up.html" title="Prerequisites: Get Ready to Build an API in API Gateway">
+      <link rel="next" href="apigateway-getting-started-mock.html" title="Create a REST API with a Mock Integration
+            in Amazon API Gateway">
+      <meta name="description" content="Learn how to create Lambda integrations in API Gateway.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon API Gateway">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-getting-started-with-rest-apis.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="getting-started.html">Getting Started with Amazon API Gateway</a> &#xBB; <span class="breadcrumb">Create a REST API with Lambda
+                                    Integrations in Amazon API Gateway</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="apigateway-getting-started-with-rest-apis">Create a REST API with Lambda
+                        Integrations in Amazon API Gateway
+                     </h1>
+                     <p>You can use this walkthrough to create and deploy a REST API with a Lambda proxy
+                        integration and a Lambda non-proxy integration in Amazon API Gateway.
+                     </p>
+                     <p>In a Lambda integration, the HTTP method request from the client is mapped to a backend
+                        <a href="./lambda/latest/dg/API_Invoke.html">Lambda function
+                           invocation</a>.
+                     </p>
+                     <p>In a <em>Lambda proxy integration</em>, the entire client request is sent to
+                        the backend Lambda function as is, except that the order of the request parameters
+                        isn&apos;t
+                        preserved. API Gateway maps the entire client request to the input <code class="code">event</code> parameter of
+                        the backend Lambda function. The Lambda function&apos;s output, including status code,
+                        headers, and
+                        body, is returned to the client as is. For many use cases, this is the preferred integration
+                        type. For more information, see <a href="set-up-lambda-proxy-integrations.html">Set up Lambda Proxy Integrations in
+                           API Gateway</a>.
+                     </p>
+                     <p>In a <em>Lambda non-proxy integration</em> (also called a &quot;custom
+                        integration&quot;), you configure the way the parameters, headers, and body of the client&apos;s
+                        request are translated into the format that your backend Lambda function requires.
+                        And you
+                        configure the way the Lambda function output is translated back to the format that&apos;s
+                        required
+                        by the client. For more information, see <a href="set-up-lambda-custom-integrations.html">Set up Lambda Custom Integrations in
+                           API Gateway</a>.
+                     </p>
+                     <p>Depending on your use case, you may choose to use Lambda proxy integration, Lambda
+                        non-proxy
+                        integration, or both in your API Gateway API.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#apigateway-getting-started-rest-step-1">Step 1: Create a Lambda
+                                 Function in the Lambda Console</a></li>
+                           <li><a href="#apigateway-getting-started-rest-step-2">Step 2: Create a REST API in
+                                 the API Gateway Console</a></li>
+                           <li><a href="#apigateway-getting-started-rest-step-3">Step 3: Deploy Your REST API in
+                                 the API Gateway Console</a></li>
+                           <li><a href="#apigateway-getting-started-rest-step-4">Step 4: Create a Second Lambda
+                                 Function in the Lambda Console</a></li>
+                           <li><a href="#apigateway-getting-started-rest-step-5">Step 5: Add a Resource, Method,
+                                 and Parameter to the REST API in the API Gateway Console</a></li>
+                           <li><a href="#apigateway-getting-started-rest-next-steps">Next Steps</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="apigateway-getting-started-rest-step-1">Step 1: Create a Lambda
+                        Function in the Lambda Console
+                     </h2>
+                     
+                     <p>In this step, you use the AWS Lambda console to create a simple Lambda function. You&apos;ll
+                        use this function in the following steps.
+                     </p>
+                     
+                     <ol>
+                        <li>
+                           
+                           <p>If you haven&apos;t already done so, complete the steps in <a href="setting-up.html">Prerequisites: Get Ready to Build an API in API Gateway</a>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Complete the steps in <a href="./lambda/latest/dg/getting-started-create-function.html">To create a
+                                 Lambda function</a> in the AWS Lambda Developer Guide.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <h2 id="apigateway-getting-started-rest-step-2">Step 2: Create a REST API in
+                        the API Gateway Console
+                     </h2>
+                     
+                     <p>In this step, you create a simple REST API in the API Gateway console and attach your
+                        Lambda
+                        function to it as a backend.
+                     </p>
+                     
+                     <ol>
+                        <li>
+                           
+                           <p>From the <b>Services</b> menu, choose <b>API Gateway</b>
+                              to go to the API Gateway console.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>If this is your first time using API Gateway, you see a page that introduces you to
+                              the features of the service. Choose <b>Get Started</b>. When the
+                              <b>Create Example API</b> popup appears, choose
+                              <b>OK</b>.
+                           </p>
+                           
+                           <p>If this isn&apos;t your first time using API Gateway, choose <b>Create
+                                 API</b>.
+                           </p>
+                           
+                           <div class="mediaobject">
+                              
+                              <img src="../../..//img/apigateway-get-started-button.png" alt="
+                        API Gateway Getting Started
+                    " style="max-width:100%">
+                              
+                              
+                              
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Under <b>Choose the protocol</b>, choose
+                              <b>REST</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Under <b>Create new API</b>, choose <b>New
+                                 API</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Under <b>Settings</b>:
+                           </p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p>For <b>API name</b>, enter <code class="code">my-api</code>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>If desired, enter a description in the
+                                       <b>Description</b> field; otherwise, leave it
+                                       empty.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p>Leave <b>Endpoint Type</b> set to
+                                       <b>Regional</b>.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create API</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Under <b>Resources</b>, you&apos;ll see nothing but
+                              <b>/</b>. This is the root-level resource, which corresponds
+                              to the base path URL for your API
+                              (<code class="code">https://b123abcde4.execute-api.us-west-2.amazonaws.com/<em class="replaceable"><code>{stage-name}</code></em>)</code>.
+                           </p>
+                           
+                           <p>From the <b>Actions</b> dropdown menu, choose
+                              <b>Create Method</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Under the resource name (<b>/</b>), you&apos;ll see a dropdown menu.
+                              Choose <b>GET</b> and then choose the checkmark icon to save
+                              your choice.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the <b>/ &#x2013; GET &#x2013; Setup</b> pane, for <b>Integration
+                                 type</b>, choose <b>Lambda Function</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Use Lambda proxy integration</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Lambda Region</b>, choose the Region where you created
+                              your Lambda function.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the <b>Lambda Function</b> field, type any character and then
+                              choose <b>my-function</b> (or whatever name you gave the function that you created in the previous step) from
+                              the dropdown menu. (If the
+                              dropdown menu doesn&apos;t appear, delete the character you just typed to make the
+                              dropdown menu appear.) Leave Use <b>Default Timeout</b> checked.
+                              Choose <b>Save</b> to save your choice.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>When the <b>Add Permission to Lambda Function</b> popup appears
+                              (saying <b>&quot;You are about to give API Gateway permission to invoke your Lambda
+                                 function&#x2026;&quot;</b>), choose <b>OK</b> to grant API Gateway
+                              that permission.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>Now you&apos;ll see a <b>/ &#x2013; GET &#x2013; Method Execution</b> pane:
+                     </p>
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/apigateway-get-method-execution-boxes.png" alt="
+                API Gateway Method Execution pane
+            " style="max-width:100%">
+                        
+                        
+                        
+                     </div>
+                     
+                     <p>The <b>Method Execution</b> pane contains these items, in clockwise
+                        order:
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><b>Client</b>: This box represents the client (browser or app)
+                                 that calls your API&apos;s <code class="code">GET</code> method. If you choose the
+                                 <b>Test</b> link and then choose <b>Test</b>,
+                                 this simulates a <code class="code">GET</code> request from a client.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>Method Request</b>: This box represents the client&apos;s
+                                 <code class="code">GET</code> request as it&apos;s received by API Gateway. If you choose
+                                 <b>Method Request</b>, you&apos;ll see settings for things like
+                                 authorization and modifying the method request before it&apos;s passed through to the
+                                 backend as an integration request. For this step, leave everything set to the
+                                 default values.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>Integration Request</b>: This box represents the
+                                 <code class="code">GET</code> request as it&apos;s passed to the backend. Here the settings
+                                 depend on the <b>Integration Type</b> that&apos;s selected. The
+                                 <b>URL Path Parameters</b>, <b>URL Query String
+                                    Parameters</b>, <b>HTTP Headers</b>, and
+                                 <b>Mapping Templates</b> settings are for modifying the method
+                                 request as needed by the specific backend. Leave the <b>Integration
+                                    Type</b> set to <b>Lambda function</b>, and leave the
+                                 other settings set to the default values.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>Lambda <code class="code">my-function</code></b>: This box represents the
+                                 backend Lambda function you created in Step 1. If you choose
+                                 <code class="code">my-function</code>, that opens the <code class="code">my-function</code> Lambda
+                                 function in the Lambda console.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>Integration Response</b>: This box represents the response
+                                 from the backend, before it&apos;s passed to the client as a method response. For a
+                                 Lambda proxy integration, this entire box is grayed out, because a proxy
+                                 integration returns the <a href="./apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-output-format">Lambda function&apos;s output</a> as is. For a Lambda non-proxy integration,
+                                 you can configure the integration response to transform the Lambda function&apos;s
+                                 output into a form that&apos;s appropriate for the client application. You&apos;ll learn
+                                 how to do that later in this walkthrough.
+                              </p>
+                              
+                              <p>For this Getting Started procedure, leave everything set to the default
+                                 values.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>Method Response</b>: This box represents the method response
+                                 that&apos;s returned to the client as an HTTP status code, an optional response
+                                 header, and an optional response body. By default, the response body that&apos;s
+                                 returned by your Lambda function is passed through as is as a JSON document, so
+                                 the response body default setting is <code class="code">application/json</code> with an empty
+                                 model (indicating that the body is passed through as is). Here, too, leave
+                                 everything set to the default values.
+                              </p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     
+                     <h2 id="apigateway-getting-started-rest-step-3">Step 3: Deploy Your REST API in
+                        the API Gateway Console
+                     </h2>
+                     
+                     <p>Once you complete Step 2, you&apos;ve created an API, but you can&apos;t actually use it yet.
+                        This is because it needs to be deployed.
+                     </p>
+                     
+                     <ol>
+                        <li>
+                           
+                           <p>From the <b>Actions</b> dropdown menu, choose <b>Deploy
+                                 API</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>From the <b>Deployment stage</b> dropdown menu, choose
+                              <b>[New Stage]</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Stage name</b>, enter <code class="code">prod</code>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Deploy</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the <code class="code">prod</code>
+                              <b>Stage Editor</b>, note the <b>Invoke URL</b> at
+                              the top. It should be in this format:
+                              (<code class="code">https://<em class="replaceable"><code>b123abcde4</code></em>.execute-api.<em class="replaceable"><code>us-west-2</code></em>.amazonaws.com/prod</code>).
+                              If you choose the <b>Invoke URL</b>, it will open a new browser
+                              tab with that URL. If you refresh the new browser tab, you&apos;ll see the message
+                              body (<code class="code">&quot;Hello from Lambda!&quot;</code>) returned.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>For actual API testing, you would use a tool such as <a href="https://curl.haxx.se/" target="_blank">cURL</a> or <a href="https://www.getpostman.com/" target="_blank">POSTMAN</a> to test your API. For example, if you have <code class="code">cURL</code>
+                        installed on your computer, you can test your API as follows:
+                     </p>
+                     
+                     <ol>
+                        <li>
+                           
+                           <p>Open a terminal window.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Copy the following cURL command and paste it into the terminal window,
+                              replacing <code class="code"><em class="replaceable"><code>b123abcde4</code></em></code> with your API&apos;s API
+                              ID and <code class="code"><em class="replaceable"><code>us-west-2</code></em></code> with the Region where
+                              your API is deployed.
+                           </p>
+                           
+                           <div class="option container">
+                              <div class="optionselector"><span class="optionanchor" id=""><span class="option  selected" data-tab="linux-or-macintosh">Linux or Macintosh</span></span><span class="optionanchor" id=""><span class="option " data-tab="windows">Windows</span></span></div>
+                              <dl>
+                                 <dt>Linux or Macintosh</dt>
+                                 <dd class="selected" data-tab="linux-or-macintosh"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">curl -X GET &apos;https://<em class="replaceable"><code>b123abcde4</code></em>.execute-api.<em class="replaceable"><code>us-west-2</code></em>.amazonaws.com/prod&apos;</code></pre></dd>
+                                 <dt>Windows</dt>
+                                 <dd class="" data-tab="windows"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">curl -X GET &quot;https://<em class="replaceable"><code>b123abcde4</code></em>.execute-api.<em class="replaceable"><code>us-west-2</code></em>.amazonaws.com/prod&quot;</code></pre></dd>
+                              </dl>
+                           </div>
+                           
+                           <p>This command returns the following output: <code class="code">&quot;Hello from
+                                 Lambda!&quot;</code>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <h2 id="apigateway-getting-started-rest-step-4">Step 4: Create a Second Lambda
+                        Function in the Lambda Console
+                     </h2>
+                     
+                     <p>In this step, you&apos;ll create a second backend Lambda function. This one takes an input
+                        parameter. In Step 5 you&apos;ll create a child resource in your API that has its own
+                        <code class="code">GET</code> method, which you&apos;ll configure to pass a parameter value to this
+                        new function.
+                     </p>
+                     
+                     <ol>
+                        <li>
+                           
+                           <p>Choose <b>Lambda</b> from the
+                              <b>Services</b> menu to go to the Lambda console.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create function</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Author from scratch</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Function name</b>, enter
+                              <code class="code">my-function2</code>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Under <b>Runtime</b>, choose <b>Node.js 8.10</b>
+                              or <b>Python 3.7</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Under <b>Permissions</b>, expand <b>Choose or create an
+                                 execution role</b>. From the <b>Execution role</b>
+                              dropdown list, choose <b>Use an existing role</b>. From
+                              <b>Existing role</b>, choose the role from your previous Lambda
+                              function. The role&apos;s name will be in the form
+                              <code class="code">service-role/my-function-<em>a1b23c4d</em></code>. Or
+                              choose <b>Create a new role with basic Lambda
+                                 permissions</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create function</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the <b>Function code</b> pane, you&apos;ll see the default &quot;Hello
+                              from Lambda!&quot; function. Replace the entire function with the following:
+                           </p>
+                           
+                           <div class="option container">
+                              <div class="optionselector"><span class="optionanchor" id=""><span class="option  selected" data-tab="node.js-8.10">Node.js 8.10</span></span><span class="optionanchor" id=""><span class="option " data-tab="python-3.7">Python 3.7</span></span></div>
+                              <dl>
+                                 <dt>Node.js 8.10</dt>
+                                 <dd class="selected" data-tab="node.js-8.10"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="js ">exports.handler = async (event) =&gt; {
+    let myParam = event.myParam;
+    const response = {
+        statusCode: 200,
+        body: JSON.stringify(myParam)
+    };
+    return response;
+};</code></pre></dd>
+                                 <dt>Python 3.7</dt>
+                                 <dd class="" data-tab="python-3.7"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="py ">import json
+def lambda_handler(event, context):
+    myParam = event[&apos;myParam&apos;]
+    return {
+        &apos;statusCode&apos;: 200,
+        &apos;body&apos;: json.dumps(myParam)
+    }</code></pre></dd>
+                              </dl>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Save</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <h2 id="apigateway-getting-started-rest-step-5">Step 5: Add a Resource, Method,
+                        and Parameter to the REST API in the API Gateway Console
+                     </h2>
+                     
+                     <p>Resources and methods are the nouns and verbs of your REST API. In this step, you&apos;ll
+                        create a child resource for the API and add a <code class="code">GET</code> method to the resource.
+                        You&apos;ll add a query string parameter to the new method to match the input parameter
+                        for
+                        the Lambda function you created in Step 4. You&apos;ll integrate the new function with
+                        the
+                        method to illustrate how to get user input (a simple &quot;Hello from API Gateway!&quot; text
+                        string) and map it to the Lambda function&apos;s input (also a simple string).
+                     </p>
+                     
+                     <ol>
+                        <li>
+                           
+                           <p>Choose <b>API Gateway</b> from the <b>Services</b>
+                              menu to go to the API Gateway console.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>From the <b>APIs</b> list, choose
+                              <b>my-api</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Under <b>Resources</b>, choose <b>/</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>From the <b>Actions</b> dropdown menu, choose <b>Create
+                                 Resource</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Resource Name</b>, enter <code class="code">my-resource</code>. Notice
+                              that the <b>Resource Path</b> field is populated automatically
+                              with the resource name.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create Resource</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>From the <b>Actions</b> dropdown menu, choose <b>Create
+                                 Method</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Under the resource name (<b>my-resource</b>), you&apos;ll see a
+                              dropdown menu. Choose <b>GET</b> and then choose the
+                              checkmark icon to save your choice.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the <b>/my-resource &#x2013; GET &#x2013; Setup</b> pane, for
+                              <b>Integration type</b>, choose <b>Lambda
+                                 Function</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Lambda Region</b>, choose the Region where you created
+                              your Lambda function.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the <b>Lambda Function</b> box, type any character and then
+                              choose <b>my-function2</b> from the dropdown menu. (If the
+                              dropdown menu doesn&apos;t appear, delete the character you just typed to make the
+                              dropdown menu appear.) Choose <b>Save</b> to save your
+                              choice.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>When the <b>Add Permission to Lambda Function</b> popup appears
+                              (saying <b>&quot;You are about to give API Gateway permission to invoke your Lambda
+                                 function&#x2026;&quot;</b>), choose OK to grant API Gateway that permission.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>You&apos;ll now see a <b>/my-resource &#x2013; GET &#x2013; Method Execution</b>
+                              pane. Notice that this time the <b>Integration Response</b> box is
+                              not grayed out.
+                           </p>
+                           
+                           <p>Choose <b>Integration Request</b>.
+                           </p>
+                           
+                           <div class="mediaobject">
+                              
+                              <img src="../../..//img/apigateway-my-resource-get-method-execution-boxes.png" alt="
+                        API Gateway Method Execution pane
+                    " style="max-width:100%">
+                              
+                              
+                              
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Expand <b>Mapping Templates</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Set <b>Request body passthrough</b> to <b>When there are
+                                 no templates defined</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Add mapping template</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>For <b>Content-Type</b>, enter <code class="code">application/json</code> and
+                              choose the checkmark icon to save your choice.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>If a <b>Change passthrough behavior</b> popup appears, choose
+                              <b>Yes, secure this integration</b>. This ensures that your
+                              integration only allows requests that match the
+                              <b>Content-Type</b> you just defined.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the template window, enter the following:</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
+    &quot;myParam&quot;: &quot;$input.params(&apos;myParam&apos;)&quot;
+}</code></pre>
+                           <p>This is the JSON document that will be passed to your Lambda function in the
+                              body of the input event object. The right-hand side tells API Gateway what to look
+                              for
+                              in your input query string. The left-hand side stores it into the parameter that
+                              you&apos;re about to add to your Lambda function.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Save</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>From the <b>Actions</b> dropdown menu, choose <b>Deploy
+                                 API</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>From the <b>Deployment stage</b> dropdown menu, choose
+                              <b>prod</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Deploy</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>Test your API as follows:</p>
+                     
+                     <ol>
+                        <li>
+                           
+                           <p>Open a terminal window.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Copy the following cURL command and paste it into the terminal window,
+                              replacing <code class="code"><em class="replaceable"><code>b123abcde4</code></em></code> with your API&apos;s API
+                              ID and <code class="code"><em class="replaceable"><code>us-west-2</code></em></code> with the Region where
+                              your API is deployed.
+                           </p>
+                           
+                           <div class="option container">
+                              <div class="optionselector"><span class="optionanchor" id=""><span class="option  selected" data-tab="linux-or-macintosh">Linux or Macintosh</span></span><span class="optionanchor" id=""><span class="option " data-tab="windows">Windows</span></span></div>
+                              <dl>
+                                 <dt>Linux or Macintosh</dt>
+                                 <dd class="selected" data-tab="linux-or-macintosh"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">curl -X GET &apos;https://<em class="replaceable"><code>b123abcde4</code></em>.execute-api.<em class="replaceable"><code>us-west-2</code></em>.amazonaws.com/prod&apos;</code></pre></dd>
+                                 <dt>Windows</dt>
+                                 <dd class="" data-tab="windows"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">curl -X GET &quot;https://<em class="replaceable"><code>b123abcde4</code></em>.execute-api.<em class="replaceable"><code>us-west-2</code></em>.amazonaws.com/prod&quot;</code></pre></dd>
+                              </dl>
+                           </div>
+                           
+                           <p>This will invoke your API, and you&apos;ll see &quot;Hello from Lambda!&quot; returned. This
+                              is because your new Lambda function, <code class="code">my-function2</code>, isn&apos;t attached to
+                              the root resource (<code class="code">/</code>). It&apos;s attached to the new resource you
+                              created, <code class="code">my-resource</code>. So the Lambda function you just invoked is the
+                              &quot;Hello from Lambda!&quot; function you created earlier,
+                              <code class="code">my-function</code>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the cURL command line, after <code class="code">prod</code>, type
+                              <code class="code">/my-resource?myParam=Hello%20from%20API%20Gateway!</code>. The
+                              complete command should look like this:
+                           </p>
+                           
+                           <div class="option container">
+                              <div class="optionselector"><span class="optionanchor" id=""><span class="option  selected" data-tab="linux-or-macintosh">Linux or Macintosh</span></span><span class="optionanchor" id=""><span class="option " data-tab="windows">Windows</span></span></div>
+                              <dl>
+                                 <dt>Linux or Macintosh</dt>
+                                 <dd class="selected" data-tab="linux-or-macintosh"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">curl -X GET &apos;https://<em class="replaceable"><code>b123abcde4</code></em>.execute-api.<em class="replaceable"><code>us-west-2</code></em>.amazonaws.com/prod/my-resource?myParam=Hello%20from%20API%20Gateway!&apos;</code></pre></dd>
+                                 <dt>Windows</dt>
+                                 <dd class="" data-tab="windows"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">curl -X GET &quot;https://<em class="replaceable"><code>b123abcde4</code></em>.execute-api.<em class="replaceable"><code>us-west-2</code></em>.amazonaws.com/prod/my-resource?myParam=Hello%20from%20API%20Gateway!&quot;</code></pre></dd>
+                              </dl>
+                           </div>
+                           
+                           <p>You should now see the correct response returned: <code class="code">{&quot;statusCode&quot;: 200,
+                                 &quot;body&quot;: &quot;\&quot;Hello from API Gateway!\&quot;&quot;}</code>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <h2 id="apigateway-getting-started-rest-next-steps">Next Steps</h2>
+                     
+                     <p>Explore any or all of the following topics to continue getting familiar with
+                        Amazon API Gateway.
+                     </p>
+                     
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w468aab9b9c25b5">
+                              
+                              <tbody><tr>
+                                 
+                                 <th>To Learn More About</th>
+                                 
+                                 <th>Go To</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 
+                                 <td>Passing input to a backend Lambda function</td>
+                                 
+                                 <td><a href="set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format">Input Format of a
+                                       Lambda Function for Proxy Integration</a></td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Returning output from a backend Lambda function</td>
+                                 
+                                 <td><a href="set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-output-format">Output Format of
+                                       a Lambda Function for Proxy Integration</a></td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Setting up a custom domain name for your API</td>
+                                 
+                                 <td><a href="how-to-custom-domains.html">Set up Custom Domain Name for an API in
+                                       API Gateway</a></td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Adding a Lambda authorizer function to your API</td>
+                                 
+                                 <td><a href="apigateway-use-lambda-authorizer.html">Use API Gateway Lambda Authorizers</a></td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Adding a Amazon Cognito user pool authorizer to your API</td>
+                                 
+                                 <td><a href="apigateway-integrate-with-cognito.html">Control Access to a REST API Using
+                                       Amazon Cognito User Pools as Authorizer</a></td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>Enabling CORS for your API</td>
+                                 
+                                 <td><a href="how-to-cors.html">Enable CORS for an API Gateway REST API Resource</a></td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     <p>To get help with Amazon API Gateway from the community, see the <a href="http://forums.aws.amazon.com/forum.jspa?forumID=199" target="_blank">API Gateway Discussion Forum</a>. (When you enter this
+                        forum, AWS might require you to sign in.)
+                     </p>
+                     
+                     <p>To get help with API Gateway directly from AWS, see the support options on the <a href="http://aws.amazon.com/premiumsupport/" target="_blank">AWS Support page</a>.
+                     </p>
+                     
+                     <p>See also our <a href="http://aws.amazon.com/api-gateway/faqs/" target="_blank">frequently asked
+                           questions (FAQs)</a>, or <a href="http://aws.amazon.com/contact-us/" target="_blank">contact us
+                           directly</a>.
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="setting-up.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="apigateway-getting-started-mock.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Step 1: Create a Lambda
+                Function in the Lambda Console"><a class="pagetoc" href="#apigateway-getting-started-rest-step-1">Step 1: Create a Lambda
+                              Function in the Lambda Console</a></li>
+                        <li class="pagetoc" name="Step 2: Create a REST API in
+                the API Gateway Console"><a class="pagetoc" href="#apigateway-getting-started-rest-step-2">Step 2: Create a REST API in
+                              the API Gateway Console</a></li>
+                        <li class="pagetoc" name="Step 3: Deploy Your REST API in
+                the API Gateway Console"><a class="pagetoc" href="#apigateway-getting-started-rest-step-3">Step 3: Deploy Your REST API in
+                              the API Gateway Console</a></li>
+                        <li class="pagetoc" name="Step 4: Create a Second Lambda
+                Function in the Lambda Console"><a class="pagetoc" href="#apigateway-getting-started-rest-step-4">Step 4: Create a Second Lambda
+                              Function in the Lambda Console</a></li>
+                        <li class="pagetoc" name="Step 5: Add a Resource, Method,
+                and Parameter to the REST API in the API Gateway Console"><a class="pagetoc" href="#apigateway-getting-started-rest-step-5">Step 5: Add a Resource, Method,
+                              and Parameter to the REST API in the API Gateway Console</a></li>
+                        <li class="pagetoc" name="Next Steps"><a class="pagetoc" href="#apigateway-getting-started-rest-next-steps">Next Steps</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon API Gateway';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

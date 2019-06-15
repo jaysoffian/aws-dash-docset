@@ -1,0 +1,616 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title> Using Amazon S3 Access Logs to
+         Identify Signature Version 2 Requests  - Amazon Simple Storage Service
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="ServerLogs.html" title="Amazon S3 Server Access Logging">
+      <link rel="prev" href="deleting-log-files-lifecycle.html" title="Deleting Amazon S3 Log Files">
+      <link rel="next" href="UsingAWSSDK.html" title="Using the AWS SDKs, CLI, and Explorers">
+      <meta name="description" content="Use Amazon S3 access logs to identify Signature Version 2 requests.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Simple Storage Service">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/using-s3-access-logs-to-idenitfy-sigv2-requests.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="ServerLogs.html">Amazon S3 Server Access Logging</a> &#xBB; <span class="breadcrumb"> Using Amazon S3 Access Logs to
+                                    Identify Signature Version 2 Requests </span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="using-s3-access-logs-to-idenitfy-sigv2-requests"> Using Amazon S3 Access Logs to
+                        Identify Signature Version 2 Requests 
+                     </h1>
+                     <p>Amazon S3 support for Signature Version 2 will be turned off (deprecated).
+                        After that, Amazon S3 will no longer accept requests that use Signature Version 2, and
+                        all requests must use <em>Signature Version 4</em> signing. You can identify
+                        Signature Version 2 access requests using Amazon S3 access logs. 
+                     </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <div class="itemizedlist">
+                           
+                           
+                           
+                           <ul class="itemizedlist" type="disc">
+                              <li class="listitem">
+                                 
+                                 <p>We recommend that you use AWS CloudTrail data events instead of Amazon S3 access logs.
+                                    CloudTrail
+                                    data events are easier to set up and contain more information. For more information,
+                                    see
+                                    <a href="cloudtrail-identification-sigV2.html">Using AWS CloudTrail to Identify Amazon S3
+                                       Signature Version 2 Requests</a>.
+                                 </p>
+                                 
+                              </li>
+                              <li class="listitem">
+                                 
+                                 <p>Depending on how many access requests you get, you might get too much data to
+                                    analyze
+                                    easily.
+                                 </p>
+                                 
+                              </li>
+                           </ul>
+                        </div>
+                     </div>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#enabling-s3-access-logs-for-sigv2">Enabling Amazon S3 Access Logs for Signature
+                                 Version 2 Requests</a></li>
+                           <li><a href="#enabling-s3-access-logs-for-sigv2">Querying Amazon S3 Access Logs for Signature
+                                 Version 2 Requests</a></li>
+                           <li><a href="#s3-access-logs-sigv2-more-info">Related Resources</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="enabling-s3-access-logs-for-sigv2">Enabling Amazon S3 Access Logs for Signature
+                        Version 2 Requests
+                     </h2>
+                     
+                     <p>We recommend that you create a dedicated logging bucket in each AWS Region that you
+                        have
+                        S3 buckets in. Then have the Amazon S3 access log delivered to that S3 bucket.
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example &#x2014; Enabling access logs with five buckets across two Regions</b></p>
+                        <div class="example-contents">
+                           <p>In this example, you have the following five buckets:</p>
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p><code class="code">1-awsexamplebucket-us-east-1</code></p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><code class="code">2-awsexamplebucket-us-east-1</code></p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><code class="code">3-awsexamplebucket-us-east-1</code></p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><code class="code">1-awsexamplebucket-us-west-2</code></p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><code class="code">2-awsexamplebucket-us-west-2</code></p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           <ol>
+                              <li>
+                                 
+                                 <p>Create two logging buckets in the following Regions:</p>
+                                 
+                                 <div class="itemizedlist">
+                                    
+                                    
+                                    
+                                    <ul class="itemizedlist" type="disc">
+                                       <li class="listitem">
+                                          
+                                          <p><code class="code">awsexamplebucket-logs-us-east-1</code></p>
+                                          
+                                       </li>
+                                       <li class="listitem">
+                                          
+                                          <p><code class="code">awsexamplebucket-logs-us-west-2</code></p>
+                                          
+                                       </li>
+                                    </ul>
+                                 </div>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Then enable the Amazon S3 access logs as follows:</p>
+                                 
+                                 <div class="itemizedlist">
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    <ul class="itemizedlist" type="disc">
+                                       <li class="listitem">
+                                          
+                                          <p><code class="code">1-awsexamplebucket-us-east-1</code> logs to
+                                             <code class="code">s3://awsexamplebucket-logs-us-east-1/1-awsexamplebucket-us-east-1</code></p>
+                                          
+                                       </li>
+                                       <li class="listitem">
+                                          
+                                          <p><code class="code">2-awsexamplebucket-us-east-1</code> logs to
+                                             <code class="code">s3://awsexamplebucket-logs-us-east-1/2-awsexamplebucket-us-east-1</code></p>
+                                          
+                                       </li>
+                                       <li class="listitem">
+                                          
+                                          <p><code class="code">1-awsexamplebucket-us-east-1</code> logs to
+                                             <code class="code">s3://awsexamplebucket-logs-us-east-1/3-awsexamplebucket-us-east-1</code></p>
+                                          
+                                       </li>
+                                       <li class="listitem">
+                                          
+                                          <p><code class="code">1-awsexamplebucket-us-west-2</code> logs to <code class="code">
+                                                s3://awsexamplebucket-logs-us-west-2/1-awsexamplebucket-us-west-2</code></p>
+                                          
+                                       </li>
+                                       <li class="listitem">
+                                          
+                                          <p><code class="code">2-awsexamplebucket-us-west-2</code> logs to
+                                             <code class="code">s3://awsexamplebucket-logs-us-west-2/2-awsexamplebucket-us-west-2</code></p>
+                                          
+                                       </li>
+                                    </ul>
+                                 </div>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>You can then enable the Amazon S3 access logs using the following methods:</p>
+                                 
+                                 <div class="itemizedlist">
+                                    
+                                    
+                                    
+                                    
+                                    <ul class="itemizedlist" type="disc">
+                                       <li class="listitem">
+                                          
+                                          <p>Using the <a href="./AmazonS3/latest/user-guide/server-access-logging.html">AWS Management
+                                                Console</a></p>
+                                          
+                                       </li>
+                                       <li class="listitem">
+                                          
+                                          <p><a href="enable-logging-programming.html">Enabling Logging Programmatically</a>
+                                             
+                                          </p>
+                                          
+                                       </li>
+                                       <li class="listitem">
+                                          
+                                          <p>Using the <a href=".//cli/latest/reference/s3api/put-bucket-logging.html">AWS
+                                                CLI put-bucket-logging command</a> to programmatically enable access logs on
+                                             a bucket using the following commands:
+                                          </p>
+                                          
+                                          <ol>
+                                             <li>
+                                                
+                                                <p>First, grant Amazon S3 permission using <code class="code">put-bucket-acl</code>:
+                                                </p>
+                                                <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">
+                                        aws s3api put-bucket-acl --bucket awsexamplebucket-logs  --grant-write URI=http://acs.amazonaws.com/groups/s3/LogDelivery --grant-read-acp URI=http://acs.amazonaws.com/groups/s3/LogDelivery 
+                                    </code></pre>
+                                                </li>
+                                             <li>
+                                                
+                                                <p>Then, apply the logging policy:</p>
+                                                
+                                                <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">
+                                        aws s3api put-bucket-logging --bucket awsexamplebucket --bucket-logging-status file://logging.json 
+                                    </code></pre>
+                                                <p><code>Logging.json</code> is a JSON document in the current folder
+                                                   that contains the logging policy:
+                                                </p>
+                                                <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="">
+                                        {
+                                            &quot;LoggingEnabled&quot;: {
+                                                &quot;TargetBucket&quot;: &quot;awsexamplebucket-logs&quot;,
+                                                &quot;TargetPrefix&quot;: &quot;awsexamplebucket/&quot;,
+                                                &quot;TargetGrants&quot;: [
+                                                     {
+                                                        &quot;Grantee&quot;: {
+                                                            &quot;Type&quot;: &quot;AmazonCustomerByEmail&quot;,
+                                                            &quot;EmailAddress&quot;: &quot;user@example.com&quot;
+                                                         },
+                                                        &quot;Permission&quot;: &quot;FULL_CONTROL&quot;
+                                                     }
+                                                 ]
+                                             }
+                                         } 
+                                    </code></pre>
+                                                <div class="aws-note">
+                                                   <p class="aws-note">Note</p>
+                                                   <p>The <code class="code">put-bucket-acl</code> command is required to grant the Amazon S3
+                                                      log delivery system the necessary permissions (write and read-acp
+                                                      permissions). 
+                                                   </p>
+                                                </div>
+                                                
+                                             </li>
+                                             <li>
+                                                
+                                                <p>Use a bash script to add access logging for all the buckets in your
+                                                   account:
+                                                </p>
+                                                <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">
+                                            loggingBucket=&apos;awsexamplebucket-logs&apos;
+                                            region=&apos;us-west-2&apos;
+                                            
+                                            
+                                            # Create Logging bucket
+                                            aws s3 mb s3://$loggingBucket --region $region
+                                            
+                                            aws s3api put-bucket-acl --bucket $loggingBucket --grant-write URI=http://acs.amazonaws.com/groups/s3/LogDelivery --grant-read-acp URI=http://acs.amazonaws.com/groups/s3/LogDelivery
+                                            
+                                            # List buckets in this account
+                                            buckets=&quot;$(aws s3 ls | awk &apos;{print $3}&apos;)&quot;
+                                            
+                                            # Put bucket logging on each bucket
+                                            for bucket in $bucenable-logging-programmingkets
+                                                do printf &apos;{
+                                               &quot;LoggingEnabled&quot;: {
+                                                   &quot;TargetBucket&quot;: &quot;%s&quot;,
+                                                   &quot;TargetPrefix&quot;: &quot;%s/&quot;
+                                                    }
+                                                }&apos; &quot;$loggingBucket&quot; &quot;$bucket&quot;  &gt; logging.json
+                                                aws s3api put-bucket-logging --bucket $bucket --bucket-logging-status file://logging.json
+                                                echo &quot;$bucket done&quot;
+                                            done
+                                            
+                                            rm logging.json
+                                            
+                                            echo &quot;Complete&quot;
+                                    </code></pre>
+                                                <div class="aws-note">
+                                                   <p class="aws-note">Note</p>
+                                                   <p>This only works if all your buckets are in the same Region. If you have
+                                                      buckets in multiple Regions, you must adjust the script. 
+                                                   </p>
+                                                </div>
+                                                
+                                             </li>
+                                          </ol>
+                                          
+                                       </li>
+                                    </ul>
+                                 </div>
+                                 
+                              </li>
+                           </ol>
+                        </div>
+                     </div>
+                     
+                     
+                     <h2 id="enabling-s3-access-logs-for-sigv2">Querying Amazon S3 Access Logs for Signature
+                        Version 2 Requests
+                     </h2>
+                     
+                     <p>Amazon S3 stores server access logs as objects in an S3 bucket. Logs can&apos;t be analyzed
+                        easily
+                        in Amazon S3. Athena supports analysis of S3 objects and can be used to query Amazon
+                        S3 access
+                        logs.
+                     </p>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example </b></p>
+                        <div class="example-contents">
+                           <p>The following example shows how you can query Amazon S3 server access logs in Amazon
+                              Athena. 
+                           </p>
+                           <div class="aws-note">
+                              <p class="aws-note">Note</p>
+                              <p>To specify the Amazon S3 location in an Athena query, you need the target bucket name
+                                 and
+                                 the target prefix, as follows: <code class="code">s3://awsexamplebucket-logs/prefix/</code>
+                                 
+                              </p>
+                           </div>
+                           <ol>
+                              <li>
+                                 <p>Open the Athena console at
+                                    <a href="https://console.aws.amazon.com/athena/home" target="_blank">https://console.aws.amazon.com/athena/</a>.
+                                 </p>
+                              </li>
+                              <li>
+                                 
+                                 <p>In the Query Editor, run a command similar to the following:</p>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">create database s3_access_logs_db</code></pre>
+                                 <div class="aws-note">
+                                    <p class="aws-note">Note</p>
+                                    <p>It&apos;s a best practice to create the database in the same AWS Region as your S3
+                                       bucket. 
+                                    </p>
+                                 </div>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>In the Query Editor, run a command similar to the following to create a table
+                                    schema in the database that you created in step 2. The <code class="code">STRING</code> and
+                                    <code class="code">BIGINT</code> data type values are the access log properties. You can query
+                                    these properties in Athena. For <code class="code">LOCATION</code>, enter the S3 bucket and prefix
+                                    path as noted earlier.
+                                 </p>
+                                 <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">
+                             CREATE EXTERNAL TABLE IF NOT EXISTS s3_access_logs_db.mybucket_logs(
+                                BucketOwner STRING,
+                                Bucket STRING,
+                                RequestDateTime STRING,
+                                RemoteIP STRING,
+                                Requester STRING,
+                                RequestID STRING,
+                                Operation STRING,
+                                Key STRING,
+                                RequestURI_operation STRING,
+                                RequestURI_key STRING,
+                                RequestURI_httpProtoversion STRING,
+                                HTTPstatus STRING,
+                                ErrorCode STRING,
+                                BytesSent BIGINT,
+                                ObjectSize BIGINT,
+                                TotalTime STRING,
+                                TurnAroundTime STRING,
+                                Referrer STRING,
+                                UserAgent STRING,
+                                VersionId STRING,
+                                HostId STRING,
+                                SigV STRING,
+                                CipherSuite STRING,
+                                AuthType STRING,
+                                EndPoint STRING
+                            ) 
+                            ROW FORMAT SERDE &apos;org.apache.hadoop.hive.serde2.RegexSerDe&apos;
+                            WITH SERDEPROPERTIES (
+                                &apos;serialization.format&apos; = &apos;1&apos;, &apos;input.regex&apos; = &apos;([^ ]*) ([^ ]*) 
+                                \\[(.*?)\\] ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) 
+                                \\\&quot;([^ ]*) ([^ ]*) (- |[^ ]*)\\\&quot; (-|[0-9]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) 
+                                ([^ ]*) (\&quot;[^\&quot;]*\&quot;) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*).*$&apos; )
+                                LOCATION &apos;s3://awsexamplebucket-logs/prefix&apos;
+                             </code></pre>
+                                 </li>
+                              <li>
+                                 
+                                 <p>In the navigation pane, under <b>Database</b>, choose your
+                                    database.
+                                 </p>
+                                 
+                              </li>
+                              <li>
+                                 
+                                 <p>Under <b>Tables</b>, choose <b>Preview table</b> next
+                                    to your table name.
+                                 </p>
+                                 
+                                 <p>In the <b>Results</b> pane, you should see data from the server
+                                    access logs, such as <code class="code">bucketowner</code>, <code class="code">bucket</code>,
+                                    <code class="code">requestdatetime</code>, and so on. This means that you successfully created
+                                    the Athena table. You can now query the Amazon S3 server access logs.
+                                 </p>
+                                 
+                              </li>
+                           </ol>
+                        </div>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example &#x2014; Find the log for a deleted object</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">
+                    SELECT * 
+                    FROM s3_access_logs_db.mybucket_logs 
+                    WHERE key = &apos;images/picture.jpg&apos; AND operation like &apos;%DELETE%&apos;;
+                </code></pre></div>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example &#x2014; Show who deleted an object and when (timestamp, IP address, and IAM user): </b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">
+                    SELECT RequestDateTime, RemoteIP, Requester, Key 
+                    FROM s3_access_logs_db.mybucket_logs 
+                    WHERE key = &apos;images/picture.jpg&apos; AND operation like &apos;%DELETE%&apos;;
+                </code></pre></div>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example &#x2014; Show all operations executed by an IAM user</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">
+                    SELECT * 
+                    FROM s3_access_logs_db.mybucket_logs 
+                    WHERE requester=&apos;arn:aws:iam::123456789123:user/user_name&apos;;
+                </code></pre></div>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example &#x2014; Show all operations that were performed on an object in a specific time
+                              period</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">
+                    SELECT *
+                    FROM s3_access_logs_db.mybucket_logs
+                    WHERE Key=&apos;prefix/images/picture.jpg&apos; 
+                        AND parse_datetime(RequestDateTime,&apos;dd/MMM/yyyy:HH:mm:ss Z&apos;)
+                        BETWEEN parse_datetime(&apos;2017-02-18:07:00:00&apos;,&apos;yyyy-MM-dd:HH:mm:ss&apos;)
+                        AND parse_datetime(&apos;2017-02-18:08:00:00&apos;,&apos;yyyy-MM-dd:HH:mm:ss&apos;);
+                </code></pre></div>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example &#x2014; Show how much data was transferred by a specific IP address in a specific
+                              time period</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">
+                   SELECT SUM(bytessent) AS uploadTotal,
+                          SUM(objectsize) AS downloadTotal,
+                          SUM(bytessent + objectsize) AS Total
+                   FROM s3_access_logs_db.mybucket_logs
+                   WHERE RemoteIP=&apos;1.2.3.4&apos;
+                    AND parse_datetime(RequestDateTime,&apos;dd/MMM/yyyy:HH:mm:ss Z&apos;)
+                    BETWEEN parse_datetime(&apos;2017-06-01&apos;,&apos;yyyy-MM-dd&apos;)
+                    AND parse_datetime(&apos;2017-07-01&apos;,&apos;yyyy-MM-dd&apos;);
+                </code></pre></div>
+                     </div>
+                     
+                     <div class="example">
+                        <p class="title"><b>Example &#x2014; Show all requesters that are sending Signature Version 2 traffic</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="sql ">
+                   SELECT requester, Sigv, Count(Sigv) as SigCount 
+                   FROM s3_access_logs_db.mybucket_logs
+                   GROUP BY requester, Sigv;
+                </code></pre></div>
+                     </div>
+                     
+                     <p>To reduce the time that you retain your log, you can <a href="./AmazonS3/latest/user-guide/create-lifecycle.html">create an Amazon S3 lifecycle policy</a> for your
+                        server access logs bucket. Configure the lifecycle policy to remove log files periodically.
+                        Doing so reduces the amount of data that Athena analyzes for each query.
+                     </p>
+                     
+                     <h2 id="s3-access-logs-sigv2-more-info">Related Resources</h2>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><a href="LogFormat.html">Amazon S3 Server Access Log Format</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="./athena/latest/ug/querying-AWS-service-logs.html">Querying AWS Service
+                                    Logs</a></p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="deleting-log-files-lifecycle.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="UsingAWSSDK.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Enabling Amazon S3 Access Logs for Signature
+          Version 2 Requests"><a class="pagetoc" href="#enabling-s3-access-logs-for-sigv2">Enabling Amazon S3 Access Logs for Signature
+                              Version 2 Requests</a></li>
+                        <li class="pagetoc" name="Querying Amazon S3 Access Logs for Signature
+          Version 2 Requests"><a class="pagetoc" href="#enabling-s3-access-logs-for-sigv2">Querying Amazon S3 Access Logs for Signature
+                              Version 2 Requests</a></li>
+                        <li class="pagetoc" name="Related Resources"><a class="pagetoc" href="#s3-access-logs-sigv2-more-info">Related Resources</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Simple Storage Service';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

@@ -1,0 +1,803 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Delivering Live 
+         			Streaming Video with CloudFront and AWS Media Services - Amazon CloudFront
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="on-demand-streaming-video.html" title="On-Demand and Live Streaming Video with CloudFront">
+      <link rel="prev" href="on-demand-video.html" title="Delivering On-Demand Video with CloudFront">
+      <link rel="next" href="distribution-rtmp.html" title="Working with RTMP Distributions">
+      <meta name="description" content="To use AWS Media Services with CloudFront to deliver live content to a global audience, follow the guidance included in this section.">
+      <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon CloudFront">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/live-streaming.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="on-demand-streaming-video.html">On-Demand and Live Streaming Video with CloudFront</a> &#xBB; <span class="breadcrumb">Delivering Live 
+                                    			Streaming Video with CloudFront and AWS Media Services</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="live-streaming">Delivering Live 
+                        			Streaming Video with CloudFront and AWS Media Services
+                     </h1>
+                     <p>To use AWS Media Services with CloudFront to deliver live content to a global audience,
+                        follow the guidance included 
+                        				in this section.
+                     </p>
+                     <p><a href="./medialive/latest/ug/getting-started.html">AWS Elemental MediaLive</a> encodes live video streams in real time. If you have a larger-sized live 
+                        				video source&#x2014;for example, video coming from a ground encoder like Elemental Live&#x2014;you
+                        can compress it by using MediaLive into 
+                        				smaller versions (&quot;encodes&quot;) that are then distributed to your viewers.
+                     </p>
+                     <p>There are two main options for preparing and serving live streaming content:</p>
+                     <div class="itemizedlist">
+                        				
+                        				
+                        			
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p><b>Convert your content into required formats, and then serve it:</b> 
+                                 					You can use <a href="https://aws.amazon.com/mediapackage/" target="_blank">AWS Elemental MediaPackage</a> to convert your video content from a single format to
+                                 					multiple formats, and then package the content for different device types. MediaPackage
+                                 lets you implement video features 
+                                 					for viewers such as start-over, pause, rewind, and so on. MediaPackage can also
+                                 protect your content from
+                                 					unauthorized copying by adding Digital Rights Management (DRM). For step-by-step
+                                 instructions
+                                 					for using CloudFront to serve content that was formatted using MediaPackage,
+                                 see <a href="live-streaming.html#live-streaming-with-mediapackage">Serving Live Video Formatted with AWS Elemental MediaPackage</a>
+                                 					in this topic.
+                              </p>
+                           </li>
+                           <li class="listitem">
+                              <p><b>Store and serve your content using scalable origin:</b> If your encoder already 
+                                 					outputs content in the formats required by all of the devices that your viewers
+                                 use, you can serve the content by using 
+                                 					a highly-scalable origin like an <a href="./mediastore/latest/ug/getting-started.html">AWS Elemental MediaStore</a> container. For
+                                 					step-by-step instructions for using CloudFront to serve content that is stored
+                                 in a MediaStore container, see <a href="live-streaming.html#video-streaming-mediastore">Serving Video Using AWS Elemental MediaStore as the Origin</a> in this topic.
+                              </p>
+                           </li>
+                        </ul>
+                     </div>
+                     <p>After you&apos;ve set up your origin by using one of these options, you can distribute
+                        live streaming video to viewers by 
+                        				using CloudFront.
+                     </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Tip</p>
+                        <p>To learn more about best practices when you implement a live video streaming workflow
+                           with AWS Cloud services, see 
+                           					<a href="https://aws.amazon.com/answers/media-entertainment/live-streaming/" target="_blank">Live Streaming Video</a>.
+                        </p>
+                        <p>You can also learn about an AWS solution that automatically deploys services for building
+                           a highly-available
+                           					real-time viewing experience. To see the steps to automatically deploy this solution,
+                           see 
+                           					<a href="./solutions/latest/live-streaming/deployment.html">Live Streaming Automated Deployment</a>.
+                        </p>
+                     </div>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#video-streaming-mediastore">Serving Video Using AWS Elemental MediaStore as the Origin</a></li>
+                           <li><a href="#live-streaming-with-mediapackage">Serving Live Video Formatted with AWS Elemental MediaPackage</a></li>
+                        </ul>
+                     </div>
+                     				
+                     <h2 id="video-streaming-mediastore">Serving Video Using AWS Elemental MediaStore as the Origin</h2>
+                     				
+                     				
+                     <p>If you have video stored in an <a href="./mediastore/latest/ug/getting-started.html">AWS Elemental MediaStore</a> container, 
+                        					you can create a CloudFront distribution to serve the content.
+                     </p>
+                     				
+                     <p>To get started, you grant CloudFront access to your MediaStore container. Then you
+                        create a CloudFront distribution
+                        					and configure it to work with MediaStore.
+                     </p>
+                     				
+                     <ol>
+                        <li>
+                           <p>Follow the procedure at <a href="./mediastore/latest/ug/cdns-allowing-cloudfront-to-access-mediastore.html">
+                                 						Allowing Amazon CloudFront to Access Your MediaStore Container</a>, and then return to these steps
+                              						to create your distribution.
+                           </p>
+                        </li>
+                        <li>
+                           <p>Create a distribution with the following settings:</p>
+                           						
+                           <div class="variablelist">
+                              							
+                              							
+                              							
+                              							
+                              							
+                              							
+                              							
+                              						
+                              <dl>
+                                 								
+                                 <dt><i><span class="term">Origin Domain Name</span></i></dt>
+                                 								
+                                 <dd>
+                                    <p>The data endpoint that is assigned to your MediaStore container. From the dropdown
+                                       list, 
+                                       									choose the MediaStore container for your live video. The format of a MediaStore
+                                       origin is Container-OriginEndpointURL.
+                                       									For example, mymediastore.data.mediastore.us-east-1.amazonaws.com. For more
+                                       information, 
+                                       									see <a href="distribution-web-values-specify.html#DownloadDistValuesDomainName">Origin Domain Name</a>.
+                                    </p>
+                                 </dd>
+                                 							
+                                 								
+                                 <dt><i><span class="term">Origin Path</span></i></dt>
+                                 								
+                                 <dd>
+                                    <p>The folder structure in the MediaStore container where your objects are stored.
+                                       									For more information, see <a href="distribution-web-values-specify.html#DownloadDistValuesOriginPath">Origin Path</a>.
+                                    </p>
+                                    								
+                                 </dd>
+                                 							
+                                 								
+                                 <dt><i><span class="term">Origin Custom Headers</span></i></dt>
+                                 								
+                                 <dd>
+                                    <p>Add header names and values if you want CloudFront to include custom headers when
+                                       it 
+                                       									forwards requests to your origin.
+                                    </p>
+                                 </dd>
+                                 							
+                                 								
+                                 <dt><i><span class="term">Viewer Protocol Policy</span></i></dt>
+                                 								
+                                 <dd>
+                                    <p>Choose <b>Redirect HTTP to HTTPS</b>.
+                                       									For more information, see <a href="distribution-web-values-specify.html#DownloadDistValuesViewerProtocolPolicy">Viewer Protocol Policy</a>.
+                                       								
+                                    </p>
+                                 </dd>
+                                 							
+                                 								
+                                 <dt><i><span class="term">Object Caching</span></i></dt>
+                                 								
+                                 <dd>
+                                    <p>If the transcoder that you use can&apos;t set cache controls on all objects,
+                                       									choose <b>Customize</b>. 
+                                       									If your transcoder can set cache controls on all objects, choose 
+                                       									<b>Origin Cache Headers</b>.
+                                       								
+                                    </p>
+                                 </dd>
+                                 							
+                                 								
+                                 <dt><i><span class="term">Minimum TTL, Maximum TTL, and Default TTL</span></i></dt>
+                                 								
+                                 <dd>
+                                    <p>Set as appropriate for your caching needs and segment durations.</p>
+                                 </dd>
+                                 							
+                                 								
+                                 <dt><i><span class="term">Error Caching Minimum TTL</span></i></dt>
+                                 								
+                                 <dd>
+                                    <p>Set to 5 seconds or less, to help prevent serving stale content.</p>
+                                 </dd>
+                                 							
+                              </dl>
+                           </div>
+                           						
+                           						
+                           <p>For the other settings, you can set specific values based on other technical requirements
+                              or the
+                              							needs of your business. For a list of all the options for web distributions
+                              and information about setting them, 
+                              							see <a href="distribution-web-values-specify.html">Values That You Specify When You Create or Update a Distribution</a>.
+                           </p>
+                           					
+                        </li>
+                        <li>
+                           <p>After you create your distribution and it&#x2019;s been provisioned, edit the cache behavior
+                              to set up 
+                              						cross-origin resource sharing (CORS) for your origin:
+                           </p>
+                           						
+                           <div class="orderedlist">
+                              							
+                              							
+                              							
+                              							
+                              							
+                              							
+                              						
+                              <ol>
+                                 <li>
+                                    <p>Select the distribution, and then choose <b>Distribution Settings</b>.
+                                    </p>
+                                 </li>
+                                 <li>
+                                    <p>Choose <b>Behaviors</b>, select your origin, and then choose <b>Edit</b>.
+                                    </p>
+                                    							
+                                 </li>
+                                 <li>
+                                    <p>Under <b>Cache Based on Selected Request Headers</b>, choose <b>Whitelist</b>, 
+                                       								and then, under <b>Whitelist Headers</b>, select <b>Origin</b>.
+                                    </p>
+                                 </li>
+                              </ol>
+                           </div>
+                           						
+                           <p>To learn more about CORS, see <em>Configuring CloudFront to Respect Cross-Origin Resource Sharing (CORS) Settings</em>
+                              							in <a href="header-caching.html">Caching Content Based on Request Headers</a>.
+                           </p>
+                           					
+                        </li>
+                        <li>
+                           <p>For links in your application (for example, a media player), specify the name of the
+                              media 
+                              						file in the same format that you use for other objects that you&apos;re distributing
+                              using CloudFront.
+                           </p>
+                        </li>
+                     </ol>
+                     			
+                     				
+                     <h2 id="live-streaming-with-mediapackage">Serving Live Video Formatted with AWS Elemental MediaPackage</h2>
+                     				
+                     				
+                     <p>If you&apos;ve used AWS Elemental MediaPackage to format a live stream for viewing, you
+                        can create a CloudFront distribution and configure cache 
+                        					behaviors to serve the live stream. This topic assumes that you have already
+                        <a href="./mediapackage/latest/ug/channels-create.html">
+                           					created a channel</a> and <a href="./mediapackage/latest/ug/channels-add-endpoint.html">added endpoints</a> for 
+                        					your live video using MediaPackage.
+                     </p>	
+                     				
+                     <p>To stream the video with CloudFront, create a web distribution for the channel, and
+                        then add each MediaPackage 
+                        					endpoint as an origin for the distribution. For each origin, you must configure
+                        cache behaviors to route the video content 
+                        					correctly.
+                     </p>
+                     				
+                     <p>When you save a channel in MediaPackage, you can choose to also automatically create
+                        a distribution in CloudFront. For more
+                        					information, see <a href="./mediapackage/latest/ug/cdns-create-mp.html">Creating a Distribution from AWS Elemental MediaPackage</a> 
+                        					in the AWS Elemental MediaPackage User Guide.
+                     </p>
+                     				
+                     <p>To create a CloudFront distribution for MediaPackage in CloudFront, follow these steps:</p>
+                     				
+                     				
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#live-streaming-with-mediapackage-create-dist">Step 1: Create and Configure a CloudFront Distribution for 
+                                 						Live Video</a></li>
+                           <li><a href="#live-streaming-with-mediapackage-add-endpoints">Step 2: Add the Other Endpoints as Origins
+                                 						for the Distribution</a></li>
+                           <li><a href="#live-streaming-with-mediapackage-create-cache-behavior">Step 3: Configure Cache Behaviors for 
+                                 						all Endpoints</a></li>
+                           <li><a href="#live-streaming-with-mediapackage-serve-channel">Step 4: Use CloudFront to Serve the Live Stream
+                                 						Channel</a></li>
+                        </ul>
+                     </div>
+                     				
+                     				
+                     				
+                     					
+                     <h3 id="live-streaming-with-mediapackage-create-dist">Step 1: Create and Configure a CloudFront Distribution for 
+                        						Live Video
+                     </h3>
+                     					
+                     <p>Complete the following procedure to set up a CloudFront distribution for the live
+                        video channel that you created with MediaPackage
+                     </p>
+                     					<a id="live-streaming-with-mediapackage-create-dist-procedure"></a><p class="title"><b>To create a web distribution for your live 
+                           							video channel</b></p>
+                     <ol>
+                        <li>
+                           <p>Sign in to the AWS Management Console and open the CloudFront console at
+                              <a href="https://console.aws.amazon.com/cloudfront/" target="_blank">https://console.aws.amazon.com/cloudfront/</a>.
+                           </p>
+                        </li>
+                        <li>
+                           <p>Choose <b>Create Distribution</b>.
+                           </p>
+                        </li>
+                        <li>
+                           <p>On the <b>Select a delivery method</b> page, in the <b>Web</b> section, choose 
+                              							<b>Get Started</b>.
+                           </p>
+                        </li>
+                        <li>
+                           <p>Choose the settings for the distribution, including the following:</p>
+                           							
+                           <div class="variablelist">
+                              								
+                              								
+                              								
+                              							
+                              <dl>
+                                 									
+                                 <dt><b><span class="term">Origin Domain Name</span></b></dt>
+                                 									
+                                 <dd>
+                                    <p>The origin where your MediaPackage live video channel and endpoints are. From the
+                                       dropdown list, choose the 
+                                       										MediaPackage channel for your live video. The format of a MediaPackage origin
+                                       is ChannelID-OriginEndpointID-OriginEndpointURL. 
+                                       										You can map one channel to several origin endpoints.
+                                    </p>
+                                    										
+                                    <p>If you created your channel using another AWS account, type the origin URL value into
+                                       the field. The origin 
+                                       											must be an HTTPS URL.
+                                    </p>
+                                    										
+                                    <p>For more information, see <a href="distribution-web-values-specify.html#DownloadDistValuesDomainName">Origin Domain Name</a> 
+                                       											in the <a href="distribution-web-values-specify.html">Values That You Specify When You Create or Update a Distribution</a> 
+                                       											topic.
+                                    </p>
+                                 </dd>
+                                 								
+                                 									
+                                 <dt><b><span class="term">Origin Path</span></b></dt>
+                                 									
+                                 <dd>
+                                    <p>The folder structure in the MediaPackage where your objects are stored. When you choose
+                                       
+                                       										a channel from the dropdown list, the path is filled in for you.
+                                    </p>
+                                    										
+                                    <p>Note that if you chose to use a channel from another AWS account for <b>Origin Domain Name</b>, the 
+                                       											<b>Origin Path</b> field is not filled in for you. You must sign in to the other account and get 
+                                       											the correct origin path so you that can enter it manually.
+                                    </p>
+                                    										
+                                    <p>For more information about how an origin path works, see <a href="distribution-web-values-specify.html#DownloadDistValuesOriginPath">Origin Path</a> in the <a href="distribution-web-values-specify.html">Values That You Specify When You Create or Update a Distribution</a> topic.
+                                    </p>
+                                    										
+                                    <p>For the other distribution settings, set specific values based on other technical
+                                       requirements or 
+                                       											the needs of your business. For a list of all the options for web distributions
+                                       and information about 
+                                       											setting them, see <a href="distribution-web-values-specify.html">Values That You Specify When You Create or Update a Distribution</a> topic.
+                                    </p>
+                                    									
+                                 </dd>
+                              </dl>
+                           </div>
+                        </li>
+                        <li>
+                           <p>Specify the correct cache behavior settings for the channel that you chose for the
+                              origin. You&#x2019;ll add 
+                              							one or more additional origins later and edit cache behavior settings for them.
+                           </p>
+                        </li>
+                        <li>
+                           <p>Wait until the value of the Status column for your distribution has changed from 
+                              							<b>In Progress</b> to <b>Deployed</b>, indicating that CloudFront has created your 
+                              							distribution.
+                           </p>
+                        </li>
+                     </ol>
+                     					
+                     				
+                     				
+                     					
+                     <h3 id="live-streaming-with-mediapackage-add-endpoints">Step 2: Add the Other Endpoints as Origins
+                        						for the Distribution
+                     </h3>
+                     					
+                     <p>Repeat the steps here to add each endpoint.</p>
+                     					<a id="live-streaming-with-mediapackage-add-endpoints-procedure"></a><p class="title"><b>To add other endpoints as origins</b></p>
+                     <ol>
+                        <li>
+                           <p>On the CloudFront console, choose the distribution that you created for your channel,
+                              and then 
+                              							choose <b>Distribution Settings</b>.
+                           </p>
+                        </li>
+                        <li>
+                           <p>On the <b>Origins</b> tab, choose <b>Create Origin</b>.
+                           </p>
+                        </li>
+                        <li>
+                           <p>For <b>Origin Domain Name</b>, in the dropdown list, choose a MediaPackage endpoint for your channel. 
+                              							The <b>Origin Path</b> field will be automatically filled in for you.
+                           </p>
+                        </li>
+                        <li>
+                           <p>For the other settings, set the values based on other technical requirements or the
+                              needs of your business.
+                              							For more information, see <a href="distribution-web-values-specify.html#DownloadDistValuesOrigin">Origin Settings</a> 
+                              							in the <a href="distribution-web-values-specify.html">Values That You Specify When You Create or Update a Distribution</a> 
+                              							topic.
+                           </p>
+                        </li>
+                        <li>
+                           <p>Choose <b>Create</b>.
+                           </p>
+                        </li>
+                     </ol>	
+                     				
+                     				
+                     				
+                     					
+                     <h3 id="live-streaming-with-mediapackage-create-cache-behavior">Step 3: Configure Cache Behaviors for 
+                        						all Endpoints
+                     </h3>
+                     					
+                     <p>For each endpoint, you must configure cache behaviors to add path patterns that route
+                        requests correctly. 
+                        						The path patterns that you specify depend on the video format that you&#x2019;re serving.
+                        The procedure in this
+                        						topic includes the path pattern information to use for HLS, CMAF, DASH, and
+                        Microsoft Smooth formats.
+                     </p>
+                     					
+                     <p>You typically set up two cache behaviors for each endpoint:</p>
+                     					
+                     <div class="itemizedlist">
+                        						
+                        						
+                        					
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p>The parent manifest, which is the index to your files</p>
+                           </li>
+                           <li class="listitem">
+                              <p>The segments, which are the files of the video content</p>
+                           </li>
+                        </ul>
+                     </div>
+                     					<a id="live-streaming-with-mediapackage-create-cache-behavior-procedure"></a><p class="title"><b>To create a cache behavior for an endpoint</b></p>
+                     <ol>
+                        <li>
+                           <p>On the CloudFront console, choose the distribution that you created for your channel,
+                              and then 
+                              							choose <b>Distribution Settings</b>.
+                           </p>
+                        </li>
+                        <li>
+                           <p>On the <b>Behaviors</b> tab, choose <b>Create Behavior</b>.
+                           </p>
+                        </li>
+                        <li>
+                           <p>In the <b>Cache Behavior Settings</b> section, for <b>Path Pattern</b>, type the 
+                              							first path pattern for the endpoint type for this origin, using the following
+                              path pattern guidance. 
+                              							For example, if it&#x2019;s a DASH endpoint, type <code class="code">*.mpd</code> for <b>Path Pattern</b>.
+                           </p>
+                           							
+                           							
+                           <div class="variablelist">
+                              								
+                              							
+                              <dl>
+                                 									
+                                 <dt><b><span class="term">Path Patterns</span></b></dt>
+                                 									
+                                 <dd>
+                                    										
+                                    <p>For an HLS endpoint, create the following two cache behaviors:</p>
+                                    										
+                                    <div class="itemizedlist">
+                                       											
+                                       											
+                                       										
+                                       <ul class="itemizedlist" type="disc">
+                                          <li class="listitem">
+                                             <p>A cache behavior with a path pattern of <code class="code">*.m3u8</code> (for the parent and child manifests)
+                                             </p>
+                                          </li>
+                                          <li class="listitem">
+                                             <p>A cache behavior with a path pattern of <code class="code">*.ts</code> (for the segments)
+                                             </p>
+                                          </li>
+                                       </ul>
+                                    </div>
+                                    										
+                                    										
+                                    <p>For a CMAF endpoint, create the following two cache behaviors:</p>
+                                    										
+                                    <div class="itemizedlist">
+                                       											
+                                       											
+                                       										
+                                       <ul class="itemizedlist" type="disc">
+                                          <li class="listitem">
+                                             <p>A cache behavior with a path pattern of <code class="code">*.m3u8</code> (for the parent and child manifests)
+                                             </p>
+                                          </li>
+                                          <li class="listitem">
+                                             <p>A cache behavior with a path pattern of <code class="code">*.mp4</code> (for the segments)
+                                             </p>
+                                          </li>
+                                       </ul>
+                                    </div>
+                                    										
+                                    
+                                    										
+                                    <p>For a DASH endpoint, create the following two cache behaviors:</p>
+                                    										
+                                    <div class="itemizedlist">
+                                       											
+                                       											
+                                       										
+                                       <ul class="itemizedlist" type="disc">
+                                          <li class="listitem">
+                                             <p>A cache behavior with a path pattern of <code class="code">*.mpd</code> (for the parent manifest)
+                                             </p>
+                                          </li>
+                                          <li class="listitem">
+                                             <p>A cache behavior with a path pattern of <code class="code">*.mp4</code> (for the segments)
+                                             </p>
+                                          </li>
+                                       </ul>
+                                    </div>
+                                    										
+                                    										
+                                    <p>For a Microsoft Smooth Streaming endpoint, only a manifest is served, so you create
+                                       only one cache behavior:
+                                    </p>
+                                    										
+                                    <div class="itemizedlist">
+                                       											
+                                       										
+                                       <ul class="itemizedlist" type="disc">
+                                          <li class="listitem">
+                                             <p>A cache behavior with a path pattern of <code class="code">index.ism/*</code></p>
+                                          </li>
+                                       </ul>
+                                    </div>
+                                    										
+                                    <div class="aws-note">
+                                       <p class="aws-note">Note</p>
+                                       <p>For all endpoint formats except for a Microsoft Smooth Streaming endpoint, you must
+                                          repeat the steps, to add 
+                                          											two cache behaviors.
+                                       </p>
+                                    </div>
+                                    									
+                                 </dd>
+                                 								
+                              </dl>
+                           </div>
+                           						
+                        </li>
+                        <li>
+                           <p>Specify values for the following settings, for each cache behavior:</p>
+                           							
+                           							
+                           <div class="variablelist">
+                              								
+                              								
+                              								
+                              								
+                              														
+                              								
+                              								
+                              							
+                              <dl>
+                                 									
+                                 <dt><b><span class="term">Viewer Protocol Policy</span></b></dt>
+                                 									
+                                 <dd>
+                                    										
+                                    <p>Choose <b>Redirect HTTP to HTTPS</b>.
+                                    </p>
+                                    									
+                                 </dd>
+                                 								
+                                 									
+                                 <dt><b><span class="term">Cache Based on Selected Request Headers</span></b></dt>
+                                 									
+                                 <dd>
+                                    										
+                                    <p>Choose <b>None (improves caching)</b>.
+                                    </p>
+                                    										
+                                    <p>For more information about improving caching, see 
+                                       											<a href="cache-hit-ratio.html">Increasing the Proportion of Requests that Are Served from CloudFront Edge Caches
+                                          
+                                          			(Cache Hit Ratio)</a>.
+                                    </p>
+                                    									
+                                 </dd>
+                                 								
+                                 									
+                                 <dt><b><span class="term">Query String Forwarding and Caching</span></b></dt>
+                                 									
+                                 <dd>
+                                    										
+                                    <p>Choose <b>Forward all, cache based on whitelist</b>.
+                                    </p>
+                                    									
+                                 </dd>
+                                 								
+                                 									
+                                 <dt><b><span class="term">Query String Whitelist</span></b></dt>
+                                 									
+                                 <dd>
+                                    										
+                                    <p>Specify the letter m as the query string parameter that you want CloudFront to use
+                                       as the basis for 
+                                       											caching. The AWS Elemental MediaPackage response always includes the tag
+                                       <code class="code">?m=###</code>  to capture 
+                                       											the modified time of the endpoint. If content is already cached with a
+                                       different value for this tag, 
+                                       											CloudFront requests a new manifest instead of serving the cached version.
+                                    </p>
+                                    										
+                                    <p>If you&#x2019;re using the time-shifted viewing functionality in MediaPackage, specify <code class="code">start</code> 
+                                       											and <code class="code">end</code> as additional query string parameters on the cache behavior for manifest requests
+                                       
+                                       											(<code class="code">*.m3u8</code>, <code class="code">*.mpd</code>, and <code class="code">index.ism/*</code>). This way, content is served
+                                       											that&#x2019;s specific to the requested time period in the manifest request. For
+                                       more information about time-shifted
+                                       											viewing and formatting content start and end request parameters, see <a href="./mediapackage/latest/ug/time-shifted.html">
+                                          											Time-shifted Viewing</a> in the AWS Elemental MediaPackage User Guide.
+                                    </p>
+                                    									
+                                 </dd>
+                                 								
+                                 									
+                                 <dt><b><span class="term">Object Caching</span></b></dt>
+                                 									
+                                 <dd>
+                                    										
+                                    <p>MediaPackage sets default <code class="code">Cache-Control</code> headers that ensure correct playback behavior. 
+                                       											If you want to use those values, choose Use Origin Cache Headers. However,
+                                       you can increase cache 
+                                       											times for video segments. For more information about customizing the time
+                                       that objects stay in the CloudFront cache, see 
+                                       											<a href="distribution-web-values-specify.html#DownloadDistValuesObjectCaching">Object Caching</a> in the
+                                       											<a href="distribution-web-values-specify.html">Values That You Specify When You Create or Update a Distribution</a> topic.
+                                    </p>
+                                    									
+                                 </dd>
+                                 								
+                                 									
+                                 <dt><b><span class="term">Error Caching Minimum TTL</span></b></dt>
+                                 									
+                                 <dd>
+                                    <p>Set to 5 seconds or less, to help prevent serving stale content.</p>
+                                 </dd>
+                                 								
+                              </dl>
+                           </div>
+                           						
+                        </li>
+                        <li>
+                           <p>Choose <b>Create</b>.
+                           </p>
+                        </li>
+                        <li>
+                           <p>If your endpoint is not a Microsoft Smooth endpoint, choose <b>Create Behavior</b>, and then 
+                              							repeat these steps to create a second cache behavior.
+                           </p>
+                        </li>
+                     </ol>	
+                     				
+                     				
+                     				
+                     					
+                     <h3 id="live-streaming-with-mediapackage-serve-channel">Step 4: Use CloudFront to Serve the Live Stream
+                        						Channel
+                     </h3>
+                     					
+                     <p>After you create the distribution, add the origins, and create the cache behaviors,
+                        you can serve the live stream channel 
+                        						using CloudFront. Content requests from viewers are routed to the correct MediaPackage
+                        endpoints based on the settings that you configured 
+                        						for the cache behaviors.
+                     </p>
+                     					
+                     <p>For links in your application (for example, a media player), specify the URL for the
+                        media file in the standard 
+                        						format for CloudFront URLs. For more information, see <a href="LinkFormat.html">Customizing the URL Format for Files in CloudFront</a>.
+                     </p>
+                     					
+                     			
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="on-demand-video.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="distribution-rtmp.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Serving Video Using AWS Elemental MediaStore as the Origin"><a class="pagetoc" href="#video-streaming-mediastore">Serving Video Using AWS Elemental MediaStore as the Origin</a></li>
+                        <li class="pagetoc" name="Serving Live Video Formatted with AWS Elemental MediaPackage"><a class="pagetoc" href="#live-streaming-with-mediapackage">Serving Live Video Formatted with AWS Elemental MediaPackage</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon CloudFront';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>On-Demand Capacity Reservations - Amazon Elastic Compute Cloud</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="instance-purchasing-options.html" title="Instance Purchasing Options">
+      <link rel="prev" href="dedicated-instance.html" title="Dedicated Instances">
+      <link rel="next" href="capacity-reservations-pricing-biling.html" title="">
+      <meta name="description" content="Reserve capacity for any duration without making a long-term commitment.">
+      <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Elastic Compute Cloud">
+      <meta name="guide" content="User Guide for Linux Instances">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-capacity-reservations.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="instance-purchasing-options.html">Instance Purchasing Options</a> &#xBB; <span class="breadcrumb">On-Demand Capacity Reservations</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="ec2-capacity-reservations">On-Demand Capacity Reservations</h1>
+                     <p>On-Demand Capacity Reservations
+                        		enable you to reserve capacity for your Amazon EC2 instances in a specific Availability
+                        Zone for
+                        		any duration. This gives you the ability to create and manage capacity reservations
+                        		independently from the billing discounts offered by Reserved Instances (RI). By
+                        creating Capacity Reservations, you
+                        		ensure that you always have access to EC2 capacity when you need it, for as long
+                        as you need
+                        		it. Capacity Reservations can be created at any time, without entering into a one-year
+                        or three-year term
+                        		commitment, and the capacity is available immediately. When you no longer need the
+                        reservation, 
+                        		cancel the Capacity Reservation to stop incurring charges for it.
+                     </p>
+                     <p>When you create a Capacity Reservation, you specify the Availability Zone in which
+                        you want to reserve 
+                        		the capacity, the number of instances for which you want to reserve capacity, and
+                        the instance 
+                        		attributes, including the instance type, tenancy, and platform/OS. Capacity Reservations
+                        can only be 
+                        		used by instances that match their attributes. By default, they are automatically
+                        used by 
+                        		running instances that match the attributes. If you don&apos;t have any running instances
+                        that 
+                        		match the attributes of the Capacity Reservation, it remains unused until you launch
+                        an instance with 
+                        		matching attributes.
+                     </p>
+                     <p>In addition, you can use your Regional RIs with your Capacity Reservations to benefit
+                        from billing discounts.
+                        		This gives you the flexibility to selectively add capacity reservations and still
+                        get the Regional 
+                        		RI discounts for that usage. AWS automatically applies your RI discount when the
+                        attributes of a 
+                        		Capacity Reservation match the attributes of an active Regional RI.
+                     </p>
+                     <div class="highlights">
+                        <p><strong>Contents</strong></p>
+                        <ul>
+                           <li><a href="#capacity-reservations-differences">Differences between Capacity Reservations and RIs</a></li>
+                           <li><a href="#capacity-reservations-limits">Capacity Reservation Limits</a></li>
+                           <li><a href="#capacity-reservations-limitations">Capacity Reservation Limitations and Restrictions</a></li>
+                           <li><a href="capacity-reservations-pricing-biling.html">Capacity Reservation Pricing and Billing</a></li>
+                           <li><a href="capacity-reservations-using.html">Working with Capacity Reservations</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="capacity-reservations-differences">Differences between Capacity Reservations and RIs</h2>
+                     
+                     <p>The following table highlights some key differences between Capacity Reservations
+                        and RIs:
+                     </p>
+                     
+                     <div class="table">
+                        <p class="title"><b></b></p>
+                        <div class="table-contents">
+                           <table id="w306aac20c13c28c15b5">
+                              
+                              <tbody><tr>
+                                 
+                                 <th></th>
+                                 
+                                 <th>Capacity Reservations</th>
+                                 	
+                                 <th>Zonal RIs</th>
+                                 	
+                                 <th>Regional RIs</th>
+                                 
+                              </tr>
+                              
+                              
+                              <tr>
+                                 	
+                                 <td><b>Term</b></td>
+                                 
+                                 <td>No commitment required. Can be created and canceled as
+                                    							needed.
+                                 </td>
+                                 	
+                                 <td colspan="2">Require fixed one-year or three-year commitment.</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 	
+                                 <td><b>Capacity benefit</b></td>
+                                 
+                                 <td>Reserve capacity in a specific Availability Zone.</td>
+                                 
+                                 <td>Reserve capacity in a specific Availability Zone.</td>
+                                 	
+                                 <td>Do not reserve capacity in an Availability Zone.</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 	
+                                 <td><b>Billing discount</b></td>
+                                 
+                                 <td>No billing discount. Instances launched into a Capacity Reservation are charged at
+                                    							their standard On-Demand rates. However, Regional RIs can be used with
+                                    							Capacity Reservations to get a billing discount.
+                                 </td>
+                                 	
+                                 <td colspan="2">Provide billing discounts.</td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 	
+                                 <td><b>Instance Limits</b></td>
+                                 
+                                 <td>Limited to your On-Demand Instance limits per Region.</td>
+                                 	
+                                 <td>Limited to 20 per Availability Zone. A limit increase can be
+                                    							requested.
+                                 </td>
+                                 	
+                                 <td>Limited to 20 per Region. A limit increase can be requested.</td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <h2 id="capacity-reservations-limits">Capacity Reservation Limits</h2>
+                     	
+                     <p>The number of instances for which you are allowed to reserve capacity is based on
+                        your 
+                        		account&apos;s On-Demand Instance limit. You can reserve capacity for as many instances
+                        as that limit 
+                        		allows, minus the number of instances that are already running.
+                     </p>
+                     
+                     
+                     <h2 id="capacity-reservations-limitations">Capacity Reservation Limitations and Restrictions</h2>
+                     
+                     <p>Before you create Capacity Reservations, take note of the following limitations and
+                        restrictions.
+                     </p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        
+                        
+                        			
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              <p>Active and unused Capacity Reservations count towards your On-Demand Instance limits</p>
+                           </li>
+                           <li class="listitem">
+                              <p>Capacity Reservations can&apos;t be shared across AWS accounts</p>
+                           </li>
+                           <li class="listitem">
+                              <p>Capacity Reservations are not transferable from one AWS account to another</p>
+                           </li>
+                           <li class="listitem">
+                              <p>Zonal RI billing discounts do not apply to Capacity Reservations</p>
+                           </li>
+                           <li class="listitem">
+                              <p>Capacity Reservations can&apos;t be created in Placement Groups</p>
+                           </li>
+                           <li class="listitem">
+                              <p>Capacity Reservations can&apos;t be used with Dedicated Hosts</p>
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="dedicated-instance.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="capacity-reservations-pricing-biling.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Differences between Capacity Reservations and RIs"><a class="pagetoc" href="#capacity-reservations-differences">Differences between Capacity Reservations and RIs</a></li>
+                        <li class="pagetoc" name="Capacity Reservation Limits"><a class="pagetoc" href="#capacity-reservations-limits">Capacity Reservation Limits</a></li>
+                        <li class="pagetoc" name="Capacity Reservation Limitations and Restrictions"><a class="pagetoc" href="#capacity-reservations-limitations">Capacity Reservation Limitations and Restrictions</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Elastic Compute Cloud';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide for Linux Instances';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

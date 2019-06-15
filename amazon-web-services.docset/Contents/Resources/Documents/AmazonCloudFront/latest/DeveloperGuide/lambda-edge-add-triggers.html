@@ -3,15 +3,18 @@
       <title>Adding Triggers for a Lambda@Edge Function - Amazon CloudFront</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="lambda-at-the-edge.html" title="Using CloudFront with Lambda@Edge">
-      <link rel="prev" href="lambda-edge-create-programmatically.html" title="Creating Lambda Functions and CloudFront Triggers Programmatically">
+      <link rel="up" href="lambda-at-the-edge.html" title="Customizing Content at the Edge with Lambda@Edge">
+      <link rel="prev" href="lambda-edge-create-programmatically.html" title="Creating Lambda Functions and CloudFront Triggers
+					Programmatically">
       <link rel="next" href="lambda-cloudfront-trigger-events.html" title="CloudFront Events That Can Trigger a Lambda Function">
-      <meta name="description" content="You specify one or more CloudFront events, known as triggers, that cause a Lambda function to execute. For example, you can create a trigger that causes the function to execute when CloudFront receives a request from a viewer.">
+      <meta name="description" content="A Lambda@Edge trigger is one combination of CloudFront distribution, cache behavior, and event that causes a function to execute. You can specify one or more CloudFront triggers that cause the function to run. For example, you can create a trigger that causes the function to execute when CloudFront receives a request from a viewer for a specific cache behavior you set up for your distribution.">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/lambda-edge-add-triggers.html">
@@ -21,7 +24,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,24 +36,42 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-at-the-edge.html">Using CloudFront with Lambda@Edge</a> &#xBB; <span class="breadcrumb">Adding Triggers for a Lambda@Edge Function</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-at-the-edge.html">Customizing Content at the Edge with Lambda@Edge</a> &#xBB; <span class="breadcrumb">Adding Triggers for a Lambda@Edge Function</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="lambda-edge-add-triggers">Adding Triggers for a Lambda@Edge Function</h1>
-                     <p>You specify one or more CloudFront events, known as triggers, that cause a Lambda
-                        function to execute. For example, you can create a 
+                     <p>A Lambda@Edge trigger is one combination of CloudFront distribution, cache behavior,
+                        and event that causes a function to
+                        			execute. You can specify one or more CloudFront triggers that cause the function
+                        to run. For example, you can create a
                         			trigger that causes the function to execute when CloudFront receives a request
-                        from a viewer.
+                        from a viewer for a specific cache behavior
+                        			you set up for your distribution.
                      </p>
-                     <p>At the time that you create a Lambda function, you can specify only one trigger&#x2014;that
-                        is,
-                        			only one combination of CloudFront distribution, cache behavior, and event that
-                        causes the
-                        			function to execute. But you can add more triggers to the same function later by
-                        using
-                        			the Lambda console or by editing the distribution in the CloudFront console.
+                     <div class="aws-note">
+                        <p class="aws-note">Tip</p>
+                        <p>If you&apos;re not familiar with CloudFront cache behaviors, here&apos;s a brief overview. When
+                           you create a CloudFront distribution,
+                           				you specify settings that tell CloudFront how to respond when it receives different
+                           requests. The default settings are
+                           				called the default cache behavior for the distribution. You can set up additional
+                           cache behaviors that define how
+                           				CloudFront responds under specific circumstances, for example, when it receives
+                           a request for a specific file type. For
+                           				more information, see <a href="./AmazonCloudFront/latest/DeveloperGuide/distribution-web-values-specify.html#DownloadDistValuesCacheBehavior">Cache Behavior
+                              					Settings</a>.
+                        </p>
+                     </div>
+                     <p>At the time that you create a Lambda function, you can specify only one trigger. But
+                        you can add more triggers to the
+                        			same function later in one of two ways: by using the Lambda console or by editing
+                        the distribution in the CloudFront
+                        			console.
                      </p>
                      <div class="itemizedlist">
                         			
@@ -58,34 +79,45 @@
                         		
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
+                              				
                               <p>Using the Lambda console works well if you want to add more triggers to a function
-                                 for the same CloudFront distribution.
+                                 for the same CloudFront
+                                 					distribution.
                               </p>
+                              			
                            </li>
                            <li class="listitem">
+                              				
                               <p>Using the CloudFront console can be better if you want to add triggers for multiple
-                                 distributions
-                                 				because it&apos;s easier to find the distribution that you want to update. You can
-                                 				also update other CloudFront settings at the same time.
+                                 distributions because it&apos;s
+                                 					easier to find the distribution that you want to update. You can also update
+                                 other CloudFront settings at the same
+                                 					time.
                               </p>
+                              			
                            </li>
                         </ul>
                      </div>
                      <div class="aws-note">
                         <p class="aws-note">Note</p>
                         <p>If you want to work with Lambda@Edge programmatically, there are several resources
-                           to help you. For more information, see
-                           			<a href="lambda-edge-create-programmatically.html">Creating Lambda Functions and CloudFront Triggers Programmatically</a>.
+                           to help you. For more
+                           				information, see <a href="lambda-edge-create-programmatically.html">Creating Lambda Functions and CloudFront Triggers
+                              					Programmatically</a>.
                         </p>
                      </div>
                      <div class="highlights">
                         <p><strong>Topics</strong></p>
                         <ul>
                            <li><a href="lambda-cloudfront-trigger-events.html">CloudFront Events That Can Trigger a Lambda Function</a></li>
-                           <li><a href="lambda-how-to-choose-event.html">How to Decide Which CloudFront Event to Use to Trigger a Lambda Function</a></li>
+                           <li><a href="lambda-how-to-choose-event.html">How to Decide Which CloudFront Event to Use to Trigger a Lambda
+                                 					Function</a></li>
                            <li><a href="lambda-edge-add-triggers-lam-console.html">Adding Triggers by Using the Lambda Console</a></li>
                            <li><a href="lambda-edge-add-triggers-cf-console.html">Adding Triggers by Using the CloudFront Console</a></li>
                         </ul>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
                   </div>
                   <noscript>
@@ -93,9 +125,10 @@
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -105,7 +138,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="lambda-edge-create-programmatically.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="lambda-cloudfront-trigger-events.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -113,6 +148,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

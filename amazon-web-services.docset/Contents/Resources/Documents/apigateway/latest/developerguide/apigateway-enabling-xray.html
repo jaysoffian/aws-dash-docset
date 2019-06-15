@@ -1,0 +1,341 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Setting Up AWS X-Ray with API Gateway - Amazon API Gateway</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="apigateway-xray.html" title="Trace API Gateway API Execution with AWS X-Ray">
+      <link rel="prev" href="apigateway-xray.html" title="Trace API Gateway API Execution with AWS X-Ray">
+      <link rel="next" href="apigateway-using-xray-maps.html" title="Using AWS X-Ray Service Maps and Trace Views
+            with API Gateway">
+      <meta name="description" content="Learn how to enable AWS X-Ray in Amazon API Gateway.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon API Gateway">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-enabling-xray.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="monitoring_overview.html">Tracing, Logging, and Monitoring an API Gateway API</a> &#xBB; <a href="apigateway-xray.html">Trace API Gateway API Execution with AWS X-Ray</a> &#xBB; <span class="breadcrumb">Setting Up AWS X-Ray with API Gateway</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="apigateway-enabling-xray">Setting Up AWS X-Ray with API Gateway</h1>
+                     <p>In this section you can find detailed information on how to set up <a href="./xray/latest/devguide/xray-services-apigateway.html">AWS X-Ray</a> with API Gateway.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#apigateway-tracing-modes">X-Ray Tracing Modes for API Gateway</a></li>
+                           <li><a href="#set-up-xray-tracing-permissions">Permissions for X-Ray Tracing</a></li>
+                           <li><a href="#apigateway-xray-console-setup">Enabling X-Ray tracing in the API Gateway
+                                 console</a></li>
+                           <li><a href="#apigateway-xray-cli-setup">Enabling AWS X-Ray Tracing Using the API Gateway
+                                 CLI</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="apigateway-tracing-modes">X-Ray Tracing Modes for API Gateway</h2>
+                     
+                     
+                     <p>The path of a request through your application is tracked with a trace ID. A trace
+                        collects all of the segments generated by a single request, typically an
+                        HTTP
+                        <code class="code">GET</code> or <code class="code">POST</code> request.
+                     </p>
+                     
+                     <p>There are two modes of tracing for an API Gateway API:</p>
+                     
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><b>Passive</b>: This is the default setting if
+                                 you have not enabled X-Ray tracing on an API stage. This approach means that
+                                 the API Gateway API is only traced if X-Ray has been enabled on an upstream service.
+                              </p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><b>Active</b>: When an API Gateway API stage has this
+                                 setting, API Gateway automatically samples API invocation requests, based on the
+                                 sampling algorithm specified by X-Ray.
+                              </p>
+                              
+                              <p>When active tracing is enabled on a stage, API Gateway creates a service-linked role
+                                 in your
+                                 account, if the role does not exist already. The role is named
+                                 <code class="code">AWSServiceRoleForAPIGateway</code> and will have the
+                                 <code class="code">APIGatewayServiceRolePolicy</code> managed policy attached to it. For more
+                                 information about service-linked roles, see <a href="./IAM/latest/UserGuide/using-service-linked-roles.html">Using Service-Linked
+                                    Roles</a>.
+                              </p>
+                              
+                              <div class="aws-note">
+                                 <p class="aws-note">Note</p>
+                                 <p>X-Ray applies a sampling algorithm to ensure that tracing is efficient,
+                                    while still providing a representative sample of the requests that your API
+                                    receives. The default sampling algorithm is 1 request per second, with 5
+                                    percent of requests sampled past that limit.
+                                 </p>
+                              </div>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     
+                     <p>You can change the tracing mode for your API by using the API Gateway management console,
+                        the API Gateway CLI, or an AWS SDK.
+                     </p>
+                     
+                     
+                     <h2 id="set-up-xray-tracing-permissions">Permissions for X-Ray Tracing</h2>
+                     
+                     <p>When you enable X-Ray
+                        tracing on a stage, API Gateway creates a service-linked role in your account, if
+                        the role
+                        does not exist already. The role is named <code class="code">AWSServiceRoleForAPIGateway</code> and
+                        will have the <code class="code">APIGatewayServiceRolePolicy</code> managed policy attached to it.
+                        For more information about service-linked roles, see <a href="./IAM/latest/UserGuide/using-service-linked-roles.html">Using Service-Linked
+                           Roles</a>.
+                     </p>
+                     
+                     
+                     <h2 id="apigateway-xray-console-setup">Enabling X-Ray tracing in the API Gateway
+                        console
+                     </h2>
+                     
+                     
+                     <p>You can use the Amazon API Gateway console to enable active tracing on an API stage.</p>
+                     
+                     
+                     <p>These steps assume that you have already deployed the API to a stage.</p>
+                     
+                     <ol>
+                        <li>
+                           <p>Sign in to the API Gateway console at <a href="https://console.aws.amazon.com/apigateway" target="_blank">https://console.aws.amazon.com/apigateway</a>.
+                           </p>
+                        </li>
+                        <li>
+                           
+                           <p>In the <b>APIs</b> pane, choose the API, and then choose
+                              <b>Stages</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the <b>Stages</b> pane, choose the name of the stage.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the <b>Stage Editor</b> pane, choose the
+                              <b>Logs/Tracing</b> tab.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>To enable active X-Ray tracing, choose <b>Enable X-Ray
+                                 Tracing</b> under <b>X-Ray Tracing</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>If desired, choose <b>Set X-Ray Sampling Rules</b> and go to
+                              the X-Ray console to <a href="apigateway-configuring-xray-sampling-rules.html">configure sampling rules</a>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <p>Once you&apos;ve enabled X-Ray for your API stage, you can use the X-Ray management
+                        console to view the traces and service maps.
+                     </p>
+                     
+                     
+                     <h2 id="apigateway-xray-cli-setup">Enabling AWS X-Ray Tracing Using the API Gateway
+                        CLI
+                     </h2>
+                     
+                     
+                     <p>To use the AWS CLI to enable active X-Ray tracing for an API stage when you create
+                        the
+                        stage, call the <a href="./cli/latest/reference/apigateway/create-stage.html"><code class="code">create-stage</code></a> command as in the following example: 
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws apigateway --endpoint-url <em class="replaceable"><code>{endpoint-url}</code></em> create-stage          \
+    --rest-api-id <em class="replaceable"><code>{rest-api-id}</code></em>      \
+    --stage-name <em class="replaceable"><code>{stage-name}</code></em>      \
+    --deployment-id <em class="replaceable"><code>{deployment-id}</code></em>        \
+    --region <em class="replaceable"><code>{region}</code></em>        \
+    --tracing-enabled=true</code></pre>
+                     <p>Following is example output for a successful invocation:</p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;tracingEnabled&quot;: true, 
+    &quot;stageName&quot;: <em class="replaceable"><code>{stage-name}</code></em>, 
+    &quot;cacheClusterEnabled&quot;: false, 
+    &quot;cacheClusterStatus&quot;: &quot;NOT_AVAILABLE&quot;, 
+    &quot;deploymentId&quot;: <em class="replaceable"><code>{deployment-id}</code></em>, 
+    &quot;lastUpdatedDate&quot;: 1533849811, 
+    &quot;createdDate&quot;: 1533849811, 
+    &quot;methodSettings&quot;: {}
+}</code></pre>
+                     
+                     <p>To use the AWS CLI to disable active X-Ray tracing for an API stage when you create
+                        the
+                        stage, call the <a href="./cli/latest/reference/apigateway/create-stage.html"><code class="code">create-stage</code></a> command as in the following example: 
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws apigateway --endpoint-url <em class="replaceable"><code>{endpoint-url}</code></em> create-stage          \
+    --rest-api-id <em class="replaceable"><code>{rest-api-id}</code></em>      \
+    --stage-name <em class="replaceable"><code>{stage-name}</code></em>      \
+    --deployment-id <em class="replaceable"><code>{deployment-id}</code></em>        \
+    --region <em class="replaceable"><code>{region}</code></em>        \
+    --tracing-enabled=false</code></pre>
+                     <p>Following is example output for a successful invocation:</p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;tracingEnabled&quot;: false, 
+    &quot;stageName&quot;: <em class="replaceable"><code>{stage-name}</code></em>, 
+    &quot;cacheClusterEnabled&quot;: false, 
+    &quot;cacheClusterStatus&quot;: &quot;NOT_AVAILABLE&quot;, 
+    &quot;deploymentId&quot;: <em class="replaceable"><code>{deployment-id}</code></em>, 
+    &quot;lastUpdatedDate&quot;: 1533849811, 
+    &quot;createdDate&quot;: 1533849811, 
+    &quot;methodSettings&quot;: {}
+}</code></pre>
+                     
+                     <p> To use the AWS CLI to enable active X-Ray tracing for an API that&apos;s already been
+                        deployed, call the <a href="./cli/latest/reference/apigateway/update-stage.html"><code class="code">update-stage</code></a> command as follows: 
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws apigateway update-stage          \
+    --rest-api-id <em class="replaceable"><code>{rest-api-id}</code></em>      \
+    --stage-name <em class="replaceable"><code>{stage-name}</code></em>      \
+    --patch-operations op=replace,path=/tracingEnabled,value=true</code></pre>
+                     
+                     <p> To use the AWS CLI to disable active X-Ray tracing for an API that&apos;s already been
+                        deployed, call the <a href="./cli/latest/reference/apigateway/update-stage.html"><code class="code">update-stage</code></a> command as in the following example: 
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws apigateway update-stage          \
+    --endpoint-url <em class="replaceable"><code>{endpoint-url}</code></em>       \
+    --rest-api-id <em class="replaceable"><code>{rest-api-id}</code></em>      \
+    --stage-name <em class="replaceable"><code>{stage-name}</code></em>      \
+    --region <em class="replaceable"><code>{region}</code></em>      \
+    --patch-operations op=replace,path=/tracingEnabled,value=false</code></pre>
+                     <p>Following is example output for a successful invocation:</p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+    &quot;tracingEnabled&quot;: false, 
+    &quot;stageName&quot;: <em class="replaceable"><code>{stage-name}</code></em>, 
+    &quot;cacheClusterEnabled&quot;: false, 
+    &quot;cacheClusterStatus&quot;: &quot;NOT_AVAILABLE&quot;, 
+    &quot;deploymentId&quot;: <em class="replaceable"><code>{deployment-id}</code></em>, 
+    &quot;lastUpdatedDate&quot;: 1533850033, 
+    &quot;createdDate&quot;: 1533849811, 
+    &quot;methodSettings&quot;: {}
+}</code></pre>
+                     
+                     <p>Once you&apos;ve enabled X-Ray for your API stage, use the X-Ray CLI to retrieve trace
+                        information. For more information, see <a href="./xray/latest/devguide/xray-api-tutorial.html">Using the AWS X-Ray API with the AWS CLI</a>.
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="apigateway-xray.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="apigateway-using-xray-maps.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="X-Ray Tracing Modes for API Gateway"><a class="pagetoc" href="#apigateway-tracing-modes">X-Ray Tracing Modes for API Gateway</a></li>
+                        <li class="pagetoc" name="Permissions for X-Ray Tracing"><a class="pagetoc" href="#set-up-xray-tracing-permissions">Permissions for X-Ray Tracing</a></li>
+                        <li class="pagetoc" name="Enabling X-Ray tracing in the API Gateway
+                console"><a class="pagetoc" href="#apigateway-xray-console-setup">Enabling X-Ray tracing in the API Gateway console</a></li>
+                        <li class="pagetoc" name="Enabling AWS X-Ray Tracing Using the API Gateway
+                CLI"><a class="pagetoc" href="#apigateway-xray-cli-setup">Enabling X-Ray Tracing Using the API Gateway API CLI</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon API Gateway';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

@@ -1,17 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>AMIs with Encrypted Snapshots - Amazon Elastic Compute Cloud</title>
+      <title>Using Encryption with EBS-Backed AMIs - Amazon Elastic Compute Cloud</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="AMIs.html" title="Amazon Machine Images (AMI)">
       <link rel="prev" href="ami-tools-commands.html" title="AMI Tools Reference">
       <link rel="next" href="CopyingAMIs.html" title="Copying an AMI">
-      <meta name="description" content="Use EBS encryption with AMIs in various configurations.">
+      <meta name="description" content="Use Amazon EBS encryption with AMIs in various configurations.">
       <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIEncryption.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,312 +35,473 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="AMIs.html">Amazon Machine Images (AMI)</a> &#xBB; <span class="breadcrumb">AMIs with Encrypted Snapshots</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="AMIs.html">Amazon Machine Images (AMI)</a> &#xBB; <span class="breadcrumb">Using Encryption with EBS-Backed AMIs</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="AMIEncryption">AMIs with Encrypted Snapshots</h1>
+                     <h1 class="topictitle" id="AMIEncryption">Using Encryption with EBS-Backed AMIs</h1>
                      <p>AMIs that are backed by Amazon EBS snapshots can take advantage of Amazon EBS encryption.
-                        Snapshots
-                        		of both data and root volumes can be encrypted and attached to an AMI.
+                        Snapshots of
+                        		both data and root volumes can be encrypted and attached to an AMI. You can launch
+                        instances
+                        		and copy images with full EBS encryption support included. Encryption parameters
+                        for these
+                        		operations are supported in all Regions where AWS KMS is available.
                      </p>
-                     <p>EC2 instances with encrypted volumes are launched from AMIs in the same way as other
-                        		instances. 
+                     <p>EC2 instances with encrypted EBS volumes are launched from AMIs in the same way as
+                        other
+                        		instances. In addition, when you launch an instance from an AMI backed by unencrypted
+                        EBS
+                        		snapshots, you can encrypt some or all of the volumes during launch. 
                      </p>
-                     <p>The <code class="code">CopyImage</code> action can be used to create an AMI with encrypted snapshots
-                        		from an AMI with unencrypted snapshots. By default, <code class="code">CopyImage</code> preserves the
-                        		encryption status of source snapshots when creating destination copies. However,
-                        you can
-                        		configure the parameters of the copy process to also encrypt the destination snapshots.
-                        
+                     <p>Like EBS volumes, snapshots in AMIs can be encrypted by either your default AWS Key
+                        Management Service
+                        		customer master key (CMK), or to a customer managed key that you specify. You must
+                        in all 
+                        		cases have permission to use the selected key.
                      </p>
-                     <p>Snapshots can be encrypted with either your default AWS Key Management Service customer
-                        master key (CMK),
-                        		or with a custom key that you specify. You must in all cases have permission to
-                        use the
-                        		selected key. If you have an AMI with encrypted snapshots, you can choose to re-encrypt
-                        		them with a different encryption key as part of the <code class="code">CopyImage</code> action.
-                        			<code class="code">CopyImage</code> accepts only one key at a time and encrypts all of an image&apos;s
-                        		snapshots (whether root or data) to that key. However, it is possible to manually
-                        build an
-                        		AMI with snapshots encrypted to multiple keys.
-                     </p>
-                     <p>Support for creating AMIs with encrypted snapshots is accessible through the Amazon
-                        EC2 console,
-                        		Amazon EC2 API, or the AWS CLI. 
-                     </p>
-                     <p>The encryption parameters of <code class="code">CopyImage</code> are available in all regions where
-                        		AWS KMS is available.
-                     </p>
-                     <h2 id="AMIEncryption_scenarios">AMI Scenarios Involving Encrypted EBS
-                        			Snapshots
-                     </h2>
-                     		
-                     		
-                     <p>You can copy an AMI and simultaneously encrypt its associated EBS snapshots using
-                        			the AWS Management Console or the command line.
+                     <p>AMIs with encrypted snapshots can be shared across AWS accounts. For more information,
+                        		see <a href="./AWSEC2/latest/UserGuide/sharing-amis.html">Shared AMIs</a>.
                      </p>
                      		
-                     <h3 id="w2ab1c15c37c15b4">Copying an AMI with an Encrypted Data Snapshot</h3>
-                     			
-                     			
-                     <p>In this scenario, an EBS-backed AMI has an unencrypted root snapshot and an
-                        				encrypted data snapshot, shown in step 1. The <code class="code">CopyImage</code> action is
-                        				invoked in step 2 without encryption parameters. As a result, the encryption status
-                        				of each snapshot is preserved, so that the destination AMI, in step 3, is also
-                        				backed by an unencrypted root snapshot and an encrypted data snapshot. Though
-                        the
-                        				snapshots contain the same data, they are distinct from each other and you will
-                        				incur storage costs for the snapshots in both AMIs, as well as charges for any
-                        				instances you launch from either AMI.
-                     </p>
-                     			
-                     				
-                     <div class="mediaobject">
-                        					
-                        						<img src="../../..//img/ami-to-ami-mixed.png" alt="
-						Copy an AMI with encrypted data snapshot
-					">
-                        					
-                        					
-                        				
-                     </div>
-                     			
-                     			
-                     <p>You can perform a simple copy such as this using either the Amazon EC2 console or
-                        the
-                        				command line. For more information, see <a href="CopyingAMIs.html">Copying an AMI</a>.
-                     </p>
+                     <h2 id="AMI-encryption-launch">Instance-Launching Scenarios</h2>
                      		
                      		
-                     <h3 id="w2ab1c15c37c15b6">Copying an AMI Backed by An Encrypted Root Snapshot</h3>
-                     			
-                     			
-                     <p>In this scenario, an Amazon EBS-backed AMI has an encrypted root snapshot, shown in
-                        				step 1. The <code class="code">CopyImage</code> action is invoked in step 2 without encryption
-                        				parameters. As a result, the encryption status of the snapshot is preserved, so
-                        that
-                        				the destination AMI, in step 3, is also backed by an encrypted root snapshot.
-                        				Though the root snapshots contain identical system data, they are distinct from
-                        each
-                        				other and you will incur storage costs for the snapshots in both AMIs, as well
-                        as
-                        				charges for any instances you launch from either AMI.
-                     </p>
-                     			
-                     				
-                     <div class="mediaobject">
-                        					
-                        						<img src="../../..//img/ami-to-ami-encrypted.png" alt="
-						Copy an AMI backed by encrypted root snapshot
-					">
-                        					
-                        					
-                        				
-                     </div>
-                     			
-                     			
-                     <p>You can perform a simple copy such as this using either the Amazon EC2 console or
-                        the
-                        				command line. For more information, see <a href="CopyingAMIs.html">Copying an AMI</a>.
+                     <p>Amazon EC2 instances are launched from AMIs using the <code class="code">RunInstances</code> action with
+                        			parameters supplied through block device mapping, either by means of the AWS Management
+                        Console or
+                        			directly using the Amazon EC2 API or CLI. For more information about block device
+                        mapping,
+                        			see <a href="./AWSEC2/latest/UserGuide/block-device-mapping-concepts.html">Block
+                           				Device Mapping</a>. For examples of controlling block device mapping from the AWS CLI,
+                        			see <a href="./cli/latest/userguide/cli-services-ec2-instances.html">Launch, List, and Terminate EC2 Instances</a>.
                      </p>
                      		
-                     		
-                     <h3 id="w2ab1c15c37c15b8">Creating an AMI with Encrypted Root Snapshot from an Unencrypted AMI</h3>
-                     			
-                     			
-                     <p>In this scenario, an Amazon EBS-backed AMI has an unencrypted root snapshot, shown
-                        in
-                        				step 1, and an AMI is created with an encrypted root snapshot, shown in step 3.
-                        				The <code class="code">CopyImage</code> action in step 2 is invoked with two encryption
-                        				parameters, including the choice of a CMK. As a result, the encryption status
-                        of the
-                        				root snapshot changes, so that the target AMI is backed by a root snapshot
-                        				containing the same data as the source snapshot, but encrypted using the specified
-                        				key. You will incur storage costs for the snapshots in both AMIs, as well as
-                        				charges for any instances you launch from either AMI.
-                     </p>
-                     			
-                     				
-                     <div class="mediaobject">
-                        					
-                        						<img src="../../..//img/ami-to-ami-convert.png" alt="
-						Create an AMI from unencrypted AMI
-					">
-                        					
-                        					
-                        				
-                     </div>
-                     			
-                     			
-                     <p>You can perform a copy and encrypt operation such as this using either the Amazon
-                        EC2
-                        				console or the command line. For more information, see <a href="CopyingAMIs.html">Copying an AMI</a>.
+                     <p>By default, without explicit encryption parameters, a <code class="code">RunInstances</code> action
+                        			maintains the existing encryption state of an AMI&apos;s source snapshots while restoring
+                        EBS
+                        			volumes from them. If
+                        				<a href="./AWSEC2/latest/UserGuide/encryption-by-default.html">encryption by
+                           				default</a> is enabled, all volumes created from the AMI (whether
+                        			from encrypted or unencrypted snapshots) will be encrypted. If encryption by default
+                        is
+                        			not enabled, then the instance maintains the encryption state of the AMI.
                      </p>
                      		
-                     		
-                     <h3 id="w2ab1c15c37c15c10">Creating an AMI with an Encrypted Root Snapshot from a Running Instance</h3>
-                     			
-                     			
-                     <p>In this scenario, an AMI is created from a running EC2 instance. The running
-                        				instance in step 1 has an encrypted root volume, and the created AMI in step 3
-                        has
-                        				a root snapshot encrypted to the same key as the source volume. The
-                        					<code class="code">CreateImage</code> action has exactly the same behavior whether or not
-                        				encryption is present.
-                     </p>
-                     			
-                     				
-                     <div class="mediaobject">
-                        					
-                        						<img src="../../..//img/running-instance-encrypted.png" alt="
-						Create an AMI from instance with encrypted root snapshot
-					">
-                        					
-                        					
-                        				
-                     </div>
-                     			
-                     			
-                     <p>You can create an AMI from a running Amazon EC2 instance (with or without encrypted
-                        				volumes) using either the Amazon EC2 console or the command line. For more information,
-                        				see <a href="creating-an-ami-ebs.html">Creating an Amazon EBS-Backed Linux AMI</a>. 
+                     <p>You can also launch an instance and simultaneously apply a new
+                        			encryption state to the resulting volumes by supplying encryption parameters.
+                        			Consequently, the following behaviors are observed:
                      </p>
                      		
+                     <p><b>Launch with no encryption parameters</b></p>
                      		
-                     <h3 id="w2ab1c15c37c15c12">Creating an AMI with Unique CMKs for Each Encrypted Snapshot</h3>
-                     			
-                     			
-                     <p>This scenario starts with an AMI backed by a root-volume snapshot (encrypted to
-                        				key #1), and finishes with an AMI that has two additional data-volume snapshots
-                        				attached (encrypted to key #2 and key #3). The <code class="code">CopyImage</code> action cannot
-                        				apply more than one encryption key in a single operation. However, you can create
-                        an
-                        				AMI from an instance that has multiple attached volumes encrypted to different
-                        keys.
-                        				The resulting AMI has snapshots encrypted to those keys and any instance launched
-                        				from this new AMI also has volumes encrypted to those keys.
-                     </p>
-                     			
-                     <p>The steps of this example procedure correspond to the following diagram.</p>
-                     			
-                     <div class="orderedlist">
-                        				
-                        				
-                        				
-                        				
-                        				
-                        				
-                        				
-                        			
-                        <ol>
-                           <li>
-                              					
-                              <p>Start with the source AMI backed by vol. #1 (root) snapshot, which is
-                                 						encrypted with key #1.
-                              </p>
-                              				
-                           </li>
-                           <li>
-                              					
-                              <p>Launch an EC2 instance from the source AMI.</p>
-                              				
-                           </li>
-                           <li>
-                              					
-                              <p>Create EBS volumes vol. #2 (data) and vol. #3 (data), encrypted to key #2
-                                 						and key #3 respectively.
-                              </p>
-                              				
-                           </li>
-                           <li>
-                              					
-                              <p>Attach the encrypted data volumes to the EC2 instance.</p>
-                              				
-                           </li>
-                           <li>
-                              					
-                              <p>The EC2 instance now has an encrypted root volume as well as two encrypted
-                                 						data volumes, all using different keys.
-                              </p>
-                              				
-                           </li>
-                           <li>
-                              					
-                              <p>Use the <code class="code">CreateImage</code> action on the EC2 instance.
-                              </p>
-                              				
-                           </li>
-                           <li>
-                              					
-                              <p>The resulting target AMI contains encrypted snapshots of the three EBS
-                                 						volumes, all using different keys.
-                              </p>
-                              				
-                           </li>
-                        </ol>
-                     </div>
-                     			
-                     				
-                     <div class="mediaobject">
-                        					
-                        						<img src="../../..//img/multi-key.png" alt="
-						Create AMIs with unique CMKs
-					">
-                        					
-                        					
-                        				
-                     </div>
-                     			
-                     			
-                     <p>You can carry out this procedure using either the Amazon EC2 console or the command
-                        				line. For more information, see the following topics:
-                     </p>
-                     			
                      <div class="itemizedlist">
-                        					
-                        					
-                        					
-                        					
                         			
+                        			
+                        			
+                        		
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
-                              						
-                              <p><a href="LaunchingAndUsingInstances.html">Launch Your Instance</a></p>
-                              					
-                           </li>
-                           <li class="listitem">
-                              						
-                              <p><a href="creating-an-ami-ebs.html">Creating an Amazon EBS-Backed Linux AMI</a>.
+                              				
+                              <p>An unencrypted snapshot is restored to an unencrypted volume, unless
+                                 					encryption by default is enabled, in which case all the newly created volumes
+                                 					will be encrypted.
                               </p>
-                              					
+                              			
                            </li>
                            <li class="listitem">
-                              						
-                              <p><a href="EBSVolumes.html">Amazon EBS Volumes</a></p>
-                              					
+                              				
+                              <p>An encrypted snapshot that you own is restored to a volume that is encrypted
+                                 					to the same CMK.
+                              </p>
+                              			
                            </li>
                            <li class="listitem">
-                              						
-                              <p><a href="./kms/latest/developerguide/getting-started.html" target="_blank">AWS Key
-                                    								Management</a> in the
-                                 							<em>AWS Key Management Service Developer Guide</em></p>
-                              					
+                              				
+                              <p>An encrypted snapshot that you do not own (for example, the AMI is shared with you)
+                                 					is restored to a volume that is encrypted by your AWS account&apos;s default
+                                 					CMK.
+                              </p>
+                              			
                            </li>
                         </ul>
                      </div>
                      		
+                     <p>The default behaviors can be overridden by supplying encryption parameters. The
+                        			available parameters are <code class="code">Encrypted</code> and <code class="code">KmsKeyId</code>. Setting only
+                        			the <code class="code">Encrypted</code> parameter results in the following:
+                     </p>
+                     		
+                     <p><b>Instance launch behaviors with <code class="code">Encrypted</code> set, but
+                           				no <code class="code">KmsKeyId</code> specified</b></p>
+                     		
+                     <div class="itemizedlist">
+                        			
+                        			
+                        			
+                        		
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              				
+                              <p>An unencrypted snapshot is restored to an EBS volume that is encrypted by your
+                                 					AWS account&apos;s default CMK.
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>An encrypted snapshot that you own is restored to an EBS volume encrypted by
+                                 					the same CMK. (In other words, the <code class="code">Encrypted</code> parameter has no
+                                 					effect.)
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>An encrypted snapshot that you do not own (i.e., the AMI is shared with you)
+                                 					is restored to a volume that is encrypted by your AWS account&apos;s default CMK.
+                                 					(In other words, the <code class="code">Encrypted</code> parameter has no effect.)
+                              </p>
+                              			
+                           </li>
+                        </ul>
+                     </div>
+                     		
+                     <p>Setting both the <code class="code">Encrypted</code> and <code class="code">KmsKeyId</code> parameters allows
+                        			you to specify a non-default CMK for an encryption operation. The following behaviors
+                        			result:
+                     </p>
+                     		
+                     <p><b>Instance with both <code class="code">Encrypted</code> and
+                           					<code class="code">KmsKeyId</code> set</b></p>
+                     		
+                     <div class="itemizedlist">
+                        			
+                        			
+                        		
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              				
+                              <p>An unencrypted snapshot is restored to an EBS volume encrypted by the
+                                 					specified CMK.
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>An encrypted snapshot is restored to an EBS volume encrypted not to the
+                                 					original CMK, but instead to the specified CMK.
+                              </p>
+                              			
+                           </li>
+                        </ul>
+                     </div>
+                     		
+                     <p>Submitting a <code class="code">KmsKeyId</code> without also setting the <code class="code">Encrypted</code>
+                        			parameter results in an error.
+                     </p>
+                     		
+                     <p>The following sections provide examples of launching instances from AMIs using
+                        			non-default encryption parameters. In each of these scenarios, parameters supplied
+                        to
+                        			the <code class="code">RunInstances</code> action result in a change of encryption state during
+                        			restoration of a volume from a snapshot.
+                     </p>
+                     		
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>For detailed console procedures to launch an instance from an AMI, see <a href="./AWSEC2/latest/UserGuide/LaunchingAndUsingInstances.html">Launch Your
+                              					Instance</a>.
+                        </p>
+                        <p>For documentation of the <code class="code">RunInstances</code> API, see <a href="./AWSEC2/latest/APIReference/API_RunInstances.html">RunInstances</a>.
+                        </p>
+                        <p>For documentation of the <code class="code">run-instances</code> command in the AWS Command Line Interface, see <a href="./cli/latest/reference/ec2/run-instances.html">run-instances</a>.
+                        </p>
+                     </div>
+                     		
+                     		
+                     			
+                     <h3 id="launch1">Encrypt a Volume during Launch</h3>
+                     			
+                     <p>In this example, an AMI backed by an unencrypted snapshot is used to launch an EC2
+                        				instance with an encrypted EBS volume.
+                     </p>
+                     			
+                     <div class="mediaobject">
+                        				
+                        					<img src="../../..//img/ami-launch-convert.png" alt="
+					Launch instance and encrypt volume on the fly
+				">
+                        				
+                        				
+                        			
+                     </div>
+                     			
+                     <p>The <code class="code">Encrypted</code> parameter alone results in the volume for this instance
+                        				being encrypted. Providing a <code class="code">KmsKeyId</code> parameter is optional. If no key
+                        				ID is specified, the AWS account&apos;s default CMK is used to encrypt the volume.
+                        To
+                        				encrypt the volume to a different CMK that you own, supply the <code class="code">KmsKeyId</code>
+                        				parameter. 
+                     </p>
+                     		
+                     		
+                     			
+                     <h3 id="launch2">Re-Encrypt a Volume during Launch</h3>
+                     			
+                     <p>In this example, an AMI backed by an encrypted snapshot is used to launch an EC2
+                        				instance with an EBS volume encrypted by a new CMK. 
+                     </p>
+                     			
+                     <div class="mediaobject">
+                        				
+                        					<img src="../../..//img/ami-launch-encrypted.png" alt="
+					Launch instance and re-encrypt volume on the fly
+				">
+                        				
+                        				
+                        			
+                     </div>
+                     			
+                     			
+                     <p>If you own the AMI and supply no encryption parameters, the
+                        				resulting instance has a volume encrypted by the same key as the snapshot. If
+                        the
+                        				AMI is shared rather than owned by you, and you supply no encryption parameters,
+                        the
+                        				volume is encrypted by your default CMK. With encryption parameters supplied as
+                        				shown, the volume is encrypted by the specified CMK.
+                     </p>
+                     		
+                     		
+                     			
+                     <h3 id="launch3">Change Encryption State of Multiple Volumes during Launch
+                        				
+                     </h3>
+                     			
+                     <p>In this more complex example, an AMI backed by multiple snapshots (each with its
+                        				own encryption state) is used to launch an EC2 instance with a newly encrypted
+                        				volume and a re-encrypted volume.
+                     </p>
+                     			
+                     <div class="mediaobject">
+                        				
+                        					<img src="../../..//img/ami-launch-mixed.png" alt="
+					Encrypt and re-encrypt multiple volumes during launch
+				">
+                        				
+                        				
+                        			
+                     </div>
+                     		
+                     		
+                     <p>In this scenario, the <code class="code">RunInstances</code> action is supplied with encryption
+                        			parameters for each of the source snapshots. When all possible encryption parameters
+                        are
+                        			specified, the resulting instance is the same regardless of whether you own the
+                        			AMI.
+                     </p>
                      	
+                     		
+                     <h2 id="AMI-encryption-copy">Image-Copying Scenarios</h2>
+                     		
+                     <p>Amazon EC2 AMIs are copied using the <code class="code">CopyImage</code> action, either through the
+                        			AWS Management Console or directly using the Amazon EC2 API or CLI.
+                     </p>
+                     		
+                     <p>By default, without explicit encryption parameters, a <code class="code">CopyImage</code> action
+                        			maintains the existing encryption state of an AMI&apos;s source snapshots during copy.
+                        You
+                        			can also copy an AMI and simultaneously apply a new encryption state to its associated
+                        			EBS snapshots by supplying encryption parameters. Consequently, the following behaviors
+                        			are observed:
+                     </p>
+                     		
+                     <p><b>Copy with no encryption parameters</b></p>
+                     		
+                     <div class="itemizedlist">
+                        			
+                        			
+                        			
+                        		
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              				
+                              <p>An unencrypted snapshot is copied to another unencrypted snapshot, unless
+                                 					encryption by default is enabled, in which case all the newly created snapshots
+                                 					will be encrypted.
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>An encrypted snapshot that you own is copied to a snapshot encrypted with the
+                                 					same key.
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>An encrypted snapshot that you do not own (that is, the AMI is shared with you) is
+                                 copied
+                                 					to a snapshot that is encrypted by your AWS account&apos;s default CMK.
+                              </p>
+                              			
+                           </li>
+                        </ul>
+                     </div>
+                     		
+                     <p>All of these default behaviors can be overridden by supplying encryption parameters.
+                        The
+                        			available parameters are <code class="code">Encrypted</code> and <code class="code">KmsKeyId</code>. Setting only
+                        			the <code class="code">Encrypted</code> parameter results in the following:
+                     </p>
+                     		
+                     <p><b>Copy-image behaviors with <code class="code">Encrypted</code> set, but no
+                           					<code class="code">KmsKeyId</code> specified</b></p>
+                     		
+                     <div class="itemizedlist">
+                        			
+                        			
+                        			
+                        		
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              				
+                              <p>An unencrypted snapshot is copied to a snapshot encrypted by the AWS
+                                 					account&apos;s default CMK.
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>An encrypted snapshot is copied to a snapshot encrypted by the same CMK. (In
+                                 					other words, the <code class="code">Encrypted</code> parameter has no effect.)
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>An encrypted snapshot that you do not own (i.e., the AMI is shared with you)
+                                 					is copied to a volume that is encrypted by your AWS account&apos;s default CMK. (In
+                                 					other words, the <code class="code">Encrypted</code> parameter has no effect.)
+                              </p>
+                              			
+                           </li>
+                        </ul>
+                     </div>
+                     		
+                     <p>Setting both the <code class="code">Encrypted</code> and <code class="code">KmsKeyId</code> parameters allows you to
+                        			specify a customer managed CMK for an encryption operation. The following behaviors
+                        result:
+                     </p>
+                     		
+                     <p><b>Copy-image behaviors with both <code class="code">Encrypted</code> and
+                           					<code class="code">KmsKeyId</code> set</b></p>
+                     		
+                     <div class="itemizedlist">
+                        			
+                        			
+                        		
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              				
+                              <p>An unencrypted snapshot is copied to a snapshot encrypted by the specified
+                                 					CMK.
+                              </p>
+                              			
+                           </li>
+                           <li class="listitem">
+                              				
+                              <p>An encrypted snapshot is copied to a snapshot encrypted not to the original
+                                 					CMK, but instead to the specified CMK.
+                              </p>
+                              			
+                           </li>
+                        </ul>
+                     </div>
+                     		
+                     <p>Submitting a <code class="code">KmsKeyId</code> without also setting the <code class="code">Encrypted</code> parameter
+                        			results in an error.
+                     </p>
+                     		
+                     <p>The following section provides an example of copying an AMI using non-default
+                        			encryption parameters, resulting in a change of encryption state.
+                     </p>
+                     		
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>For detailed console procedures to copy an AMI, see <a href="./AWSEC2/latest/UserGuide/CopyingAMIs.html">Copying an AMI</a>.
+                        </p>
+                        <p>For documentation of the <code class="code">CopyImage</code> API, see <a href="./AWSEC2/latest/APIReference/API_CopyImage.html">CopyImage</a>.
+                        </p>
+                        <p>For documentation of the command <code class="code">copy-image</code> in the AWS Command Line Interface, see
+                           					<a href="./cli/latest/reference/ec2/copy-image.html">copy-image</a>.
+                        </p>
+                     </div>
+                     		
+                     			
+                     <h3 id="copy-unencrypted-to-encrypted">Encrypt an Unencrypted Image during Copy</h3>
+                     			
+                     
+                     <p>In this scenario, an AMI backed by an unencrypted root snapshot is copied to an AMI
+                        	with an encrypted root snapshot. The <code class="code">CopyImage</code> action is invoked with
+                        	two encryption parameters, including a CMK. As a result, the
+                        	encryption status of the root snapshot changes, so that the target AMI is backed
+                        	by a root snapshot containing the same data as the source snapshot, but encrypted
+                        	using the specified key. You incur storage costs for the snapshots in both
+                        	AMIs, as well as charges for any instances you launch from either AMI.
+                     </p>
+                     	
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>Enabling <a href="EBSEncryption.html#encryption-by-default">encryption by default</a>
+                           	     has the same effect as setting the <code class="code">Encrypted</code> parameter to 
+                           	     <code class="code">true</code> for all snapshots in the AMI.
+                        </p>
+                     </div>
+                     	
+                     
+                     <div class="mediaobject">
+                        	
+                        		<img src="../../..//img/ami-to-ami-convert.png" alt="
+		Copy AMI and encrypt snapshot on the fly
+	">
+                        	
+                        	
+                        
+                     </div>
+                     
+                     <p>Setting the <code class="code">Encrypted</code> parameter encrypts the single snapshot for this
+                        	instance. If you do not specify the <code class="code">KmsKeyId</code> parameter, the default
+                        	CMK is used to encrypt the snapshot copy.
+                     </p>
+                     			
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>You can also copy an image with multiple snapshots and configure the
+                           					encryption state of each individually.
+                        </p>
+                     </div>
+                     		
+                     	
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -348,7 +511,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="ami-tools-commands.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="CopyingAMIs.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -357,14 +522,17 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="AMI Scenarios Involving Encrypted EBS
-			Snapshots"><a class="pagetoc" href="#AMIEncryption_scenarios">AMI Scenarios Involving Encrypted EBS
-                              			Snapshots</a></li>
+                        <li class="pagetoc" name="Instance-Launching Scenarios"><a class="pagetoc" href="#AMI-encryption-launch">Instance-Launching Scenarios</a></li>
+                        <li class="pagetoc" name="Image-Copying Scenarios"><a class="pagetoc" href="#AMI-encryption-copy">Image-Copying Scenarios</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

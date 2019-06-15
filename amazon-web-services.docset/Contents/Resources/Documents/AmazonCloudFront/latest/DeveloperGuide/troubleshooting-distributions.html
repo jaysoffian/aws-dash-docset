@@ -6,12 +6,14 @@
       <link rel="up" href="Troubleshooting.html" title="Troubleshooting">
       <link rel="prev" href="Troubleshooting.html" title="Troubleshooting">
       <link rel="next" href="troubleshooting-response-errors.html" title="Troubleshooting Error Responses from Your Origin">
-      <meta name="description" content="General issues you might experience using CloudFront.">
+      <meta name="description" content="Help solving issues that you might experience when setting up CloudFront with your website or application.">
       <meta name="keywords" content="Amazon CloudFront,CloudFront,cache,distribution,edge,geo,HTTP,HTTPS,media,origin,RTMP,streaming">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="Amazon CloudFront">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/troubleshooting-distributions.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,23 +35,168 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/cloudfront">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="Troubleshooting.html">Troubleshooting</a> &#xBB; <span class="breadcrumb">Troubleshooting Distribution Issues</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/cloudfront/index.html">Amazon CloudFront</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="Troubleshooting.html">Troubleshooting</a> &#xBB; <span class="breadcrumb">Troubleshooting Distribution Issues</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="troubleshooting-distributions">Troubleshooting Distribution Issues</h1>
-                     <p>Use the information here to help you diagnose and fix access-denied issues or other
-                        common
-                        			issues that you might encounter when working with Amazon CloudFront distributions.
+                     <p>Use the information here to help you diagnose and fix certificate errors, access-denied
+                        issues, or other common
+                        			issues that you might encounter when setting up your website or application with
+                        Amazon CloudFront distributions.
                      </p>
-                     <h2 id="troubleshooting-web-distribution">I Can&apos;t View the Files in My Web
-                        				Distribution
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#troubleshooting-distributions-certificates">CloudFront 
+                                 			Returns an InvalidViewerCertificate Error When I Try to Add an Alternate Domain
+                                 Name</a></li>
+                           <li><a href="#troubleshooting-web-distribution">I Can&apos;t View the Files in My 
+                                 			Distribution</a></li>
+                           <li><a href="#troubleshooting-certificate-error">Error Message: Certificate: &lt;certificate-id&gt; Is Being Used by CloudFront</a></li>
+                        </ul>
+                     </div>
+                     <h2 id="troubleshooting-distributions-certificates">CloudFront 
+                        			Returns an InvalidViewerCertificate Error When I Try to Add an Alternate Domain Name
                      </h2>
                      			
                      			
-                     <p>If you can&apos;t view the files in your CloudFront web distribution, see the following
-                        topics for
+                     <p>If CloudFront returns an <code class="code">InvalidViewerCertificate</code> error when you try to add an alternate domain name (CNAME) to your 
+                        				distribution, review the following information to help troubleshoot the problem.
+                        This error can indicate that one of the 
+                        				following issues must be resolved before you can successfully add the alternate
+                        domain name. 
+                     </p>
+                     			
+                     			
+                     <p>The following errors are listed in the order in which CloudFront checks for authorization
+                        to add an alternate domain name. 
+                        				This can help you troubleshoot issues because based on the error that CloudFront
+                        returns, you can tell which verification 
+                        				checks have completed successfully.
+                     </p>
+                     			
+                     			
+                     <div class="variablelist">
+                        				
+                        				
+                        				
+                        				
+                        				
+                        				
+                        				
+                        				
+                        			
+                        <dl>
+                           					
+                           <dt><b><span class="term">There&apos;s no certificate attached to your distribution.</span></b></dt>
+                           					
+                           <dd>
+                              <p>To add an alternate domain name (CNAME), you must attach a trusted, valid certificate
+                                 to your 
+                                 					distribution. Please review the requirements, obtain a valid certificate that
+                                 meets them, attach it to your 
+                                 					distribution, and then try again. For more information, see <a href="CNAMEs.html#alternate-domain-names-requirements">
+                                    			Requirements for Using Alternate Domain Names</a>.
+                              </p>
+                           </dd>
+                           				
+                           					
+                           <dt><b><span class="term">There are too many certificates in the certificate chain for the certificate that
+                                    you&apos;ve attached.</span></b></dt>
+                           					
+                           <dd>
+                              <p>You can only have up to five certificates in a certificate chain. Reduce the number
+                                 
+                                 					of certificates in the chain, and then try again.
+                              </p>
+                           </dd>
+                           				
+                           					
+                           <dt><b><span class="term">The certificate chain includes one or more certificates that aren&apos;t valid for the
+                                    current date.</span></b></dt>
+                           					
+                           <dd>
+                              <p>The certificate chain for a certificate that you have added has one or more certificates
+                                 that 
+                                 						aren&apos;t valid, either because a certificate isn&apos;t valid yet or a certificate
+                                 has expired. Check the <b>Not Valid 
+                                    						Before</b> and <b>Not Valid After</b> fields in the certificates in your certificate 
+                                 						chain to make sure that all of the certificates are valid based on the dates
+                                 that you&#x2019;ve listed.
+                              </p>
+                           </dd>
+                           				
+                           					
+                           <dt><b><span class="term">The certificate that you&apos;ve attached isn&apos;t signed by a trusted Certificate Authority
+                                    (CA).</span></b></dt>
+                           					
+                           <dd>
+                              <p>The certificate that you attach to CloudFront to verify an alternate domain name cannot
+                                 be a 
+                                 					self-signed certificate. It must be signed by a trusted CA. For more information,
+                                 see <a href="CNAMEs.html#alternate-domain-names-requirements">
+                                    			Requirements for Using Alternate Domain Names</a>.
+                              </p>
+                           </dd>
+                           				
+                           					
+                           <dt><b><span class="term">The certificate that you&apos;ve attached isn&apos;t formatted correctly</span></b></dt>
+                           					
+                           <dd>
+                              <p>The domain name and IP address format that are included in the certificate, and the
+                                 
+                                 					format of the certificate itself, must follow the standard for certificates.
+                              </p>
+                           </dd>
+                           				
+                           					
+                           <dt><b><span class="term">There was a CloudFront internal error.</span></b></dt>
+                           					
+                           <dd>
+                              <p>CloudFront was blocked by an internal issue and couldn&apos;t make validation checks for
+                                 certificates. In this 
+                                 						scenario, CloudFront returns an HTTP 500 status code and indicates that there
+                                 is an internal CloudFront problem with 
+                                 						attaching the certificate. Wait a few minutes, and then try again to add 
+                                 						the alternate domain name with the certificate.
+                              </p>
+                           </dd>
+                           				
+                           					
+                           <dt><b><span class="term">The certificate that you&apos;ve attached doesn&apos;t cover the alternate domain name that
+                                    you&#x2019;re trying to add.</span></b></dt>
+                           					
+                           <dd>
+                              <p>For each alternate domain name that you add, CloudFront requires that you attach a
+                                 valid SSL/TLS certificate 
+                                 						from a trusted Certificate Authority (CA) that covers the domain name, to validate
+                                 your authorization to use it. 
+                                 						Please update your certificate to include a domain name that covers the CNAME
+                                 that you&#x2019;re trying to add. 
+                                 						For more information and examples of using domain names with wildcards, see
+                                 <a href="CNAMEs.html#alternate-domain-names-requirements">
+                                    			Requirements for Using Alternate Domain Names</a>.
+                              </p>
+                           </dd>
+                           				
+                        </dl>
+                     </div>
+                     			
+                     			
+                     		
+                     <h2 id="troubleshooting-web-distribution">I Can&apos;t View the Files in My 
+                        			Distribution
+                     </h2>
+                     			
+                     				
+                     			
+                     <p>If you can&apos;t view the files in your CloudFront distribution, see the following topics
+                        for
                         				some common solutions.
                      </p>
                      			
@@ -57,9 +204,8 @@
                      				
                      				
                      <p>To use Amazon CloudFront with an Amazon S3 origin, you must sign up for both CloudFront
-                        and Amazon S3,
-                        					separately. For more information about signing up for CloudFront and Amazon S3,
-                        see <a href="GettingStarted.html">Getting Started with CloudFront</a>.
+                        and Amazon S3, separately. For more information about signing 
+                        					up for CloudFront and Amazon S3, see <a href="setting-up-cloudfront.html">Setting Up Amazon CloudFront</a>.
                      </p>
                      			
                      			
@@ -70,17 +216,18 @@
                      				
                      <p>If you are using CloudFront with an Amazon S3 origin, the original versions of your
                         content are
-                        					stored in an Amazon S3 bucket. The easiest way to use CloudFront with Amazon
-                        S3 is to make all your
+                        					stored in an S3 bucket. The easiest way to use CloudFront with Amazon S3 is to
+                        make all of your
                         					objects publicly readable in Amazon S3. To do this, you must explicitly enable
                         public read
                         					privileges for each object that you upload to Amazon S3.
                      </p>
                      				
                      <p>If your content is not publicly readable, you must create a CloudFront origin access
-                        					identity so that CloudFront can access it. For more information about CloudFront
+                        					identity (OAI) so that CloudFront can access it. For more information about CloudFront
                         origin access
-                        					identities, see <a href="private-content-restricting-access-to-s3.html">Using an Origin Access Identity to Restrict Access to Your Amazon S3 Content</a>.
+                        					identities, see <a href="private-content-restricting-access-to-s3.html">Restricting Access to Amazon S3 Content by Using an Origin
+                           				Access Identity</a>.
                      </p>
                      				
                      <p>Object properties and bucket properties are independent. You must explicitly grant
@@ -133,7 +280,7 @@
 	...
 	...
 	</code></pre>
-                     				<p>For more information about CNAMEs, see <a href="CNAMEs.html">Adding and Moving Alternate Domain Names (CNAMEs)</a>.
+                     				<p>For more information about CNAMEs, see <a href="CNAMEs.html">Using Custom URLs for Files by Adding Alternate Domain Names (CNAMEs)</a>.
                      </p>
                      			
                      			
@@ -161,19 +308,21 @@
                         					For further help, see the <a href="https://console.aws.amazon.com/support/home#/" target="_blank">AWS Support Center</a>.
                      </p>
                      			
-                     		
-                     <h2 id="Troubleshooting.Configuration">I Can&apos;t View the Files in My RTMP
+                     			
+                     			
+                     <h3 id="Troubleshooting.Configuration">I Can&apos;t View the Files in My RTMP
                         				Distribution
-                     </h2>
-                     			
-                     			
+                     </h3>
+                     				
+                     				
                      <p>If you can&apos;t view the files in your RTMP distribution, are your URL and your playback
-                        				client correctly configured? RTMP distributions require you to use an RTMP protocol
+                        					client correctly configured? RTMP distributions require you to use an RTMP protocol
                         instead
-                        				of HTTP, and you must make a few minor configuration changes to your playback
+                        					of HTTP, and you must make a few minor configuration changes to your playback
                         client. For
-                        				information about creating RTMP distributions, see <a href="distribution-rtmp-creating.html">Task List for Streaming Media Files Using RTMP</a>. 
+                        					information about creating RTMP distributions, see <a href="distribution-rtmp-creating.html">Task List for Streaming Media Files Using RTMP</a>. 
                      </p>
+                     			
                      		
                      			
                      <h2 id="troubleshooting-certificate-error">Error Message: Certificate: &lt;certificate-id&gt; Is Being Used by CloudFront</h2>
@@ -191,8 +340,8 @@
                         				(replace the current custom SSL/TLS certificate with another custom SSL/TLS certificate)
                         or
                         				revert from using a custom SSL/TLS certificate to using the default CloudFront
-                        certificate. To do
-                        				that, perform the procedure in the applicable section:
+                        certificate. To fix
+                        				that, complete the steps in one of the following procedures:
                      </p>
                      			
                      <div class="itemizedlist">
@@ -207,21 +356,26 @@
                            </li>
                            <li class="listitem">
                               					
-                              <p><a href="cnames-and-https-revert-to-cf-certificate.html">Reverting from a Custom SSL/TLS Certificate to the Default CloudFront Certificate</a></p>
+                              <p><a href="cnames-and-https-revert-to-cf-certificate.html">Reverting from a Custom SSL/TLS Certificate to the
+                                    					Default CloudFront Certificate</a></p>
                               				
                            </li>
                         </ul>
                      </div>
                      		
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -231,7 +385,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="Troubleshooting.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="troubleshooting-response-errors.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -240,18 +396,22 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="I Can&apos;t View the Files in My Web
-				Distribution"><a class="pagetoc" href="#troubleshooting-web-distribution">I Can&apos;t View the Files in My Web
-                              				Distribution</a></li>
-                        <li class="pagetoc" name="I Can&apos;t View the Files in My RTMP
-				Distribution"><a class="pagetoc" href="#Troubleshooting.Configuration">I Can&apos;t View the Files in My RTMP
-                              				Distribution</a></li>
+                        <li class="pagetoc" name="CloudFront 
+			Returns an InvalidViewerCertificate Error When I Try to Add an Alternate Domain Name"><a class="pagetoc" href="#troubleshooting-distributions-certificates">CloudFront 
+                              			Returns an InvalidViewerCertificate Error When I Try to Add an Alternate Domain Name</a></li>
+                        <li class="pagetoc" name="I Can&apos;t View the Files in My 
+			Distribution"><a class="pagetoc" href="#troubleshooting-web-distribution">I Can&apos;t View the Files in My 
+                              			Distribution</a></li>
                         <li class="pagetoc" name="Error Message: Certificate: &lt;certificate-id&gt; Is Being Used by CloudFront"><a class="pagetoc" href="#troubleshooting-certificate-error">Error Message: Certificate: &lt;certificate-id&gt; Is Being Used by CloudFront</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

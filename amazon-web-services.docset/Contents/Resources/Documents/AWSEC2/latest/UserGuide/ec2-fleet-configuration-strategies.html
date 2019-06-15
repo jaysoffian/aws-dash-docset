@@ -12,6 +12,8 @@
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-fleet-configuration-strategies.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,28 +35,32 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="ec2-instance-lifecycle.html">Instance Lifecycle</a> &#xBB; <a href="LaunchingAndUsingInstances.html">Launch Your Instance</a> &#xBB; <a href="ec2-fleet.html">Launching an EC2 Fleet</a> &#xBB; <span class="breadcrumb">EC2 Fleet Configuration Strategies</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="ec2-instance-lifecycle.html">Instance Lifecycle</a> &#xBB; <a href="LaunchingAndUsingInstances.html">Launch Your Instance</a> &#xBB; <a href="ec2-fleet.html">Launching an EC2 Fleet</a> &#xBB; <span class="breadcrumb">EC2 Fleet Configuration Strategies</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="ec2-fleet-configuration-strategies">EC2 Fleet Configuration Strategies</h1>
                      <p>An <em>EC2 Fleet</em> is a group of On-Demand Instances and Spot Instances. 
                      </p>
-                     <p>The EC2 Fleet attempts to launch the number of On-Demand Instances and Spot Instances
-                        to meet the specified
-                        			target capacity. The request for Spot Instances is fulfilled if the specified Spot
-                        price exceeds
-                        			the current Spot price and there is available capacity. The fleet also attempts
-                        to
-                        			maintain its target capacity if your Spot Instances are interrupted due to a change
-                        in Spot
-                        			prices or available capacity.
+                     <p>The EC2 Fleet attempts to launch the number of instances that are required to meet
+                        the target
+                        			capacity that you specify in the fleet request. The fleet can comprise only On-Demand
+                        Instances or
+                        			only Spot Instances, or a combination of both On-Demand Instances and Spot Instances.
+                        The request for Spot Instances is
+                        			fulfilled if there is available capacity and the maximum price per hour for your
+                        request 
+                        			exceeds the Spot price. The fleet also attempts to maintain its target capacity
+                        if your
+                        			Spot Instances are interrupted.
                      </p>
                      <p>A <em>Spot Instance pool</em> is a set of unused EC2 instances with the same instance
-                        			type, operating system, Availability Zone, and network platform (EC2-Classic or
-                        			EC2-VPC). When you create an EC2 Fleet, you can include multiple launch specifications,
-                        which
+                        			type, operating system, Availability Zone, and network platform.
+                        			When you create an EC2 Fleet, you can include multiple launch specifications, which
                         			vary by instance type, Availability Zone, subnet, and maximum price. The fleet
                         selects
                         			the Spot Instance pools that are used to fulfill the request, based on the launch
@@ -82,7 +88,7 @@
                         <ul>
                            <li><a href="#plan-ec2-fleet">Planning an EC2 Fleet</a></li>
                            <li><a href="#ec2-fleet-request-type">EC2 Fleet Request Types</a></li>
-                           <li><a href="#ec2-fleet-allocation-strategy">Allocation Strategy for Spot Instances</a></li>
+                           <li><a href="#ec2-fleet-allocation-strategy">Allocation Strategies for Spot Instances</a></li>
                            <li><a href="#ec2-fleet-on-demand-backup">Configuring EC2 Fleet for On-Demand
                                  						Backup</a></li>
                            <li><a href="#ec2-fleet-price-overrides">Maximum Price Overrides</a></li>
@@ -110,10 +116,9 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               					
-                              <p>Determine whether you want to create an EC2 Fleet that submits a one-time request
-                                 for the
-                                 						desired target capacity, or one that maintains a target capacity over time.
-                                 						For more information, see <a href="ec2-fleet-configuration-strategies.html#ec2-fleet-request-type">EC2 Fleet Request Types</a>.
+                              <p>Determine whether you want to create an EC2 Fleet that submits a synchronous or asynchronous
+                                 						one-time request for the desired target capacity, or one that maintains a
+                                 						target capacity over time. For more information, see <a href="ec2-fleet-configuration-strategies.html#ec2-fleet-request-type">EC2 Fleet Request Types</a>.
                               </p>
                               				
                            </li>
@@ -172,37 +177,71 @@
                      			
                      <h2 id="ec2-fleet-request-type">EC2 Fleet Request Types</h2>
                      			
-                     <p>There are two types of EC2 Fleet requests: <code class="code">request</code> and <code class="code">maintain</code>. You
-                        				can create a fleet to submit a one-time request for your desired capacity, or
-                        				require it to maintain the target capacity over time.
+                     <p>There are three types of EC2 Fleet requests: </p>
+                     			
+                     			
+                     <div class="variablelist">
+                        				
+                        				
+                        			
+                        <dl>
+                           					
+                           <dt><span class="term"><code class="code">instant</code></span></dt>
+                           					
+                           <dd>
+                              						
+                              <p>If you configure the request type as <code class="code">instant</code>, EC2 Fleet places a synchronous
+                                 							one-time request for your desired capacity. In the API response, it
+                                 							returns the instances that launched, along with errors for those
+                                 							instances that could not be launched.
+                              </p>
+                              					
+                           </dd>
+                           				
+                           					
+                           <dt><span class="term"><code class="code">request</code></span></dt>
+                           					
+                           <dd>
+                              						
+                              <p>If you configure the request type as <code class="code">request</code>, EC2 Fleet places an asynchronous
+                                 							one-time request for your desired capacity. Thereafter, if capacity is
+                                 							diminished because of Spot interruptions, the fleet does not attempt to
+                                 							replenish Spot Instances, nor does it submit requests in alternative Spot Instance
+                                 pools
+                                 							if capacity is unavailable.
+                              </p>
+                              					
+                           </dd>
+                           				
+                           					
+                           <dt><span class="term"><code class="code">maintain</code></span></dt>
+                           					
+                           <dd>
+                              						
+                              <p>(Default) If you configure the request type as <code class="code">maintain</code>, EC2 Fleet places an
+                                 							asynchronous request for your desired capacity, and maintains capacity
+                                 							by automatically replenishing any interrupted Spot Instances.
+                              </p>
+                              					
+                           </dd>
+                           				
+                        </dl>
+                     </div>
+                     			
+                     <p>You cannot modify the target capacity of an <code class="code">instant</code> or <code class="code">request</code>
+                        				EC2 Fleet request after it&apos;s been submitted. To change the target capacity of
+                        an
+                        					<code class="code">instant</code> or <code class="code">request</code> fleet request, delete the fleet and
+                        				create a new one.
                      </p>
                      			
-                     <p>If you configure the fleet type as <code class="code">request</code>, EC2 Fleet places a one-time
-                        				request for the target capacity, and does not attempt to replenish Spot Instances
-                        if capacity
-                        				is diminished. If capacity is not available, the fleet does not submit requests
-                        in
-                        				alternative Spot Instance pools.
-                     </p>
-                     			
-                     <p>If you configure the fleet type as <code class="code">maintain</code>, EC2 Fleet places requests to
-                        				meet the target capacity, and automatically replenishes any interrupted
-                        				Spot Instances.
-                     </p>
-                     			
-                     <p>You cannot modify the target capacity of a one-time request after it&apos;s been submitted.
-                        To
-                        				change the target capacity of a one-time request, delete the EC2 Fleet and create
-                        a new
-                        				one.
-                     </p>
-                     			
-                     <p>Both types of requests benefit from an allocation strategy. For more information,
-                        				see <a href="ec2-fleet-configuration-strategies.html#ec2-fleet-allocation-strategy">Allocation Strategy for Spot Instances</a>.
+                     <p>All three types of requests benefit from an allocation strategy. For more information,
+                        see
+                        					<a href="ec2-fleet-configuration-strategies.html#ec2-fleet-allocation-strategy">Allocation Strategies for Spot Instances</a>.
                      </p>
                      		
                      				
-                     <h2 id="ec2-fleet-allocation-strategy">Allocation Strategy for Spot Instances</h2>
+                     <h2 id="ec2-fleet-allocation-strategy">Allocation Strategies for Spot Instances</h2>
                      				
                      <p>The allocation strategy for your EC2 Fleet determines how it fulfills your request
                         for Spot Instances
@@ -212,6 +251,7 @@
                      </p>
                      				
                      <div class="variablelist">
+                        					
                         					
                         					
                         				
@@ -236,6 +276,19 @@
                               						
                            </dd>
                            					
+                           						
+                           <dt><span class="term"><code class="code">InstancePoolsToUseCount</code></span></dt>
+                           						
+                           <dd>
+                              							
+                              <p>The Spot Instances are distributed across the number of Spot pools that you specify.
+                                 This
+                                 							parameter is valid only when used in combination with
+                                 								<code class="code">lowestPrice</code>.
+                              </p>
+                              						
+                           </dd>
+                           					
                         </dl>
                      </div>
                      				
@@ -245,12 +298,18 @@
                      </h3>
                      					
                      <p>After Spot Instances are terminated due to a change in the Spot price or available
-                        						capacity of a Spot Instance pool, the EC2 Fleet launches replacement Spot Instances.
-                        If the
-                        						allocation strategy is <code class="code">lowestPrice</code>, the fleet launches
-                        						replacement instances in the pool where the Spot price is currently the
-                        						lowest. If the allocation strategy is <code class="code">diversified</code>, the fleet
-                        						distributes the replacement Spot Instances across the remaining pools.
+                        capacity of a
+                        					Spot Instance pool, an EC2 Fleet of type <code class="code">maintain</code> launches replacement Spot Instances. If
+                        					the allocation strategy is <code class="code">lowestPrice</code>, the fleet launches
+                        					replacement instances in the pool where the Spot price is currently the lowest.
+                        					If the allocation strategy is <code class="code">diversified</code>, the fleet distributes
+                        					the replacement Spot Instances across the remaining pools. If the allocation
+                        strategy is
+                        						<code class="code">lowestPrice</code> in combination with
+                        						<code class="code">InstancePoolsToUseCount</code>, the fleet selects the Spot pools with
+                        					the lowest price and launches Spot Instances across the number of Spot pools
+                        that you
+                        					specify.
                      </p>
                      				
                      				
@@ -259,17 +318,27 @@
                         							Cost Optimization
                      </h3>
                      					
-                     <p>To optimize the costs for your use of Spot Instances, specify the
-                        							<code class="code">lowestPrice</code> allocation strategy so that EC2 Fleet automatically
-                        						deploys the cheapest combination of instance types and Availability Zones
-                        						based on the current Spot price.
+                     <p>To optimize the costs for your use of Spot Instances, specify the <code class="code">lowestPrice</code>
+                        					allocation strategy so that EC2 Fleet automatically deploys the cheapest combination
+                        					of instance types and Availability Zones based on the current Spot price.
                      </p>
                      					
                      <p>For On-Demand Instance target capacity, EC2 Fleet always selects the cheapest instance
-                        type
-                        						based on the public On-Demand price, while continuing to follow the
-                        						allocation strategy (either <code class="code">lowestPrice</code> or
-                        							<code class="code">diversified</code>) for Spot Instances.
+                        type based on the
+                        					public On-Demand price, while continuing to follow the allocation strategy
+                        					(either <code class="code">lowestPrice</code> or <code class="code">diversified</code>) for Spot Instances.
+                     </p>
+                     				
+                     				
+                     					
+                     <h3 id="ec2-fleet-strategy-cost-optimization-and-diversified">Configuring EC2 Fleet for Cost Optimization and Diversification</h3>
+                     					
+                     <p>To create a fleet of Spot Instances that is both cheap and diversified, use the
+                        						<code class="code">lowestPrice</code> allocation strategy in combination with
+                        						<code class="code">InstancePoolsToUseCount</code>. EC2 Fleet automatically deploys the
+                        					cheapest combination of instance types and Availability Zones based on the
+                        					current Spot price across the number of Spot pools that you specify. This
+                        					combination can be used to avoid the most expensive Spot Instances.
                      </p>
                      				
                      				
@@ -280,11 +349,11 @@
                      					
                      <p>You can optimize your fleet based on your use case.</p>
                      					
-                     <p>If your fleet is small or runs for a short time, the probability that your
-                        						Spot Instances will be interrupted is low, even with all the instances in a
-                        single
-                        						Spot Instance pool. Therefore, the <code class="code">lowestPrice</code> strategy is likely to
-                        						meet your needs while providing the lowest cost.
+                     <p>If your fleet is small or runs for a short time, the probability that your Spot Instances
+                        will be
+                        					interrupted is low, even with all the instances in a single Spot Instance pool.
+                        					Therefore, the <code class="code">lowestPrice</code> strategy is likely to meet your needs
+                        					while providing the lowest cost.
                      </p>
                      					
                      <p>If your fleet is large or runs for a long time, you can improve the
@@ -300,6 +369,18 @@
                      					
                      <p>With the <code class="code">diversified</code> strategy, the EC2 Fleet does not launch Spot Instances
                         						into any pools with a Spot price that is equal to or higher than the <a href="https://aws.amazon.com/ec2/pricing/" target="_blank">On-Demand price</a>.
+                     </p>
+                     					
+                     <p>To create a cheap and diversified fleet, use the <code class="code">lowestPrice</code> strategy in
+                        					combination with <code class="code">InstancePoolsToUseCount</code>. You can use a low or high
+                        					number of Spot pools across which to allocate your Spot Instances. For example,
+                        if you
+                        					run batch processing, we recommend specifying a low number of Spot pools (for
+                        					example, <code class="code">InstancePoolsToUseCount=2</code>) to ensure that your queue
+                        					always has compute capacity while maximizing savings. If you run a web service,
+                        					we recommend specifying a high number of Spot pools (for example,
+                        						<code class="code">InstancePoolsToUseCount=10</code>) to minimize the impact if a Spot Instance
+                        					pool becomes temporarily unavailable. 
                      </p>
                      				
                      			
@@ -320,6 +401,32 @@
                         					insufficient capacity, it automatically launches <code class="code">c4.2xlarge</code>
                         					instances to fulfill the target capacity.
                      </p>
+                     				
+                     					
+                     <h3 id="ec2-fleet-on-demand-priority">Prioritizing Instance Types for On-Demand
+                        						Capacity
+                     </h3>
+                     				
+                     <p>When EC2 Fleet attempts to fulfill your On-Demand capacity, it defaults to launching
+                        the
+                        					lowest-priced instance type first. If <code class="code">AllocationStrategy</code> is set to
+                        						<code class="code">prioritized</code>, EC2 Fleet uses priority to determine which instance
+                        					type to use first in fulfilling On-Demand capacity. The priority is assigned
+                        to
+                        					the launch template override, and the highest priority is launched first. 
+                     </p>
+                     				
+                     <p>For example, you have configured three launch template overrides, each with a different
+                        					instance type: <code class="code">c3.large</code>, <code class="code">c4.large</code>, and
+                        						<code class="code">c5.large</code>. The On-Demand price for <code class="code">c5.large</code> is less
+                        					than for <code class="code">c4.large</code>. <code class="code">c3.large</code> is the cheapest. If you do
+                        					not use priority to determine the order, the fleet fulfills On-Demand capacity
+                        					by starting with <code class="code">c3.large</code>, and then <code class="code">c5.large</code>. Because
+                        					you often have unused Reserved Instances for <code class="code">c4.large</code>, you can set the launch
+                        					template override priority so that the order is <code class="code">c4.large</code>,
+                        						<code class="code">c3.large</code>, and then <code class="code">c5.large</code>.
+                     </p>
+                     				
                      			
                      			
                      <h2 id="ec2-fleet-price-overrides">Maximum Price Overrides</h2>
@@ -369,7 +476,7 @@
                      <div class="table">
                         <p class="title"><b></b></p>
                         <div class="table-contents">
-                           <table id="w185aac17c15c21c25c21c25b9">
+                           <table id="w306aac20c15c31c25c23c25b9">
                               						
                               <tbody><tr>
                                  							
@@ -588,7 +695,8 @@
                      </div>
                      			
                      <p>The EC2 Fleet would launch four instances (30 divided by 8, result rounded up). With
-                        				the <code class="code">lowestPrice</code> strategy, all four instances come from the pool that
+                        the
+                        					<code class="code">lowestPrice</code> strategy, all four instances come from the pool that
                         				provides the lowest price per unit. With the <code class="code">diversified</code> strategy, the
                         				fleet launches one instance in each of the three pools, and the fourth instance
                         in
@@ -634,7 +742,7 @@
                      				
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac17c15c21c25c21c27b7b7">
+                           <table id="w306aac20c15c31c25c23c27b7b7">
                               							
                               <tbody><tr>
                                  								
@@ -780,7 +888,7 @@
                      				
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac17c15c21c25c21c27b7c19">
+                           <table id="w306aac20c15c31c25c23c27b7c19">
                               							
                               <tbody><tr>
                                  								
@@ -920,12 +1028,12 @@
                     &quot;InstanceType&quot;: &quot;r3.2xlarge&quot;, 
                     &quot;SubnetId&quot;: &quot;subnet-482e4972&quot;, 
                     &quot;WeightedCapacity&quot;: 1
-                }
+                },
                 {
                     &quot;InstanceType&quot;: &quot;r3.4xlarge&quot;, 
                     &quot;SubnetId&quot;: &quot;subnet-482e4972&quot;, 
                     &quot;WeightedCapacity&quot;: 2
-                }
+                },
                 {
                     &quot;InstanceType&quot;: &quot;r3.8xlarge&quot;, 
                     &quot;MaxPrice&quot;: &quot;0.90&quot;, 
@@ -938,10 +1046,9 @@
     &quot;TargetCapacitySpecification&quot;: {
         &quot;TotalTargetCapacity&quot;: 20, 
         &quot;DefaultTargetCapacityType&quot;: &quot;spot&quot;
-    }, 
-    ]
+    }
 }</code></pre>
-                     				<p>Example Corp creates the EC2 Fleet using the following <a href="./cli/latest/reference/ec2/request-spot-fleet.html" target="_blank">create-fleet</a>
+                     				<p>Example Corp creates the EC2 Fleet using the following <a href="./cli/latest/reference/ec2/create-fleet.html">create-fleet</a>
                         					command:
                      </p>
                      				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 create-fleet --cli-input-json file://config.json</code></strong></code></pre>
@@ -956,10 +1063,9 @@
                         					from.
                      </p>
                      				
-                     <p>With the <code class="code">lowestPrice</code> strategy (which is the default strategy),
-                        					the Spot Instances come from the pool with the lowest price per unit at the time
-                        of
-                        					fulfillment. To provide 20 units of capacity, the EC2 Fleet launches either 20
+                     <p>With the <code class="code">lowestPrice</code> strategy (which is the default strategy), the Spot Instances come
+                        					from the pool with the lowest price per unit at the time of fulfillment. To
+                        					provide 20 units of capacity, the EC2 Fleet launches either 20
                         						<code class="code">r3.2xlarge</code> instances (20 divided by 1), 10
                         						<code class="code">r3.4xlarge</code> instances (20 divided by 2), or 5
                         						<code class="code">r3.8xlarge</code> instances (20 divided by 4).
@@ -990,7 +1096,7 @@
                      				
                      <p>ABC Online, a restaurant delivery company, wants to be able to provision Amazon EC2
                         capacity
-                        					across EC2 instance types and purchase models to achieve their desired scale,
+                        					across EC2 instance types and purchasing options to achieve their desired scale,
                         					performance, and cost.
                      </p>
                      			
@@ -1061,7 +1167,7 @@
         &quot;DefaultTargetCapacityType&quot;: &quot;spot&quot;
     }
 }</code></pre>
-                     				<p>ABC Online creates the EC2 Fleet using the following <a href="./cli/latest/reference/ec2/request-spot-fleet.html" target="_blank">create-fleet</a>
+                     				<p>ABC Online creates the EC2 Fleet using the following <a href="./cli/latest/reference/ec2/create-fleet.html">create-fleet</a>
                         					command:
                      </p>
                      				<pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight"><strong class="userinput"><code>aws ec2 create-fleet --cli-input-json file://config.json</code></strong></code></pre>
@@ -1078,15 +1184,19 @@
                      </p>
                      			
                      		
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -1096,7 +1206,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="ec2-fleet.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="manage-ec2-fleet.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -1107,7 +1219,7 @@
                      <ul class="pagetoc">
                         <li class="pagetoc" name="Planning an EC2 Fleet"><a class="pagetoc" href="#plan-ec2-fleet">Planning an EC2 Fleet</a></li>
                         <li class="pagetoc" name="EC2 Fleet Request Types"><a class="pagetoc" href="#ec2-fleet-request-type">EC2 Fleet Request Types</a></li>
-                        <li class="pagetoc" name="Allocation Strategy for Spot Instances"><a class="pagetoc" href="#ec2-fleet-allocation-strategy">Allocation Strategy for Spot Instances</a></li>
+                        <li class="pagetoc" name="Allocation Strategies for Spot Instances"><a class="pagetoc" href="#ec2-fleet-allocation-strategy">Allocation Strategies for Spot Instances</a></li>
                         <li class="pagetoc" name="Configuring EC2 Fleet for On-Demand
 						Backup"><a class="pagetoc" href="#ec2-fleet-on-demand-backup">Configuring EC2 Fleet for On-Demand
                               						Backup</a></li>
@@ -1124,6 +1236,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

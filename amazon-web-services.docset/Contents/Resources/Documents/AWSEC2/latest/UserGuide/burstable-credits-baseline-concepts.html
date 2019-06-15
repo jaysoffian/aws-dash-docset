@@ -1,0 +1,1052 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>CPU Credits and Baseline Performance for
+         Burstable Performance Instances - Amazon Elastic Compute Cloud
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="burstable-performance-instances.html" title="Burstable Performance Instances">
+      <link rel="prev" href="burstable-performance-instances.html" title="Burstable Performance Instances">
+      <link rel="next" href="burstable-performance-instances-unlimited-mode.html" title="Unlimited Mode for Burstable Performance Instances">
+      <meta name="description" content="Traditional Amazon EC2 instance types provide fixed performance, while burstable performance instances provide a baseline level of CPU performance with the ability to burst above that baseline level. The baseline performance and ability to burst are governed by CPU credits. A CPU credit provides the performance of a full CPU core for one minute.">
+      <meta name="keywords" content="EC2,Amazon EC2,EC2 instance,instance,VM,virtual machine">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Elastic Compute Cloud">
+      <meta name="guide" content="User Guide for Linux Instances">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/burstable-credits-baseline-concepts.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Instances.html">Amazon EC2 Instances</a> &#xBB; <a href="instance-types.html">Instance Types</a> &#xBB; <a href="general-purpose-instances.html">General Purpose Instances</a> &#xBB; <a href="burstable-performance-instances.html">Burstable Performance Instances</a> &#xBB; <span class="breadcrumb">CPU Credits and Baseline Performance for
+                                    Burstable Performance Instances</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="burstable-credits-baseline-concepts">CPU Credits and Baseline Performance for
+                        Burstable Performance Instances
+                     </h1>
+                     <p>Traditional Amazon EC2 instance types provide fixed performance, while burstable performance
+                        instances provide a baseline level of CPU performance with the ability to burst above
+                        that
+                        baseline level. The baseline performance and ability to burst are governed by CPU
+                        credits.
+                        A CPU credit provides the performance of a full CPU core for one minute.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Contents</strong></p>
+                        <ul>
+                           <li><a href="#cpu-credits">CPU Credits</a></li>
+                           <li><a href="#baseline_performance">Baseline Performance</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="cpu-credits">CPU Credits</h2>
+                     
+                     <p>One CPU credit is equal to one vCPU running at 100% utilization for one minute. Other
+                        combinations of number of vCPUs, utilization, and time can also equate to one CPU
+                        credit. For example, one CPU credit is equal to one vCPU running at 50% utilization
+                        for
+                        two minutes, or two vCPUs running at 25% utilization for two minutes.
+                     </p>
+                     
+                     
+                     
+                     <h3 id="earning-CPU-credits">Earning CPU Credits</h3>
+                     
+                     <p>Each burstable performance instance continuously earns (at a millisecond-level resolution)
+                        a set rate of CPU credits per hour, depending on the instance size. The accounting
+                        process for whether credits are accrued or spent also happens at a millisecond-level
+                        resolution, so you don&apos;t have to worry about overspending CPU credits; a short burst
+                        of CPU uses a small fraction of a CPU credit.
+                     </p>
+                     
+                     <p>If a burstable performance instance uses fewer CPU resources than is required for
+                        baseline performance (such as when it is idle), the unspent CPU credits are accrued
+                        in
+                        the CPU credit balance. If a burstable performance instance needs to burst above the
+                        baseline performance level, it spends the accrued credits. The more credits that a
+                        burstable performance instance has accrued, the more time it can burst beyond its
+                        baseline when more performance is needed.
+                     </p>
+                     
+                     <p>The following table lists the burstable performance instance types, the rate at which
+                        CPU credits are earned per hour, the maximum number of earned CPU credits that an
+                        instance can accrue, the number of vCPUs per instance, and the baseline performance
+                        level as a percentage of a full core performance (using a single vCPU).
+                     </p>
+                     
+                     
+                     <div class="table"><a id="burstable-performance-instances-credit-table"></a><div class="table-contents">
+                           <table id="w306aac20c11c27c33c17b7b5b9">
+                              
+                              <tbody><tr>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>Instance type</p>
+                                    
+                                 </th>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>CPU credits earned per hour</p>
+                                    
+                                 </th>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>Maximum earned credits that can be accrued*</p>
+                                    
+                                 </th>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>vCPUs</p>
+                                    
+                                 </th>
+                                 
+                                 <th align="center" style="text-align: center;">
+                                    
+                                    <p>Baseline performance per vCPU</p>
+                                    
+                                 </th>
+                                 
+                              </tr>
+                              
+                                
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t2.nano</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>3</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>72</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>1</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>5%</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t2.micro</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>6</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>144</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>1</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>10%</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t2.small</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>12</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>288</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>1</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>20%</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t2.medium</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>24</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>576</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>20%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t2.large</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>36</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>864</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>30%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t2.xlarge</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>54</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>1296</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>4</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>22.5%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t2.2xlarge</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>81.6</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>1958.4</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>8</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>17%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t3.nano</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>6</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>144</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>5%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t3.micro</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>12</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>288</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>10%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t3.small</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>24</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>576</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>20%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t3.medium</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>24</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>576</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>20%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t3.large</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>36</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>864</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>30%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t3.xlarge</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>96</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2304</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>4</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>40%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t3.2xlarge</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>192</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>4608</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>8</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>40%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t3a.nano</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>6</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>144</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>5%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t3a.micro</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>12</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>288</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>10%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t3a.small</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>24</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>576</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>20%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t3a.medium</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>24</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>576</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>20%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t3a.large</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>36</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>864</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>30%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t3a.xlarge</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>96</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>2304</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>4</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>40%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">t3a.2xlarge</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>192</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>4608</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>8</p>
+                                    
+                                 </td>
+                                 
+                                 <td align="center" style="text-align: center;">
+                                    
+                                    <p>40%**</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     <div class="table"><a id="burstable-performance-instances-credit-table-notes"></a><div class="table-contents">
+                           <table id="w306aac20c11c27c33c17b7b5c11">
+                              
+                              <tbody><tr>
+                                 
+                                 <td>
+                                    
+                                    <p>* The number of credits that can be accrued is equivalent to the
+                                       number of credits that can be earned in a 24-hour period.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p>** The baseline performance in the table is per vCPU. For instance
+                                       sizes that have more than one vCPU, to calculate the baseline CPU
+                                       utilization for the instance, multiply the vCPU percentage by the number
+                                       of vCPUs. For example, a <code class="code">t3.large</code> instance has two vCPUs,
+                                       which provide a baseline CPU utilization for the instance of 60% (2 vCPUs
+                                       x 30% baseline performance of one vCPU). In CloudWatch, CPU utilization is
+                                       shown per vCPU. Therefore, the CPU utilization for a
+                                       <code class="code">t3.large</code> instance operating at the baseline performance
+                                       is shown as 30% in CloudWatch CPU metrics.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     
+                     
+                     
+                     <h3 id="CPU-credit-earn-rate">CPU Credit Earn Rate</h3>
+                     
+                     <p>The number of CPU credits earned per hour is determined by the instance size. For
+                        example, a <code class="code">t3.nano</code> earns six credits per hour, while a
+                        <code class="code">t3.small</code> earns 24 credits per hour. The preceding table lists the
+                        credit earn rate for all instances.
+                     </p>
+                     
+                     
+                     
+                     
+                     <h3 id="CPU-credit-accrual-limit">CPU Credit Accrual Limit</h3>
+                     
+                     <p>While earned credits never expire on a running instance, there is a limit to the
+                        number of earned credits that an instance can accrue. The limit is determined by the
+                        CPU credit balance limit. After the limit is reached, any new credits that are earned
+                        are discarded, as indicated by the following image. The full bucket indicates the
+                        CPU
+                        credit balance limit, and the spillover indicates the newly earned credits that
+                        exceed the limit.
+                     </p> 
+                     
+                     <div class="mediaobject">
+                        
+                        <img src="../../..//img/t2-t3-bucket.png">
+                        
+                        
+                     </div>     
+                     
+                     <p>The CPU credit balance limit differs for each instance size. For example, a
+                        <code class="code">t3.micro</code> instance can accrue a maximum of 288 earned CPU credits in the
+                        CPU credit balance. The preceding table lists the maximum number of earned credits
+                        that
+                        each instance can accrue.
+                     </p>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>T2 Standard instances also earn launch credits. Launch credits do not count
+                           towards the CPU credit balance limit. If a T2 instance has not spent its launch
+                           credits, and remains idle over a 24-hour period while accruing earned credits, its
+                           CPU credit balance appears as over the limit. For more information, see <a href="burstable-performance-instances-standard-mode.html#launch-credits">Launch Credits</a>. 
+                        </p>
+                        <p>T3 and T3a instances do not earn launch credits. These instances launch as
+                           <code class="code">unlimited</code> by default, and therefore can burst immediately upon start
+                           without any launch credits.
+                        </p>
+                     </div>
+                     
+                     
+                     
+                     
+                     <h3 id="accrued-CPU-credits-life-span">Accrued CPU Credits Life Span</h3>
+                     
+                     <p>CPU credits on a running instance do not expire.</p>
+                     
+                     <p>For T3 and T3a, the CPU credit balance persists for seven days after an instance stops
+                        and
+                        the credits are lost thereafter. If you start the instance within seven days, no credits
+                        are lost.
+                     </p>
+                     
+                     <p>For T2, the CPU credit balance does not persist between instance stops and starts.
+                        If
+                        you stop a T2 instance, the instance loses all its accrued credits.
+                     </p>
+                     
+                     <p>For more information, see <code class="code">CPUCreditBalance</code> in the <a href="burstable-performance-instances-monitoring-cpu-credits.html#burstable-performance-instances-CW-metrics-table">CloudWatch metrics table</a>.
+                     </p>
+                     
+                     
+                     
+                     <h2 id="baseline_performance">Baseline Performance</h2>
+                     
+                     <p>The number of credits that an instance earns per hour can be expressed as a
+                        percentage of CPU utilization. It is known as the <em>baseline
+                           performance</em>, and sometimes just as <em>the
+                           baseline</em>. For example, a <code class="code">t3.nano</code> instance, with two vCPUs,
+                        earns six credits per hour, resulting in a baseline performance of 5% (3/60 minutes)
+                        per
+                        vCPU. A <code class="code">t3.xlarge</code> instance, with four vCPUs, earns 96 credits per hour,
+                        resulting in a baseline performance of 40% (24/60 minutes) per vCPU.
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="burstable-performance-instances.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="burstable-performance-instances-unlimited-mode.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="CPU Credits"><a class="pagetoc" href="#cpu-credits">CPU Credits</a></li>
+                        <li class="pagetoc" name="Baseline Performance"><a class="pagetoc" href="#baseline_performance">Baseline Performance</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Elastic Compute Cloud';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='User Guide for Linux Instances';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

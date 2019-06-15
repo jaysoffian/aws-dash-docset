@@ -1,16 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Invoking Lambda Functions - AWS Lambda</title>
+      <title>Invoking AWS Lambda Functions - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="welcome.html" title="What Is AWS Lambda?">
-      <link rel="prev" href="running-lambda-code.html" title="AWS Lambda Execution Model">
+      <link rel="prev" href="tagging.html" title="Tagging Lambda Functions">
       <link rel="next" href="invocation-options.html" title="Invocation Types">
-      <meta name="description" content="When building applications on AWS Lambda, including serverless applications, the core components are Lambda functions and event sources. An event source is the AWS service or custom application that publishes events, and a Lambda function is the custom code that processes the events. To illustrate, consider the following scenarios:">
+      <meta name="description" content="When building applications on AWS Lambda the core components are Lambda functions and event sources. An event source is the AWS service or custom application that publishes events, and a Lambda function is the custom code that processes the events. To illustrate, consider the following scenarios:">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/invoking-lambda-functions.html">
@@ -20,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,16 +35,20 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Invoking Lambda Functions</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Invoking AWS Lambda Functions</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="invoking-lambda-functions">Invoking Lambda Functions</h1>
-                     <p> When building applications on AWS Lambda, including <a href="https://aws.amazon.com/serverless" target="_blank">serverless</a> applications, the core components are Lambda functions and event
-                        sources. An <em>event source</em> is the AWS service or custom application that publishes events, and 
-                        a <em>Lambda function</em> is the custom code that processes the events. To illustrate, 
-                        consider the following scenarios:
+                     <h1 class="topictitle" id="invoking-lambda-functions">Invoking AWS Lambda Functions</h1>
+                     <p>When building applications on AWS Lambda the core components are Lambda functions
+                        and event sources. An
+                        <em>event source</em> is the AWS service or custom application that publishes events, and a
+                        <em>Lambda function</em> is the custom code that processes the events. To illustrate, consider the
+                        following scenarios:
                      </p>
                      <div class="itemizedlist">
                         
@@ -52,92 +59,76 @@
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p><b>File processing</b> &#x2013; Suppose you have a
-                                 photo sharing application. People use your application to upload photos, and the
-                                 application stores these user photos in an Amazon S3 bucket. Then, your application
-                                 creates a thumbnail version of each user&apos;s photos and displays them on the
-                                 user&apos;s profile page. In this scenario, you may choose to create a Lambda function
-                                 that creates a thumbnail automatically. Amazon S3 is one of the supported AWS event
-                                 sources that can publish <em>object-created events</em> and invoke
+                              <p><b>File processing</b> &#x2013; Suppose you have a photo sharing application.
+                                 People use your application to upload photos, and the application stores these user
+                                 photos in an Amazon S3 bucket.
+                                 Then, your application creates a thumbnail version of each user&apos;s photos and displays
+                                 them on the user&apos;s profile
+                                 page. In this scenario, you may choose to create a Lambda function that creates a
+                                 thumbnail automatically. Amazon S3
+                                 is one of the supported AWS event sources that can publish <em>object-created events</em> and invoke
                                  your Lambda function. Your Lambda function code can read the photo object from the
-                                 S3 bucket, create a thumbnail version, and then save it in another S3 bucket. 
+                                 S3 bucket, create a thumbnail
+                                 version, and then save it in another S3 bucket. 
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><b>Data and analytics</b> &#x2013; 
-                                 Suppose you are building an analytics application and storing raw data
-                                 in a DynamoDB table. When you write, update, or delete items in a table, DynamoDB
-                                 streams can
-                                 publish item update events to a stream associated with the table. In this case, the
-                                 
-                                 event data provides the item key, event name (such as insert, update, and delete),
-                                 and other relevant details. You can write a Lambda function to generate custom
-                                 metrics by aggregating raw data.
+                              <p><b>Data and analytics</b> &#x2013; Suppose you are building an analytics
+                                 application and storing raw data in a DynamoDB table. When you write, update, or delete
+                                 items in a table, DynamoDB
+                                 streams can publish item update events to a stream associated with the table. In this
+                                 case, the event data
+                                 provides the item key, event name (such as insert, update, and delete), and other
+                                 relevant details. You can
+                                 write a Lambda function to generate custom metrics by aggregating raw data.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><b>Websites</b> &#x2013; Suppose you are creating a
-                                 website and you want to host the backend logic on Lambda. You can invoke your
-                                 Lambda function over HTTP using Amazon API Gateway as the HTTP endpoint. Now, your
-                                 web
-                                 client can invoke the API, and then API Gateway can route the request to Lambda.
+                              <p><b>Websites</b> &#x2013; Suppose you are creating a website and you want to host
+                                 the backend logic on Lambda. You can invoke your Lambda function over HTTP using Amazon
+                                 API Gateway as the HTTP endpoint.
+                                 Now, your web client can invoke the API, and then API Gateway can route the request
+                                 to Lambda.
                               </p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p><b>Mobile applications</b> &#x2013; 
-                                 Suppose you have a custom mobile application that produces events. You can create
-                                 
-                                 a Lambda function to process events published by your custom application. For example,
-                                 in this scenario 
-                                 you can configure a Lambda function to process the clicks within your custom mobile
-                                 application.
-                                 
+                              <p><b>Mobile applications</b> &#x2013; Suppose you have a custom mobile application
+                                 that produces events. You can create a Lambda function to process events published
+                                 by your custom application.
+                                 For example, in this scenario you can configure a Lambda function to process the clicks
+                                 within your custom mobile
+                                 application. 
                               </p>
                               
                            </li>
                         </ul>
                      </div>
-                     <p>Each of these event sources uses a specific format for the event data. For more information,
-                        see <a href="eventsources.html">Sample Events Published by Event Sources</a>. When a Lambda function is
-                        invoked, it receives the event as a parameter for the Lambda function. 
-                     </p>
                      <p>AWS Lambda supports many AWS services as event sources. For more information, see
-                        <a href="invoking-lambda-function.html">Supported Event Sources</a>. When you
-                        configure these event sources to trigger a Lambda function, the Lambda function is
-                        invoked
-                        automatically when events occur. You define <em>event source mapping</em>, which is how
-                        you identify what events to track and which Lambda function to invoke. 
-                     </p>
-                     <p>In addition to the supported AWS services, user applications can also generate events&#x2014;you
-                        can 
-                        build your own custom event sources. Custom event sources invoke a Lambda function
-                        using
-                        the AWS Lambda <a href="API_Invoke.html">Invoke</a> operation. User
-                        applications, such as client, mobile, or web applications, can publish events and
-                        invoke
-                        Lambda functions on demand using the AWS SDKs or AWS Mobile SDKs, such as the AWS
-                        Mobile SDK for Android. 
+                        <a href="lambda-services.html">Using AWS Lambda with Other Services</a>. When you configure these event sources to trigger a Lambda function, the Lambda
+                        function is invoked automatically when events occur. You define <em>event source mapping</em>, which is
+                        how you identify what events to track and which Lambda function to invoke. 
                      </p>
                      <p>The following are introductory examples of event sources and how the end-to-end experience
                         works.
                      </p>
-                     <h2 id="example-lambda-pushes-events-invokes-function">Example 1: Amazon S3 Pushes Events and Invokes a Lambda Function</h2>
                      
+                     <h2 id="example-lambda-pushes-events-invokes-function">Example 1: Amazon S3 Pushes Events and Invokes a Lambda
+                        Function
+                     </h2>
                      
-                     
-                     <p>Amazon S3 can publish events of different types, such as PUT, POST, COPY, and
-                        DELETE object events on a bucket. Using the bucket notification feature, you can
-                        configure an event source mapping that directs Amazon S3 to invoke a Lambda function
-                        when a specific type of event
-                        occurs, as shown in the following illustration. 
+                     <p>Amazon S3 can publish events of different types, such as PUT, POST, COPY, and DELETE
+                        object events on a bucket.
+                        Using the bucket notification feature, you can configure an event source mapping that
+                        directs Amazon S3 to invoke a
+                        Lambda function when a specific type of event occurs, as shown in the following illustration.
+                        
                      </p>
-                     
                      
                      <div class="mediaobject">
                         
@@ -147,7 +138,6 @@
                      </div>
                      
                      <p>The diagram illustrates the following sequence:</p>
-                     
                      
                      <div class="orderedlist">
                         
@@ -168,78 +158,53 @@
                            </li>
                            <li>
                               
-                              <p>Amazon S3 invokes your Lambda function using the permissions provided by the execution
-                                 role. For more information on execution roles, see 
-                                 <a href="lambda-auth-and-access-control.html">Authentication and Access Control for
-                                    AWS Lambda</a>. Amazon S3 knows which Lambda function to
-                                 invoke based on the event source mapping that is stored in the bucket notification
-                                 configuration. 
+                              <p>Amazon S3 invokes your Lambda function using the permissions provided by the <a href="lambda-intro-execution-role.html">execution role</a>.
                               </p>
                               
                            </li>
                            <li>
                               
-                              <p>AWS Lambda executes the Lambda function, specifying the
-                                 event as a parameter.
-                              </p>
+                              <p>AWS Lambda executes the Lambda function, specifying the event as a parameter.</p>
                               
                            </li>
                         </ol>
                      </div>
                      
-                     <p>Note the following:</p>
+                     <p>You configure Amazon S3 to invoke your function as a bucket notification action. To
+                        grant Amazon S3 permission to invoke
+                        the function, update the function&apos;s <a href="access-control-resource-based.html">resource-based
+                           policy</a>.
+                     </p>
+                     
+                     
+                     <h2 id="example-lambda-pulls-kinesis-streams-events-invokes-function">Example 2: AWS Lambda Pulls Events
+                        from a Kinesis Stream and Invokes a Lambda Function
+                     </h2>
+                     
+                     <p>For poll-based event sources, AWS Lambda polls the source and then invokes the Lambda
+                        function when records are
+                        detected on that source.
+                     </p>
                      
                      <div class="itemizedlist">
-                        
-                        
                         
                         
                         
                         <ul class="itemizedlist" type="disc">
                            <li class="listitem">
                               
-                              <p>The event source mapping is maintained within the event source
-                                 service, Amazon S3 in this scenario. This is true for all supported AWS event sources
-                                 except the
-                                 stream-based sources (Kinesis and DynamoDB streams). The next
-                                 example explains stream-based event sources.
-                              </p>
+                              <p><a href="API_CreateEventSourceMapping.html">CreateEventSourceMapping</a></p>
                               
                            </li>
                            <li class="listitem">
                               
-                              <p>The event source (Amazon S3) invokes the Lambda function (referred to
-                                 as the <em>push model</em>). Again, this is true for all supported AWS services
-                                 except the stream-based event sources.
-                              </p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p>In order for the event source (Amazon S3) to invoke your Lambda function, you must
-                                 grant
-                                 permissions using the permissions policy attached to the Lambda
-                                 function.
-                              </p>
-                              
+                              <p><a href="API_UpdateEventSourceMapping.html">UpdateEventSourceMapping</a></p>
                               
                            </li>
                         </ul>
                      </div>
                      
-                     <h2 id="example-lambda-pulls-kinesis-streams-events-invokes-function">Example 2: AWS Lambda Pulls Events from an Kinesis Stream and Invokes a Lambda Function</h2>
-                     
-                     
-                     
-                     <p>For stream-based event sources, AWS Lambda polls the stream and invokes the Lambda
-                        function when records are detected on the stream. These stream sources are special
-                        in that event source mapping information is stored in Lambda. AWS Lambda
-                        provides an API for you to create and manage these event source mappings. 
-                     </p>
-                     
-                     <p>The following diagram shows how a custom application writes records to a Kinesis
-                        stream.
-                     </p>
+                     <p>The following diagram shows how a custom application writes records to a Kinesis stream.</p>
                      
                      <div class="mediaobject">
                         
@@ -255,7 +220,6 @@
                         
                         
                         
-                        
                         <ol>
                            <li>
                               
@@ -264,9 +228,10 @@
                            </li>
                            <li>
                               
-                              <p>AWS Lambda continuously polls the stream, and invokes the Lambda function
-                                 when the service detects new records on the stream. AWS Lambda knows
-                                 which stream to poll and which Lambda function to invoke based on the
+                              <p>AWS Lambda continuously polls the stream, and invokes the Lambda function when the
+                                 service detects new
+                                 records on the stream. AWS Lambda knows which stream to poll and which Lambda function
+                                 to invoke based on the
                                  event source mapping you create in Lambda.
                               </p>
                               
@@ -279,66 +244,26 @@
                         </ol>
                      </div>
                      
-                     <p>Note the following:</p>
+                     <p>When working with stream-based event sources, you create event source mappings in
+                        AWS Lambda. Lambda reads items
+                        from the stream invokes the function synchronously. You don&apos;t need to grant Lambda
+                        permission to invoke the
+                        function, but it does need permission to read from the stream.
+                     </p>
                      
-                     <div class="itemizedlist">
-                        
-                        
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              
-                              <p>When working with stream-based event sources, the following is
-                                 true:
-                              </p>
-                              
-                              <div class="itemizedlist">
-                                 
-                                 
-                                 
-                                 <ul class="itemizedlist" type="disc">
-                                    <li class="listitem">
-                                       
-                                       <p>You create event source mappings in AWS Lambda.</p>
-                                       
-                                    </li>
-                                    <li class="listitem">
-                                       
-                                       <p>AWS Lambda invokes the Lambda function (referred to as the <em>pull model</em>).
-                                       </p>
-                                       
-                                    </li>
-                                 </ul>
-                              </div>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p>AWS Lambda does not need permission to invoke your Lambda function,
-                                 therefore you don&apos;t need to add any permissions to the permissions policy
-                                 attached to your Lambda function. 
-                              </p>
-                              
-                           </li>
-                           <li class="listitem">
-                              
-                              <p>Your Lambda role needs permission to read from the stream.</p>
-                              
-                           </li>
-                        </ul>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
-                     
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -347,8 +272,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="running-lambda-code.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="invocation-options.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="tagging.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="invocation-options.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -357,13 +284,21 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Example 1: Amazon S3 Pushes Events and Invokes a Lambda Function"><a class="pagetoc" href="#example-lambda-pushes-events-invokes-function">Example 1</a></li>
-                        <li class="pagetoc" name="Example 2: AWS Lambda Pulls Events from an Kinesis Stream and Invokes a Lambda Function"><a class="pagetoc" href="#example-lambda-pulls-kinesis-streams-events-invokes-function">Example 2</a></li>
+                        <li class="pagetoc" name="Example 1: Amazon S3 Pushes Events and Invokes a Lambda
+        Function"><a class="pagetoc" href="#example-lambda-pushes-events-invokes-function">Example 1: Amazon S3 Pushes Events and Invokes a Lambda
+                              Function</a></li>
+                        <li class="pagetoc" name="Example 2: AWS Lambda Pulls Events
+        from a Kinesis Stream and Invokes a Lambda Function"><a class="pagetoc" href="#example-lambda-pulls-kinesis-streams-events-invokes-function">Example 2: AWS Lambda Pulls Events
+                              from a Kinesis Stream and Invokes a Lambda Function</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

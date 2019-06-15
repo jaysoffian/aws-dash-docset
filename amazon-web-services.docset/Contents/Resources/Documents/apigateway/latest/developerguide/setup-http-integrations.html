@@ -1,9 +1,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Set up HTTP Integrations in API Gateway  - Amazon API Gateway</title>
+      <title>Set up HTTP Integrations in API Gateway - Amazon API Gateway</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
-      <link rel="up" href="how-to-integration-settings.html" title="Set up API Integrations in API Gateway">
+      <link rel="up" href="how-to-integration-settings.html" title="Set up REST API Integrations in API Gateway">
       <link rel="prev" href="handle-errors-in-lambda-integration.html" title="Handle Lambda Errors in API Gateway">
       <link rel="next" href="set-up-private-integration.html" title="Set up API Gateway Private Integrations">
       <meta name="description" content="Learn how to configure HTTP integrations in API Gateway.">
@@ -11,6 +11,8 @@
       <meta name="product" content="Amazon API Gateway">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/setup-http-integrations.html">
@@ -20,7 +22,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,23 +34,27 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/apigateway">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="how-to-create-api.html">Creating an API in Amazon API Gateway</a> &#xBB; <a href="how-to-integration-settings.html">Set up API Integrations in API Gateway</a> &#xBB; <span class="breadcrumb">Set up HTTP Integrations in API Gateway </span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="how-to-create-api.html">Creating a REST API in Amazon API Gateway</a> &#xBB; <a href="how-to-integration-settings.html">Set up REST API Integrations in API Gateway</a> &#xBB; <span class="breadcrumb">Set up HTTP Integrations in API Gateway</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="setup-http-integrations">Set up HTTP Integrations in API Gateway </h1>
+                     <h1 class="topictitle" id="setup-http-integrations">Set up HTTP Integrations in API Gateway</h1>
                      <p> You can integrate an API method with an HTTP endpoint using the HTTP proxy integration
                         or
                         the HTTP custom integration. 
                      </p>
-                     <p>
-                        With the proxy integration, the setup is simple. You only need to set the HTTP method
-                        and the HTTP endpoint URI, according to the backend requirements, if you are not concerned
-                        with content encoding or caching. 
-                        
+                     <p>API Gateway supports the following endpoint ports: 80, 443 and 1024-65535.</p>
+                     <p> With proxy integration, setup is simple. You only need to set the HTTP method and
+                        the HTTP endpoint URI, according to the backend requirements, if you are not concerned
+                        with
+                        content encoding or caching. 
                      </p>
-                     <p> With the custom integration, the setup is more involved. In addition to the proxy
+                     <p> With custom integration, setup is more involved. In addition to the proxy
                         integration setup steps, you need to specify how the incoming request data is mapped
                         to the
                         integration request and how the resulting integration response data is mapped to the
@@ -60,8 +66,7 @@
                         <ul>
                            <li><a href="#api-gateway-set-up-http-proxy-integration-on-proxy-resource">Set up HTTP Proxy Integrations in API Gateway</a></li>
                            <li><a href="#set-up-http-custom-integrations">Set up HTTP Custom
-                                 Integrations in API Gateway
-                                 </a></li>
+                                 Integrations in API Gateway</a></li>
                         </ul>
                      </div>
                      
@@ -78,20 +83,77 @@
                      </p>
                      
                      <p>As with a non-proxy resource, you can set up a proxy resource with the HTTP proxy
-                        integration by using the API Gateway console, importing a Swagger definition file,
+                        integration by using the API Gateway console, importing an OpenAPI definition file,
                         or calling
                         the API Gateway REST API directly. For detailed instructions about using the API Gateway
                         console to
-                        configure a proxy resource with the HTTP integration, see <a href="api-gateway-create-api-as-simple-proxy-for-http.html">Build an API with HTTP
-                           Proxy Integration </a>.
+                        configure a proxy resource with the HTTP integration, see <a href="api-gateway-create-api-as-simple-proxy-for-http.html">TUTORIAL: Build an API with HTTP
+                           Proxy Integration</a>.
                      </p>
                      
-                     <p>The following Swagger API definition file shows an example of an API with a proxy
-                        resource
+                     <p>The following OpenAPI definition file shows an example of an API with a proxy resource
                         that is integrated with the <a href="http://petstore-demo-endpoint.execute-api.com/petstore/pets" target="_blank">PetStore</a>
                         website.
                      </p>
-                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+                     
+                     <div class="option container">
+                        <div class="optionselector"><span class="optionanchor" id=""><span class="option  selected" data-tab="openapi-3.0">OpenAPI 3.0</span></span><span class="optionanchor" id=""><span class="option " data-tab="openapi-2.0">OpenAPI 2.0</span></span></div>
+                        <dl>
+                           <dt>OpenAPI 3.0</dt>
+                           <dd class="selected" data-tab="openapi-3.0"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
+   &quot;openapi&quot;: &quot;3.0.0&quot;,
+   &quot;info&quot;: {
+      &quot;version&quot;: &quot;2016-09-12T23:19:28Z&quot;,
+      &quot;title&quot;: &quot;PetStoreWithProxyResource&quot;
+   },
+   &quot;paths&quot;: {
+      &quot;/{proxy+}&quot;: {
+         &quot;x-amazon-apigateway-any-method&quot;: {
+            &quot;parameters&quot;: [
+               {
+                  &quot;name&quot;: &quot;proxy&quot;,
+                  &quot;in&quot;: &quot;path&quot;,
+                  &quot;required&quot;: true,
+                  &quot;schema&quot;: {
+                     &quot;type&quot;: &quot;string&quot;
+                  }
+               }
+            ],
+            &quot;responses&quot;: {},
+            &quot;x-amazon-apigateway-integration&quot;: {
+               &quot;responses&quot;: {
+                  &quot;default&quot;: {
+                     &quot;statusCode&quot;: &quot;200&quot;
+                  }
+               },
+               &quot;requestParameters&quot;: {
+                  &quot;integration.request.path.proxy&quot;: &quot;method.request.path.proxy&quot;
+               },
+               &quot;uri&quot;: &quot;http://petstore-demo-endpoint.execute-api.com/petstore/{proxy}&quot;,
+               &quot;passthroughBehavior&quot;: &quot;when_no_match&quot;,
+               &quot;httpMethod&quot;: &quot;ANY&quot;,
+               &quot;cacheNamespace&quot;: &quot;rbftud&quot;,
+               &quot;cacheKeyParameters&quot;: [
+                  &quot;method.request.path.proxy&quot;
+               ],
+               &quot;type&quot;: &quot;http_proxy&quot;
+            }
+         }
+      }
+   },
+   &quot;servers&quot;: [
+      {
+         &quot;url&quot;: &quot;https://4z9giyi2c1.execute-api.us-east-1.amazonaws.com/{basePath}&quot;,
+         &quot;variables&quot;: {
+            &quot;basePath&quot;: {
+              &quot;default&quot;: &quot;/test&quot;
+            }
+         }
+      }
+   ]
+}</code></pre></dd>
+                           <dt>OpenAPI 2.0</dt>
+                           <dd class="" data-tab="openapi-2.0"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
   &quot;swagger&quot;: &quot;2.0&quot;,
   &quot;info&quot;: {
     &quot;version&quot;: &quot;2016-09-12T23:19:28Z&quot;,
@@ -138,7 +200,10 @@
       }
     }
   }
-}</code></pre>
+}</code></pre></dd>
+                        </dl>
+                     </div>
+                     
                      <p>In this example, a cache key is declared on the <code class="code">method.request.path.proxy</code>
                         path parameter of the proxy resource. This is the default setting when you create
                         the
@@ -167,8 +232,8 @@
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">GET https://4z9giyi2c1.execute-api.us-west-2.amazonaws.com/test/pets HTTP/1.1</code></pre>
                               <p>Integration request sent to the backend:</p>
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">GET http://petstore-demo-endpoint.execute-api.com/petstore/pets HTTP/1.1</code></pre>
-                              <p>The run-time instances of the <code class="code">ANY</code> method and proxy resource are both
-                                 valid. The call returns a <code class="code">200 OK</code> response with the payload
+                              <p>The run-time instances of the <code class="code">ANY</code> method and proxy resource are
+                                 both valid. The call returns a <code class="code">200 OK</code> response with the payload
                                  containing the first batch of pets, as returned from the backend.
                               </p>
                               
@@ -180,8 +245,8 @@
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">GET https://4z9giyi2c1.execute-api.us-west-2.amazonaws.com/test/pets?type=dog HTTP/1.1</code></pre>
                               <p>Integration request sent to the backend:</p>
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">GET http://petstore-demo-endpoint.execute-api.com/petstore/pets?type=dog HTTP/1.1</code></pre>
-                              <p>The run-time instances of the <code class="code">ANY</code> method and proxy resource are both
-                                 valid. The call returns a <code class="code">200 OK</code> response with the payload
+                              <p>The run-time instances of the <code class="code">ANY</code> method and proxy resource are
+                                 both valid. The call returns a <code class="code">200 OK</code> response with the payload
                                  containing the first batch of specified dogs, as returned from the
                                  backend.
                               </p>
@@ -196,8 +261,8 @@
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">GET https://4z9giyi2c1.execute-api.us-west-2.amazonaws.com/test/pets/1 HTTP/1.1</code></pre>
                               <p>Integration request sent to the backend:</p>
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">GET http://petstore-demo-endpoint.execute-api.com/petstore/pets/1 HTTP/1.1</code></pre>
-                              <p>The run-time instances of the <code class="code">ANY</code> method and proxy resource are both
-                                 valid. The call returns a <code class="code">200 OK</code> response with the payload
+                              <p>The run-time instances of the <code class="code">ANY</code> method and proxy resource are
+                                 both valid. The call returns a <code class="code">200 OK</code> response with the payload
                                  containing the specified pet, as returned from the backend.
                               </p>
                               
@@ -225,8 +290,8 @@ Content-Length: ...
   &quot;type&quot; : &quot;dog&quot;,
   &quot;price&quot; : 1001.00
 }</code></pre>
-                              <p>The run-time instances of the <code class="code">ANY</code> method and proxy resource are both
-                                 valid. The call returns a <code class="code">200 OK</code> response with the payload
+                              <p>The run-time instances of the <code class="code">ANY</code> method and proxy resource are
+                                 both valid. The call returns a <code class="code">200 OK</code> response with the payload
                                  containing the newly created pet, as returned from the backend.
                               </p>
                               
@@ -240,9 +305,9 @@ Content-Length: ...
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">GET https://4z9giyi2c1.execute-api.us-west-2.amazonaws.com/test/pets/cat</code></pre>
                               <p>Integration request sent to the backend:</p>
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">GET http://petstore-demo-endpoint.execute-api.com/petstore/pets/cat</code></pre>
-                              <p>The run-time instance of the proxy resource path does not correspond to a backend
-                                 endpoint and the resulting request is invalid. As a result, a <code class="code">400 Bad Request</code>
-                                 response is returned with the following error message. 
+                              <p>The run-time instance of the proxy resource path does not correspond to a
+                                 backend endpoint and the resulting request is invalid. As a result, a <code class="code">400
+                                    Bad Request</code> response is returned with the following error message. 
                               </p>
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">{
   &quot;errors&quot;: [
@@ -266,14 +331,14 @@ Content-Length: ...
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">GET https://4z9giyi2c1.execute-api.us-west-2.amazonaws.com/test</code></pre>
                               <p>Integration request sent to the backend:</p>
                               <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">GET http://petstore-demo-endpoint.execute-api.com/petstore/pets</code></pre>
-                              <p>The targeted resource is the parent of the proxy resource, but the run-time instance
-                                 of the <code class="code">ANY</code> method is not defined in the API on that resource. As a
-                                 result, this <code class="code">GET</code> request returns a <code class="code">403 Forbidden</code>
-                                 response with the <code class="code">Missing Authentication Token</code> error message as
-                                 returned by API Gateway. If the API exposes the <code class="code">ANY</code> or <code class="code">GET</code>
-                                 method on the parent resource (<code class="code">/</code>), the call returns a <code class="code">404 Not
-                                    Found</code> response with the <code class="code">Cannot GET /petstore</code> message as
-                                 returned from the backend.
+                              <p>The targeted resource is the parent of the proxy resource, but the run-time
+                                 instance of the <code class="code">ANY</code> method is not defined in the API on that
+                                 resource. As a result, this <code class="code">GET</code> request returns a <code class="code">403
+                                    Forbidden</code> response with the <code class="code">Missing Authentication Token</code>
+                                 error message as returned by API Gateway. If the API exposes the <code class="code">ANY</code> or
+                                 <code class="code">GET</code> method on the parent resource (<code class="code">/</code>), the call
+                                 returns a <code class="code">404 Not Found</code> response with the <code class="code">Cannot GET
+                                    /petstore</code> message as returned from the backend.
                               </p>
                               
                            </li>
@@ -281,15 +346,13 @@ Content-Length: ...
                      </div>
                      
                      <p>For any client request, if the targeted endpoint URL is invalid or the HTTP verb is
-                        valid
-                        but not supported, the backend returns a <code class="code">404 Not Found</code> response. For an
-                        unsupported HTTP method, a <code class="code">403 Forbidden</code> response is returned.
+                        valid but not supported, the backend returns a <code class="code">404 Not Found</code> response. For
+                        an unsupported HTTP method, a <code class="code">403 Forbidden</code> response is returned.
                      </p>
                      
                      
                      <h2 id="set-up-http-custom-integrations">Set up HTTP Custom
                         Integrations in API Gateway
-                        
                      </h2>
                      
                      <p> With the HTTP custom integration, you have more control of which data to pass between
@@ -297,29 +360,29 @@ Content-Length: ...
                         mappings. 
                      </p>
                      
-                     <p>As part of the method request setup, you set the <a href="./apigateway/api-reference/resource/method/#requestParameters" target="_blank">requestParameters</a>
-                        property on a <a href="./apigateway/api-reference/resource/method/" target="_blank">Method</a> resource. This
+                     <p>As part of the method request setup, you set the <a href="./apigateway/api-reference/resource/method/#requestParameters">requestParameters</a>
+                        property on a <a href="./apigateway/api-reference/resource/method/">Method</a> resource. This
                         declares which method request parameters, which are provisioned from the client, are
                         to
                         be mapped to integration request parameters or applicable body properties before being
                         dispatched to the backend. Then, as part of the integration request setup, you set
                         the
-                        <a href="./apigateway/api-reference/resource/integration/#requestParameters" target="_blank">requestParameters</a> property on the corresponding <a href="./apigateway/api-reference/resource/integration/" target="_blank">Integration</a> resource to specify the
-                        parameter-to-parameter mappings. You also set the <a href="./apigateway/api-reference/resource/integration/#requestTemplates" target="_blank">requestTemplates</a>
+                        <a href="./apigateway/api-reference/resource/integration/#requestParameters">requestParameters</a> property on the corresponding <a href="./apigateway/api-reference/resource/integration/">Integration</a> resource to specify the
+                        parameter-to-parameter mappings. You also set the <a href="./apigateway/api-reference/resource/integration/#requestTemplates">requestTemplates</a>
                         property to specify mapping templates, one for each supported content type. The mapping
                         templates map method request parameters, or body, to the integration request body.
                         
                      </p>
                      
-                     <p> Similarly, as part of the method response setup, you set the <a href="./apigateway/api-reference/resource/method-response/#responseParameters" target="_blank">responseParameters</a> property on the <a href="./apigateway/api-reference/resource/method-response/" target="_blank">MethodResponse</a> resource. This
+                     <p> Similarly, as part of the method response setup, you set the <a href="./apigateway/api-reference/resource/method-response/#responseParameters">responseParameters</a> property on the <a href="./apigateway/api-reference/resource/method-response/">MethodResponse</a> resource. This
                         declares which method response parameters, to be dispatched to the client, are to
                         be
                         mapped from integration response parameters or certain applicable body properties
                         that
                         were returned from the backend. Then, as part of the integration response setup, you
                         set
-                        the <a href="./apigateway/api-reference/resource/integration-response/#responseParameters" target="_blank">responseParameters</a> property on the corresponding <a href="./apigateway/api-reference/resource/integration-response/" target="_blank">IntegrationResponse</a>
-                        resource to specify the parameter-to-parameter mappings. You also set the <a href="./apigateway/api-reference/resource/integration-response/#responseTemplates" target="_blank">responseTemplates</a> map to specify mapping templates, one for each supported
+                        the <a href="./apigateway/api-reference/resource/integration-response/#responseParameters">responseParameters</a> property on the corresponding <a href="./apigateway/api-reference/resource/integration-response/">IntegrationResponse</a>
+                        resource to specify the parameter-to-parameter mappings. You also set the <a href="./apigateway/api-reference/resource/integration-response/#responseTemplates">responseTemplates</a> map to specify mapping templates, one for each supported
                         content type. The mapping templates map integration response parameters, or integration
                         response body properties, to the method response body. 
                      </p>
@@ -330,15 +393,19 @@ Content-Length: ...
                      
                      
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -348,7 +415,9 @@ Content-Length: ...
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="handle-errors-in-lambda-integration.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="set-up-private-integration.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -359,13 +428,16 @@ Content-Length: ...
                      <ul class="pagetoc">
                         <li class="pagetoc" name="Set up HTTP Proxy Integrations in API Gateway"><a class="pagetoc" href="#api-gateway-set-up-http-proxy-integration-on-proxy-resource">Set up HTTP Proxy Integrations in API Gateway</a></li>
                         <li class="pagetoc" name="Set up HTTP Custom
-                Integrations in API Gateway
-                "><a class="pagetoc" href="#set-up-http-custom-integrations"> Set up HTTP Custom Integrations </a></li>
+                Integrations in API Gateway"><a class="pagetoc" href="#set-up-http-custom-integrations"> Set up HTTP Custom Integrations </a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

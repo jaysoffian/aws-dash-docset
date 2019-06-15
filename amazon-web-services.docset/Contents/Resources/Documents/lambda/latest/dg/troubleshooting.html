@@ -1,16 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Monitoring and Troubleshooting Lambda-based Applications - AWS Lambda</title>
+      <title>Monitoring and Troubleshooting Lambda Applications - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="welcome.html" title="What Is AWS Lambda?">
-      <link rel="prev" href="automating-updates-to-serverless-apps.html" title="Gradual Code Deployment">
-      <link rel="next" href="monitoring-functions.html" title="Using Amazon CloudWatch">
-      <meta name="description" content="AWS Lambda will automatically track the behavior of your Lambda function invocations and provide feedback that you can monitor. In addition, it provides metrics that allows you to analyze the full function invocation spectrum, including event source integration and whether downstream resources perform as expected. The following sections provide guidance on the tools you can use analyze your Lambda function invocation behavior:">
+      <link rel="prev" href="with-sqs-example-use-app-spec.html" title="AWS SAM Template for an Amazon SQS Application">
+      <link rel="next" href="monitoring-functions-access-metrics.html" title="Monitoring Functions in the AWS Lambda Console">
+      <meta name="description" content="Monitor and troubleshoot Lambda applications">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/troubleshooting.html">
@@ -20,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,25 +35,80 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Monitoring and Troubleshooting Lambda-based Applications</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <span class="breadcrumb">Monitoring and Troubleshooting Lambda Applications</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <h1 class="topictitle" id="troubleshooting">Monitoring and Troubleshooting Lambda-based Applications</h1>
-                     <p>AWS Lambda will automatically track the behavior of your Lambda function invocations
-                        and provide feedback that you can monitor. In addition, it provides metrics that allows
-                        you to analyze the full function invocation spectrum, including event source integration
-                        and whether downstream resources perform as expected.
-                        The following sections provide guidance on the tools you can use analyze your Lambda
-                        function invocation behavior:
+                     <h1 class="topictitle" id="troubleshooting">Monitoring and Troubleshooting Lambda Applications</h1>
+                     <p>AWS Lambda automatically monitors Lambda functions on your behalf, reporting metrics
+                        through Amazon CloudWatch. To help you
+                        monitor your code as it executes, Lambda automatically tracks the number of requests,
+                        the execution duration per
+                        request, and the number of requests resulting in an error and publishes the associated
+                        CloudWatch metrics. You can
+                        leverage these metrics to set CloudWatch custom alarms. For more information about
+                        CloudWatch, see the <a href="./AmazonCloudWatch/latest/DeveloperGuide/">Amazon CloudWatch User Guide</a>.
                      </p>
+                     <p>You can view request rates and error rates for each of your Lambda functions by using
+                        the AWS Lambda console, the
+                        CloudWatch console, and other Amazon Web Services (AWS) resources. The following topics
+                        describe Lambda CloudWatch metrics and how to
+                        access them.
+                     </p>
+                     <div class="itemizedlist">
+                        
+                        
+                        
+                        <ul class="itemizedlist" type="disc">
+                           <li class="listitem">
+                              
+                              <p><a href="monitoring-functions-access-metrics.html">Monitoring Functions in the AWS Lambda Console</a></p>
+                              
+                           </li>
+                           <li class="listitem">
+                              
+                              <p><a href="monitoring-functions-metrics.html">AWS Lambda Metrics</a></p>
+                              
+                           </li>
+                        </ul>
+                     </div>
+                     <p>You can insert logging statements into your code to help you validate that your code
+                        is working as expected.
+                        Lambda automatically integrates with Amazon CloudWatch Logs and pushes all logs from
+                        your code to a CloudWatch Logs group associated with a
+                        Lambda function (/aws/lambda/<em class="replaceable"><code>&lt;function name&gt;</code></em>). To learn more about log groups and
+                        accessing them through the CloudWatch console, see the <a href="./AmazonCloudWatch/latest/DeveloperGuide/WhatIsCloudWatchLogs.html">Monitoring
+                           System, Application, and Custom Log Files</a> in the <em>Amazon CloudWatch User Guide</em>. For information
+                        about how to access CloudWatch log entries, see <a href="monitoring-functions-logs.html">Accessing Amazon CloudWatch Logs for AWS Lambda</a>.
+                     </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>If your Lambda function code is executing, but you don&apos;t see any log data being generated
+                           after several
+                           minutes, this could mean your execution role for the Lambda function did not grant
+                           permissions to write log data to
+                           CloudWatch Logs. For information about how to make sure that you have set up the execution
+                           role correctly to grant these
+                           permissions, see <a href="lambda-intro-execution-role.html">AWS Lambda Execution Role</a>.
+                        </p>
+                     </div>
                      <div class="highlights">
                         <p><strong>Topics</strong></p>
                         <ul>
-                           <li><a href="monitoring-functions.html">Using Amazon CloudWatch</a></li>
+                           <li><a href="monitoring-functions-access-metrics.html">Monitoring Functions in the AWS Lambda Console</a></li>
+                           <li><a href="monitoring-functions-metrics.html">AWS Lambda Metrics</a></li>
+                           <li><a href="monitoring-functions-logs.html">Accessing Amazon CloudWatch Logs for AWS Lambda</a></li>
                            <li><a href="lambda-x-ray.html">Using AWS X-Ray</a></li>
+                           <li><a href="logging-using-cloudtrail.html">Logging AWS Lambda API Calls with AWS CloudTrail</a></li>
+                           <li><a href="monitoring-functions-troubleshooting.html">AWS Lambda Troubleshooting Scenarios</a></li>
                         </ul>
+                     </div>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
                      </div>
                   </div>
                   <noscript>
@@ -58,9 +116,10 @@
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -69,8 +128,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="automating-updates-to-serverless-apps.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="monitoring-functions.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="with-sqs-example-use-app-spec.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="monitoring-functions-access-metrics.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -78,6 +139,10 @@
                <div id="right-content-wrapper"></div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

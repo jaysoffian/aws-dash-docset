@@ -12,6 +12,8 @@
       <meta name="product" content="Amazon Elastic Compute Cloud">
       <meta name="guide" content="User Guide for Linux Instances">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/raid-config.html">
@@ -21,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -33,10 +35,13 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/ec2">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <a href="EBSPerformance.html">Amazon EBS Volume Performance on Linux Instances</a> &#xBB; <span class="breadcrumb">RAID Configuration on Linux</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/ec2/index.html">Amazon EC2</a> &#xBB; <a href="index.html">User Guide for Linux Instances</a> &#xBB; <a href="Storage.html">Storage</a> &#xBB; <a href="AmazonEBS.html">Amazon Elastic Block Store (Amazon EBS)</a> &#xBB; <a href="EBSPerformance.html">Amazon EBS Volume Performance on Linux Instances</a> &#xBB; <span class="breadcrumb">RAID Configuration on Linux</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="raid-config">RAID Configuration on <span>Linux</span></h1>
                      <p>With Amazon EBS, you can use any of the standard RAID configurations that you can
@@ -65,7 +70,7 @@
                            unable to boot the operating system.
                         </p>
                      </div>
-                     <p>If you need to create a RAID array on a Windows instance, see <a href="./AWSEC2/latest/WindowsGuide/raid-config.html" target="_blank">RAID Configuration on Windows</a> in the
+                     <p>If you need to create a RAID array on a Windows instance, see <a href="./AWSEC2/latest/WindowsGuide/raid-config.html">RAID Configuration on Windows</a> in the
                         <em>Amazon EC2 User Guide for Windows Instances</em>.
                      </p>
                      <div class="highlights" id="inline-topiclist">
@@ -73,8 +78,10 @@
                         <ul>
                            <li><a href="#raid-config-options">RAID Configuration Options</a></li>
                            <li><a href="#linux-raid">Creating a RAID Array on Linux</a></li>
+                           <li><a href="#ebs-snapshots-raid-array">Creating Snapshots of Volumes in a RAID Array</a></li>
                         </ul>
                      </div>
+                     
                      <h2 id="raid-config-options">RAID Configuration Options</h2>
                      
                      
@@ -82,7 +89,7 @@
                      
                      <div class="table">
                         <div class="table-contents">
-                           <table id="w185aac23c29c27c15c13b4">
+                           <table id="w306aac29c29c27c17c13b5">
                               
                               <tbody><tr>
                                  
@@ -209,11 +216,12 @@
                         configuration, performance, and recovery, see the Linux RAID Wiki at <a href="https://raid.wiki.kernel.org/index.php/Linux_Raid" target="_blank">https://raid.wiki.kernel.org/index.php/Linux_Raid</a>.
                      </p>
                      
+                     
                      <h2 id="linux-raid">Creating a RAID Array on Linux</h2>
                      
                      
                      <p>Use the following procedure to create the RAID array. Note that you can get directions
-                        for Windows instances from <a href="./AWSEC2/latest/WindowsGuide/raid-config.html#windows-raid" target="_blank">Creating a RAID Array on Windows</a> in the
+                        for Windows instances from <a href="./AWSEC2/latest/WindowsGuide/raid-config.html#windows-raid">Creating a RAID Array on Windows</a> in the
                         <em>Amazon EC2 User Guide for Windows Instances</em>.
                      </p>
                      
@@ -446,15 +454,47 @@ md0 : active raid1 xvdg[1] xvdf[0]
                         </li>
                      </ol>
                      
+                     
+                     <h2 id="ebs-snapshots-raid-array">Creating Snapshots of Volumes in a RAID Array</h2>
+                     
+                     <p>If you want to back up the data on the EBS volumes in a RAID array using snapshots,
+                        you must ensure
+                        that the snapshots are consistent. This is because snapshots of these volumes are
+                        created independently, 
+                        not as a whole. Restoring EBS volumes in a RAID array from snapshots that are out
+                        of sync would degrade 
+                        the integrity of the array.
+                     </p>
+                     
+                     <p>To create a consistent set of snapshots for your RAID array, stop applications from
+                        writing to the
+                        RAID array and flush all caches to disk. To stop writes to the RAID array, you can
+                        take steps such as
+                        stopping the applications, stopping the instance, or unmounting the RAID array. After
+                        you&apos;ve stopped  
+                        all I/O activity, you can create the snapshots. When the snapshot has been initiated
+                        or the snapshot 
+                        API returns successfully, it is safe to resume all I/O activity.
+                     </p>
+                     
+                     <p>When restoring the EBS volumes in a RAID array from a set of snapshots, stop all I/O
+                        activity as you 
+                        did when you created the snapshots and then restore the volumes from the snapshots.
+                     </p>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -464,7 +504,9 @@ md0 : active raid1 xvdg[1] xvdf[0]
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="ebs-initialize.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="benchmark_procedures.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -475,11 +517,16 @@ md0 : active raid1 xvdg[1] xvdf[0]
                      <ul class="pagetoc">
                         <li class="pagetoc" name="RAID Configuration Options"><a class="pagetoc" href="#raid-config-options">RAID Configuration Options</a></li>
                         <li class="pagetoc" name="Creating a RAID Array on Linux"><a class="pagetoc" href="#linux-raid">Creating a RAID Array on Linux</a></li>
+                        <li class="pagetoc" name="Creating Snapshots of Volumes in a RAID Array"><a class="pagetoc" href="#ebs-snapshots-raid-array">Creating Snapshots of Volumes in a RAID Array</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

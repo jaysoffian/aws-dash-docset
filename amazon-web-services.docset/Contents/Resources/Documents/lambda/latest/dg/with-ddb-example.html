@@ -1,16 +1,19 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <title>Tutorial: Using AWS Lambda with Amazon DynamoDB - AWS Lambda</title>
+      <title>Tutorial: Using AWS Lambda with Amazon DynamoDB Streams - AWS Lambda</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <link rel="home" href="#top">
       <link rel="up" href="with-ddb.html" title="Using AWS Lambda with Amazon DynamoDB">
       <link rel="prev" href="with-ddb.html" title="Using AWS Lambda with Amazon DynamoDB">
-      <link rel="next" href="with-ddb-prepare.html" title="Step 1: Prepare">
-      <meta name="description" content="In this tutorial, you create a Lambda function to consume events from a DynamoDB stream.">
+      <link rel="next" href="with-ddb-create-package.html" title="Sample Function Code">
+      <meta name="description" content="In this tutorial, you create a Lambda function to consume events from an Amazon DynamoDB stream.">
+      <meta name="keywords" content="Lambda,AWS Lambda,serverless,serverless applications,cloud computing">
       <meta name="deployment_region" content="IAD">
       <meta name="product" content="AWS Lambda">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/lambda/latest/dg/with-ddb-example.html">
@@ -20,7 +23,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -32,83 +35,453 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/lambda">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="use-cases.html">Examples of How to Use AWS Lambda</a> &#xBB; <a href="with-ddb.html">Using AWS Lambda with Amazon DynamoDB</a> &#xBB; <span class="breadcrumb">Tutorial: Using AWS Lambda with Amazon DynamoDB</span></div>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/lambda/index.html">AWS Lambda</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="lambda-services.html">Using AWS Lambda with Other Services</a> &#xBB; <a href="with-ddb.html">Using AWS Lambda with Amazon DynamoDB</a> &#xBB; <span class="breadcrumb">Tutorial: Using AWS Lambda with Amazon DynamoDB Streams</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
-                     <div id="language-filter" class="page-header" style="display:none">
-                        <form> Filter View: 
-                           <select name="filter-select" id="filter-select">
-                              <option selected="1">All</option>
-                              <option value="Node.js" selected>Node.js</option>
-                              <option value="Java" selected>Java</option>
-                              <option value="C#" selected>C#</option>
-                              <option value="Python" selected>Python</option>
-                              <option value="Go" selected>Go</option></select></form>
-                     </div>
-                     <h1 class="topictitle" id="with-ddb-example">Tutorial: Using AWS Lambda with Amazon DynamoDB</h1>
-                     <p> In this tutorial, you create a Lambda function to consume events from a DynamoDB
-                        
-                        			stream. 
+                     <h1 class="topictitle" id="with-ddb-example">Tutorial: Using AWS Lambda with Amazon DynamoDB Streams</h1>
+                     <p> In this tutorial, you create a Lambda function to consume events from an Amazon DynamoDB
+                        stream.
                      </p>
-                     <p> The tutorial is divided into two main sections: </p>
-                     <div class="itemizedlist">
-                        				
-                        				
-                        			
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
-                              					
-                              <p> First, you perform the necessary setup to create a Lambda function
-                                 						and then you test it by invoking it manually using sample event data. 
-                              </p>
-                              				
-                           </li>
-                           <li class="listitem">
-                              					
-                              <p>Second, you create an DynamoDB stream-enabled table and add an event
-                                 						source mapping in AWS Lambda to associate the stream with your Lambda
-                                 						function. AWS Lambda starts polling the stream. Then, you test the end-to-end
-                                 setup. 
-                                 						As you create, update, and delete items from the table, Amazon DynamoDB writes
-                                 
-                                 						records to the stream. AWS Lambda detects the new records as it polls the 
-                                 						stream and executes your Lambda function on your behalf. 
-                                 					
-                              </p>
-                              				
-                           </li>
-                        </ul>
-                     </div>
+                     
+                     <h2 id="with-ddb-prepare">Prerequisites</h2>
+                      
+                     <p>This tutorial assumes that you have some knowledge of basic Lambda operations and
+                        the Lambda console. If you
+                        haven&apos;t already, follow the instructions in <a href="getting-started.html">Getting Started with AWS Lambda</a> to create your first Lambda function.
+                     </p>
+                      
+                     <p>To follow the procedures in this guide, you will need a command line terminal or shell
+                        to run commands. Commands are shown in
+                        listings preceded by a
+                        prompt symbol ($) and the name of the current directory, when appropriate:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">~/lambda-project$ <strong class="userinput"><code>this is a command</code></strong>
+this is output</code></pre>
+                     <p>For long commands, an escape character (<code class="code">\</code>) is used to split a command over multiple lines.
+                     </p>
+                     
+                     <p>On Linux and macOS, use your preferred shell and package manager. On Windows 10, you
+                        can <a href="https://docs.microsoft.com/en-us/windows/wsl/install-win10" target="_blank">install the Windows Subsystem for Linux</a> to get a Windows-integrated version of 
+                        Ubuntu and Bash.
+                     </p>
+                     
+                     
+                     
+                     <h2 id="with-ddb-create-execution-role">Create the Execution Role</h2>
+                     
+                     <p>Create the <a href="lambda-intro-execution-role.html">execution role</a> that gives your function
+                        permission to access AWS resources.
+                     </p>
+                     
+                     <p class="title"><b>To create an execution role</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Open the <a href="https://console.aws.amazon.com/iam/home#/roles" target="_blank">roles page</a> in the IAM console.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create role</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Create a role with the following properties.</p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p><b>Trusted entity</b> &#x2013; Lambda.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Permissions</b> &#x2013; <b>AWSLambdaDynamoDBExecutionRole</b>.
+                                    </p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Role name</b> &#x2013; <strong class="userinput"><code>lambda-dynamodb-role</code></strong>.
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>The <b>AWSLambdaDynamoDBExecutionRole</b> has the permissions that the function needs to read
+                        items from DynamoDB and write logs to CloudWatch Logs.
+                     </p>
+                     
+                     
+                     <h2 id="with-ddb-example-create-function">Create the Function</h2>
+                     
+                     
+                     <p>The following example code receives a DynamoDB event input and processes the messages
+                        that it contains. For
+                        illustration, the code writes some of the incoming event data to CloudWatch Logs.
+                     </p>
+                     
+                     
                      <div class="aws-note">
-                        <p class="aws-note">Important</p>
-                        <p>Both the Lambda function and the DynamoDB stream must be in the same AWS region.
-                           				This tutorial assumes that you create these resources in the
-                           				<code class="code">us-east-1</code> region.
+                        <p class="aws-note">Note</p>
+                        <p>For sample code in other languages, see <a href="with-ddb-create-package.html">Sample Function Code</a>.
                         </p>
                      </div>
-                     <p>In this tutorial, you use the AWS Command Line Interface to perform AWS Lambda operations
-                        such
-                        			as creating a Lambda function, creating a stream, and adding records to the stream.
-                        You
-                        			use the AWS Lambda console to manually invoke the function before you create a
-                        			DynamoDB stream. You verify return values and logs in the console UI. 
+                     
+                     <div class="example">
+                        <p class="title"><b>Example index.js</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nodejs ">console.log(&apos;Loading function&apos;);
+
+exports.handler = function(event, context, callback) {
+    console.log(JSON.stringify(event, null, 2));
+    event.Records.forEach(function(record) {
+        console.log(record.eventID);
+        console.log(record.eventName);
+        console.log(&apos;DynamoDB Record: %j&apos;, record.dynamodb);
+    });
+    callback(null, &quot;message&quot;); 
+};</code></pre></div>
+                     </div>
+                     
+                     
+                     <p class="title"><b>To create the function</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Copy the sample code into a file named <code>index.js</code>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Create a deployment package.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>zip function.zip index.js</code></strong></code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Create a Lambda function with the <code class="code">create-function</code> command.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda create-function --function-name ProcessDynamoDBRecords \
+--zip-file fileb://function.zip --handler index.handler --runtime nodejs8.10 \
+--role arn:aws:iam::<em class="replaceable"><code>123456789012</code></em>:role/lambda-dynamodb-role</code></strong></code></pre>
+                           </li>
+                     </ol>
+                     
+                     
+                     <h2 id="with-dbb-invoke-manually">Test the Lambda Function</h2>
+                     
+                     <p>In this step, you invoke your Lambda function manually using the <code class="code">invoke</code> AWS Lambda CLI command and
+                        the following sample DynamoDB event.
                      </p>
-                     <h2 id="wt-ddb-next-step">Next Step</h2>
-                     			
-                     			
-                     <p><a href="with-ddb-prepare.html">Step 1: Prepare</a></p>
-                     		
+                     
+                     <div class="example">
+                        <p class="title"><b>Example input.txt</b></p>
+                        <div class="example-contents"><pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight ">{
+   &quot;Records&quot;:[
+      {
+         &quot;eventID&quot;:&quot;1&quot;,
+         &quot;eventName&quot;:&quot;INSERT&quot;,
+         &quot;eventVersion&quot;:&quot;1.0&quot;,
+         &quot;eventSource&quot;:&quot;aws:dynamodb&quot;,
+         &quot;awsRegion&quot;:&quot;us-east-1&quot;,
+         &quot;dynamodb&quot;:{
+            &quot;Keys&quot;:{
+               &quot;Id&quot;:{
+                  &quot;N&quot;:&quot;101&quot;
+               }
+            },
+            &quot;NewImage&quot;:{
+               &quot;Message&quot;:{
+                  &quot;S&quot;:&quot;New item!&quot;
+               },
+               &quot;Id&quot;:{
+                  &quot;N&quot;:&quot;101&quot;
+               }
+            },
+            &quot;SequenceNumber&quot;:&quot;111&quot;,
+            &quot;SizeBytes&quot;:26,
+            &quot;StreamViewType&quot;:&quot;NEW_AND_OLD_IMAGES&quot;
+         },
+         &quot;eventSourceARN&quot;:&quot;stream-ARN&quot;
+      },
+      {
+         &quot;eventID&quot;:&quot;2&quot;,
+         &quot;eventName&quot;:&quot;MODIFY&quot;,
+         &quot;eventVersion&quot;:&quot;1.0&quot;,
+         &quot;eventSource&quot;:&quot;aws:dynamodb&quot;,
+         &quot;awsRegion&quot;:&quot;us-east-1&quot;,
+         &quot;dynamodb&quot;:{
+            &quot;Keys&quot;:{
+               &quot;Id&quot;:{
+                  &quot;N&quot;:&quot;101&quot;
+               }
+            },
+            &quot;NewImage&quot;:{
+               &quot;Message&quot;:{
+                  &quot;S&quot;:&quot;This item has changed&quot;
+               },
+               &quot;Id&quot;:{
+                  &quot;N&quot;:&quot;101&quot;
+               }
+            },
+            &quot;OldImage&quot;:{
+               &quot;Message&quot;:{
+                  &quot;S&quot;:&quot;New item!&quot;
+               },
+               &quot;Id&quot;:{
+                  &quot;N&quot;:&quot;101&quot;
+               }
+            },
+            &quot;SequenceNumber&quot;:&quot;222&quot;,
+            &quot;SizeBytes&quot;:59,
+            &quot;StreamViewType&quot;:&quot;NEW_AND_OLD_IMAGES&quot;
+         },
+         &quot;eventSourceARN&quot;:&quot;stream-ARN&quot;
+      },
+      {
+         &quot;eventID&quot;:&quot;3&quot;,
+         &quot;eventName&quot;:&quot;REMOVE&quot;,
+         &quot;eventVersion&quot;:&quot;1.0&quot;,
+         &quot;eventSource&quot;:&quot;aws:dynamodb&quot;,
+         &quot;awsRegion&quot;:&quot;us-east-1&quot;,
+         &quot;dynamodb&quot;:{
+            &quot;Keys&quot;:{
+               &quot;Id&quot;:{
+                  &quot;N&quot;:&quot;101&quot;
+               }
+            },
+            &quot;OldImage&quot;:{
+               &quot;Message&quot;:{
+                  &quot;S&quot;:&quot;This item has changed&quot;
+               },
+               &quot;Id&quot;:{
+                  &quot;N&quot;:&quot;101&quot;
+               }
+            },
+            &quot;SequenceNumber&quot;:&quot;333&quot;,
+            &quot;SizeBytes&quot;:38,
+            &quot;StreamViewType&quot;:&quot;NEW_AND_OLD_IMAGES&quot;
+         },
+         &quot;eventSourceARN&quot;:&quot;stream-ARN&quot;
+      }
+   ]
+}</code></pre></div>
+                     </div>
+                     
+                     <p>Execute the following <code class="code">invoke</code> command. 
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda invoke --function-name ProcessDynamoDBRecords --payload file://input.txt outputfile.txt</code></strong></code></pre>
+                     <p>The function returns the string message (message in the <code class="code">context.succeed()</code> in the code) in the
+                        response body. 
+                     </p>
+                     
+                     <p>Verify the output in the <code class="code">outputfile.txt</code> file.
+                     </p>
+                     
+                     
+                     <h2 id="with-ddb-create-buckets">Create a DynamoDB Table with a Stream Enabled</h2>
+                     
+                     <p>Create an Amazon DynamoDB table with a stream enabled.</p>
+                     
+                     <p class="title"><b>To create a DynamoDB table</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Open the <a href="https://console.aws.amazon.com/dynamodb" target="_blank">DynamoDB console</a>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create table</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Create a table with the following settings.</p>
+                           
+                           <div class="itemizedlist">
+                              
+                              
+                              
+                              <ul class="itemizedlist" type="disc">
+                                 <li class="listitem">
+                                    
+                                    <p><b>Table name</b> &#x2013; <strong class="userinput"><code>lambda-dynamodb-stream</code></strong></p>
+                                    
+                                 </li>
+                                 <li class="listitem">
+                                    
+                                    <p><b>Primary key</b> &#x2013; <strong class="userinput"><code>id</code></strong> (string)
+                                    </p>
+                                    
+                                 </li>
+                              </ul>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Create</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p class="title"><b>To enable streams</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Open the <a href="https://console.aws.amazon.com/dynamodb" target="_blank">DynamoDB console</a>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Tables</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose the <b>lambda-dynamodb-stream</b> table.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Under <b>Overview</b>, choose <b>Manage stream</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Enable</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <p>Write down the stream ARN. You need this in the next step when you associate the stream
+                        with your Lambda
+                        function. For more information on enabling streams, see <a href="./amazondynamodb/latest/developerguide/Streams.html">Capturing Table
+                           Activity with DynamoDB Streams</a>.
+                     </p>
+                     
+                     
+                     <h2 id="with-ddb-attach-notification-configuration">Add an Event Source in AWS Lambda</h2>
+                     
+                     <p>Create an event source mapping in AWS Lambda. This event source mapping associates
+                        the DynamoDB stream with
+                        your Lambda function. After you create this event source mapping, AWS Lambda starts
+                        polling the stream.
+                     </p>
+                     
+                     <p>Run the following AWS CLI <code class="code">create-event-source-mapping</code> command. After the command executes, note
+                        down the UUID. You&apos;ll need this UUID to refer to the event source mapping in any commands,
+                        for example, when
+                        deleting the event source mapping.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda create-event-source-mapping --function-name ProcessDynamoDBRecords \
+ --batch-size 100 --starting-position LATEST --event-source <em class="replaceable"><code>DynamoDB-stream-arn</code></em></code></strong></code></pre>
+                     <p> This creates a mapping between the specified DynamoDB stream and the Lambda function.
+                        You can associate a DynamoDB
+                        stream with multiple Lambda functions, and associate the same Lambda function with
+                        multiple streams. However, the
+                        Lambda functions will share the read throughput for the stream they share. 
+                     </p>
+                     
+                     <p>You can get the list of event source mappings by running the following command.</p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda list-event-source-mappings</code></strong></code></pre>
+                     <p>The list returns all of the event source mappings you created, and for each mapping
+                        it shows the
+                        <code class="code">LastProcessingResult</code>, among other things. This field is used to provide an informative message if
+                        there are any problems. Values such as <code class="code">No records processed</code> (indicates that AWS Lambda has not started
+                        polling or that there are no records in the stream) and <code class="code">OK</code> (indicates AWS Lambda successfully read
+                        records from the stream and invoked your Lambda function) indicate that there no issues.
+                        If there are issues, you
+                        receive an error message.
+                     </p>
+                     
+                     <p>If you have a lot of event source mappings, use the function name parameter to narrow
+                        down the results.
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">$ <strong class="userinput"><code>aws lambda list-event-source-mappings --function-name ProcessDynamoDBRecords</code></strong></code></pre>
+                     
+                     <h2 id="with-ddb-final-integration-test-no-iam">Test the Setup</h2>
+                     
+                     <p>Test the end-to-end experience. As you perform table updates, DynamoDB writes event
+                        records to the stream. As
+                        AWS Lambda polls the stream, it detects new records in the stream and executes your
+                        Lambda function on your behalf
+                        by passing events to the function. 
+                     </p>
+                     
+                     <div class="orderedlist">
+                        
+                        
+                        
+                        
+                        <ol>
+                           <li>
+                              
+                              <p>In the DynamoDB console, add, update, delete items to the table. DynamoDB writes records
+                                 of these actions to the
+                                 stream.
+                              </p>
+                              
+                           </li>
+                           <li>
+                              
+                              <p>AWS Lambda polls the stream and when it detects updates to the stream, it invokes
+                                 your Lambda function by
+                                 passing in the event data it finds in the stream.
+                              </p>
+                              
+                           </li>
+                           <li>
+                              
+                              <p>Your function executes and creates logs in Amazon CloudWatch. You can verify the logs
+                                 reported in the Amazon CloudWatch
+                                 console.
+                              </p>
+                              
+                           </li>
+                        </ol>
+                     </div>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -117,8 +490,10 @@
                   </noscript>
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
-                     <div id="next"><a class="awstoc" accesskey="p" href="with-ddb.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="with-ddb-prepare.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="with-ddb.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="with-ddb-create-package.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -127,12 +502,22 @@
                   <div id="pagetoc">
                      <p>On this page:</p>
                      <ul class="pagetoc">
-                        <li class="pagetoc" name="Next Step"><a class="pagetoc" href="#wt-ddb-next-step">Next Step</a></li>
+                        <li class="pagetoc" name="Prerequisites"><a class="pagetoc" href="#with-ddb-prepare">Prerequisites</a></li>
+                        <li class="pagetoc" name="Create the Execution Role"><a class="pagetoc" href="#with-ddb-create-execution-role">Create the Execution Role</a></li>
+                        <li class="pagetoc" name="Create the Function"><a class="pagetoc" href="#with-ddb-example-create-function">Create the Function</a></li>
+                        <li class="pagetoc" name="Test the Lambda Function"><a class="pagetoc" href="#with-dbb-invoke-manually">Test the Lambda Function</a></li>
+                        <li class="pagetoc" name="Create a DynamoDB Table with a Stream Enabled"><a class="pagetoc" href="#with-ddb-create-buckets">Create a DynamoDB Table with a Stream Enabled</a></li>
+                        <li class="pagetoc" name="Add an Event Source in AWS Lambda"><a class="pagetoc" href="#with-ddb-attach-notification-configuration">Add an Event Source in AWS Lambda</a></li>
+                        <li class="pagetoc" name="Test the Setup"><a class="pagetoc" href="#with-ddb-final-integration-test-no-iam">Test the Setup</a></li>
                      </ul>
                   </div>
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

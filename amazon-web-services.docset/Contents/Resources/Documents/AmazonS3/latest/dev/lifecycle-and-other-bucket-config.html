@@ -15,6 +15,8 @@
       <meta name="product" content="Amazon Simple Storage Service">
       <meta name="guide" content="Developer Guide">
       <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
       <link rel="icon" type="image/ico" href="/images/favicon.ico">
       <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
       <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/lifecycle-and-other-bucket-config.html">
@@ -24,7 +26,7 @@
       <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
       <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
       <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
-      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/handlebars.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20170615"></script></head>
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
    <body id="top">
       
       <div id="content-container">
@@ -36,12 +38,15 @@
                      <table summary="Breadcrumbs">
                         <tbody><tr>
                            <td>
-                              <div class="breadcrumb"><a href="http://aws.amazon.com/documentation">AWS Documentation</a> &#xBB; <a href="http://aws.amazon.com/documentation/s3">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="UsingObjects.html">Working with Amazon S3 Objects</a> &#xBB; <a href="object-lifecycle-mgmt.html">Object Lifecycle Management</a> &#xBB; <a href="lifecycle-additional-considerations.html">Additional Considerations for
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="UsingObjects.html">Working with Amazon S3 Objects</a> &#xBB; <a href="object-lifecycle-mgmt.html">Object Lifecycle Management</a> &#xBB; <a href="lifecycle-additional-considerations.html">Additional Considerations for
                                     Lifecycle Configuration</a> &#xBB; <span class="breadcrumb">Lifecycle and Other Bucket
                                     Configurations</span></div>
                            </td>
                         </tr>
                      </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
                      <div></div>
                      <h1 class="topictitle" id="lifecycle-and-other-bucket-config">Lifecycle and Other Bucket
                         Configurations
@@ -80,48 +85,173 @@
                         Logging
                      </h2>
                      
-                     <p>If you have logging enabled on your bucket, Amazon S3 reports the results of an
-                        expiration action as follows: 
+                     <p>Amazon S3 lifecycle actions are not captured by CloudTrail object level logging since
+                        CloudTrail captures API requests made to external Amazon S3 
+                        endpoints whereas Amazon S3 lifecycle actions are performed using internal Amazon
+                        S3 endpoints. Amazon S3 server access logs can be enabled in 
+                        an S3 bucket to capture Amazon S3 lifecycle related actions such as object transition
+                        to another storage class and object expiration 
+                        resulting in permanent deletion or logical deletion. For more information, see <a href="ServerLogs.html">Amazon S3 Server Access Logging</a></p>
+                     
+                     
+                     <p>If you have logging enabled on your bucket, Amazon S3 server access logs report the
+                        results of the following operations:
                      </p>
                      
-                     <div class="itemizedlist">
-                        
-                        
-                        
-                        
-                        
-                        
-                        <ul class="itemizedlist" type="disc">
-                           <li class="listitem">
+                     <div class="table">
+                        <div class="table-contents">
+                           <table id="w203aac19c22c13c11b9b7">
                               
-                              <p>If the lifecycle expiration action results in Amazon S3 permanently
-                                 removing the object, Amazon S3 reports it as an <code class="code">S3.EXPIRE.OBJECT</code>
-                                 operation in the log record.
-                              </p>
+                              <tbody><tr>
+                                 
+                                 <th>Operation log</th>
+                                 
+                                 <th>Decription</th>
+                                 
+                              </tr>
                               
-                           </li>
-                           <li class="listitem">
                               
-                              <p>For a versioning-enabled bucket, if the lifecycle expiration action
-                                 results in a logical deletion of the current version, in which Amazon S3 adds
-                                 a delete marker, Amazon S3 reports the logical deletion as an
-                                 <code class="code">S3.CREATE.DELETEMARKER</code> operation in the log record. For
-                                 more information, see <a href="ObjectVersioning.html">Object Versioning</a>.
-                              </p>
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">S3.EXPIRE.OBJECT</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Amazon S3 permanently deletes the object due to the lifecycle expiration action.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
                               
-                           </li>
-                           <li class="listitem">
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">S3.CREATE.DELETEMARKER</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Amazon S3 logically deletes the current version and adds a delete marker in a versioning
+                                       enabled bucket.
+                                    </p>
+                                    
+                                 </td>
+                                 
+                              </tr>
                               
-                              <p>When Amazon S3 transitions an object to the GLACIER storage class, it
-                                 reports it as an operation <code class="code">S3.TRANSITION.OBJECT</code> in the log
-                                 record to indicate it has initiated the operation. When the object is
-                                 transitioned to the STANDARD_IA (or ONEZONE_IA) storage class, it is
-                                 reported as an <code class="code">S3.TRANSITION_SIA.OBJECT</code> (or
-                                 <code class="code">S3.TRANSITION_ZIA.OBJECT</code>) operation. 
-                              </p>
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">S3.TRANSITION_SIA.OBJECT</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Amazon S3 transitions the object to the STANDARD_IA storage class.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
                               
-                           </li>
-                        </ul>
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">S3.TRANSITION_ZIA.OBJECT</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Amazon S3 transitions the object to the  ONEZONE_IA storage class.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">S3.TRANSITION_INT.OBJECT</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Amazon S3 transitions the object to the  Intelligent-Tiering storage class.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">S3.TRANSITION.OBJECT</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Amazon S3 initiates the transition of object to the GLACIER storage class.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">S3.TRANSITION_GDA.OBJECT</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Amazon S3 initiates the transition of object to the GLACIER DEEP_ARCHIVE storage class.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                              <tr>
+                                 
+                                 <td>
+                                    
+                                    <p><code class="code">S3.DELETE.UPLOAD</code></p>
+                                    
+                                 </td>
+                                 
+                                 <td>
+                                    
+                                    <p>Amazon S3 aborts incomplete multipart upload.</p>
+                                    
+                                 </td>
+                                 
+                              </tr>
+                              
+                           </tbody></table>
+                        </div>
+                     </div>
+                     
+                     <div class="aws-note">
+                        <p class="aws-note">Note</p>
+                        <p>Amazon S3 server access log records are generally delivered on a best effort basis
+                           and cannot be used for complete 
+                           accounting of all Amazon S3 requests.
+                           
+                        </p>
                      </div>
                      
                      
@@ -143,8 +273,8 @@
                            </li>
                            <li class="listitem">
                               
-                              <p><a href="lifecycle-transition-general-considerations.html#before-deciding-to-archive-objects">Transitioning to the GLACIER
-                                    Storage Class (Object Archival)</a></p>
+                              <p><a href="lifecycle-transition-general-considerations.html#before-deciding-to-archive-objects">Transitioning to the
+                                    GLACIER and DEEP ARCHIVE Storage Classes (Object Archival)</a></p>
                               
                            </li>
                            <li class="listitem">
@@ -159,15 +289,19 @@
                      </div>
                      
                      
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
                   </div>
                   <noscript>
                      <div>
                         <div>
                            <div>
                               <div id="js_error_message">
-                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your browser.</strong></p>
-                                 <p>To use the AWS Documentation, Javascript must be enabled. Please refer to your browser's
-                                    Help pages for instructions.
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
                                  </p>
                               </div>
                            </div>
@@ -177,7 +311,9 @@
                   <div id="main-col-footer">
                      <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
                      <div id="next"><a class="awstoc" accesskey="p" href="lifecycle-expire-general-considerations.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="intro-lifecycle-rules.html">Next &#xBB;</a></div>
-                     <div id="copyright-main-footer">&#xA9; 2018, Amazon Web Services, Inc. or its affiliates. All rights reserved.</div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
                   </div>
                </div>
             </div>
@@ -200,6 +336,10 @@
                </div>
             </div>
          </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
       </div>
       
       <!-- SiteCatalyst code version: H.25.2.

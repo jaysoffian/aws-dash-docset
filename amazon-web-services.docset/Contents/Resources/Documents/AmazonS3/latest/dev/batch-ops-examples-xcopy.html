@@ -1,0 +1,508 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Cross-Account Copy Examples for Amazon S3 Batch Operations  - Amazon Simple Storage Service</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="batch-ops-examples.html" title="Amazon S3 Batch Operations Examples">
+      <link rel="prev" href="batch-ops-examples-reports.html" title="Amazon S3 Batch Operations Completion Report
+            Examples">
+      <link rel="next" href="batch-ops-examples-cli.html" title="AWS CLI Examples for Amazon S3 Batch Operations ">
+      <meta name="description" content="Amazon S3 batch operations cross-account copy example.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon Simple Storage Service">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/batch-ops-examples-xcopy.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/s3/index.html">Amazon Simple Storage Service (S3)</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="batch-ops.html">Performing Batch Operations</a> &#xBB; <a href="batch-ops-examples.html">Amazon S3 Batch Operations Examples</a> &#xBB; <span class="breadcrumb">Cross-Account Copy Examples for Amazon S3 Batch Operations </span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="batch-ops-examples-xcopy">Cross-Account Copy Examples for Amazon S3 Batch Operations </h1>
+                     <p>You can use Amazon S3 batch operations to create a PUT copy job to copy objects to
+                        a different AWS
+                        account (the <em>destination account</em>). When doing this, you can use Amazon S3
+                        inventory to deliver the inventory report to the destination account for use during
+                        job creation
+                        or you can use a comma-separated values (CSV) manifest in the source or destination
+                        account. The
+                        following sections explain how to store and use a manifest that is in a different
+                        AWS
+                        account.
+                     </p>
+                     <div class="highlights" id="inline-topiclist">
+                        <p><strong>Topics</strong></p>
+                        <ul>
+                           <li><a href="#specify-batchjob-manifest-xaccount-inventory">Using an Inventory Report
+                                 Delivered to the Destination AWS Account</a></li>
+                           <li><a href="#specify-batchjob-manifest-xaccount-csv">Using a CSV Manifest Stored in the
+                                 Source AWS Account</a></li>
+                        </ul>
+                     </div>
+                     
+                     <h2 id="specify-batchjob-manifest-xaccount-inventory">Using an Inventory Report
+                        Delivered to the Destination AWS Account
+                     </h2>
+                     
+                     
+                     <p>The Amazon S3 inventory generates inventories of the objects in a bucket. The resulting
+                        list is
+                        published to an output file. The bucket that is inventoried is called the <em>source
+                           bucket</em>, and the bucket where the inventory report file is stored is called the
+                        <em>destination bucket</em>. The Amazon S3 inventory report can be configured to
+                        deliver the inventory report to another AWS account. This allows Amazon S3 batch operations
+                        to read the
+                        inventory report when the job is created in the destination AWS account. For more
+                        information
+                        about Amazon S3 inventory source and destination buckets, see <a href="storage-inventory.html#storage-inventory-how-to-set-up">How Do I Set Up Amazon S3 Inventory?</a>. 
+                     </p>
+                     
+                     <p>The easiest way to set up an inventory is by using the AWS Management Console, but
+                        you can also use the
+                        REST API, AWS CLI, or AWS SDKs.
+                     </p>
+                     
+                     <p>In the following console procedure, you set up permissions for an Amazon S3 batch
+                        operations job to
+                        copy objects from a source account to a destination account, with the inventory report
+                        stored
+                        in the destination AWS account.
+                     </p>
+                     
+                     <p class="title"><b>To set up Amazon S3 inventory for source and destination buckets that are owned by
+                           different
+                           AWS accounts</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Choose a destination bucket to store the inventory report in.</p>
+                           
+                           <p>Decide on a destination manifest bucket for storing the inventory report. In this
+                              procedure, the <em>destination account</em> is the account that owns both the
+                              destination manifest bucket and the bucket that the objects are copied to. 
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Configure an inventory to list the objects in a source bucket and publish the list
+                              to
+                              the destination manifest bucket.
+                           </p>
+                           
+                           <p>Configure an inventory list for a source bucket. When you do this, you specify the
+                              destination bucket where you want the list to be stored. The inventory report for
+                              the
+                              source bucket is published to the destination bucket. In this procedure, the
+                              <em>source account</em> is the account that owns the source bucket. 
+                           </p>
+                           
+                           <p>For information about how to use the console to configure an inventory, see <a href="./AmazonS3/latest/user-guide/configure-inventory.html">How Do I Configure Amazon S3 Inventory?</a>
+                              in the <em>Amazon Simple Storage Service Console User Guide</em>.
+                           </p>
+                           
+                           <p>Choose <b>CSV</b> for the output format. 
+                           </p>
+                           
+                           <p>When you enter information for the destination bucket, choose <b>Buckets in
+                                 another account</b>. Then enter the name of the destination manifest bucket.
+                              Optionally, you can enter the account ID of the destination account.
+                           </p>
+                           
+                           <p>After the inventory configuration is saved, the console displays a message similar
+                              to
+                              the following: 
+                           </p>
+                           
+                           <p><strong class="errortext"><code>Amazon S3 could not create a bucket policy on the destination bucket. Ask the
+                                    destination bucket owner to add the following bucket policy to allow Amazon S3 to
+                                    place data
+                                    in that bucket.</code></strong></p>
+                           
+                           <p>The console then displays a bucket policy that you can use for the destination
+                              bucket.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Copy the destination bucket policy that appears on the console.</p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the destination account, add the copied bucket policy to the destination manifest
+                              bucket where the inventory report is stored.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Create a role in the destination account that is based on the Amazon S3 batch operations
+                              trust
+                              policy. For more information about the trust policy, see <a href="batch-ops-iam-role-policies.html#batch-ops-iam-role-policies-trust">Trust Policy</a>. For more information about creating
+                              a role, see <a href="./IAM/latest/UserGuide/id_roles_create_for-service.html"> Creating a Role
+                                 to Delegate Permissions to an AWS Service </a> in the
+                              <em>IAM User Guide</em>.
+                           </p>
+                           
+                           
+                           <p>Enter a name for the role (the example role uses the name
+                              <code class="code">BatchOperationsDestinationRoleCOPY</code>). Choose the <b>S3</b>
+                              service, and then choose the <b>S3 bucket Batch Operations</b> use case,
+                              which applies the trust policy to the role. 
+                           </p>
+                           
+                           <p>Then choose <b>Create policy</b> to attach the following policy to the
+                              role.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+        &quot;Version&quot;: &quot;2012-10-17&quot;,
+        &quot;Statement&quot;: [
+            {
+                &quot;Sid&quot;: &quot;AllowBatchOperationsDestinationObjectCOPY&quot;,
+                &quot;Effect&quot;: &quot;Allow&quot;,
+                &quot;Action&quot;: [
+                    &quot;s3:PutObject&quot;,
+                    &quot;s3:PutObjectVersionAcl&quot;,
+                    &quot;s3:PutObjectAcl&quot;,
+                    &quot;s3:PutObjectVersionTagging&quot;,
+                    &quot;s3:PutObjectTagging&quot;,
+                    &quot;s3:GetObject&quot;,
+                    &quot;s3:GetObjectVersion&quot;,
+                    &quot;s3:GetObjectAcl&quot;,
+                    &quot;s3:GetObjectTagging&quot;,
+                    &quot;s3:GetObjectVersionAcl&quot;,
+                    &quot;s3:GetObjectVersionTagging&quot;
+                ],
+                &quot;Resource&quot;: [
+                    &quot;arn:aws:s3:::<em class="replaceable"><code>ObjectDestinationBucket</code></em>*/*&quot;,
+                    &quot;arn:aws:s3:::<em class="replaceable"><code>ObjectSourceBucket</code></em>/*&quot;,
+                    &quot;arn:aws:s3:::<em class="replaceable"><code>ObjectDestinationManifestBucket</code></em>/*&quot;
+                ]
+            }
+        ]
+}</code></pre>
+                           <p>The role uses the policy to grant <code class="code">batchoperations.s3.amazonaws.com</code>
+                              permission to read the manifest in the destination bucket. It also grants permissions
+                              to
+                              GET objects, access control lists (ACLs), tags, and versions in the source object
+                              bucket.
+                              And it grants permissions to PUT objects, ACLs, tags, and versions into the destination
+                              object bucket.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the source account, create a bucket policy for the source bucket that grants the
+                              role that you created in the previous step to GET objects, ACLs, tags, and versions
+                              in the
+                              source bucket. This step allows Amazon S3 batch operations to get objects from the
+                              source bucket
+                              through the trusted role.
+                           </p>
+                           
+                           <p>The following is an example of the bucket policy for the source account.</p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+    &quot;Version&quot;: &quot;2012-10-17&quot;,
+    &quot;Statement&quot;: [
+        {
+            &quot;Sid&quot;: &quot;AllowBatchOperationsSourceObjectCOPY&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Principal&quot;: {
+                &quot;AWS&quot;: &quot;arn:aws:iam::<em class="replaceable"><code>DestinationAccountNumber</code></em>:role/BatchOperationsDestinationRoleCOPY&quot;
+            },
+            &quot;Action&quot;: [
+                &quot;s3:GetObject&quot;,
+                &quot;s3:GetObjectVersion&quot;,
+                &quot;s3:GetObjectAcl&quot;,
+                &quot;s3:GetObjectTagging&quot;,
+                &quot;s3:GetObjectVersionAcl&quot;,
+                &quot;s3:GetObjectVersionTagging&quot;
+            ],
+            &quot;Resource&quot;: &quot;arn:aws:s3:::<em class="replaceable"><code>ObjectSourceBucket</code></em>/*&quot;
+        }
+    ]
+}</code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>After the inventory report is available, create an Amazon S3 batch operations PUT
+                              object copy job
+                              in the destination account, choosing the inventory report from the destination manifest
+                              bucket. You need the ARN for the role that you created in the destination account.
+                              
+                           </p>
+                           
+                           <p>For general information about creating a job, see <a href="batch-ops-create-job.html">Creating a Batch Operations Job</a>. For information about creating a job using the
+                              console, see <a href="./AmazonS3/latest/user-guide/batch-ops-create-job.html"> Creating an Amazon S3 Batch
+                                 Operations Job</a> in the <em>Amazon Simple Storage Service Console User Guide</em>. 
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <h2 id="specify-batchjob-manifest-xaccount-csv">Using a CSV Manifest Stored in the
+                        Source AWS Account
+                     </h2>
+                     
+                     <p>You can use a CSV file that is stored in a different AWS account as a manifest for
+                        an
+                        Amazon S3 batch operations job. 
+                     </p>
+                     
+                     
+                     <p>The following procedure shows how to set up permissions when using an Amazon S3 batch
+                        operations job
+                        to copy objects from a source account to a destination account with the CSV manifest
+                        file
+                        stored in the source account.
+                     </p>
+                     
+                     <p class="title"><b>To set up a CSV manifest stored in a different AWS account</b></p>
+                     <ol>
+                        <li>
+                           
+                           <p>Create a role in the destination account that is based on the Amazon S3 batch operations
+                              trust
+                              policy. In this procedure, the <em>destination account</em> is the account
+                              that the objects are being copied to. 
+                           </p>
+                           
+                           <p>For more information about the trust policy, see <a href="batch-ops-iam-role-policies.html#batch-ops-iam-role-policies-trust">Trust Policy</a>. For more information about creating
+                              a role, see <a href="./IAM/latest/UserGuide/id_roles_create_for-service.html">Creating a Role to
+                                 Delegate Permissions to an AWS Service </a> in the
+                              <em>IAM User Guide</em>.
+                           </p>
+                           
+                           <p>If you create the role using the console, enter a name for the role (the example role
+                              uses the name <code class="code">BatchOperationsDestinationRoleCOPY</code>). Choose the
+                              <b>S3</b> service, and then choose the <b>S3 bucket Batch
+                                 Operations</b> use case, which applies the trust policy to the role. Then choose
+                              <b>Create policy</b> to attach the following policy to the role.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+        &quot;Version&quot;: &quot;2012-10-17&quot;,
+        &quot;Statement&quot;: [
+            {
+                &quot;Sid&quot;: &quot;AllowBatchOperationsDestinationObjectCOPY&quot;,
+                &quot;Effect&quot;: &quot;Allow&quot;,
+                &quot;Action&quot;: [
+                    &quot;s3:PutObject&quot;,
+                    &quot;s3:PutObjectVersionAcl&quot;,
+                    &quot;s3:PutObjectAcl&quot;,
+                    &quot;s3:PutObjectVersionTagging&quot;,
+                    &quot;s3:PutObjectTagging&quot;,
+                    &quot;s3:GetObject&quot;,
+                    &quot;s3:GetObjectVersion&quot;,
+                    &quot;s3:GetObjectAcl&quot;,
+                    &quot;s3:GetObjectTagging&quot;,
+                    &quot;s3:GetObjectVersionAcl&quot;,
+                    &quot;s3:GetObjectVersionTagging&quot;
+                ],
+                &quot;Resource&quot;: [
+                    &quot;arn:aws:s3:::<em class="replaceable"><code>ObjectDestinationBucket</code></em>*/*&quot;,
+                    &quot;arn:aws:s3:::<em class="replaceable"><code>ObjectSourceBucket</code></em>/*&quot;,
+                    &quot;arn:aws:s3:::<em class="replaceable"><code>ObjectSourceManifestBucket</code></em>/*&quot;
+                ]
+            }
+        ]
+}</code></pre>
+                           <p>Using the policy, the role grants <code class="code">batchoperations.s3.amazonaws.com</code>
+                              permission to read the manifest in the source manifest bucket. It grants permissions
+                              to
+                              GET objects, ACLs, tags, and versions in the source object bucket. It also grants
+                              permissions to PUT objects, ACLs, tags, and versions into the destination object
+                              bucket.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the source account, create a bucket policy for the bucket that contains the
+                              manifest to grant the role that you created in the previous step to GET objects and
+                              versions in the source manifest bucket. This step allows Amazon S3 batch operations
+                              to read the
+                              manifest using the trusted role. Apply the bucket policy to the bucket that contains
+                              the
+                              manifest. 
+                           </p>
+                           
+                           <p>The following is an example of the bucket policy to apply to the source manifest
+                              bucket.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+    &quot;Version&quot;: &quot;2012-10-17&quot;,
+    &quot;Statement&quot;: [
+        {
+            &quot;Sid&quot;: &quot;AllowBatchOperationsSourceManfiestRead&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Principal&quot;: {
+                &quot;AWS&quot;: [
+                    &quot;arn:aws:iam::*DestinationAccountNumber*:user/ConsoleUserCreatingJob&quot;,
+                    &quot;arn:aws:iam::*DestinationAccountNumber*:role/BatchOperationsDestinationRoleCOPY&quot;
+                ]
+            },
+            &quot;Action&quot;: [
+                &quot;s3:GetObject&quot;,
+                &quot;s3:GetObjectVersion&quot;
+            ],
+            &quot;Resource&quot;: &quot;arn:aws:s3:::*ObjectSourceManifestBucket*/*&quot;
+        }
+    ]
+}</code></pre>
+                           <p>This policy also grants permissions to allow a console user who is creating a job
+                              in
+                              the destination account the same permissions in the source manifest bucket through
+                              the
+                              same bucket policy.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the source account, create a bucket policy for the source bucket that grants the
+                              role you created to GET objects, ACLs, tags, and versions in the source object bucket.
+                              Amazon S3 batch operations can then get objects from the source bucket through the
+                              trusted
+                              role.
+                           </p>
+                           
+                           <p>The following is an example of the bucket policy for the bucket that contains the
+                              source objects.
+                           </p>
+                           <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="json ">{
+    &quot;Version&quot;: &quot;2012-10-17&quot;,
+    &quot;Statement&quot;: [
+        {
+            &quot;Sid&quot;: &quot;AllowBatchOperationsSourceObjectCOPY&quot;,
+            &quot;Effect&quot;: &quot;Allow&quot;,
+            &quot;Principal&quot;: {
+                &quot;AWS&quot;: &quot;arn:aws:iam::*DestinationAccountNumber*:role/BatchOperationsDestinationRoleCOPY&quot;
+            },
+            &quot;Action&quot;: [
+                &quot;s3:GetObject&quot;,
+                &quot;s3:GetObjectVersion&quot;,
+                &quot;s3:GetObjectAcl&quot;,
+                &quot;s3:GetObjectTagging&quot;,
+                &quot;s3:GetObjectVersionAcl&quot;,
+                &quot;s3:GetObjectVersionTagging&quot;
+            ],
+            &quot;Resource&quot;: &quot;arn:aws:s3:::<em class="replaceable"><code>ObjectSourceBucket</code></em>/*&quot;
+        }
+    ]
+}</code></pre>
+                           </li>
+                        <li>
+                           
+                           <p>Create an Amazon S3 batch operations job in the destination account. You need the
+                              ARN for the role
+                              that you created in the destination account. 
+                           </p>
+                           
+                           <p>For general information about creating a job, see <a href="batch-ops-create-job.html">Creating a Batch Operations Job</a>. For information about creating a job using the
+                              console, see <a href="./AmazonS3/latest/user-guide/batch-ops-create-job.html"> Creating an Amazon S3 Batch
+                                 Operations Job</a> in the <em>Amazon Simple Storage Service Console User Guide</em>. 
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="batch-ops-examples-reports.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="batch-ops-examples-cli.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="Using an Inventory Report
+        Delivered to the Destination AWS Account"><a class="pagetoc" href="#specify-batchjob-manifest-xaccount-inventory">Using an Inventory Report
+                              Delivered to the Destination AWS Account</a></li>
+                        <li class="pagetoc" name="Using a CSV Manifest Stored in the
+        Source AWS Account"><a class="pagetoc" href="#specify-batchjob-manifest-xaccount-csv">Using a CSV Manifest Stored in the
+                              Source AWS Account</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon Simple Storage Service';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>

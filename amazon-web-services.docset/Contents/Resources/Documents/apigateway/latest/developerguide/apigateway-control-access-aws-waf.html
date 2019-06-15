@@ -1,0 +1,287 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <title>Use AWS WAF to Protect Your Amazon API Gateway API
+         from Common Web Exploits - Amazon API Gateway
+      </title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="home" href="#top">
+      <link rel="up" href="apigateway-control-access-to-api.html" title="Controlling and Managing Access to a REST
+			API in API Gateway">
+      <link rel="prev" href="api-gateway-supported-certificate-authorities-for-http-endpoints.html" title="API Gateway-Supported Certificate Authorities for HTTP and HTTP Proxy Integrations">
+      <link rel="next" href="api-gateway-api-usage-plans.html" title="Create and Use Usage Plans with API
+            Keys">
+      <meta name="description" content="Learn how to configure AWS WAF to protect your Amazon API Gateway APIs.">
+      <meta name="deployment_region" content="IAD">
+      <meta name="product" content="Amazon API Gateway">
+      <meta name="guide" content="Developer Guide">
+      <meta name="guide-locale" content="en_us">
+      <meta name="tocs" content="toc-contents.json">
+      <meta name="marketingLocale" content="en_US">
+      <link rel="icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="shortcut icon" type="image/ico" href="/images/favicon.ico">
+      <link rel="canonical" href="https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-control-access-aws-waf.html">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/font-awesome.min.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/google-font.css">
+      <link id="code-style" rel="stylesheet" type="text/css" href="../../../css/light.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/jquery-ui.theme.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/colorbox.css">
+      <link rel="stylesheet" type="text/css" href="../../../css/awsdocs.css"><script type="text/javascript" src="/js/highlight.pack.js"></script><script type="text/javascript" src="/js/jquery.min.js"></script><script type="text/javascript" src="/js/jquery-ui.min.js"></script><script type="text/javascript" src="/js/jquery.colorbox.js"></script><script type="text/javascript" src="/js/awsdocs.min.js?v=20181221"></script><link rel="stylesheet" type="text/css" href="../../../css/marketing-target.css"><script type="text/javascript" src="/assets/marketing/js/marketing-target.js"></script></head>
+   <body id="top">
+      
+      <div id="content-container">
+         
+         <div id="main-column">
+            <div id="main">
+               <div id="main-content">
+                  <div id="main-col-body">
+                     <table summary="Breadcrumbs">
+                        <tbody><tr>
+                           <td>
+                              <div class="breadcrumb"><a href="/index.html">AWS Documentation</a> &#xBB; <a href="/apigateway/index.html">Amazon API Gateway</a> &#xBB; <a href="index.html">Developer Guide</a> &#xBB; <a href="apigateway-rest-api.html">Creating, Deploying, and Invoking a REST API
+                                    in Amazon API Gateway</a> &#xBB; <a href="apigateway-control-access-to-api.html">Controlling and Managing Access to a REST
+                                    			API in API Gateway</a> &#xBB; <span class="breadcrumb">Use AWS WAF to Protect Your Amazon API Gateway API
+                                    from Common Web Exploits</span></div>
+                           </td>
+                        </tr>
+                     </tbody></table>
+                     <div id="language-notice">
+                        <div class="language-notice-text"></div>
+                     </div>
+                     <div></div>
+                     <h1 class="topictitle" id="apigateway-control-access-aws-waf">Use AWS WAF to Protect Your Amazon API Gateway API
+                        from Common Web Exploits
+                     </h1>
+                     <p>AWS WAF is a web application firewall that helps protect web applications and APIs
+                        from
+                        attacks by allowing you to configure a set of rules (called a web access control list,
+                        or
+                        web ACL) that allow, block, or count web requests based on customizable web security
+                        rules
+                        and conditions that you define. For more information, see <a href="./waf/latest/developerguide/how-aws-waf-works.html">How AWS WAF Works</a>.
+                     </p>
+                     <p>You can use AWS WAF to protect your API Gateway API from common web exploits, such
+                        as SQL
+                        injection and cross-site scripting (XSS) attacks, that could affect API availability,
+                        performance, and compromise security or consume excessive resources. For example,
+                        you can
+                        create rules to allow or block requests from specified IP address ranges or CIDR blocks
+                        or
+                        originating from a specific country or region, containing malicious SQL code, or containing
+                        malicious script. You can also create rules that match a specified string or a regular
+                        expression pattern in HTTP headers, method, query string, URI, and the request body
+                        (limited
+                        to the first 8 KB). Additionally, you can create rules to block attacks from specific
+                        user-agents, bad bots, and content scrapers. For example, you can use rate-based rules
+                        to
+                        specify the number of web requests that are allowed by each client IP in a trailing,
+                        continuously updated, 5-minute period. 
+                     </p>
+                     <div class="aws-note">
+                        <p class="aws-note">Important</p>
+                        <p>AWS WAF is your first line of defense against web exploits. When AWS WAF is enabled
+                           on an
+                           API, AWS WAF rules are evaluated before other access control features, such as <a href="apigateway-resource-policies.html">resource policies</a>, <a href="permissions.html">IAM policies</a>, <a href="apigateway-use-lambda-authorizer.html">Lambda authorizers</a>, and <a href="apigateway-integrate-with-cognito.html">Amazon Cognito authorizers</a>. For example,
+                           if AWS WAF blocks access from a CIDR block that a resource policy allows, AWS WAF
+                           takes
+                           precedence and the resource policy is not evaluated.
+                        </p>
+                     </div>
+                     <p>To enable AWS WAF for your API, you&apos;ll need to:</p>
+                     <ol>
+                        <li>
+                           
+                           <p>Use the AWS WAF console, AWS SDK, or CLI to create a regional web ACL containing the
+                              desired
+                              combination of AWS WAF managed rules and your own custom rules. For more information,
+                              see <a href="./waf/latest/developerguide/getting-started.html">Getting Started with AWS WAF</a> and <a href="./waf/latest/developerguide/web-acl.html">Creating and Configuring a Web Access
+                                 Control List (Web ACL)</a>.
+                           </p>
+                           
+                           <div class="aws-note">
+                              <p class="aws-note">Important</p>
+                              <p>API Gateway requires a regional web ACL.</p>
+                           </div>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Associate the AWS WAF regional web ACL with an API stage. You can do this by using
+                              the AWS WAF
+                              console, AWS SDK, or CLI or by using the API Gateway console, AWS SDK, or CLI.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     <h2 id="apigateway-control-access-aws-waf-console">To Associate an AWS WAF Regional Web
+                        ACL with an API Gateway API Stage Using the API Gateway Console
+                     </h2>
+                     
+                     <p>To use the API Gateway console to associate an AWS WAF regional web ACL with an existing
+                        API Gateway API
+                        stage, use the following steps:
+                     </p>
+                     
+                     <ol>
+                        <li> 
+                           <p>Sign in to the API Gateway console at <a href="https://console.aws.amazon.com/apigateway" target="_blank">https://console.aws.amazon.com/apigateway</a>.
+                           </p> 
+                        </li>
+                        <li>
+                           
+                           <p>In the <b>APIs</b> navigation pane, choose the API, and then
+                              choose <b>Stages</b>.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the <b>Stages</b> pane, choose the name of the stage.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>In the <b>Stage Editor</b> pane, choose the
+                              <b>Settings</b> tab.
+                           </p>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>To associate a regional web ACL with the API stage:</p>
+                           
+                           <ol>
+                              <li>
+                                 
+                                 <p>In the AWS WAF Web ACL dropdown list, choose the regional web ACL that you want
+                                    to associate with this stage.
+                                 </p>
+                                 
+                                 <div class="aws-note">
+                                    <p class="aws-note">Note</p>
+                                    <p>If the Web ACL you need doesn&apos;t exist yet, choose <b>Create
+                                          WebACL</b> and then choose <b>Go to AWS WAF</b>to open the WAF console in a new browser tab
+                                       and create a regional web ACL. Then return to the API Gateway console to
+                                       associate the web ACL with the stage.
+                                    </p>
+                                 </div>
+                                 
+                              </li>
+                           </ol>
+                           
+                        </li>
+                        <li>
+                           
+                           <p>Choose <b>Save Changes</b>.
+                           </p>
+                           
+                        </li>
+                     </ol>
+                     
+                     
+                     <h2 id="apigateway-control-access-aws-waf-awscli">Associate an AWS WAF Regional Web ACL
+                        with an API Gateway API Stage Using the AWS CLI
+                     </h2>
+                     
+                     <p>To use the AWS CLI to associate an AWS WAF regional web ACL with an existing API Gateway
+                        API stage, call
+                        the <a href="./cli/latest/reference/waf-regional/associate-web-acl.html"><code class="code">associate-web-acl</code></a> command as in the following
+                        example:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">aws waf-regional associate-web-acl \
+--web-acl-id &apos;aabc123a-fb4f-4fc6-becb-2b00831cadcf&apos; \
+--resource-arn &apos;arn:aws:apigateway:<em class="replaceable"><code>{region}</code></em>::/restapis/4wk1k4onj3/stages/prod&apos;</code></pre>
+                     
+                     <h2 id="apigateway-control-access-aws-waf-api">Associate an AWS WAF Regional Web ACL with
+                        an API Stage Using the AWS WAF REST API
+                     </h2>
+                     
+                     <p>To use the AWS WAF REST API to associate an AWS WAF regional web ACL with an existing
+                        API Gateway API
+                        stage, call the <a href="./waf/latest/APIReference/API_regional_AssociateWebACL.html"><code class="code">AssociateWebACL</code></a> command as in the following
+                        example:
+                     </p>
+                     <pre class="programlisting"><div class="code-btn-container"><div class="btn-copy-code" title="Copy"></div><div class="btn-dark-theme" title="Dark theme" title-dark="Dark theme" title-light="Light theme"></div></div><code class="nohighlight">import boto3
+ 
+waf = boto3.client(&apos;wafregional&apos;)
+ 
+waf.associate_web_acl(
+    WebACLId=&apos;aabc123a-fb4f-4fc6-becb-2b00831cadcf&apos;,
+    ResourceArn=&apos;arn:aws:apigateway:<em class="replaceable"><code>{region}</code></em>::/restapis/4wk1k4onj3/stages/prod&apos;
+)</code></pre>
+                     <div id="marketing-target"><span class="close-button"></span><div class="marketing-title" id="marketing-title"></div>
+                        <div class="marketing-description"><span id="marketing-description"></span><span id="marketing-cta"></span></div>
+                     </div>
+                  </div>
+                  <noscript>
+                     <div>
+                        <div>
+                           <div>
+                              <div id="js_error_message">
+                                 <p><img src="https://d1ge0kk1l5kms0.cloudfront.net/images/G/01/webservices/console/warning.png" alt="Warning" /> <strong>Javascript is disabled or is unavailable in your
+                                       browser.</strong></p>
+                                 <p>To use the AWS Documentation, Javascript must be
+                                    enabled. Please refer to your browser's Help pages for instructions.
+                                 </p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </noscript>
+                  <div id="main-col-footer">
+                     <div id="doc-conventions"><a target="_top" href="/general/latest/gr/docconventions.html">Document Conventions</a></div>
+                     <div id="next"><a class="awstoc" accesskey="p" href="api-gateway-supported-certificate-authorities-for-http-endpoints.html">&#xAB; Previous </a><a class="awstoc" accesskey="n" href="api-gateway-api-usage-plans.html">Next &#xBB;</a></div>
+                     <div id="copyright-main-footer">&#xA9; 2019, Amazon Web Services, Inc. or its affiliates. All rights
+                        reserved.
+                     </div>
+                  </div>
+               </div>
+            </div>
+            <div id="right-expanded">
+               <div id="right-content-wrapper">
+                  <div id="pagetoc">
+                     <p>On this page:</p>
+                     <ul class="pagetoc">
+                        <li class="pagetoc" name="To Associate an AWS WAF Regional Web
+                ACL with an API Gateway API Stage Using the API Gateway Console"><a class="pagetoc" href="#apigateway-control-access-aws-waf-console">To Associate an AWS WAF Regional Web
+                              ACL with an API Gateway API Stage Using the API Gateway Console</a></li>
+                        <li class="pagetoc" name="Associate an AWS WAF Regional Web ACL
+                with an API Gateway API Stage Using the AWS CLI"><a class="pagetoc" href="#apigateway-control-access-aws-waf-awscli">Associate an AWS WAF Regional Web ACL
+                              with an API Gateway API Stage Using the AWS CLI</a></li>
+                        <li class="pagetoc" name="Associate an AWS WAF Regional Web ACL with
+                an API Stage Using the AWS WAF REST API"><a class="pagetoc" href="#apigateway-control-access-aws-waf-api">Associate an AWS WAF Regional Web ACL with
+                              an API Stage Using the AWS WAF REST API</a></li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div id="cookie-notice">
+         <div class="cookie-notice-text">We use cookies to provide and improve our services. By using
+            our site, you consent to cookies. <a href="http://aws.amazon.com/legal/cookies">Learn more</a></div>
+      </div>
+      
+      <!-- SiteCatalyst code version: H.25.2.
+            Copyright 1996-2012 Adobe, Inc. All Rights Reserved
+            More info available at http://www.omniture.com --><script language="JavaScript" type="text/javascript" src="https://a0.awsstatic.com/s_code/js/1.0/awshome_s_code.js"></script><script language="JavaScript" type="text/javascript">
+         <!--
+
+            // Documentation Service Name
+            s.prop66='Amazon API Gateway';
+            s.eVar66='D=c66';
+  
+            // Documentation Guide Name                                                                 
+            s.prop65='Developer Guide';
+            s.eVar65='D=c65';
+
+            var s_code=s.t();if(s_code)document.write(s_code)//--></script><script language="JavaScript" type="text/javascript">
+         <!--
+                if(navigator.appVersion.indexOf('MSIE')>=0)document.write(unescape('%3C')+'\!-'+'-')
+                //--></script><noscript><img src="https://amazonwebservices.d2.sc.omtrdc.net/b/ss/awsamazondev/1/H.25.2--NS/0" height="1" width="1" border="0" alt="" /></noscript>
+      <!--/DO NOT REMOVE/-->
+      <!-- End SiteCatalyst code version: H.25.2. -->
+   
+</body></html>
